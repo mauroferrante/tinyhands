@@ -1281,45 +1281,21 @@
     const landedW = stBlockWidth;
     const towerY = stGetTowerTopY();
 
-    // First block — lands on ball, ideal center is ball center (screen center)
+    // First block — sets ideal center
     if (stTowerBlocks.length === 0) {
       stActiveEl.style.bottom = GROUND_H + 'px';
       stActiveEl.style.left = landedX + 'px';
       stActiveEl.classList.remove('active');
 
-      // Ideal center is always the ball center (screen center)
-      const screenW = window.innerWidth;
-      stIdealCenterX = screenW / 2;
-
-      // First block offset from ball center adds instability
-      const blockCenterX = landedX + landedW / 2;
-      const offsetFromBall = blockCenterX - stIdealCenterX;
-      const normalizedOffset = Math.abs(offsetFromBall) / stOriginalWidth;
-      const isPerfect = normalizedOffset < PERFECT_THRESHOLD;
-
-      if (isPerfect) {
-        const snappedX = stIdealCenterX - landedW / 2;
-        stActiveEl.style.left = snappedX + 'px';
-        stTowerBlocks.push({ el: stActiveEl, x: snappedX, w: landedW, y: GROUND_H });
-        stPerfectStreak++;
-        stActiveEl.classList.add('perfect-flash');
-        playPerfectDing();
-        spawnParticles(stIdealCenterX, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
-      } else {
-        stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: GROUND_H });
-        stPerfectStreak = 0;
-        stInstability += normalizedOffset * 1.5;
-        stLeanDirection += (offsetFromBall / stOriginalWidth) * 1.5;
-        playThud();
-        spawnParticles(landedX + landedW / 2, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
-      }
-
+      stIdealCenterX = landedX + landedW / 2;
+      stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: GROUND_H });
       stBlockCount++;
       stackScoreEl.textContent = stBlockCount;
       stActiveEl = null;
       stDropping = false;
       stGameState = 'idle';
-      stUpdateDangerVignette();
+      playThud();
+      spawnParticles(landedX + landedW / 2, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
       stStartSway();
       return;
     }
