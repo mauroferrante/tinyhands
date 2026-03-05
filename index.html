@@ -536,6 +536,7 @@
 
   // ---- Shared state ----
   let currentGame  = null;
+  let pendingGame  = null;
   let audioCtx     = null;
   let cursorTimer  = null;
   let cursorActive = false;
@@ -786,14 +787,26 @@
     initAudio();
     const game = GAMES[gameId];
     if (!game) return;
+    pendingGame = game;
 
     playEntryAnimation(btn, () => {
       const el = document.documentElement;
       const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
       if (rfs) {
-        rfs.call(el).catch(() => startGame(game));
+        rfs.call(el).then(() => {
+          // Fullscreen succeeded — start if onFullscreenChange hasn't already
+          if (!currentGame && pendingGame) {
+            startGame(pendingGame);
+            pendingGame = null;
+          }
+        }).catch(() => {
+          // Fullscreen failed — start game without fullscreen
+          if (pendingGame) startGame(pendingGame);
+          pendingGame = null;
+        });
       } else {
-        startGame(game);
+        startGame(pendingGame);
+        pendingGame = null;
       }
     });
   }
@@ -830,9 +843,9 @@
   // Fullscreen change listener
   function onFullscreenChange() {
     const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-    if (fsEl && !currentGame) {
-      // Fullscreen entered but game not started — this means the game object
-      // was queued via launchGame. The startGame call handles it via the callback.
+    if (fsEl && !currentGame && pendingGame) {
+      startGame(pendingGame);
+      pendingGame = null;
     } else if (!fsEl && currentGame) {
       stopGame();
     }
