@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Tiny Hands Play 🎨 — Toddler Keyboard Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  /* ===== Reset & Base ===== */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ===== Animated Gradient Background ===== */
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, #FFDEE9, #B5FFFC, #FFF8E7, #E8D5FF, #FDE8F0);
+    background-size: 400% 400%;
+    animation: gradientShift 20s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    25%  { background-position: 100% 0%; }
+    50%  { background-position: 100% 100%; }
+    75%  { background-position: 0% 100%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* ===== Landing Page ===== */
+  #landing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    position: relative;
+    z-index: 10;
+  }
+
+  #landing h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(3rem, 8vw, 5rem);
+    color: #7C5CFC;
+    text-shadow: 3px 3px 0 rgba(124, 92, 252, 0.15);
+    margin-bottom: 0.2em;
+  }
+
+  #landing .subtitle {
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    color: #888;
+    font-weight: 600;
+    margin-bottom: 2em;
+  }
+
+  #landing .domain {
+    margin-top: 2em;
+    font-size: 0.9rem;
+    color: #bbb;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  #landing .tip-jar {
+    margin-top: 0.8em;
+    font-size: 0.95rem;
+    color: #7C5CFC;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 30px;
+    background: rgba(124, 92, 252, 0.08);
+    transition: background 0.2s ease, transform 0.15s ease;
+    z-index: 10;
+    position: relative;
+  }
+
+  #landing .tip-jar:hover {
+    background: rgba(124, 92, 252, 0.16);
+    transform: scale(1.05);
+  }
+
+  #landing .tip-section {
+    margin-top: 0.8em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6em;
+    z-index: 10;
+    position: relative;
+  }
+
+  #landing .qr-code {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+
+  #landing .qr-code:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  /* Start button */
+  #startBtn {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    padding: 0.6em 2em;
+    border: none;
+    border-radius: 60px;
+    background: linear-gradient(135deg, #FF6B8A, #FFB347, #7C5CFC, #4ECDC4, #FF6B8A);
+    background-size: 300% 300%;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(124, 92, 252, 0.35);
+    animation: wobble 2.5s ease-in-out infinite;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 10;
+  }
+
+  #startBtn:hover {
+    animation: wobble 2.5s ease-in-out infinite, btnRainbow 2s linear infinite;
+    transform: scale(1.1);
+    box-shadow: 0 12px 40px rgba(124, 92, 252, 0.5), 0 0 30px rgba(255, 107, 138, 0.3);
+  }
+
+  #startBtn:active {
+    transform: scale(0.96);
+  }
+
+  @keyframes wobble {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    15%      { transform: rotate(-3deg) scale(1.04); }
+    30%      { transform: rotate(3deg) scale(1); }
+    45%      { transform: rotate(-2deg) scale(1.03); }
+    60%      { transform: rotate(2deg) scale(1); }
+  }
+
+  @keyframes btnRainbow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+
+  /* Transition overlay for entering playground */
+  #transition-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    display: none;
+  }
+
+  #transition-overlay .boom-emoji {
+    position: absolute;
+    font-size: 60px;
+    pointer-events: none;
+    animation: boomFly 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  @keyframes boomFly {
+    0%   { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
+    50%  { opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(1.2) rotate(var(--tr)); opacity: 0; }
+  }
+
+  #transition-overlay .flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    animation: flashBang 0.6s ease-out forwards;
+    border-radius: 0;
+  }
+
+  @keyframes flashBang {
+    0%   { opacity: 0; }
+    30%  { opacity: 0.8; }
+    100% { opacity: 0; }
+  }
+
+  /* Floating background emojis on landing */
+  .bg-emoji {
+    position: absolute;
+    font-size: 2.5rem;
+    opacity: 0.18;
+    animation: floatEmoji linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes floatEmoji {
+    0%   { transform: translateY(0) rotate(0deg); }
+    50%  { transform: translateY(-40px) rotate(15deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+  }
+
+  /* ===== Playground (fullscreen mode) ===== */
+  #playground {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    overflow: hidden;
+    cursor: none;
+  }
+
+  /* Play hint */
+  #playHint {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    color: rgba(124, 92, 252, 0.35);
+    z-index: 200;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    text-align: center;
+  }
+
+  /* ESC hint */
+  #escHint {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.35);
+    background: rgba(255, 255, 255, 0.45);
+    padding: 6px 14px;
+    border-radius: 20px;
+    z-index: 200;
+    transition: opacity 1s ease;
+    pointer-events: none;
+  }
+
+  /* ===== Spawned Emoji ===== */
+  .emoji {
+    position: absolute;
+    font-size: 80px;
+    line-height: 1;
+    pointer-events: none;
+    animation:
+      popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+      emojiFloat var(--float-dur) ease-in-out infinite var(--float-delay);
+    z-index: 110;
+    transition: opacity 3s ease;
+  }
+
+  @keyframes popIn {
+    0%   { transform: scale(0) rotate(0deg); }
+    60%  { transform: scale(1.25) rotate(var(--rot)); }
+    100% { transform: scale(1) rotate(var(--rot)); }
+  }
+
+  @keyframes emojiFloat {
+    0%   { translate: 0 0; }
+    25%  { translate: var(--fx) var(--fy); }
+    50%  { translate: var(--fx2) var(--fy2); }
+    75%  { translate: var(--fx3) var(--fy3); }
+    100% { translate: 0 0; }
+  }
+
+  #playground.show-cursor {
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><text y='32' font-size='32'>🖐️</text></svg>") 20 20, pointer;
+  }
+
+  .emoji.fade-out {
+    opacity: 0 !important;
+  }
+
+  /* ===== Confetti Particle ===== */
+  .particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 105;
+    animation: particleBurst 0.6s ease-out forwards;
+  }
+
+  @keyframes particleBurst {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--px), var(--py)) scale(0);
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Landing Screen ===== -->
+<div id="landing">
+  <h1>Tiny Hands Play 🎨</h1>
+  <p class="subtitle">Let your toddler go wild on the keyboard!</p>
+  <button id="startBtn">Start Playing! 🎉</button>
+  <p class="domain">tinyhandsplay.com</p>
+  <div class="tip-section">
+    <a href="https://paypal.me/mauroferrante/5" target="_blank" rel="noopener" class="tip-jar">💜 Buy me a coffee</a>
+    <img src="qrcode.png" alt="PayPal QR Code" class="qr-code">
+  </div>
+</div>
+
+<!-- ===== Transition Overlay ===== -->
+<div id="transition-overlay"></div>
+
+<!-- ===== Playground Screen ===== -->
+<div id="playground">
+  <div id="playHint">Press any key and watch the magic!</div>
+  <div id="escHint">Press ESC to exit</div>
+</div>
+
+<script>
+  /* =========================================================
+   *  Tiny Hands Play — Toddler Keyboard Playground
+   *  All logic in a single self-contained script.
+   * ========================================================= */
+
+  // ---- Element references ----
+  const landing    = document.getElementById('landing');
+  const playground = document.getElementById('playground');
+  const startBtn   = document.getElementById('startBtn');
+  const escHint    = document.getElementById('escHint');
+  const playHint   = document.getElementById('playHint');
+
+  // ---- Emoji pool (random, for non-letter keys / clicks / touch) ----
+  const EMOJIS = [
+    '😀','😺','🐶','🐱','🌳','🌻','🦋','🐠','🌈','🍎',
+    '🚀','⭐','🎈','🐸','🦁','🐧','🎉','🌸','🐝','🍕',
+    '🦄','🐢','🐬','🌙','🍩'
+  ];
+
+  // ---- Letter → Emoji mapping ----
+  const KEY_MAP = {
+    a: '🍎',  // apple
+    b: '🐝',  // bee
+    c: '🐱',  // cat
+    d: '🐶',  // dog
+    e: '🐘',  // elephant
+    f: '🐸',  // frog
+    g: '🦒',  // giraffe
+    h: '🐴',  // horse
+    i: '🍦',  // ice cream
+    j: '🃏',  // joker
+    k: '🪁',  // kite
+    l: '🦁',  // lion
+    m: '🐵',  // monkey
+    n: '🌙',  // night/moon
+    o: '🐙',  // octopus
+    p: '🐧',  // penguin
+    q: '👑',  // queen
+    r: '🌈',  // rainbow
+    s: '⭐',  // star
+    t: '🐢',  // turtle
+    u: '🦄',  // unicorn
+    v: '🌋',  // volcano
+    w: '🐋',  // whale
+    x: '✨',  // sparkles (x marks the magic)
+    y: '🪀',  // yo-yo
+    z: '🦓',  // zebra
+  };
+
+  // ---- Config ----
+  const MAX_EMOJIS   = 30;
+  const EMOJI_SIZE   = 90;   // px — within 80-120 range
+  const PARTICLE_COUNT = 8;
+
+  // ---- State ----
+  let activeEmojis = [];      // track spawned emoji elements
+  let isPlaying    = false;
+  let audioCtx     = null;
+
+  // ---- Floating background emojis on landing ----
+  (function createBgEmojis() {
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('span');
+      el.className = 'bg-emoji';
+      el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      el.style.left = Math.random() * 90 + 5 + '%';
+      el.style.top  = Math.random() * 90 + 5 + '%';
+      el.style.animationDuration = (4 + Math.random() * 4) + 's';
+      el.style.animationDelay    = (Math.random() * 4) + 's';
+      el.style.fontSize = (1.8 + Math.random() * 1.5) + 'rem';
+      landing.appendChild(el);
+    }
+  })();
+
+  // ===== Fullscreen logic =====
+
+  const overlay = document.getElementById('transition-overlay');
+
+  function playEntryAnimation(callback) {
+    overlay.style.display = 'block';
+    overlay.innerHTML = '';
+
+    // Get button center for explosion origin
+    const rect = startBtn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    // Spawn ~25 emojis flying outward from button
+    for (let i = 0; i < 25; i++) {
+      const em = document.createElement('span');
+      em.className = 'boom-emoji';
+      em.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      const angle = (Math.PI * 2 / 25) * i + Math.random() * 0.3;
+      const dist = 300 + Math.random() * 400;
+      em.style.left = cx + 'px';
+      em.style.top = cy + 'px';
+      em.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      em.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      em.style.setProperty('--tr', (Math.random() * 360 - 180) + 'deg');
+      em.style.animationDelay = (Math.random() * 0.15) + 's';
+      overlay.appendChild(em);
+    }
+
+    // White flash
+    const flash = document.createElement('div');
+    flash.className = 'flash';
+    flash.style.animationDelay = '0.2s';
+    overlay.appendChild(flash);
+
+    // Hooray fanfare sound
+    playFanfare();
+
+    // After animation, clean up and proceed
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      overlay.innerHTML = '';
+      callback();
+    }, 800);
+  }
+
+  function enterFullscreen() {
+    // Init AudioContext early (needs user gesture)
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    playEntryAnimation(() => {
+      const el = document.documentElement;
+      const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+      if (rfs) {
+        rfs.call(el).catch(() => {
+          startPlayground();
+        });
+      } else {
+        startPlayground();
+      }
+    });
+  }
+
+  function startPlayground() {
+    isPlaying = true;
+    landing.style.display    = 'none';
+    playground.style.display = 'block';
+
+    // Lazy-init AudioContext on first user gesture
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    // Show hints
+    playHint.style.opacity = '1';
+    escHint.style.opacity = '1';
+    setTimeout(() => { escHint.style.opacity = '0'; }, 3000);
+  }
+
+  function stopPlayground() {
+    isPlaying = false;
+    cursorActive = false;
+    playground.classList.remove('show-cursor');
+    playground.style.display = 'none';
+    landing.style.display    = 'flex';
+
+    // Clear all emojis
+    activeEmojis.forEach(el => el.remove());
+    activeEmojis = [];
+
+    // Remove any lingering particles
+    playground.querySelectorAll('.particle').forEach(p => p.remove());
+  }
+
+  // Listen for fullscreen changes (enter and exit)
+  function onFullscreenChange() {
+    const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fsEl && !isPlaying) {
+      startPlayground();
+    } else if (!fsEl && isPlaying) {
+      stopPlayground();
+    }
+  }
+  document.addEventListener('fullscreenchange', onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+
+  // Start button
+  startBtn.addEventListener('click', enterFullscreen);
+  startBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    enterFullscreen();
+  });
+
+  // ===== Emoji spawning =====
+
+  function hidePlayHint() {
+    if (playHint.style.opacity !== '0') {
+      playHint.style.opacity = '0';
+    }
+  }
+
+  function spawnEmoji(x, y, key) {
+    if (!isPlaying) return;
+    hidePlayHint();
+
+    // Pick emoji: mapped letter or random
+    const letter = key ? key.toLowerCase() : null;
+    const char = (letter && KEY_MAP[letter]) ? KEY_MAP[letter] : EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+
+    // Random rotation between -15 and 15 degrees
+    const rot = (Math.random() * 30 - 15);
+
+    // Random float movement values (gentle drift)
+    const randDrift = () => (Math.random() * 40 - 20) + 'px';
+
+    // Create element
+    const el = document.createElement('span');
+    el.className = 'emoji';
+    el.textContent = char;
+    el.style.left = (x - EMOJI_SIZE / 2) + 'px';
+    el.style.top  = (y - EMOJI_SIZE / 2) + 'px';
+    el.style.fontSize = EMOJI_SIZE + 'px';
+    el.style.setProperty('--rot', rot + 'deg');
+    // Float animation params
+    el.style.setProperty('--float-dur', (3 + Math.random() * 3) + 's');
+    el.style.setProperty('--float-delay', (Math.random() * -3) + 's');
+    el.style.setProperty('--fx', randDrift());
+    el.style.setProperty('--fy', randDrift());
+    el.style.setProperty('--fx2', randDrift());
+    el.style.setProperty('--fy2', randDrift());
+    el.style.setProperty('--fx3', randDrift());
+    el.style.setProperty('--fy3', randDrift());
+
+    playground.appendChild(el);
+    activeEmojis.push(el);
+
+    // Fade out after 8s, remove after 11s (8s visible + 3s fade)
+    setTimeout(() => {
+      el.classList.add('fade-out');
+      setTimeout(() => {
+        el.remove();
+        const idx = activeEmojis.indexOf(el);
+        if (idx !== -1) activeEmojis.splice(idx, 1);
+      }, 3000);
+    }, 8000);
+
+    // Spawn particles
+    spawnParticles(x, y);
+
+    // Play sound
+    playSound();
+  }
+
+  // ===== Confetti particles =====
+
+  const PARTICLE_COLORS = ['#FF6B8A','#7C5CFC','#FFB347','#4ECDC4','#FF85A1','#FFC75F','#845EC2','#00C9A7'];
+
+  function spawnParticles(x, y) {
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const p = document.createElement('span');
+      p.className = 'particle';
+
+      // Random direction
+      const angle = (Math.PI * 2 / PARTICLE_COUNT) * i + (Math.random() * 0.5);
+      const dist  = 40 + Math.random() * 50;
+      const px = Math.cos(angle) * dist;
+      const py = Math.sin(angle) * dist;
+
+      p.style.left = x + 'px';
+      p.style.top  = y + 'px';
+      p.style.setProperty('--px', px + 'px');
+      p.style.setProperty('--py', py + 'px');
+      p.style.backgroundColor = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+      p.style.width  = (6 + Math.random() * 6) + 'px';
+      p.style.height = p.style.width;
+
+      playground.appendChild(p);
+
+      // Remove after animation
+      p.addEventListener('animationend', () => p.remove());
+    }
+  }
+
+  // ===== Web Audio API sound effects =====
+
+  function playSound() {
+    if (!audioCtx) return;
+
+    // Resume context if suspended (autoplay policy)
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const now = audioCtx.currentTime;
+
+    // Pick a random sound type
+    const type = Math.floor(Math.random() * 4);
+
+    switch (type) {
+      case 0: playPop(now); break;
+      case 1: playBoing(now); break;
+      case 2: playChime(now); break;
+      case 3: playBubble(now); break;
+    }
+  }
+
+  // Short pop
+  function playPop(now) {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600 + Math.random() * 400, now);
+    osc.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.12);
+  }
+
+  // Boing
+  function playBoing(now) {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    const base = 300 + Math.random() * 200;
+    osc.frequency.setValueAtTime(base, now);
+    osc.frequency.exponentialRampToValueAtTime(base * 2, now + 0.05);
+    osc.frequency.exponentialRampToValueAtTime(base * 0.8, now + 0.15);
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.18);
+  }
+
+  // Chime
+  function playChime(now) {
+    // Two oscillators for a richer chime
+    const notes = [523, 587, 659, 698, 784, 880]; // C5-A5
+    const freq = notes[Math.floor(Math.random() * notes.length)];
+
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.2);
+  }
+
+  // Bubble
+  function playBubble(now) {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    const base = 200 + Math.random() * 300;
+    osc.frequency.setValueAtTime(base, now);
+    osc.frequency.exponentialRampToValueAtTime(base * 1.8, now + 0.08);
+    osc.frequency.exponentialRampToValueAtTime(base * 1.2, now + 0.15);
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }
+
+  // ===== Hooray fanfare sound =====
+  function playFanfare() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+
+    // Rising celebratory notes: C-E-G-C (major chord arpeggio)
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + i * 0.1);
+      gain.gain.setValueAtTime(0, now + i * 0.1);
+      gain.gain.linearRampToValueAtTime(0.15, now + i * 0.1 + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now + i * 0.1);
+      osc.stop(now + i * 0.1 + 0.4);
+    });
+
+    // Final shimmer chord (all notes together)
+    setTimeout(() => {
+      [523, 659, 784, 1047, 1319].forEach(freq => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.6);
+      });
+    }, 400);
+  }
+
+  // ===== Event listeners for spawning =====
+
+  // Random position helper
+  function randPos() {
+    return {
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight
+    };
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if (!isPlaying) return;
+
+    // Prevent default browser behaviors (except ESC which exits fullscreen)
+    if (e.key !== 'Escape') {
+      e.preventDefault();
+    }
+
+    const pos = randPos();
+    spawnEmoji(pos.x, pos.y, e.key);
+  });
+
+  // Mouse left click — 1 emoji at cursor
+  document.addEventListener('mousedown', (e) => {
+    if (!isPlaying) return;
+    e.preventDefault();
+    if (e.button === 2) {
+      // Right click — 3 random emojis scattered around cursor
+      for (let i = 0; i < 3; i++) {
+        const angle = (Math.PI * 2 / 3) * i + Math.random() * 0.8;
+        const dist = 60 + Math.random() * 40;
+        const ox = e.clientX + Math.cos(angle) * dist;
+        const oy = e.clientY + Math.sin(angle) * dist;
+        spawnEmoji(ox, oy);
+      }
+    } else {
+      spawnEmoji(e.clientX, e.clientY);
+    }
+  });
+
+  // Touch
+  document.addEventListener('touchstart', (e) => {
+    if (!isPlaying) return;
+    e.preventDefault();
+    // Spawn for each touch point
+    for (let i = 0; i < e.touches.length; i++) {
+      spawnEmoji(e.touches[i].clientX, e.touches[i].clientY);
+    }
+  }, { passive: false });
+
+  // ===== Show cursor only on mouse activity =====
+  let cursorTimer = null;
+  let cursorActive = false;
+  function showCursor() {
+    if (!cursorActive) return;
+    playground.classList.add('show-cursor');
+    clearTimeout(cursorTimer);
+    cursorTimer = setTimeout(() => {
+      playground.classList.remove('show-cursor');
+    }, 2000);
+  }
+  // Only start tracking mouse after the first mousemove inside playground
+  document.addEventListener('mousemove', (e) => {
+    if (!isPlaying) return;
+    if (!cursorActive) {
+      // Ignore the first move (from clicking Start)
+      cursorActive = true;
+      return;
+    }
+    showCursor();
+  });
+
+  // Prevent context menu
+  document.addEventListener('contextmenu', (e) => {
+    if (isPlaying) e.preventDefault();
+  });
+</script>
+</body>
+</html>
