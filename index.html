@@ -385,10 +385,16 @@
     display: none;
     position: absolute;
     inset: 0;
+    overflow: hidden;
   }
 
   #splatKeysGame {
     display: none;
+    position: absolute;
+    inset: 0;
+  }
+
+  .stack-camera {
     position: absolute;
     inset: 0;
   }
@@ -403,38 +409,55 @@
     color: rgba(124, 92, 252, 0.6);
     z-index: 200;
     pointer-events: none;
-    transition: opacity 0.5s ease;
   }
 
   .stack-block {
     position: absolute;
-    border-radius: 8px;
+    border-radius: 10px;
     z-index: 110;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.3);
   }
 
-  .stack-block.falling {
-    transition: none;
+  .stack-block.active {
+    box-shadow: 0 2px 12px rgba(124, 92, 252, 0.3), 0 0 20px rgba(255, 255, 255, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.3);
   }
 
-  .stack-block.landed {
-    animation: blockLand 0.2s ease-out;
+  .stack-block.perfect-flash {
+    animation: perfectGlow 0.5s ease-out;
   }
 
-  @keyframes blockLand {
-    0%   { transform: scaleY(0.85) scaleX(1.1); }
-    50%  { transform: scaleY(1.05) scaleX(0.97); }
-    100% { transform: scaleY(1) scaleX(1); }
+  @keyframes perfectGlow {
+    0%   { box-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700, inset 0 2px 4px rgba(255,255,255,0.3); }
+    100% { box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.3); }
   }
 
-  @keyframes blockSway {
-    0%, 100% { transform: rotate(calc(var(--sway) * -1)); }
-    50%      { transform: rotate(var(--sway)); }
+  .stack-block.streak-flash {
+    animation: streakRainbow 0.6s ease-out;
   }
 
-  .stack-block.swaying {
-    animation: blockSway var(--sway-dur) ease-in-out infinite;
-    transform-origin: bottom center;
+  @keyframes streakRainbow {
+    0%   { box-shadow: 0 0 20px #FF6B8A, 0 0 40px #FFB347; }
+    33%  { box-shadow: 0 0 20px #7C5CFC, 0 0 40px #4ECDC4; }
+    66%  { box-shadow: 0 0 20px #FFB347, 0 0 40px #FF6B8A; }
+    100% { box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.3); }
+  }
+
+  .stack-overhang {
+    position: absolute;
+    border-radius: 10px;
+    z-index: 109;
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  .stack-ground-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, transparent, rgba(124, 92, 252, 0.2), transparent);
+    z-index: 109;
   }
 
   .stack-celebrate {
@@ -457,15 +480,17 @@
     opacity: 1;
   }
 
-  /* Ground platform */
-  .stack-ground {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background: linear-gradient(to top, rgba(124, 92, 252, 0.15), transparent);
-    z-index: 109;
+  .stack-confetti {
+    position: fixed;
+    pointer-events: none;
+    z-index: 250;
+    animation: confettiFall var(--fall-dur) linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translateY(var(--fall-dist)) rotate(var(--fall-rot)); opacity: 0; }
   }
 </style>
 </head>
@@ -514,10 +539,12 @@
 
   <!-- Stack & Smash game layer -->
   <div id="stackGame">
-    <div class="stack-ground"></div>
+    <div class="stack-camera" id="stackCamera">
+      <div class="stack-ground-line"></div>
+    </div>
     <div class="stack-score" id="stackScore">0</div>
-    <div class="play-hint" id="stackHint">Tap or press any key to drop a block!</div>
-    <div class="stack-celebrate" id="stackCelebrate">🎉 CRASH! 🎉</div>
+    <div class="play-hint" id="stackHint">Tap to drop!</div>
+    <div class="stack-celebrate" id="stackCelebrate"></div>
   </div>
 
   <div id="escHint">Press ESC to exit</div>
@@ -742,6 +769,92 @@
       osc.start(now + i * 0.05);
       osc.stop(now + i * 0.05 + 0.3);
     }
+  }
+
+  function playSnap() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(1200, now);
+    osc.frequency.exponentialRampToValueAtTime(300, now + 0.06);
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.06);
+  }
+
+  function playPerfectDing() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, now);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.setValueAtTime(0.15, now + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.4);
+  }
+
+  function playStreakChime() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    notes.forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + i * 0.08);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.setValueAtTime(0.12, now + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.2);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now + i * 0.08);
+      osc.stop(now + i * 0.08 + 0.2);
+    });
+  }
+
+  function playWinFanfare() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+    notes.forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + i * 0.12);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.setValueAtTime(0.15, now + i * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.4);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now + i * 0.12);
+      osc.stop(now + i * 0.12 + 0.4);
+    });
+    // Shimmer chord at the end
+    setTimeout(() => {
+      if (!audioCtx) return;
+      const chord = [523.25, 659.25, 783.99, 1046.5];
+      chord.forEach(freq => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.8);
+      });
+    }, 500);
   }
 
   // ===== Entry Animation & Fullscreen =====
@@ -981,197 +1094,425 @@
   //  GAME 2: Stack & Smash
   // =========================================================
 
-  const stackGameEl   = document.getElementById('stackGame');
-  const stackScoreEl  = document.getElementById('stackScore');
-  const stackHint     = document.getElementById('stackHint');
+  const stackGameEl    = document.getElementById('stackGame');
+  const stackCameraEl  = document.getElementById('stackCamera');
+  const stackScoreEl   = document.getElementById('stackScore');
+  const stackHint      = document.getElementById('stackHint');
   const stackCelebrate = document.getElementById('stackCelebrate');
 
   const BLOCK_COLORS = ['#FF6B8A','#FFB347','#7C5CFC','#4ECDC4','#FF85A1','#FFC75F','#845EC2','#00C9A7','#F9844A','#90BE6D'];
-  const BLOCK_HEIGHT = 40;
-  const GROUND_Y = 40; // ground height
+  const BLOCK_H = 35;
+  const GROUND_H = 20;
+  const SWAY_GAP = 80;
+  const SWAY_MARGIN = 30;
+  const PERFECT_THRESHOLD = 0.05;
+  const MIN_WIDTH_RATIO = 0.15;
+  const WIN_BLOCKS = 20;
+  const SWAY_SPEEDS = [1.5, 2.5, 3.5, 4.5];
 
-  let stackBlocks = [];      // { el, x, y, w, h, vx, vy, landed }
-  let fallingBlock = null;
-  let stackAnimFrame = null;
-  let stackCount = 0;
-  let stackCollapsing = false;
-  let stackDropReady = true;
+  let stTowerBlocks = [];    // { el, x, w, y }
+  let stActiveEl = null;     // the swaying block element
+  let stBlockWidth = 0;
+  let stOriginalWidth = 0;
+  let stSwayX = 0;
+  let stSwayDir = 1;
+  let stSwaySpeed = SWAY_SPEEDS[0];
+  let stDropping = false;
+  let stDropY = 0;
+  let stDropVy = 0;
+  let stPerfectStreak = 0;
+  let stBlockCount = 0;
+  let stCameraY = 0;
+  let stTargetCameraY = 0;
+  let stGameState = 'idle'; // 'idle' | 'swaying' | 'dropping' | 'collapsing' | 'winning'
+  let stAnimFrame = null;
 
-  function stackHideHint() {
-    if (stackHint.style.opacity !== '0') stackHint.style.opacity = '0';
+  function stGetSwaySpeed() {
+    if (stBlockCount < 5) return SWAY_SPEEDS[0];
+    if (stBlockCount < 10) return SWAY_SPEEDS[1];
+    if (stBlockCount < 16) return SWAY_SPEEDS[2];
+    return SWAY_SPEEDS[3];
   }
 
-  function getStackTop() {
-    // Returns the Y position of the top of the stack (from bottom of screen)
-    if (stackBlocks.length === 0) return GROUND_Y;
-    return GROUND_Y + stackBlocks.length * BLOCK_HEIGHT;
+  function stGetTowerTopY() {
+    // Tower top in camera-space Y (from bottom of viewport)
+    return GROUND_H + stTowerBlocks.length * BLOCK_H;
   }
 
-  function getTopBlock() {
-    return stackBlocks.length > 0 ? stackBlocks[stackBlocks.length - 1] : null;
-  }
-
-  function dropBlock() {
-    if (stackCollapsing || fallingBlock) return;
-    stackHideHint();
+  function stStartSway() {
+    if (stGameState === 'collapsing' || stGameState === 'winning') return;
 
     const screenW = window.innerWidth;
-    const screenH = window.innerHeight;
-    const topBlock = getTopBlock();
+    stSwaySpeed = stGetSwaySpeed();
 
-    // Block width: random but roughly similar (gets slightly narrower higher up)
-    const baseW = Math.min(screenW * 0.35, 200);
-    const w = baseW - Math.min(stackBlocks.length * 2, 40) + (Math.random() * 30 - 15);
-    const blockW = Math.max(w, 60);
-
-    // Drop position: centered with slight random offset
-    const centerX = screenW / 2;
-    const offsetRange = Math.min(stackBlocks.length * 8, 80);
-    const dropX = centerX - blockW / 2 + (Math.random() * offsetRange - offsetRange / 2);
-
+    // Create the swaying block
     const el = document.createElement('div');
-    el.className = 'stack-block falling';
-    el.style.width = blockW + 'px';
-    el.style.height = BLOCK_HEIGHT + 'px';
-    el.style.backgroundColor = BLOCK_COLORS[stackBlocks.length % BLOCK_COLORS.length];
-    el.style.left = dropX + 'px';
-    el.style.top = '0px';
+    el.className = 'stack-block active';
+    el.style.width = stBlockWidth + 'px';
+    el.style.height = BLOCK_H + 'px';
+    el.style.backgroundColor = BLOCK_COLORS[stBlockCount % BLOCK_COLORS.length];
 
-    // Add a fun emoji face to each block
-    const faces = ['😄','😎','🤪','😋','🥳','😆','🤩','😜','🙃','😊'];
-    el.textContent = faces[Math.floor(Math.random() * faces.length)];
-    el.style.display = 'flex';
-    el.style.alignItems = 'center';
-    el.style.justifyContent = 'center';
-    el.style.fontSize = '24px';
+    // Position: above the tower top with gap
+    const screenH = window.innerHeight;
+    const towerTopFromBottom = stGetTowerTopY();
+    const blockBottomY = screenH - towerTopFromBottom - SWAY_GAP;
+    el.style.bottom = (towerTopFromBottom + SWAY_GAP) + 'px';
 
-    stackGameEl.appendChild(el);
+    // Start sway from left edge
+    stSwayX = SWAY_MARGIN;
+    stSwayDir = 1;
+    el.style.left = stSwayX + 'px';
 
-    fallingBlock = {
-      el: el,
-      x: dropX,
-      y: 0,
-      w: blockW,
-      h: BLOCK_HEIGHT,
-      vy: 2,
-      landed: false
-    };
+    stackCameraEl.appendChild(el);
+    stActiveEl = el;
+    stGameState = 'swaying';
 
-    stackDropReady = false;
+    // Hide hint after first interaction
+    if (stBlockCount > 0) {
+      stackHint.style.opacity = '0';
+    }
   }
 
-  function stackPhysicsLoop() {
-    if (!fallingBlock || stackCollapsing) {
-      stackAnimFrame = requestAnimationFrame(stackPhysicsLoop);
+  function stDropBlock() {
+    if (stGameState !== 'swaying' || !stActiveEl) return;
+
+    stackHint.style.opacity = '0';
+    stGameState = 'dropping';
+    stDropping = true;
+    stDropVy = 0;
+
+    // Get current position of the active block in camera-space
+    const towerTopFromBottom = stGetTowerTopY();
+    stDropY = towerTopFromBottom + SWAY_GAP; // in "from bottom" coords
+
+    stActiveEl.classList.remove('active');
+  }
+
+  function stOnLanded() {
+    if (!stActiveEl) return;
+
+    const screenW = window.innerWidth;
+    const landedX = stSwayX;
+    const landedW = stBlockWidth;
+
+    // Check overlap with the block below (or ground)
+    if (stTowerBlocks.length === 0) {
+      // First block — always lands on ground, no trimming
+      const towerY = stGetTowerTopY(); // = GROUND_H for first block
+      stActiveEl.style.bottom = GROUND_H + 'px';
+      stActiveEl.style.left = landedX + 'px';
+      stActiveEl.classList.remove('active');
+
+      stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: GROUND_H });
+      stBlockCount++;
+      stackScoreEl.textContent = stBlockCount;
+      stActiveEl = null;
+      stDropping = false;
+      stGameState = 'idle';
+      playThud();
+      spawnParticles(landedX + landedW / 2, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
+      stStartSway();
       return;
     }
 
-    const screenH = window.innerHeight;
-    const block = fallingBlock;
+    const below = stTowerBlocks[stTowerBlocks.length - 1];
 
-    // Gravity
-    block.vy += 0.6;
-    block.y += block.vy;
+    // Calculate overlap
+    const overlapLeft = Math.max(landedX, below.x);
+    const overlapRight = Math.min(landedX + landedW, below.x + below.w);
+    const overlap = overlapRight - overlapLeft;
 
-    // Landing target
-    const stackTopFromBottom = getStackTop();
-    const landingY = screenH - stackTopFromBottom - block.h;
-
-    if (block.y >= landingY) {
-      // Landed!
-      block.y = landingY;
-      block.el.style.top = block.y + 'px';
-      block.el.classList.remove('falling');
-      block.el.classList.add('landed');
-      block.landed = true;
-
-      playThud();
-
-      // Check if block is too far off-center from the one below
-      const topBlock = getTopBlock();
-      let shouldTopple = false;
-
-      if (topBlock) {
-        const blockCenter = block.x + block.w / 2;
-        const topCenter = topBlock.x + topBlock.w / 2;
-        const overlap = Math.min(block.x + block.w, topBlock.x + topBlock.w) - Math.max(block.x, topBlock.x);
-
-        if (overlap < block.w * 0.25) {
-          shouldTopple = true;
-        }
-      }
-
-      stackBlocks.push(block);
-      stackCount++;
-      stackScoreEl.textContent = stackCount;
-      fallingBlock = null;
-
-      if (shouldTopple || stackBlocks.length >= 15) {
-        // TOPPLE!
-        collapseStack();
-      } else {
-        // Add sway to landed block
-        const swayAmount = Math.min(stackBlocks.length * 0.3, 4);
-        block.el.classList.add('swaying');
-        block.el.style.setProperty('--sway', swayAmount + 'deg');
-        block.el.style.setProperty('--sway-dur', (1.5 + Math.random() * 0.5) + 's');
-
-        // Spawn small particles at landing point
-        spawnParticles(block.x + block.w / 2, block.y + block.h, stackGameEl);
-
-        // Ready for next drop after small delay
-        setTimeout(() => { stackDropReady = true; }, 300);
-      }
-    } else {
-      block.el.style.top = block.y + 'px';
+    if (overlap <= 0) {
+      // Complete miss — collapse!
+      stActiveEl.remove();
+      stActiveEl = null;
+      stDropping = false;
+      stTriggerCollapse();
+      return;
     }
 
-    stackAnimFrame = requestAnimationFrame(stackPhysicsLoop);
+    // Check if perfect placement
+    const overlapRatio = overlap / landedW;
+    const isPerfect = overlapRatio > (1 - PERFECT_THRESHOLD);
+
+    const towerY = stGetTowerTopY();
+
+    if (isPerfect) {
+      // Perfect! No trimming — snap to previous block's alignment
+      stActiveEl.style.left = below.x + 'px';
+      stActiveEl.style.bottom = towerY + 'px';
+
+      stTowerBlocks.push({ el: stActiveEl, x: below.x, w: below.w, y: towerY });
+      stBlockWidth = below.w; // Keep same width
+
+      stPerfectStreak++;
+      stActiveEl.classList.add('perfect-flash');
+      playPerfectDing();
+      spawnParticles(below.x + below.w / 2, window.innerHeight - towerY - BLOCK_H, stackCameraEl);
+
+      if (stPerfectStreak >= 3) {
+        // Streak bonus: grow width slightly (up to original)
+        stBlockWidth = Math.min(stBlockWidth + 10, stOriginalWidth);
+        stActiveEl.classList.add('streak-flash');
+        playStreakChime();
+      }
+    } else {
+      // Trim the overhang
+      const newX = overlapLeft;
+      const newW = overlap;
+
+      stActiveEl.style.left = newX + 'px';
+      stActiveEl.style.width = newW + 'px';
+      stActiveEl.style.bottom = towerY + 'px';
+
+      // Spawn the overhang piece that falls away
+      stSpawnOverhang(landedX, landedW, newX, newW, towerY);
+
+      stTowerBlocks.push({ el: stActiveEl, x: newX, w: newW, y: towerY });
+      stBlockWidth = newW;
+      stPerfectStreak = 0;
+      playThud();
+      playSnap();
+
+      // Check if block got too narrow → collapse
+      if (newW < stOriginalWidth * MIN_WIDTH_RATIO) {
+        stBlockCount++;
+        stackScoreEl.textContent = stBlockCount;
+        stActiveEl = null;
+        stDropping = false;
+        stGameState = 'idle';
+        setTimeout(() => stTriggerCollapse(), 300);
+        return;
+      }
+    }
+
+    stBlockCount++;
+    stackScoreEl.textContent = stBlockCount;
+    stActiveEl = null;
+    stDropping = false;
+    stGameState = 'idle';
+
+    // Check win
+    if (stBlockCount >= WIN_BLOCKS) {
+      stTriggerWin();
+      return;
+    }
+
+    // Update camera then start next sway
+    stUpdateCamera();
+    setTimeout(() => stStartSway(), 250);
   }
 
-  function collapseStack() {
-    stackCollapsing = true;
+  function stSpawnOverhang(origX, origW, trimX, trimW, towerY) {
+    const screenH = window.innerHeight;
+
+    // Determine overhang side and dimensions
+    let ohX, ohW;
+    if (origX < trimX) {
+      // Overhang on left
+      ohX = origX;
+      ohW = trimX - origX;
+    } else {
+      // Overhang on right
+      ohX = trimX + trimW;
+      ohW = (origX + origW) - (trimX + trimW);
+    }
+
+    if (ohW < 2) return;
+
+    const oh = document.createElement('div');
+    oh.className = 'stack-overhang';
+    oh.style.width = ohW + 'px';
+    oh.style.height = BLOCK_H + 'px';
+    oh.style.backgroundColor = stActiveEl.style.backgroundColor;
+    oh.style.left = ohX + 'px';
+    oh.style.bottom = towerY + 'px';
+    stackCameraEl.appendChild(oh);
+
+    // Animate falling with rotation
+    const rotDir = origX < trimX ? -1 : 1;
+    let ohVy = 0;
+    let ohRot = 0;
+    let ohOpacity = 0.8;
+    let ohOffsetY = 0;
+
+    function animateOverhang() {
+      ohVy += 0.8;
+      ohOffsetY += ohVy;
+      ohRot += rotDir * 3;
+      ohOpacity -= 0.02;
+
+      oh.style.transform = `translateY(${ohOffsetY}px) rotate(${ohRot}deg)`;
+      oh.style.opacity = Math.max(0, ohOpacity);
+
+      if (ohOpacity > 0) {
+        requestAnimationFrame(animateOverhang);
+      } else {
+        oh.remove();
+      }
+    }
+    requestAnimationFrame(animateOverhang);
+  }
+
+  function stUpdateCamera() {
+    const screenH = window.innerHeight;
+    const towerTop = stGetTowerTopY();
+
+    // Keep the sway area visible — tower top should be about 60% from bottom
+    const targetVisibleTop = screenH * 0.4;
+    const towerTopScreenY = screenH - towerTop - SWAY_GAP - BLOCK_H;
+
+    if (towerTopScreenY < targetVisibleTop) {
+      stTargetCameraY = -(towerTopScreenY - targetVisibleTop);
+    } else {
+      stTargetCameraY = 0;
+    }
+  }
+
+  function stTriggerCollapse() {
+    stGameState = 'collapsing';
     playCrash();
 
-    // Fly all blocks away with physics
-    stackBlocks.forEach((block, i) => {
-      const vx = (Math.random() - 0.5) * 20;
+    // Scatter all blocks
+    stTowerBlocks.forEach((block, i) => {
+      const vx = (Math.random() - 0.5) * 25;
       const vy = -(5 + Math.random() * 15);
       const rot = (Math.random() - 0.5) * 720;
       block.el.style.transition = 'transform 1.2s ease-out, opacity 1.2s ease-out';
       block.el.style.transform = `translate(${vx * 30}px, ${vy * 20}px) rotate(${rot}deg)`;
       block.el.style.opacity = '0';
 
-      // Spawn celebration particles
       if (i % 2 === 0) {
-        spawnParticles(
-          block.x + block.w / 2,
-          block.y + block.h / 2,
-          stackGameEl
-        );
+        spawnParticles(block.x + block.w / 2, window.innerHeight - block.y - BLOCK_H / 2, stackCameraEl);
       }
     });
 
-    // Show celebration
-    const messages = ['🎉 CRASH! 🎉', '💥 BOOM! 💥', '🌟 SMASH! 🌟', '🔥 WOW! 🔥'];
-    stackCelebrate.textContent = messages[Math.floor(Math.random() * messages.length)];
+    // Show crash message
+    const msgs = ['💥 CRASH! 💥', '🌟 SMASH! 🌟', '🔥 BOOM! 🔥'];
+    stackCelebrate.textContent = msgs[Math.floor(Math.random() * msgs.length)];
     stackCelebrate.classList.add('show');
-    stackScoreEl.textContent = stackCount + ' 🏆';
 
-    // Play fanfare
-    setTimeout(() => playFanfare(), 300);
+    // Auto-restart after 2.5s
+    setTimeout(() => stResetStack(), 2500);
+  }
 
-    // Reset after celebration
-    setTimeout(() => {
-      stackCelebrate.classList.remove('show');
-      stackBlocks.forEach(b => b.el.remove());
-      stackBlocks = [];
-      fallingBlock = null;
-      stackCount = 0;
-      stackScoreEl.textContent = '0';
-      stackCollapsing = false;
-      stackDropReady = true;
-    }, 2500);
+  function stTriggerWin() {
+    stGameState = 'winning';
+    playWinFanfare();
+
+    // Confetti rain
+    const confettiColors = ['#FF6B8A','#FFB347','#7C5CFC','#4ECDC4','#FFC75F','#845EC2','#00C9A7','#FF85A1'];
+    for (let i = 0; i < 80; i++) {
+      const c = document.createElement('div');
+      c.className = 'stack-confetti';
+      c.style.left = Math.random() * 100 + '%';
+      c.style.top = -(Math.random() * 20 + 10) + 'px';
+      c.style.width = (6 + Math.random() * 10) + 'px';
+      c.style.height = (6 + Math.random() * 10) + 'px';
+      c.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      c.style.setProperty('--fall-dur', (2 + Math.random() * 3) + 's');
+      c.style.setProperty('--fall-dist', window.innerHeight + 50 + 'px');
+      c.style.setProperty('--fall-rot', (Math.random() * 720 - 360) + 'deg');
+      stackGameEl.appendChild(c);
+    }
+
+    // Emoji rain
+    const emojis = ['🎉','🏆','⭐','🥳','🎊','✨'];
+    for (let i = 0; i < 15; i++) {
+      const e = document.createElement('div');
+      e.className = 'stack-confetti';
+      e.style.left = Math.random() * 100 + '%';
+      e.style.top = -(Math.random() * 30 + 10) + 'px';
+      e.style.fontSize = (24 + Math.random() * 20) + 'px';
+      e.style.width = 'auto';
+      e.style.height = 'auto';
+      e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      e.style.setProperty('--fall-dur', (3 + Math.random() * 2) + 's');
+      e.style.setProperty('--fall-dist', window.innerHeight + 80 + 'px');
+      e.style.setProperty('--fall-rot', (Math.random() * 360 - 180) + 'deg');
+      stackGameEl.appendChild(e);
+    }
+
+    // Win message
+    stackCelebrate.textContent = '🏆 YOU WIN! 🏆';
+    stackCelebrate.classList.add('show');
+
+    // Auto-restart after 4s
+    setTimeout(() => stResetStack(), 4000);
+  }
+
+  function stResetStack() {
+    // Clear all blocks
+    stTowerBlocks.forEach(b => b.el.remove());
+    stTowerBlocks = [];
+    if (stActiveEl) { stActiveEl.remove(); stActiveEl = null; }
+
+    // Clear confetti & overhang pieces
+    stackGameEl.querySelectorAll('.stack-confetti').forEach(c => c.remove());
+    stackCameraEl.querySelectorAll('.stack-overhang').forEach(o => o.remove());
+    stackCameraEl.querySelectorAll('.particle').forEach(p => p.remove());
+
+    stackCelebrate.classList.remove('show');
+
+    // Reset state
+    const screenW = window.innerWidth;
+    stOriginalWidth = Math.min(screenW * 0.4, 200);
+    stBlockWidth = stOriginalWidth;
+    stBlockCount = 0;
+    stPerfectStreak = 0;
+    stCameraY = 0;
+    stTargetCameraY = 0;
+    stackCameraEl.style.transform = 'translateY(0px)';
+    stackScoreEl.textContent = '0';
+    stDropping = false;
+    stGameState = 'idle';
+
+    // Start fresh
+    stStartSway();
+  }
+
+  function stGameLoop() {
+    const screenW = window.innerWidth;
+
+    // Sway movement
+    if (stGameState === 'swaying' && stActiveEl) {
+      stSwayX += stSwaySpeed * stSwayDir;
+      const maxX = screenW - stBlockWidth - SWAY_MARGIN;
+
+      if (stSwayX >= maxX) {
+        stSwayX = maxX;
+        stSwayDir = -1;
+      } else if (stSwayX <= SWAY_MARGIN) {
+        stSwayX = SWAY_MARGIN;
+        stSwayDir = 1;
+      }
+
+      stActiveEl.style.left = stSwayX + 'px';
+    }
+
+    // Dropping
+    if (stGameState === 'dropping' && stActiveEl) {
+      stDropVy += 1.2;
+      stDropY -= stDropVy; // dropY is in "from bottom" coords, so subtract to go down
+
+      const towerTopFromBottom = stGetTowerTopY();
+
+      if (stDropY <= towerTopFromBottom) {
+        // Landed on the tower
+        stDropY = towerTopFromBottom;
+        stActiveEl.style.bottom = stDropY + 'px';
+        stOnLanded();
+      } else {
+        stActiveEl.style.bottom = stDropY + 'px';
+      }
+    }
+
+    // Camera lerp
+    stCameraY += (stTargetCameraY - stCameraY) * 0.08;
+    stackCameraEl.style.transform = `translateY(${-stCameraY}px)`;
+
+    stAnimFrame = requestAnimationFrame(stGameLoop);
   }
 
   const stackSmash = {
@@ -1180,37 +1521,45 @@
       stackGameEl.style.display = 'block';
       stackHint.style.opacity = '1';
       stackScoreEl.style.opacity = '1';
-      stackCount = 0;
+
+      const screenW = window.innerWidth;
+      stOriginalWidth = Math.min(screenW * 0.4, 200);
+      stBlockWidth = stOriginalWidth;
+      stBlockCount = 0;
+      stPerfectStreak = 0;
+      stCameraY = 0;
+      stTargetCameraY = 0;
+      stTowerBlocks = [];
+      stActiveEl = null;
+      stDropping = false;
+      stGameState = 'idle';
+      stackCameraEl.style.transform = 'translateY(0px)';
       stackScoreEl.textContent = '0';
-      stackBlocks = [];
-      fallingBlock = null;
-      stackCollapsing = false;
-      stackDropReady = true;
-      stackAnimFrame = requestAnimationFrame(stackPhysicsLoop);
+
+      stAnimFrame = requestAnimationFrame(stGameLoop);
+      stStartSway();
     },
     stop() {
       stackGameEl.style.display = 'none';
-      if (stackAnimFrame) cancelAnimationFrame(stackAnimFrame);
-      stackAnimFrame = null;
-      // Clean up blocks
-      stackBlocks.forEach(b => b.el.remove());
-      stackBlocks = [];
-      if (fallingBlock) {
-        fallingBlock.el.remove();
-        fallingBlock = null;
-      }
-      stackCollapsing = false;
+      if (stAnimFrame) cancelAnimationFrame(stAnimFrame);
+      stAnimFrame = null;
+      stTowerBlocks.forEach(b => b.el.remove());
+      stTowerBlocks = [];
+      if (stActiveEl) { stActiveEl.remove(); stActiveEl = null; }
       stackCelebrate.classList.remove('show');
-      stackGameEl.querySelectorAll('.particle').forEach(p => p.remove());
+      stackGameEl.querySelectorAll('.stack-confetti').forEach(c => c.remove());
+      stackCameraEl.querySelectorAll('.stack-overhang').forEach(o => o.remove());
+      stackCameraEl.querySelectorAll('.particle').forEach(p => p.remove());
+      stGameState = 'idle';
     },
     onKey(e) {
-      if (stackDropReady) dropBlock();
+      if (stGameState === 'swaying') stDropBlock();
     },
     onMouse(e) {
-      if (stackDropReady) dropBlock();
+      if (stGameState === 'swaying') stDropBlock();
     },
     onTouch(e) {
-      if (stackDropReady) dropBlock();
+      if (stGameState === 'swaying') stDropBlock();
     }
   };
 
