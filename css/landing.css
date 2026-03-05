@@ -1,0 +1,357 @@
+/* ===== Landing Page ===== */
+#landing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  position: relative;
+  z-index: 10;
+  padding: 2rem 1rem 0;
+}
+
+#landing h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  color: #7C5CFC;
+  text-shadow: 3px 3px 0 rgba(124, 92, 252, 0.15);
+  margin-bottom: 0.6em;
+}
+
+#landing .domain {
+  margin-top: 1.5em;
+  font-size: 0.9rem;
+  color: #bbb;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+#landing .tip-jar {
+  margin-top: 0.8em;
+  font-size: 0.95rem;
+  color: #7C5CFC;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 30px;
+  background: rgba(124, 92, 252, 0.08);
+  transition: background 0.2s ease, transform 0.15s ease;
+  z-index: 10;
+  position: relative;
+}
+
+#landing .tip-jar:hover {
+  background: rgba(124, 92, 252, 0.16);
+  transform: scale(1.05);
+}
+
+#landing .tip-section {
+  margin-top: 0.8em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6em;
+  z-index: 10;
+  position: relative;
+}
+
+#landing .qr-code {
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+#landing .qr-code:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+#landing .subtitle {
+  font-family: 'Quicksand', sans-serif;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: #666;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 0.3em;
+  max-width: 500px;
+}
+#landing .sub-subtitle {
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  color: #aaa;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+#landing .why-link {
+  margin-top: 1.2em;
+  font-size: 0.9rem;
+  color: #FF6B8A;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+  z-index: 10;
+  position: relative;
+}
+#landing .why-link:hover { color: #7C5CFC; }
+#landing footer {
+  margin-top: auto;
+  padding: 2rem 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6em;
+  z-index: 10;
+  position: relative;
+  width: 100%;
+}
+
+#landing footer .footer-signature {
+  font-size: 0.8rem;
+  color: #bbb;
+  font-weight: 500;
+}
+
+#landing footer .why-link {
+  margin-top: 0;
+}
+
+/* ===== Story Modal ===== */
+.story-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.story-backdrop.show {
+  display: flex;
+  opacity: 1;
+}
+.story-modal {
+  background: #FFF8E7;
+  border-radius: 24px;
+  max-width: 624px;
+  width: 92%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 2.4rem 2.4rem 1.8rem;
+  position: relative;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.story-backdrop.show .story-modal {
+  transform: scale(1);
+}
+.story-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  line-height: 1;
+  padding: 4px;
+}
+.story-close:hover { color: #333; }
+.story-modal .story-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 1.2em;
+  line-height: 1.4;
+}
+.story-modal p {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.75;
+  margin-bottom: 1em;
+}
+.story-modal .story-sign {
+  text-align: right;
+  font-style: italic;
+  color: #999;
+  margin-top: 0.5em;
+}
+
+/* ===== Game Cards Grid ===== */
+.games-grid {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  z-index: 10;
+  position: relative;
+}
+
+.game-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  padding: 2rem 1.5rem;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 8px 32px rgba(124, 92, 252, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(124, 92, 252, 0.2);
+}
+
+.game-card .card-icon {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.game-card h2 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0;
+}
+
+.game-card .age-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+.age-badge.green {
+  background: rgba(78, 205, 196, 0.2);
+  color: #2a9d8f;
+}
+
+.age-badge.blue {
+  background: rgba(124, 92, 252, 0.15);
+  color: #7C5CFC;
+}
+
+.game-card .card-desc {
+  font-size: 0.9rem;
+  color: #777;
+  text-align: center;
+  line-height: 1.4;
+  min-height: 2.5em;
+}
+
+.game-card .play-btn {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.1rem;
+  padding: 0.5em 2em;
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  animation: wobble 2.5s ease-in-out infinite;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  margin-top: 0.4rem;
+}
+
+.play-btn.gradient-warm {
+  background: linear-gradient(135deg, #FF6B8A, #FFB347, #7C5CFC, #4ECDC4, #FF6B8A);
+  background-size: 300% 300%;
+}
+
+.play-btn.gradient-cool {
+  background: linear-gradient(135deg, #7C5CFC, #4ECDC4, #FFB347, #FF6B8A, #7C5CFC);
+  background-size: 300% 300%;
+}
+
+.play-btn:hover {
+  animation: wobble 2.5s ease-in-out infinite, btnRainbow 2s linear infinite;
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(124, 92, 252, 0.4);
+}
+
+.play-btn:active {
+  transform: scale(0.96);
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  15%      { transform: rotate(-3deg) scale(1.04); }
+  30%      { transform: rotate(3deg) scale(1); }
+  45%      { transform: rotate(-2deg) scale(1.03); }
+  60%      { transform: rotate(2deg) scale(1); }
+}
+
+@keyframes btnRainbow {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* Transition overlay for entering playground */
+#transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  display: none;
+}
+
+#transition-overlay .boom-emoji {
+  position: absolute;
+  font-size: 60px;
+  pointer-events: none;
+  animation: boomFly 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes boomFly {
+  0%   { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
+  50%  { opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(1.2) rotate(var(--tr)); opacity: 0; }
+}
+
+#transition-overlay .flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  animation: flashBang 0.6s ease-out forwards;
+  border-radius: 0;
+}
+
+@keyframes flashBang {
+  0%   { opacity: 0; }
+  30%  { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+/* Floating background emojis on landing */
+.bg-emoji {
+  position: absolute;
+  font-size: 2.5rem;
+  opacity: 0.18;
+  animation: floatEmoji linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes floatEmoji {
+  0%   { transform: translateY(0) rotate(0deg); }
+  50%  { transform: translateY(-40px) rotate(15deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}

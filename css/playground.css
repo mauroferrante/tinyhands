@@ -1,0 +1,97 @@
+/* ===== Playground (fullscreen mode) ===== */
+#playground {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  cursor: none;
+}
+
+/* Play hint */
+.play-hint {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  color: rgba(124, 92, 252, 0.35);
+  z-index: 200;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  text-align: center;
+}
+
+/* ESC hint */
+#escHint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.45);
+  padding: 6px 14px;
+  border-radius: 20px;
+  z-index: 200;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+
+/* ===== Spawned Emoji (Splat Keys) ===== */
+.emoji {
+  position: absolute;
+  font-size: 80px;
+  line-height: 1;
+  pointer-events: none;
+  animation:
+    popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    emojiFloat var(--float-dur) ease-in-out infinite var(--float-delay);
+  z-index: 110;
+  transition: opacity 2s ease;
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0) rotate(0deg); }
+  60%  { transform: scale(1.25) rotate(var(--rot)); }
+  100% { transform: scale(1) rotate(var(--rot)); }
+}
+
+@keyframes emojiFloat {
+  0%   { translate: 0 0; }
+  25%  { translate: var(--fx) var(--fy); }
+  50%  { translate: var(--fx2) var(--fy2); }
+  75%  { translate: var(--fx3) var(--fy3); }
+  100% { translate: 0 0; }
+}
+
+#playground.show-cursor {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><text y='32' font-size='32'>🖐️</text></svg>") 20 20, pointer;
+}
+
+.emoji.fade-out {
+  opacity: 0 !important;
+}
+
+/* ===== Confetti Particle ===== */
+.particle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 105;
+  animation: particleBurst 0.6s ease-out forwards;
+}
+
+@keyframes particleBurst {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--px), var(--py)) scale(0);
+    opacity: 0;
+  }
+}
