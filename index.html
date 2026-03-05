@@ -1142,11 +1142,11 @@
   const CABLE_START_LENGTH = 120;
   const CRANE_HOOK_Y = 50;
   const PERFECT_THRESHOLD = 0.08;
-  const INSTABILITY_THRESHOLD = 6.0;
-  const DANGER_ZONE = 4.0;
-  const WOBBLE_SCALE = 0.3;
-  const LEAN_SCALE = 1.5;
-  const MAX_WOBBLE_ANGLE = 8;
+  const INSTABILITY_THRESHOLD = 4.0;
+  const DANGER_ZONE = 2.5;
+  const WOBBLE_SCALE = 0.6;
+  const LEAN_SCALE = 2.5;
+  const MAX_WOBBLE_ANGLE = 12;
   const SWAY_SPEEDS = [1.0, 1.4, 1.8, 2.2];
 
   let stTowerBlocks = [];
@@ -1348,7 +1348,7 @@
     const offsetFromIdeal = blockCenterX - stIdealCenterX;
     const normalizedOffset = Math.abs(offsetFromIdeal) / stOriginalWidth;
     const blockIndex = stTowerBlocks.length;
-    const heightFactor = 1 + blockIndex * 0.15;
+    const heightFactor = 1 + blockIndex * 0.25;
 
     const isPerfect = normalizedOffset < PERFECT_THRESHOLD;
 
