@@ -101,6 +101,9 @@ function startGame(game) {
 
   initAudio();
 
+  // Show appropriate exit hint based on input type
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  escHint.textContent = isTouchDevice ? 'Swipe down to exit' : 'Press ESC to exit';
   escHint.style.opacity = '1';
   setTimeout(() => { escHint.style.opacity = '0'; }, 3000);
 
@@ -210,3 +213,7 @@ document.addEventListener('mousemove', (e) => {
 document.addEventListener('contextmenu', (e) => {
   if (currentGame) e.preventDefault();
 });
+
+// Unlock audio on first user interaction (iOS requirement)
+document.addEventListener('touchstart', () => { initAudio(); }, { once: true });
+document.addEventListener('click', () => { initAudio(); }, { once: true });
