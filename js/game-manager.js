@@ -102,11 +102,13 @@ function startGame(game) {
 
   initAudio();
 
-  // Show appropriate exit hint based on input type
+  // Show ESC hint on desktop only (touch devices have the ✕ button)
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  escHint.textContent = isTouchDevice ? 'Tap ✕ to exit' : 'Press ESC to exit';
-  escHint.style.opacity = '1';
-  setTimeout(() => { escHint.style.opacity = '0'; }, 3000);
+  if (!isTouchDevice) {
+    escHint.textContent = 'Press ESC to exit';
+    escHint.style.opacity = '1';
+    setTimeout(() => { escHint.style.opacity = '0'; }, 3000);
+  }
 
   game.start();
 }

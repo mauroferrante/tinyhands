@@ -23,8 +23,9 @@
   text-align: center;
 }
 
-/* Exit button (for touch devices + desktop) */
+/* Exit button (touch devices only) */
 #exitGame {
+  display: none;
   position: fixed;
   top: 12px;
   left: 12px;
@@ -41,7 +42,10 @@
   -webkit-tap-highlight-color: transparent;
   transition: background 0.2s ease, opacity 0.2s ease;
 }
-#exitGame:hover, #exitGame:active {
+@media (pointer: coarse) {
+  #exitGame { display: block; }
+}
+#exitGame:active {
   background: rgba(0, 0, 0, 0.35);
   color: #fff;
 }
