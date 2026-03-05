@@ -3,60 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Tiny Hands Play 🖐️ — Toddler Games</title>
+<title>Tiny Hands Play 🖐️ — Free Toddler & Kids Browser Games</title>
+
+<!-- SEO Meta Tags -->
+<meta name="description" content="Free browser games for toddlers and kids aged 6 months to 5 years. No installs, no accounts, no ads. Just open and play. Splat Keys and Stack & Smash — safe, colorful fun when tiny hands invade the home office.">
+<meta name="keywords" content="toddler games, free kids games, browser games for toddlers, baby keyboard game, stacking game for kids, no install games, preschool games online, free online games for toddlers, toddler safe games, kids games no ads, baby games online free">
+<meta name="author" content="Mauro Ferrante">
+<meta name="theme-color" content="#FFDEE9">
+<link rel="canonical" href="https://tinyhandsplay.com/">
+
+<!-- Open Graph (Facebook, LinkedIn, iMessage, etc.) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tinyhandsplay.com/">
+<meta property="og:title" content="Tiny Hands Play — Free Toddler & Kids Browser Games">
+<meta property="og:description" content="Free browser games for toddlers and kids. No installs, no accounts, no ads. Just open and play.">
+<meta property="og:image" content="https://tinyhandsplay.com/og-image.png">
+<meta property="og:site_name" content="Tiny Hands Play">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tiny Hands Play — Free Toddler & Kids Browser Games">
+<meta name="twitter:description" content="Free browser games for toddlers and kids. No installs, no ads. Just open and play.">
+<meta name="twitter:image" content="https://tinyhandsplay.com/og-image.png">
+
+<!-- Favicon -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖐️</text></svg>">
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- Stylesheets -->
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/landing.css">
 <link rel="stylesheet" href="css/playground.css">
 <link rel="stylesheet" href="css/games/splat-keys.css">
 <link rel="stylesheet" href="css/games/stack-smash.css">
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Tiny Hands Play",
+  "url": "https://tinyhandsplay.com",
+  "description": "Free browser games for toddlers and kids aged 6 months to 5 years. No installs, no accounts, no ads.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires a modern web browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "audience": {
+    "@type": "PeopleAudience",
+    "suggestedMinAge": "0",
+    "suggestedMaxAge": "5"
+  },
+  "creator": {
+    "@type": "Person",
+    "name": "Mauro Ferrante"
+  }
+}
+</script>
 </head>
 <body>
 
 <!-- ===== Landing Screen ===== -->
-<div id="landing">
-  <h1>Tiny Hands Play 🖐️</h1>
-  <p class="subtitle">Simple browser games for when tiny hands invade the home office.</p>
-  <p class="sub-subtitle">Bookmark this page. Open in case of emergency.</p>
+<main id="landing">
+  <header>
+    <h1>Tiny Hands Play 🖐️</h1>
+    <p class="subtitle">Simple browser games for when tiny hands invade the home office.</p>
+    <p class="sub-subtitle">Bookmark this page. Open in case of emergency.</p>
+  </header>
 
-  <div class="games-grid">
+  <section class="games-grid" aria-label="Available games">
     <!-- Splat Keys Card -->
-    <div class="game-card">
-      <span class="card-icon">🎹</span>
+    <article class="game-card">
+      <span class="card-icon" aria-hidden="true">🎹</span>
       <h2>Splat Keys</h2>
       <span class="age-badge green">6 months – 3 years</span>
       <p class="card-desc">Smash the keyboard, watch emojis explode!</p>
       <button class="play-btn gradient-warm" data-game="splat-keys">Play! 🎉</button>
-    </div>
+    </article>
 
     <!-- Stack & Smash Card -->
-    <div class="game-card">
-      <span class="card-icon">🧱</span>
+    <article class="game-card">
+      <span class="card-icon" aria-hidden="true">🧱</span>
       <h2>Stack & Smash</h2>
       <span class="age-badge blue">3 – 5 years</span>
       <p class="card-desc">Tap to stack blocks, build tall and watch them topple!</p>
       <button class="play-btn gradient-cool" data-game="stack-smash">Play! 🏗️</button>
-    </div>
-  </div>
+    </article>
+  </section>
 
-  <div class="tip-section">
+  <aside class="tip-section">
     <a href="https://paypal.me/mauroferrante/5" target="_blank" rel="noopener" class="tip-jar">💜 Buy me a coffee</a>
-    <a href="https://paypal.me/mauroferrante/5" target="_blank" rel="noopener"><img src="qrcode.png" alt="PayPal QR Code" class="qr-code"></a>
-  </div>
+    <a href="https://paypal.me/mauroferrante/5" target="_blank" rel="noopener"><img src="qrcode.png" alt="PayPal QR Code" class="qr-code" width="140" height="140"></a>
+  </aside>
 
   <footer>
     <a class="why-link" id="whyLink">Why Tiny Hands Play? →</a>
     <p class="footer-signature">Made with ❤️ by a work‑from‑home dad.</p>
   </footer>
-</div>
+</main>
+
+<!-- Noscript fallback for search engine crawlers -->
+<noscript>
+  <div style="padding: 2rem; text-align: center; font-family: sans-serif;">
+    <h1>Tiny Hands Play</h1>
+    <p>Free browser games for toddlers and kids aged 6 months to 5 years.</p>
+    <p><strong>Splat Keys</strong> (6 months – 3 years): Smash the keyboard, watch emojis explode!</p>
+    <p><strong>Stack &amp; Smash</strong> (3 – 5 years): Tap to stack blocks, build tall and watch them topple!</p>
+    <p>No installs, no accounts, no ads. Please enable JavaScript to play.</p>
+  </div>
+</noscript>
 
 <!-- ===== Story Modal ===== -->
-<div class="story-backdrop" id="storyBackdrop">
+<div class="story-backdrop" id="storyBackdrop" role="dialog" aria-label="Why Tiny Hands Play?">
   <div class="story-modal">
-    <button class="story-close" id="storyClose">✕</button>
+    <button class="story-close" id="storyClose" aria-label="Close">✕</button>
     <div class="story-title">Made with ❤️ by a work‑from‑home dad<br>(and beta‑tested by a tiny chaos goblin).</div>
     <p>I'll be deep in a task — finally focused — and then I hear it: the quiet approach. The door opens. A toddler appears. Eyes locked on my keyboard like it's the control panel of a spaceship.</p>
     <p>If you've been here, you know the next move: enthusiastic key‑mashing that can definitely ruin your day.</p>
