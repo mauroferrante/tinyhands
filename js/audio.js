@@ -347,3 +347,77 @@ export function playBounce() {
   osc.start(now);
   osc.stop(now + 0.12);
 }
+
+// ===== Crowd Sounds (Stack & Smash Audience) =====
+
+export function playCrowdCheer() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const voices = [
+    { type: 'sawtooth', freq: 200, wobble: 15 },
+    { type: 'sine',     freq: 350, wobble: 20 },
+    { type: 'triangle', freq: 500, wobble: 25 }
+  ];
+  voices.forEach(v => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = v.type;
+    osc.frequency.setValueAtTime(v.freq, now);
+    osc.frequency.setValueAtTime(v.freq + v.wobble, now + 0.05);
+    osc.frequency.setValueAtTime(v.freq - v.wobble, now + 0.1);
+    osc.frequency.setValueAtTime(v.freq + v.wobble * 0.5, now + 0.15);
+    gain.gain.setValueAtTime(0.03, now);
+    gain.gain.setValueAtTime(0.05, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.3);
+  });
+}
+
+export function playCrowdGasp() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const freqs = [400, 500, 600];
+  freqs.forEach(f => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(f, now);
+    osc.frequency.exponentialRampToValueAtTime(f * 0.5, now + 0.25);
+    gain.gain.setValueAtTime(0.04, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.25);
+  });
+}
+
+export function playCrowdRoar() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const voices = [
+    { type: 'sawtooth', base: 180 },
+    { type: 'sine',     base: 300 },
+    { type: 'triangle', base: 450 },
+    { type: 'sine',     base: 600 }
+  ];
+  voices.forEach((v, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = v.type;
+    osc.frequency.setValueAtTime(v.base, now + i * 0.05);
+    osc.frequency.linearRampToValueAtTime(v.base * 1.3, now + 0.5);
+    osc.frequency.linearRampToValueAtTime(v.base * 1.1, now + 0.8);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.05, now + i * 0.05 + 0.1);
+    gain.gain.setValueAtTime(0.05, now + 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now + i * 0.05);
+    osc.stop(now + 1.0);
+  });
+}

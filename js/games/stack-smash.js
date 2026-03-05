@@ -1,14 +1,17 @@
 import {
   playThud, playCrash, playSnap, playPerfectDing, playStreakChime,
   playWinFanfare, playWhoosh, playCreak, playPerfectClick,
-  playHeightPing, playDangerBuzz, playBounce
+  playHeightPing, playDangerBuzz, playBounce,
+  playCrowdCheer, playCrowdGasp, playCrowdRoar
 } from '../audio.js';
 import { spawnParticles } from '../effects.js';
+import { createAudience, destroyAudience, audienceReact } from './stack-audience.js';
 
 const stackGameEl    = document.getElementById('stackGame');
 const stackCameraEl  = document.getElementById('stackCamera');
 const stackTowerEl   = document.getElementById('stackTower');
 const stackScoreEl   = document.getElementById('stackScore');
+const stackBestEl    = document.getElementById('stackBest');
 const stackHint      = document.getElementById('stackHint');
 const stackCelebrate = document.getElementById('stackCelebrate');
 const stackDangerEl  = document.getElementById('stackDanger');
@@ -27,7 +30,11 @@ const DANGER_ZONE = 2.5;
 const WOBBLE_SCALE = 1.2;
 const LEAN_SCALE = 3.2;
 const MAX_WOBBLE_ANGLE = 14;
-const SWAY_SPEEDS = [0.7, 1.0, 1.3, 1.6];
+const SWAY_SPEEDS = [0.6, 0.9, 1.2, 1.5, 1.8, 2.1];
+
+// ---- High Score ----
+const LS_KEY = 'tinyhandsplay-stack-best';
+let stBestScore = parseInt(localStorage.getItem(LS_KEY) || '0', 10);
 
 let stTowerBlocks = [];
 let stActiveEl = null;
@@ -52,16 +59,40 @@ let stAnimFrame = null;
 let stCableLength = 0;
 let stSwingAngle = 0;
 let stPendulumAngle = 0;
+let stIsNewBest = false;
 
 function stGetSwaySpeed() {
-  if (stBlockCount < 7) return SWAY_SPEEDS[0];
-  if (stBlockCount < 14) return SWAY_SPEEDS[1];
-  if (stBlockCount < 20) return SWAY_SPEEDS[2];
-  return SWAY_SPEEDS[3];
+  if (stBlockCount < 5)  return SWAY_SPEEDS[0];
+  if (stBlockCount < 10) return SWAY_SPEEDS[1];
+  if (stBlockCount < 15) return SWAY_SPEEDS[2];
+  if (stBlockCount < 20) return SWAY_SPEEDS[3];
+  if (stBlockCount < 25) return SWAY_SPEEDS[4];
+  return SWAY_SPEEDS[5];
 }
 
 function stGetTowerTopY() {
   return GROUND_H + stTowerBlocks.length * BLOCK_H;
+}
+
+function stShowBestScore() {
+  if (stBestScore > 0) {
+    stackBestEl.textContent = 'Best: ' + stBestScore;
+  } else {
+    stackBestEl.textContent = '';
+  }
+  stackBestEl.classList.remove('new-best');
+}
+
+function stCheckHighScore() {
+  if (stBlockCount > stBestScore) {
+    stBestScore = stBlockCount;
+    localStorage.setItem(LS_KEY, stBestScore);
+    stackBestEl.textContent = 'Best: ' + stBestScore;
+    stackBestEl.classList.remove('new-best');
+    void stackBestEl.offsetWidth; // force reflow for re-triggering animation
+    stackBestEl.classList.add('new-best');
+    stIsNewBest = true;
+  }
 }
 
 function stRecalcBalance() {
@@ -104,6 +135,8 @@ function stUpdateDangerVignette() {
   if (stInstability >= DANGER_ZONE) {
     const ratio = Math.min((stInstability - DANGER_ZONE) / (INSTABILITY_THRESHOLD - DANGER_ZONE), 1);
     stackDangerEl.style.setProperty('--danger-opacity', ratio * 0.4);
+    audienceReact('worry');
+    playCrowdGasp();
   } else {
     stackDangerEl.style.setProperty('--danger-opacity', '0');
   }
@@ -132,6 +165,14 @@ function stStartSway() {
   if (towerTopFromBottom + BLOCK_H + 60 >= screenH) {
     stTriggerTowerComplete();
     return;
+  }
+
+  // Block width variety: after first 3 blocks, vary width 75%-125%
+  if (stBlockCount >= 3) {
+    const variation = 0.75 + Math.random() * 0.5;
+    stBlockWidth = Math.round(stOriginalWidth * variation);
+  } else {
+    stBlockWidth = stOriginalWidth;
   }
 
   stCableLength = CABLE_START_LENGTH;
@@ -218,11 +259,14 @@ function stOnLanded() {
 
     stBlockCount++;
     stackScoreEl.textContent = stBlockCount;
+    stCheckHighScore();
     stActiveEl = null;
     stDropping = false;
     stGameState = 'idle';
     playThud();
     playBounce();
+    audienceReact('cheer');
+    playCrowdCheer();
     spawnParticles(blockCenterX, window.innerHeight - GROUND_H - BLOCK_H, stackTowerEl);
     stUpdateDangerVignette();
     stStartSway();
@@ -269,7 +313,11 @@ function stOnLanded() {
     if (stPerfectStreak >= 3) {
       stActiveEl.classList.add('streak-flash');
       playStreakChime();
+      audienceReact('wave');
+    } else {
+      audienceReact('wild');
     }
+    playCrowdCheer();
   } else {
     stackTowerEl.appendChild(stActiveEl);
     stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: towerY });
@@ -278,6 +326,8 @@ function stOnLanded() {
     playThud();
     playSnap();
     playHeightPing(stTowerBlocks.length);
+    audienceReact('cheer');
+    playCrowdCheer();
   }
 
   stRecalcBalance();
@@ -289,6 +339,7 @@ function stOnLanded() {
 
   stBlockCount++;
   stackScoreEl.textContent = stBlockCount;
+  stCheckHighScore();
   stActiveEl = null;
   stDropping = false;
   stGameState = 'idle';
@@ -307,6 +358,8 @@ function stOnLanded() {
 function stTriggerCollapse() {
   stGameState = 'collapsing';
   playCrash();
+  playCrowdGasp();
+  audienceReact('gasp');
 
   const collapseDir = stLeanDirection >= 0 ? 1 : -1;
 
@@ -326,13 +379,16 @@ function stTriggerCollapse() {
   stackTowerEl.style.transition = 'transform 1s ease-in';
   stackTowerEl.style.transform = `rotate(${collapseDir * 25}deg)`;
 
-  stackCelebrate.innerHTML = `${stBlockCount} blocks! 💥<span class="sub-text">Tap to play again!</span>`;
+  const bestText = stIsNewBest ? '<br>🏆 New best!' : '';
+  stackCelebrate.innerHTML = `${stBlockCount} blocks! 💥<span class="sub-text">Tap to play again!${bestText}</span>`;
   stackCelebrate.classList.add('show');
 }
 
 function stTriggerTowerComplete() {
   stGameState = 'winning';
   playWinFanfare();
+  playCrowdRoar();
+  audienceReact('party');
 
   const confettiColors = ['#FF6B8A','#FFB347','#7C5CFC','#4ECDC4','#FFC75F','#845EC2','#00C9A7','#FF85A1'];
   for (let i = 0; i < 80; i++) {
@@ -366,7 +422,8 @@ function stTriggerTowerComplete() {
     stackGameEl.appendChild(e);
   }
 
-  stackCelebrate.innerHTML = `🏆 You Win! 🏆<span class="sub-text">${stBlockCount} blocks stacked!<br>Tap to play again</span>`;
+  const bestText = stIsNewBest ? '<br>🏆 New best!' : '';
+  stackCelebrate.innerHTML = `🏆 You Win! 🏆<span class="sub-text">${stBlockCount} blocks stacked!${bestText}<br>Tap to play again</span>`;
   stackCelebrate.classList.add('show');
 }
 
@@ -394,15 +451,18 @@ function stResetStack() {
   stStructuralStress = 0;
   stIdealCenterX = 0;
   stWobbleTime = 0;
+  stIsNewBest = false;
 
   stackTowerEl.style.transition = 'none';
   stackTowerEl.style.transform = 'rotate(0deg)';
   if (stackDangerEl) stackDangerEl.style.setProperty('--danger-opacity', '0');
 
   stackScoreEl.textContent = '0';
+  stShowBestScore();
   stDropping = false;
   stGameState = 'idle';
 
+  audienceReact('idle');
   stStartSway();
 }
 
@@ -488,10 +548,18 @@ export const stackSmash = {
     stActiveEl = null;
     stDropping = false;
     stGameState = 'idle';
+    stIsNewBest = false;
     stackTowerEl.style.transition = 'none';
     stackTowerEl.style.transform = 'rotate(0deg)';
     if (stackDangerEl) stackDangerEl.style.setProperty('--danger-opacity', '0');
     stackScoreEl.textContent = '0';
+
+    // High score display
+    stBestScore = parseInt(localStorage.getItem(LS_KEY) || '0', 10);
+    stShowBestScore();
+
+    // Stadium audience
+    createAudience(stackGameEl);
 
     stAnimFrame = requestAnimationFrame(stGameLoop);
     stStartSway();
@@ -518,6 +586,9 @@ export const stackSmash = {
     stackTowerEl.style.transform = 'rotate(0deg)';
     if (stackDangerEl) stackDangerEl.style.setProperty('--danger-opacity', '0');
     stGameState = 'idle';
+
+    // Clean up audience
+    destroyAudience();
   },
   onKey(e) {
     if (stGameState === 'swaying') stDropBlock();
