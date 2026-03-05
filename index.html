@@ -402,9 +402,8 @@
 
   .stack-score {
     position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 16px;
+    right: 20px;
     font-family: 'Fredoka One', cursive;
     font-size: clamp(1.5rem, 4vw, 2.5rem);
     color: rgba(124, 92, 252, 0.6);
@@ -450,6 +449,26 @@
     z-index: 200;
     box-shadow: inset 0 0 80px rgba(255, 80, 80, var(--danger-opacity, 0));
     transition: box-shadow 0.3s ease;
+  }
+
+  .stack-crane {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 48px;
+    z-index: 120;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  }
+
+  .stack-cable {
+    position: absolute;
+    width: 2px;
+    background: rgba(100, 100, 100, 0.4);
+    z-index: 109;
+    pointer-events: none;
+    transform-origin: top center;
   }
 
   .stack-ground-line {
@@ -551,6 +570,7 @@
   <div id="stackGame">
     <div class="stack-camera" id="stackCamera">
       <div class="stack-ground-line"></div>
+      <div class="stack-crane" id="stackCrane">🏗️</div>
     </div>
     <div class="stack-score" id="stackScore">0</div>
     <div class="play-hint" id="stackHint">Tap to drop!</div>
@@ -1115,8 +1135,8 @@
   const BLOCK_COLORS = ['#FF6B8A','#FFB347','#7C5CFC','#4ECDC4','#FF85A1','#FFC75F','#845EC2','#00C9A7','#F9844A','#90BE6D'];
   const BLOCK_H = 35;
   const GROUND_H = 20;
-  const SWAY_GAP = 80;
-  const SWAY_MARGIN = 30;
+  const SWING_AMPLITUDE_RATIO = 0.8;
+  const DESCENT_SPEED = 1.2;
   const PERFECT_THRESHOLD = 0.08;
   const INSTABILITY_THRESHOLD = 6.0;
   const DANGER_ZONE = 4.0;
@@ -1127,10 +1147,10 @@
 
   let stTowerBlocks = [];
   let stActiveEl = null;
+  let stCableEl = null;
   let stBlockWidth = 0;
   let stOriginalWidth = 0;
   let stSwayX = 0;
-  let stSwayDir = 1;
   let stSwaySpeed = SWAY_SPEEDS[0];
   let stDropping = false;
   let stDropY = 0;
@@ -1144,6 +1164,10 @@
   let stRestartTimer = null;
   let stGameState = 'idle';
   let stAnimFrame = null;
+  let stSwingCenterX = 0;
+  let stSwingAmplitude = 0;
+  let stDescendY = 0;
+  let stSwingAngle = 0;
 
   function stGetSwaySpeed() {
     if (stBlockCount < 5) return SWAY_SPEEDS[0];
@@ -1166,6 +1190,30 @@
     }
   }
 
+  function stUpdateCable() {
+    if (!stCableEl || !stActiveEl) return;
+    const screenW = window.innerWidth;
+
+    // Crane hook position (center of crane emoji)
+    const craneX = screenW / 2;
+    const craneY = 50;
+
+    // Block top-center position
+    const blockX = stSwayX + stBlockWidth / 2;
+    const blockY = stDescendY;
+
+    // Calculate cable length and angle
+    const dx = blockX - craneX;
+    const dy = blockY - craneY;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const angle = Math.atan2(dx, dy) * (180 / Math.PI);
+
+    stCableEl.style.height = length + 'px';
+    stCableEl.style.left = craneX + 'px';
+    stCableEl.style.top = craneY + 'px';
+    stCableEl.style.transform = `rotate(${angle}deg)`;
+  }
+
   function stStartSway() {
     if (stGameState === 'collapsing' || stGameState === 'winning') return;
 
@@ -1175,24 +1223,37 @@
 
     // Check if tower has filled the screen
     const towerTopFromBottom = stGetTowerTopY();
-    if (towerTopFromBottom + SWAY_GAP + BLOCK_H >= screenH) {
+    if (towerTopFromBottom + BLOCK_H + 60 >= screenH) {
       stTriggerTowerComplete();
       return;
     }
+
+    // Swing config
+    stSwingCenterX = screenW / 2 - stBlockWidth / 2;
+    stSwingAmplitude = stBlockWidth * SWING_AMPLITUDE_RATIO;
+    stSwingAngle = 0;
+    stDescendY = 70;  // start below crane
 
     const el = document.createElement('div');
     el.className = 'stack-block active';
     el.style.width = stBlockWidth + 'px';
     el.style.height = BLOCK_H + 'px';
     el.style.backgroundColor = BLOCK_COLORS[stBlockCount % BLOCK_COLORS.length];
-    el.style.bottom = (towerTopFromBottom + SWAY_GAP) + 'px';
 
-    stSwayX = SWAY_MARGIN;
-    stSwayDir = 1;
+    // Position from top, converted to bottom
+    el.style.bottom = (screenH - stDescendY - BLOCK_H) + 'px';
+    stSwayX = stSwingCenterX;
     el.style.left = stSwayX + 'px';
 
     stackCameraEl.appendChild(el);
     stActiveEl = el;
+
+    // Create cable
+    stCableEl = document.createElement('div');
+    stCableEl.className = 'stack-cable';
+    stackCameraEl.appendChild(stCableEl);
+    stUpdateCable();
+
     stGameState = 'swaying';
 
     if (stBlockCount > 0) {
@@ -1208,8 +1269,12 @@
     stDropping = true;
     stDropVy = 0;
 
-    const towerTopFromBottom = stGetTowerTopY();
-    stDropY = towerTopFromBottom + SWAY_GAP;
+    // Drop from current descent position
+    const screenH = window.innerHeight;
+    stDropY = screenH - stDescendY - BLOCK_H;
+
+    // Remove cable
+    if (stCableEl) { stCableEl.remove(); stCableEl = null; }
 
     stActiveEl.classList.remove('active');
   }
@@ -1394,6 +1459,7 @@
     stTowerBlocks.forEach(b => b.el.remove());
     stTowerBlocks = [];
     if (stActiveEl) { stActiveEl.remove(); stActiveEl = null; }
+    if (stCableEl) { stCableEl.remove(); stCableEl = null; }
 
     stackGameEl.querySelectorAll('.stack-confetti').forEach(c => c.remove());
     stackCameraEl.querySelectorAll('.particle').forEach(p => p.remove());
@@ -1425,20 +1491,28 @@
   function stGameLoop() {
     const screenW = window.innerWidth;
 
-    // Sway movement
+    // Pendulum swing + descent
     if (stGameState === 'swaying' && stActiveEl) {
-      stSwayX += stSwaySpeed * stSwayDir;
-      const maxX = screenW - stBlockWidth - SWAY_MARGIN;
+      const screenH = window.innerHeight;
 
-      if (stSwayX >= maxX) {
-        stSwayX = maxX;
-        stSwayDir = -1;
-      } else if (stSwayX <= SWAY_MARGIN) {
-        stSwayX = SWAY_MARGIN;
-        stSwayDir = 1;
-      }
-
+      // Pendulum swing
+      stSwingAngle += stSwaySpeed * 0.04;
+      stSwayX = stSwingCenterX + Math.sin(stSwingAngle) * stSwingAmplitude;
       stActiveEl.style.left = stSwayX + 'px';
+
+      // Slow descent
+      stDescendY += DESCENT_SPEED;
+      const bottomVal = screenH - stDescendY - BLOCK_H;
+      stActiveEl.style.bottom = bottomVal + 'px';
+
+      // Update cable
+      stUpdateCable();
+
+      // Auto-drop when block reaches near tower
+      const towerTopFromBottom = stGetTowerTopY();
+      if (bottomVal <= towerTopFromBottom + BLOCK_H + 20) {
+        stDropBlock();
+      }
     }
 
     // Dropping
@@ -1514,6 +1588,7 @@
       stTowerBlocks.forEach(b => b.el.remove());
       stTowerBlocks = [];
       if (stActiveEl) { stActiveEl.remove(); stActiveEl = null; }
+      if (stCableEl) { stCableEl.remove(); stCableEl = null; }
       stackCelebrate.classList.remove('show');
       stackCelebrate.innerHTML = '';
       stackGameEl.querySelectorAll('.stack-confetti').forEach(c => c.remove());
