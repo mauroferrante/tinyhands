@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Tiny Hands Play 🎨 — Toddler Keyboard Playground</title>
+<title>Tiny Hands Play 🎨 — Toddler Games</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ===== Reset & Base ===== */
   *, *::before, *::after {
@@ -47,28 +47,23 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
     position: relative;
     z-index: 10;
+    padding: 1rem;
+    overflow-y: auto;
   }
 
   #landing h1 {
     font-family: 'Fredoka One', cursive;
-    font-size: clamp(3rem, 8vw, 5rem);
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
     color: #7C5CFC;
     text-shadow: 3px 3px 0 rgba(124, 92, 252, 0.15);
-    margin-bottom: 0.2em;
-  }
-
-  #landing .subtitle {
-    font-size: clamp(1rem, 3vw, 1.4rem);
-    color: #888;
-    font-weight: 600;
-    margin-bottom: 2em;
+    margin-bottom: 0.6em;
   }
 
   #landing .domain {
-    margin-top: 2em;
+    margin-top: 1.5em;
     font-size: 0.9rem;
     color: #bbb;
     font-weight: 600;
@@ -117,33 +112,108 @@
     transform: scale(1.1);
   }
 
-  /* Start button */
-  #startBtn {
+  /* ===== Game Cards Grid ===== */
+  .games-grid {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    z-index: 10;
+    position: relative;
+  }
+
+  .game-card {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
+    padding: 2rem 1.5rem;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 8px 32px rgba(124, 92, 252, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .game-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(124, 92, 252, 0.2);
+  }
+
+  .game-card .card-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+  }
+
+  .game-card h2 {
     font-family: 'Fredoka One', cursive;
-    font-size: clamp(1.6rem, 4vw, 2.2rem);
-    padding: 0.6em 2em;
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0;
+  }
+
+  .game-card .age-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  .age-badge.green {
+    background: rgba(78, 205, 196, 0.2);
+    color: #2a9d8f;
+  }
+
+  .age-badge.blue {
+    background: rgba(124, 92, 252, 0.15);
+    color: #7C5CFC;
+  }
+
+  .game-card .card-desc {
+    font-size: 0.9rem;
+    color: #777;
+    text-align: center;
+    line-height: 1.4;
+    min-height: 2.5em;
+  }
+
+  .game-card .play-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    padding: 0.5em 2em;
     border: none;
-    border-radius: 60px;
-    background: linear-gradient(135deg, #FF6B8A, #FFB347, #7C5CFC, #4ECDC4, #FF6B8A);
-    background-size: 300% 300%;
+    border-radius: 50px;
     color: #fff;
     cursor: pointer;
-    box-shadow: 0 8px 30px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     animation: wobble 2.5s ease-in-out infinite;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
     outline: none;
     -webkit-tap-highlight-color: transparent;
-    position: relative;
-    z-index: 10;
+    margin-top: 0.4rem;
   }
 
-  #startBtn:hover {
+  .play-btn.gradient-warm {
+    background: linear-gradient(135deg, #FF6B8A, #FFB347, #7C5CFC, #4ECDC4, #FF6B8A);
+    background-size: 300% 300%;
+  }
+
+  .play-btn.gradient-cool {
+    background: linear-gradient(135deg, #7C5CFC, #4ECDC4, #FFB347, #FF6B8A, #7C5CFC);
+    background-size: 300% 300%;
+  }
+
+  .play-btn:hover {
     animation: wobble 2.5s ease-in-out infinite, btnRainbow 2s linear infinite;
     transform: scale(1.1);
-    box-shadow: 0 12px 40px rgba(124, 92, 252, 0.5), 0 0 30px rgba(255, 107, 138, 0.3);
+    box-shadow: 0 8px 25px rgba(124, 92, 252, 0.4);
   }
 
-  #startBtn:active {
+  .play-btn:active {
     transform: scale(0.96);
   }
 
@@ -223,7 +293,7 @@
   }
 
   /* Play hint */
-  #playHint {
+  .play-hint {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -253,7 +323,7 @@
     pointer-events: none;
   }
 
-  /* ===== Spawned Emoji ===== */
+  /* ===== Spawned Emoji (Splat Keys) ===== */
   .emoji {
     position: absolute;
     font-size: 80px;
@@ -309,6 +379,94 @@
       opacity: 0;
     }
   }
+
+  /* ===== Stack & Smash Game ===== */
+  #stackGame {
+    display: none;
+    position: absolute;
+    inset: 0;
+  }
+
+  #splatKeysGame {
+    display: none;
+    position: absolute;
+    inset: 0;
+  }
+
+  .stack-score {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: rgba(124, 92, 252, 0.6);
+    z-index: 200;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+
+  .stack-block {
+    position: absolute;
+    border-radius: 8px;
+    z-index: 110;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .stack-block.falling {
+    transition: none;
+  }
+
+  .stack-block.landed {
+    animation: blockLand 0.2s ease-out;
+  }
+
+  @keyframes blockLand {
+    0%   { transform: scaleY(0.85) scaleX(1.1); }
+    50%  { transform: scaleY(1.05) scaleX(0.97); }
+    100% { transform: scaleY(1) scaleX(1); }
+  }
+
+  @keyframes blockSway {
+    0%, 100% { transform: rotate(calc(var(--sway) * -1)); }
+    50%      { transform: rotate(var(--sway)); }
+  }
+
+  .stack-block.swaying {
+    animation: blockSway var(--sway-dur) ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+
+  .stack-celebrate {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2rem, 6vw, 4rem);
+    color: #FF6B8A;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+    z-index: 300;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    text-align: center;
+  }
+
+  .stack-celebrate.show {
+    opacity: 1;
+  }
+
+  /* Ground platform */
+  .stack-ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to top, rgba(124, 92, 252, 0.15), transparent);
+    z-index: 109;
+  }
 </style>
 </head>
 <body>
@@ -316,8 +474,27 @@
 <!-- ===== Landing Screen ===== -->
 <div id="landing">
   <h1>Tiny Hands Play 🎨</h1>
-  <p class="subtitle">Let your toddler go wild on the keyboard!</p>
-  <button id="startBtn">Start Playing! 🎉</button>
+
+  <div class="games-grid">
+    <!-- Splat Keys Card -->
+    <div class="game-card">
+      <span class="card-icon">🎹</span>
+      <h2>Splat Keys</h2>
+      <span class="age-badge green">6 months – 3 years</span>
+      <p class="card-desc">Smash the keyboard, watch emojis explode!</p>
+      <button class="play-btn gradient-warm" data-game="splat-keys">Play! 🎉</button>
+    </div>
+
+    <!-- Stack & Smash Card -->
+    <div class="game-card">
+      <span class="card-icon">🧱</span>
+      <h2>Stack & Smash</h2>
+      <span class="age-badge blue">3 – 5 years</span>
+      <p class="card-desc">Tap to stack blocks, build tall and watch them topple!</p>
+      <button class="play-btn gradient-cool" data-game="stack-smash">Play! 🏗️</button>
+    </div>
+  </div>
+
   <p class="domain">tinyhandsplay.com</p>
   <div class="tip-section">
     <a href="https://paypal.me/mauroferrante/5" target="_blank" rel="noopener" class="tip-jar">💜 Buy me a coffee</a>
@@ -330,31 +507,355 @@
 
 <!-- ===== Playground Screen ===== -->
 <div id="playground">
-  <div id="playHint">Press any key and watch the magic!</div>
+  <!-- Splat Keys game layer -->
+  <div id="splatKeysGame">
+    <div class="play-hint" id="splatHint">Press any key and watch the magic!</div>
+  </div>
+
+  <!-- Stack & Smash game layer -->
+  <div id="stackGame">
+    <div class="stack-ground"></div>
+    <div class="stack-score" id="stackScore">0</div>
+    <div class="play-hint" id="stackHint">Tap or press any key to drop a block!</div>
+    <div class="stack-celebrate" id="stackCelebrate">🎉 CRASH! 🎉</div>
+  </div>
+
   <div id="escHint">Press ESC to exit</div>
 </div>
 
 <script>
   /* =========================================================
-   *  Tiny Hands Play — Toddler Keyboard Playground
-   *  All logic in a single self-contained script.
+   *  Tiny Hands Play — Multi-Game Toddler Playground
    * ========================================================= */
 
   // ---- Element references ----
   const landing    = document.getElementById('landing');
   const playground = document.getElementById('playground');
-  const startBtn   = document.getElementById('startBtn');
   const escHint    = document.getElementById('escHint');
-  const playHint   = document.getElementById('playHint');
+  const overlay    = document.getElementById('transition-overlay');
 
-  // ---- Emoji pool (random, for non-letter keys / clicks / touch) ----
+  // ---- Shared state ----
+  let currentGame  = null;
+  let audioCtx     = null;
+  let cursorTimer  = null;
+  let cursorActive = false;
+
+  // ---- Emoji pool ----
   const EMOJIS = [
     '😀','😺','🐶','🐱','🌳','🌻','🦋','🐠','🌈','🍎',
     '🚀','⭐','🎈','🐸','🦁','🐧','🎉','🌸','🐝','🍕',
     '🦄','🐢','🐬','🌙','🍩'
   ];
 
-  // ---- Letter → Emoji mapping ----
+  // ---- Floating background emojis on landing ----
+  (function createBgEmojis() {
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('span');
+      el.className = 'bg-emoji';
+      el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      el.style.left = Math.random() * 90 + 5 + '%';
+      el.style.top  = Math.random() * 90 + 5 + '%';
+      el.style.animationDuration = (4 + Math.random() * 4) + 's';
+      el.style.animationDelay    = (Math.random() * 4) + 's';
+      el.style.fontSize = (1.8 + Math.random() * 1.5) + 'rem';
+      landing.appendChild(el);
+    }
+  })();
+
+  // ===== Shared Audio =====
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+
+  const PARTICLE_COLORS = ['#FF6B8A','#7C5CFC','#FFB347','#4ECDC4','#FF85A1','#FFC75F','#845EC2','#00C9A7'];
+
+  function spawnParticles(x, y, container) {
+    const target = container || playground;
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement('span');
+      p.className = 'particle';
+      const angle = (Math.PI * 2 / 8) * i + (Math.random() * 0.5);
+      const dist  = 40 + Math.random() * 50;
+      p.style.left = x + 'px';
+      p.style.top  = y + 'px';
+      p.style.setProperty('--px', Math.cos(angle) * dist + 'px');
+      p.style.setProperty('--py', Math.sin(angle) * dist + 'px');
+      p.style.backgroundColor = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+      p.style.width  = (6 + Math.random() * 6) + 'px';
+      p.style.height = p.style.width;
+      target.appendChild(p);
+      p.addEventListener('animationend', () => p.remove());
+    }
+  }
+
+  // ===== Shared Sound Effects =====
+
+  function playPop(now) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600 + Math.random() * 400, now);
+    osc.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.12);
+  }
+
+  function playBoing(now) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    const base = 300 + Math.random() * 200;
+    osc.frequency.setValueAtTime(base, now);
+    osc.frequency.exponentialRampToValueAtTime(base * 2, now + 0.05);
+    osc.frequency.exponentialRampToValueAtTime(base * 0.8, now + 0.15);
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.18);
+  }
+
+  function playChime(now) {
+    const notes = [523, 587, 659, 698, 784, 880];
+    const freq = notes[Math.floor(Math.random() * notes.length)];
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.2);
+  }
+
+  function playBubble(now) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    const base = 200 + Math.random() * 300;
+    osc.frequency.setValueAtTime(base, now);
+    osc.frequency.exponentialRampToValueAtTime(base * 1.8, now + 0.08);
+    osc.frequency.exponentialRampToValueAtTime(base * 1.2, now + 0.15);
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }
+
+  function playRandomSound() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const type = Math.floor(Math.random() * 4);
+    switch (type) {
+      case 0: playPop(now); break;
+      case 1: playBoing(now); break;
+      case 2: playChime(now); break;
+      case 3: playBubble(now); break;
+    }
+  }
+
+  function playFanfare() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + i * 0.1);
+      gain.gain.setValueAtTime(0, now + i * 0.1);
+      gain.gain.linearRampToValueAtTime(0.15, now + i * 0.1 + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now + i * 0.1);
+      osc.stop(now + i * 0.1 + 0.4);
+    });
+    setTimeout(() => {
+      [523, 659, 784, 1047, 1319].forEach(freq => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.6);
+      });
+    }, 400);
+  }
+
+  function playThud() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Low thud
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(120 + Math.random() * 60, now);
+    osc.frequency.exponentialRampToValueAtTime(50, now + 0.15);
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+    // Noise burst
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(80, now);
+    gain2.gain.setValueAtTime(0.05, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    osc2.connect(gain2).connect(audioCtx.destination);
+    osc2.start(now);
+    osc2.stop(now + 0.08);
+  }
+
+  function playCrash() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Descending crash
+    for (let i = 0; i < 5; i++) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = i % 2 === 0 ? 'sawtooth' : 'square';
+      osc.frequency.setValueAtTime(400 - i * 60 + Math.random() * 50, now + i * 0.05);
+      osc.frequency.exponentialRampToValueAtTime(60, now + i * 0.05 + 0.3);
+      gain.gain.setValueAtTime(0.06, now + i * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.3);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now + i * 0.05);
+      osc.stop(now + i * 0.05 + 0.3);
+    }
+  }
+
+  // ===== Entry Animation & Fullscreen =====
+
+  function playEntryAnimation(originBtn, callback) {
+    overlay.style.display = 'block';
+    overlay.innerHTML = '';
+
+    const rect = originBtn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    for (let i = 0; i < 25; i++) {
+      const em = document.createElement('span');
+      em.className = 'boom-emoji';
+      em.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      const angle = (Math.PI * 2 / 25) * i + Math.random() * 0.3;
+      const dist = 300 + Math.random() * 400;
+      em.style.left = cx + 'px';
+      em.style.top = cy + 'px';
+      em.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      em.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      em.style.setProperty('--tr', (Math.random() * 360 - 180) + 'deg');
+      em.style.animationDelay = (Math.random() * 0.15) + 's';
+      overlay.appendChild(em);
+    }
+
+    const flash = document.createElement('div');
+    flash.className = 'flash';
+    flash.style.animationDelay = '0.2s';
+    overlay.appendChild(flash);
+
+    playFanfare();
+
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      overlay.innerHTML = '';
+      callback();
+    }, 800);
+  }
+
+  function launchGame(gameId, btn) {
+    initAudio();
+    const game = GAMES[gameId];
+    if (!game) return;
+
+    playEntryAnimation(btn, () => {
+      const el = document.documentElement;
+      const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+      if (rfs) {
+        rfs.call(el).catch(() => startGame(game));
+      } else {
+        startGame(game);
+      }
+    });
+  }
+
+  function startGame(game) {
+    currentGame = game;
+    landing.style.display = 'none';
+    playground.style.display = 'block';
+
+    initAudio();
+
+    // Show ESC hint
+    escHint.style.opacity = '1';
+    setTimeout(() => { escHint.style.opacity = '0'; }, 3000);
+
+    game.start();
+  }
+
+  function stopGame() {
+    if (!currentGame) return;
+    cursorActive = false;
+    playground.classList.remove('show-cursor');
+
+    currentGame.stop();
+    currentGame = null;
+
+    playground.style.display = 'none';
+    landing.style.display = 'flex';
+
+    // Remove any lingering particles
+    playground.querySelectorAll('.particle').forEach(p => p.remove());
+  }
+
+  // Fullscreen change listener
+  function onFullscreenChange() {
+    const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fsEl && !currentGame) {
+      // Fullscreen entered but game not started — this means the game object
+      // was queued via launchGame. The startGame call handles it via the callback.
+    } else if (!fsEl && currentGame) {
+      stopGame();
+    }
+  }
+  document.addEventListener('fullscreenchange', onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+
+  // Game card play buttons
+  document.querySelectorAll('.play-btn[data-game]').forEach(btn => {
+    btn.addEventListener('click', () => launchGame(btn.dataset.game, btn));
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      launchGame(btn.dataset.game, btn);
+    });
+  });
+
+  // =========================================================
+  //  GAME 1: Splat Keys
+  // =========================================================
+
+  const splatKeysGame = document.getElementById('splatKeysGame');
+  const splatHint     = document.getElementById('splatHint');
+
   const KEY_MAP = {
     // Letters
     a: '🍎',  b: '🐝',  c: '🐱',  d: '🐶',  e: '🐘',
@@ -378,171 +879,21 @@
     'CapsLock': '🎩',  'Escape': '🌀',
   };
 
-  // ---- Config ----
-  const MAX_EMOJIS   = 30;
-  const EMOJI_SIZE   = 90;   // px — within 80-120 range
-  const PARTICLE_COUNT = 8;
+  const EMOJI_SIZE = 90;
+  let activeEmojis = [];
 
-  // ---- State ----
-  let activeEmojis = [];      // track spawned emoji elements
-  let isPlaying    = false;
-  let audioCtx     = null;
-
-  // ---- Floating background emojis on landing ----
-  (function createBgEmojis() {
-    const count = 12;
-    for (let i = 0; i < count; i++) {
-      const el = document.createElement('span');
-      el.className = 'bg-emoji';
-      el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-      el.style.left = Math.random() * 90 + 5 + '%';
-      el.style.top  = Math.random() * 90 + 5 + '%';
-      el.style.animationDuration = (4 + Math.random() * 4) + 's';
-      el.style.animationDelay    = (Math.random() * 4) + 's';
-      el.style.fontSize = (1.8 + Math.random() * 1.5) + 'rem';
-      landing.appendChild(el);
-    }
-  })();
-
-  // ===== Fullscreen logic =====
-
-  const overlay = document.getElementById('transition-overlay');
-
-  function playEntryAnimation(callback) {
-    overlay.style.display = 'block';
-    overlay.innerHTML = '';
-
-    // Get button center for explosion origin
-    const rect = startBtn.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-
-    // Spawn ~25 emojis flying outward from button
-    for (let i = 0; i < 25; i++) {
-      const em = document.createElement('span');
-      em.className = 'boom-emoji';
-      em.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-      const angle = (Math.PI * 2 / 25) * i + Math.random() * 0.3;
-      const dist = 300 + Math.random() * 400;
-      em.style.left = cx + 'px';
-      em.style.top = cy + 'px';
-      em.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
-      em.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-      em.style.setProperty('--tr', (Math.random() * 360 - 180) + 'deg');
-      em.style.animationDelay = (Math.random() * 0.15) + 's';
-      overlay.appendChild(em);
-    }
-
-    // White flash
-    const flash = document.createElement('div');
-    flash.className = 'flash';
-    flash.style.animationDelay = '0.2s';
-    overlay.appendChild(flash);
-
-    // Hooray fanfare sound
-    playFanfare();
-
-    // After animation, clean up and proceed
-    setTimeout(() => {
-      overlay.style.display = 'none';
-      overlay.innerHTML = '';
-      callback();
-    }, 800);
-  }
-
-  function enterFullscreen() {
-    // Init AudioContext early (needs user gesture)
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-
-    playEntryAnimation(() => {
-      const el = document.documentElement;
-      const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
-      if (rfs) {
-        rfs.call(el).catch(() => {
-          startPlayground();
-        });
-      } else {
-        startPlayground();
-      }
-    });
-  }
-
-  function startPlayground() {
-    isPlaying = true;
-    landing.style.display    = 'none';
-    playground.style.display = 'block';
-
-    // Lazy-init AudioContext on first user gesture
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-
-    // Show hints
-    playHint.style.opacity = '1';
-    escHint.style.opacity = '1';
-    setTimeout(() => { escHint.style.opacity = '0'; }, 3000);
-  }
-
-  function stopPlayground() {
-    isPlaying = false;
-    cursorActive = false;
-    playground.classList.remove('show-cursor');
-    playground.style.display = 'none';
-    landing.style.display    = 'flex';
-
-    // Clear all emojis
-    activeEmojis.forEach(el => el.remove());
-    activeEmojis = [];
-
-    // Remove any lingering particles
-    playground.querySelectorAll('.particle').forEach(p => p.remove());
-  }
-
-  // Listen for fullscreen changes (enter and exit)
-  function onFullscreenChange() {
-    const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-    if (fsEl && !isPlaying) {
-      startPlayground();
-    } else if (!fsEl && isPlaying) {
-      stopPlayground();
-    }
-  }
-  document.addEventListener('fullscreenchange', onFullscreenChange);
-  document.addEventListener('webkitfullscreenchange', onFullscreenChange);
-
-  // Start button
-  startBtn.addEventListener('click', enterFullscreen);
-  startBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    enterFullscreen();
-  });
-
-  // ===== Emoji spawning =====
-
-  function hidePlayHint() {
-    if (playHint.style.opacity !== '0') {
-      playHint.style.opacity = '0';
-    }
+  function splatHideHint() {
+    if (splatHint.style.opacity !== '0') splatHint.style.opacity = '0';
   }
 
   function spawnEmoji(x, y, key) {
-    if (!isPlaying) return;
-    hidePlayHint();
-
-    // Pick emoji: mapped letter or random
+    splatHideHint();
     const char = (key && KEY_MAP[key]) ? KEY_MAP[key]
                : (key && KEY_MAP[key.toLowerCase()]) ? KEY_MAP[key.toLowerCase()]
                : EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-
-    // Random rotation between -15 and 15 degrees
     const rot = (Math.random() * 30 - 15);
-
-    // Random float movement values (gentle drift)
     const randDrift = () => (Math.random() * 40 - 20) + 'px';
 
-    // Create element
     const el = document.createElement('span');
     el.className = 'emoji';
     el.textContent = char;
@@ -550,7 +901,6 @@
     el.style.top  = (y - EMOJI_SIZE / 2) + 'px';
     el.style.fontSize = EMOJI_SIZE + 'px';
     el.style.setProperty('--rot', rot + 'deg');
-    // Float animation params
     el.style.setProperty('--float-dur', (3 + Math.random() * 3) + 's');
     el.style.setProperty('--float-delay', (Math.random() * -3) + 's');
     el.style.setProperty('--fx', randDrift());
@@ -560,10 +910,9 @@
     el.style.setProperty('--fx3', randDrift());
     el.style.setProperty('--fy3', randDrift());
 
-    playground.appendChild(el);
+    splatKeysGame.appendChild(el);
     activeEmojis.push(el);
 
-    // Fade out after 5s, remove after 7s (5s visible + 2s fade)
     setTimeout(() => {
       el.classList.add('fade-out');
       setTimeout(() => {
@@ -573,240 +922,336 @@
       }, 2000);
     }, 5000);
 
-    // Spawn particles
-    spawnParticles(x, y);
-
-    // Play sound
-    playSound();
+    spawnParticles(x, y, splatKeysGame);
+    playRandomSound();
   }
 
-  // ===== Confetti particles =====
+  function randPos() {
+    return { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight };
+  }
 
-  const PARTICLE_COLORS = ['#FF6B8A','#7C5CFC','#FFB347','#4ECDC4','#FF85A1','#FFC75F','#845EC2','#00C9A7'];
-
-  function spawnParticles(x, y) {
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const p = document.createElement('span');
-      p.className = 'particle';
-
-      // Random direction
-      const angle = (Math.PI * 2 / PARTICLE_COUNT) * i + (Math.random() * 0.5);
-      const dist  = 40 + Math.random() * 50;
-      const px = Math.cos(angle) * dist;
-      const py = Math.sin(angle) * dist;
-
-      p.style.left = x + 'px';
-      p.style.top  = y + 'px';
-      p.style.setProperty('--px', px + 'px');
-      p.style.setProperty('--py', py + 'px');
-      p.style.backgroundColor = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
-      p.style.width  = (6 + Math.random() * 6) + 'px';
-      p.style.height = p.style.width;
-
-      playground.appendChild(p);
-
-      // Remove after animation
-      p.addEventListener('animationend', () => p.remove());
+  const splatKeys = {
+    id: 'splat-keys',
+    start() {
+      splatKeysGame.style.display = 'block';
+      splatHint.style.opacity = '1';
+    },
+    stop() {
+      splatKeysGame.style.display = 'none';
+      activeEmojis.forEach(el => el.remove());
+      activeEmojis = [];
+      splatKeysGame.querySelectorAll('.particle').forEach(p => p.remove());
+    },
+    onKey(e) {
+      const pos = randPos();
+      spawnEmoji(pos.x, pos.y, e.key);
+    },
+    onMouse(e) {
+      if (e.button === 2) {
+        for (let i = 0; i < 3; i++) {
+          const angle = (Math.PI * 2 / 3) * i + Math.random() * 0.8;
+          const dist = 60 + Math.random() * 40;
+          spawnEmoji(e.clientX + Math.cos(angle) * dist, e.clientY + Math.sin(angle) * dist);
+        }
+      } else {
+        spawnEmoji(e.clientX, e.clientY);
+      }
+    },
+    onTouch(e) {
+      for (let i = 0; i < e.touches.length; i++) {
+        spawnEmoji(e.touches[i].clientX, e.touches[i].clientY);
+      }
     }
+  };
+
+  // =========================================================
+  //  GAME 2: Stack & Smash
+  // =========================================================
+
+  const stackGameEl   = document.getElementById('stackGame');
+  const stackScoreEl  = document.getElementById('stackScore');
+  const stackHint     = document.getElementById('stackHint');
+  const stackCelebrate = document.getElementById('stackCelebrate');
+
+  const BLOCK_COLORS = ['#FF6B8A','#FFB347','#7C5CFC','#4ECDC4','#FF85A1','#FFC75F','#845EC2','#00C9A7','#F9844A','#90BE6D'];
+  const BLOCK_HEIGHT = 40;
+  const GROUND_Y = 40; // ground height
+
+  let stackBlocks = [];      // { el, x, y, w, h, vx, vy, landed }
+  let fallingBlock = null;
+  let stackAnimFrame = null;
+  let stackCount = 0;
+  let stackCollapsing = false;
+  let stackDropReady = true;
+
+  function stackHideHint() {
+    if (stackHint.style.opacity !== '0') stackHint.style.opacity = '0';
   }
 
-  // ===== Web Audio API sound effects =====
+  function getStackTop() {
+    // Returns the Y position of the top of the stack (from bottom of screen)
+    if (stackBlocks.length === 0) return GROUND_Y;
+    return GROUND_Y + stackBlocks.length * BLOCK_HEIGHT;
+  }
 
-  function playSound() {
-    if (!audioCtx) return;
+  function getTopBlock() {
+    return stackBlocks.length > 0 ? stackBlocks[stackBlocks.length - 1] : null;
+  }
 
-    // Resume context if suspended (autoplay policy)
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+  function dropBlock() {
+    if (stackCollapsing || fallingBlock) return;
+    stackHideHint();
 
-    const now = audioCtx.currentTime;
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+    const topBlock = getTopBlock();
 
-    // Pick a random sound type
-    const type = Math.floor(Math.random() * 4);
+    // Block width: random but roughly similar (gets slightly narrower higher up)
+    const baseW = Math.min(screenW * 0.35, 200);
+    const w = baseW - Math.min(stackBlocks.length * 2, 40) + (Math.random() * 30 - 15);
+    const blockW = Math.max(w, 60);
 
-    switch (type) {
-      case 0: playPop(now); break;
-      case 1: playBoing(now); break;
-      case 2: playChime(now); break;
-      case 3: playBubble(now); break;
+    // Drop position: centered with slight random offset
+    const centerX = screenW / 2;
+    const offsetRange = Math.min(stackBlocks.length * 8, 80);
+    const dropX = centerX - blockW / 2 + (Math.random() * offsetRange - offsetRange / 2);
+
+    const el = document.createElement('div');
+    el.className = 'stack-block falling';
+    el.style.width = blockW + 'px';
+    el.style.height = BLOCK_HEIGHT + 'px';
+    el.style.backgroundColor = BLOCK_COLORS[stackBlocks.length % BLOCK_COLORS.length];
+    el.style.left = dropX + 'px';
+    el.style.top = '0px';
+
+    // Add a fun emoji face to each block
+    const faces = ['😄','😎','🤪','😋','🥳','😆','🤩','😜','🙃','😊'];
+    el.textContent = faces[Math.floor(Math.random() * faces.length)];
+    el.style.display = 'flex';
+    el.style.alignItems = 'center';
+    el.style.justifyContent = 'center';
+    el.style.fontSize = '24px';
+
+    stackGameEl.appendChild(el);
+
+    fallingBlock = {
+      el: el,
+      x: dropX,
+      y: 0,
+      w: blockW,
+      h: BLOCK_HEIGHT,
+      vy: 2,
+      landed: false
+    };
+
+    stackDropReady = false;
+  }
+
+  function stackPhysicsLoop() {
+    if (!fallingBlock || stackCollapsing) {
+      stackAnimFrame = requestAnimationFrame(stackPhysicsLoop);
+      return;
     }
+
+    const screenH = window.innerHeight;
+    const block = fallingBlock;
+
+    // Gravity
+    block.vy += 0.6;
+    block.y += block.vy;
+
+    // Landing target
+    const stackTopFromBottom = getStackTop();
+    const landingY = screenH - stackTopFromBottom - block.h;
+
+    if (block.y >= landingY) {
+      // Landed!
+      block.y = landingY;
+      block.el.style.top = block.y + 'px';
+      block.el.classList.remove('falling');
+      block.el.classList.add('landed');
+      block.landed = true;
+
+      playThud();
+
+      // Check if block is too far off-center from the one below
+      const topBlock = getTopBlock();
+      let shouldTopple = false;
+
+      if (topBlock) {
+        const blockCenter = block.x + block.w / 2;
+        const topCenter = topBlock.x + topBlock.w / 2;
+        const overlap = Math.min(block.x + block.w, topBlock.x + topBlock.w) - Math.max(block.x, topBlock.x);
+
+        if (overlap < block.w * 0.25) {
+          shouldTopple = true;
+        }
+      }
+
+      stackBlocks.push(block);
+      stackCount++;
+      stackScoreEl.textContent = stackCount;
+      fallingBlock = null;
+
+      if (shouldTopple || stackBlocks.length >= 15) {
+        // TOPPLE!
+        collapseStack();
+      } else {
+        // Add sway to landed block
+        const swayAmount = Math.min(stackBlocks.length * 0.3, 4);
+        block.el.classList.add('swaying');
+        block.el.style.setProperty('--sway', swayAmount + 'deg');
+        block.el.style.setProperty('--sway-dur', (1.5 + Math.random() * 0.5) + 's');
+
+        // Spawn small particles at landing point
+        spawnParticles(block.x + block.w / 2, block.y + block.h, stackGameEl);
+
+        // Ready for next drop after small delay
+        setTimeout(() => { stackDropReady = true; }, 300);
+      }
+    } else {
+      block.el.style.top = block.y + 'px';
+    }
+
+    stackAnimFrame = requestAnimationFrame(stackPhysicsLoop);
   }
 
-  // Short pop
-  function playPop(now) {
-    const osc  = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(600 + Math.random() * 400, now);
-    osc.frequency.exponentialRampToValueAtTime(200, now + 0.1);
-    gain.gain.setValueAtTime(0.15, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-    osc.connect(gain).connect(audioCtx.destination);
-    osc.start(now);
-    osc.stop(now + 0.12);
-  }
+  function collapseStack() {
+    stackCollapsing = true;
+    playCrash();
 
-  // Boing
-  function playBoing(now) {
-    const osc  = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    const base = 300 + Math.random() * 200;
-    osc.frequency.setValueAtTime(base, now);
-    osc.frequency.exponentialRampToValueAtTime(base * 2, now + 0.05);
-    osc.frequency.exponentialRampToValueAtTime(base * 0.8, now + 0.15);
-    gain.gain.setValueAtTime(0.12, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-    osc.connect(gain).connect(audioCtx.destination);
-    osc.start(now);
-    osc.stop(now + 0.18);
-  }
+    // Fly all blocks away with physics
+    stackBlocks.forEach((block, i) => {
+      const vx = (Math.random() - 0.5) * 20;
+      const vy = -(5 + Math.random() * 15);
+      const rot = (Math.random() - 0.5) * 720;
+      block.el.style.transition = 'transform 1.2s ease-out, opacity 1.2s ease-out';
+      block.el.style.transform = `translate(${vx * 30}px, ${vy * 20}px) rotate(${rot}deg)`;
+      block.el.style.opacity = '0';
 
-  // Chime
-  function playChime(now) {
-    // Two oscillators for a richer chime
-    const notes = [523, 587, 659, 698, 784, 880]; // C5-A5
-    const freq = notes[Math.floor(Math.random() * notes.length)];
-
-    const osc  = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, now);
-    gain.gain.setValueAtTime(0.1, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-    osc.connect(gain).connect(audioCtx.destination);
-    osc.start(now);
-    osc.stop(now + 0.2);
-  }
-
-  // Bubble
-  function playBubble(now) {
-    const osc  = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    const base = 200 + Math.random() * 300;
-    osc.frequency.setValueAtTime(base, now);
-    osc.frequency.exponentialRampToValueAtTime(base * 1.8, now + 0.08);
-    osc.frequency.exponentialRampToValueAtTime(base * 1.2, now + 0.15);
-    gain.gain.setValueAtTime(0.12, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-    osc.connect(gain).connect(audioCtx.destination);
-    osc.start(now);
-    osc.stop(now + 0.15);
-  }
-
-  // ===== Hooray fanfare sound =====
-  function playFanfare() {
-    if (!audioCtx) return;
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const now = audioCtx.currentTime;
-
-    // Rising celebratory notes: C-E-G-C (major chord arpeggio)
-    const notes = [523, 659, 784, 1047];
-    notes.forEach((freq, i) => {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, now + i * 0.1);
-      gain.gain.setValueAtTime(0, now + i * 0.1);
-      gain.gain.linearRampToValueAtTime(0.15, now + i * 0.1 + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
-      osc.connect(gain).connect(audioCtx.destination);
-      osc.start(now + i * 0.1);
-      osc.stop(now + i * 0.1 + 0.4);
+      // Spawn celebration particles
+      if (i % 2 === 0) {
+        spawnParticles(
+          block.x + block.w / 2,
+          block.y + block.h / 2,
+          stackGameEl
+        );
+      }
     });
 
-    // Final shimmer chord (all notes together)
+    // Show celebration
+    const messages = ['🎉 CRASH! 🎉', '💥 BOOM! 💥', '🌟 SMASH! 🌟', '🔥 WOW! 🔥'];
+    stackCelebrate.textContent = messages[Math.floor(Math.random() * messages.length)];
+    stackCelebrate.classList.add('show');
+    stackScoreEl.textContent = stackCount + ' 🏆';
+
+    // Play fanfare
+    setTimeout(() => playFanfare(), 300);
+
+    // Reset after celebration
     setTimeout(() => {
-      [523, 659, 784, 1047, 1319].forEach(freq => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-        osc.connect(gain).connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime);
-        osc.stop(audioCtx.currentTime + 0.6);
-      });
-    }, 400);
+      stackCelebrate.classList.remove('show');
+      stackBlocks.forEach(b => b.el.remove());
+      stackBlocks = [];
+      fallingBlock = null;
+      stackCount = 0;
+      stackScoreEl.textContent = '0';
+      stackCollapsing = false;
+      stackDropReady = true;
+    }, 2500);
   }
 
-  // ===== Event listeners for spawning =====
+  const stackSmash = {
+    id: 'stack-smash',
+    start() {
+      stackGameEl.style.display = 'block';
+      stackHint.style.opacity = '1';
+      stackScoreEl.style.opacity = '1';
+      stackCount = 0;
+      stackScoreEl.textContent = '0';
+      stackBlocks = [];
+      fallingBlock = null;
+      stackCollapsing = false;
+      stackDropReady = true;
+      stackAnimFrame = requestAnimationFrame(stackPhysicsLoop);
+    },
+    stop() {
+      stackGameEl.style.display = 'none';
+      if (stackAnimFrame) cancelAnimationFrame(stackAnimFrame);
+      stackAnimFrame = null;
+      // Clean up blocks
+      stackBlocks.forEach(b => b.el.remove());
+      stackBlocks = [];
+      if (fallingBlock) {
+        fallingBlock.el.remove();
+        fallingBlock = null;
+      }
+      stackCollapsing = false;
+      stackCelebrate.classList.remove('show');
+      stackGameEl.querySelectorAll('.particle').forEach(p => p.remove());
+    },
+    onKey(e) {
+      if (stackDropReady) dropBlock();
+    },
+    onMouse(e) {
+      if (stackDropReady) dropBlock();
+    },
+    onTouch(e) {
+      if (stackDropReady) dropBlock();
+    }
+  };
 
-  // Random position helper
-  function randPos() {
-    return {
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight
-    };
-  }
+  // =========================================================
+  //  Game Registry
+  // =========================================================
+
+  const GAMES = {
+    'splat-keys': splatKeys,
+    'stack-smash': stackSmash
+  };
+
+  // =========================================================
+  //  Global Event Listeners
+  // =========================================================
 
   // Keyboard
   document.addEventListener('keydown', (e) => {
-    if (!isPlaying) return;
-
-    // Prevent default browser behaviors (except ESC which exits fullscreen)
-    if (e.key !== 'Escape') {
-      e.preventDefault();
-    }
-
-    const pos = randPos();
-    spawnEmoji(pos.x, pos.y, e.key);
+    if (!currentGame) return;
+    if (e.key !== 'Escape') e.preventDefault();
+    currentGame.onKey(e);
   });
 
-  // Mouse left click — 1 emoji at cursor
+  // Mouse
   document.addEventListener('mousedown', (e) => {
-    if (!isPlaying) return;
+    if (!currentGame) return;
     e.preventDefault();
-    if (e.button === 2) {
-      // Right click — 3 random emojis scattered around cursor
-      for (let i = 0; i < 3; i++) {
-        const angle = (Math.PI * 2 / 3) * i + Math.random() * 0.8;
-        const dist = 60 + Math.random() * 40;
-        const ox = e.clientX + Math.cos(angle) * dist;
-        const oy = e.clientY + Math.sin(angle) * dist;
-        spawnEmoji(ox, oy);
-      }
-    } else {
-      spawnEmoji(e.clientX, e.clientY);
-    }
+    currentGame.onMouse(e);
   });
 
   // Touch
   document.addEventListener('touchstart', (e) => {
-    if (!isPlaying) return;
+    if (!currentGame) return;
     e.preventDefault();
-    // Spawn for each touch point
-    for (let i = 0; i < e.touches.length; i++) {
-      spawnEmoji(e.touches[i].clientX, e.touches[i].clientY);
-    }
+    currentGame.onTouch(e);
   }, { passive: false });
 
-  // ===== Show cursor only on mouse activity =====
-  let cursorTimer = null;
-  let cursorActive = false;
-  function showCursor() {
-    if (!cursorActive) return;
+  // Cursor visibility
+  document.addEventListener('mousemove', (e) => {
+    if (!currentGame) return;
+    if (!cursorActive) {
+      cursorActive = true;
+      return;
+    }
     playground.classList.add('show-cursor');
     clearTimeout(cursorTimer);
     cursorTimer = setTimeout(() => {
       playground.classList.remove('show-cursor');
     }, 2000);
-  }
-  // Only start tracking mouse after the first mousemove inside playground
-  document.addEventListener('mousemove', (e) => {
-    if (!isPlaying) return;
-    if (!cursorActive) {
-      // Ignore the first move (from clicking Start)
-      cursorActive = true;
-      return;
-    }
-    showCursor();
   });
 
   // Prevent context menu
   document.addEventListener('contextmenu', (e) => {
-    if (isPlaying) e.preventDefault();
+    if (currentGame) e.preventDefault();
   });
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
