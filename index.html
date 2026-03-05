@@ -1441,7 +1441,7 @@
   const CABLE_EXTEND_SPEED = 1.0;
   const CABLE_START_LENGTH = 120;
   const CRANE_HOOK_Y = 50;
-  const PERFECT_THRESHOLD = 0.08;
+  const PERFECT_THRESHOLD = 0.05;
   const INSTABILITY_THRESHOLD = 5.0;
   const DANGER_ZONE = 3.0;
   const WOBBLE_SCALE = 0.7;
@@ -1514,7 +1514,7 @@
 
     // Instability is the absolute imbalance, scaled by tower height
     const heightScale = 1 + stTowerBlocks.length * 0.08;
-    stInstability = Math.abs(normalizedLean) * heightScale * 3.0;
+    stInstability = Math.abs(normalizedLean) * heightScale * 3.5;
   }
 
   function stUpdateDangerVignette() {
@@ -1729,7 +1729,7 @@
     stUpdateDangerVignette();
 
     // Check instability threshold OR excessive lean (too much weight on one side)
-    const LEAN_COLLAPSE_THRESHOLD = 2.8;
+    const LEAN_COLLAPSE_THRESHOLD = 2.5;
     if (stInstability >= INSTABILITY_THRESHOLD || Math.abs(stLeanDirection) >= LEAN_COLLAPSE_THRESHOLD) {
       setTimeout(() => stTriggerCollapse(), 400);
       return;
