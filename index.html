@@ -1281,21 +1281,44 @@
     const landedW = stBlockWidth;
     const towerY = stGetTowerTopY();
 
-    // First block — sets ideal center
+    // First block — tilts on ball like a real surface
     if (stTowerBlocks.length === 0) {
+      const screenW = window.innerWidth;
+      const ballCenterX = screenW / 2;
+      const blockCenterX = landedX + landedW / 2;
+      const offset = blockCenterX - ballCenterX;
+      const normalizedOffset = offset / (landedW / 2);
+
+      // Tilt: block pivots on ball contact point
+      const MAX_TILT = 10;
+      const tiltDeg = normalizedOffset * MAX_TILT;
+      const ballRelativeX = ballCenterX - landedX;
+      stActiveEl.style.transformOrigin = ballRelativeX + 'px bottom';
+      stActiveEl.style.transform = 'rotate(' + tiltDeg + 'deg)';
+
       stActiveEl.style.bottom = GROUND_H + 'px';
       stActiveEl.style.left = landedX + 'px';
       stActiveEl.classList.remove('active');
 
-      stIdealCenterX = landedX + landedW / 2;
+      // Ideal center is ball center
+      stIdealCenterX = ballCenterX;
       stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: GROUND_H });
+
+      // Off-center landing adds instability
+      const absOffset = Math.abs(normalizedOffset);
+      if (absOffset > PERFECT_THRESHOLD) {
+        stInstability += absOffset * 1.2;
+        stLeanDirection += normalizedOffset * 1.2;
+      }
+
       stBlockCount++;
       stackScoreEl.textContent = stBlockCount;
       stActiveEl = null;
       stDropping = false;
       stGameState = 'idle';
       playThud();
-      spawnParticles(landedX + landedW / 2, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
+      spawnParticles(blockCenterX, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
+      stUpdateDangerVignette();
       stStartSway();
       return;
     }
