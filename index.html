@@ -19,10 +19,15 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    overflow-y: auto;
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  body.game-active {
+    overflow: hidden !important;
   }
 
   /* ===== Animated Gradient Background ===== */
@@ -50,8 +55,7 @@
     min-height: 100vh;
     position: relative;
     z-index: 10;
-    padding: 1rem;
-    overflow-y: auto;
+    padding: 2rem 1rem 0;
   }
 
   #landing h1 {
@@ -110,6 +114,123 @@
   #landing .qr-code:hover {
     opacity: 1;
     transform: scale(1.1);
+  }
+
+  #landing .subtitle {
+    font-family: 'Quicksand', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    color: #666;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 0.3em;
+    max-width: 500px;
+  }
+  #landing .sub-subtitle {
+    font-size: clamp(0.8rem, 2vw, 0.95rem);
+    color: #aaa;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 1.5em;
+  }
+  #landing .why-link {
+    margin-top: 1.2em;
+    font-size: 0.9rem;
+    color: #FF6B8A;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+    z-index: 10;
+    position: relative;
+  }
+  #landing .why-link:hover { color: #7C5CFC; }
+  #landing footer {
+    margin-top: auto;
+    padding: 2rem 1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6em;
+    z-index: 10;
+    position: relative;
+    width: 100%;
+  }
+
+  #landing footer .footer-signature {
+    font-size: 0.8rem;
+    color: #bbb;
+    font-weight: 500;
+  }
+
+  #landing footer .why-link {
+    margin-top: 0;
+  }
+
+  .story-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .story-backdrop.show {
+    display: flex;
+    opacity: 1;
+  }
+  .story-modal {
+    background: #FFF8E7;
+    border-radius: 24px;
+    max-width: 624px;
+    width: 92%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 2.4rem 2.4rem 1.8rem;
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  .story-backdrop.show .story-modal {
+    transform: scale(1);
+  }
+  .story-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    padding: 4px;
+  }
+  .story-close:hover { color: #333; }
+  .story-modal .story-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1.2em;
+    line-height: 1.4;
+  }
+  .story-modal p {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.75;
+    margin-bottom: 1em;
+  }
+  .story-modal .story-sign {
+    text-align: right;
+    font-style: italic;
+    color: #999;
+    margin-top: 0.5em;
   }
 
   /* ===== Game Cards Grid ===== */
@@ -400,6 +521,12 @@
     transform-origin: center bottom;
   }
 
+  .stack-tower {
+    position: absolute;
+    inset: 0;
+    transform-origin: center bottom;
+  }
+
   .stack-score {
     position: fixed;
     top: 16px;
@@ -529,6 +656,8 @@
 <!-- ===== Landing Screen ===== -->
 <div id="landing">
   <h1>Tiny Hands Play 🎨</h1>
+  <p class="subtitle">Simple browser games for when tiny hands invade the home office.</p>
+  <p class="sub-subtitle">Bookmark this page. Open in case of emergency.</p>
 
   <div class="games-grid">
     <!-- Splat Keys Card -->
@@ -550,10 +679,28 @@
     </div>
   </div>
 
-  <p class="domain">tinyhandsplay.com</p>
   <div class="tip-section">
     <a href="https://paypal.me/mauroferrante/5" target="_blank" rel="noopener" class="tip-jar">💜 Buy me a coffee</a>
-    <img src="qrcode.png" alt="PayPal QR Code" class="qr-code">
+    <a href="https://paypal.me/mauroferrante/5" target="_blank" rel="noopener"><img src="qrcode.png" alt="PayPal QR Code" class="qr-code"></a>
+  </div>
+
+  <footer>
+    <a class="why-link" id="whyLink">Why Tiny Hands Play? →</a>
+    <p class="footer-signature">Made with ❤️ by a work‑from‑home dad.</p>
+  </footer>
+</div>
+
+<!-- ===== Story Modal ===== -->
+<div class="story-backdrop" id="storyBackdrop">
+  <div class="story-modal">
+    <button class="story-close" id="storyClose">✕</button>
+    <div class="story-title">Made with ❤️ by a work‑from‑home dad<br>(and beta‑tested by a tiny chaos goblin).</div>
+    <p>I'll be deep in a task — finally focused — and then I hear it: the quiet approach. The door opens. A toddler appears. Eyes locked on my keyboard like it's the control panel of a spaceship.</p>
+    <p>If you've been here, you know the next move: enthusiastic key‑mashing that can definitely ruin your day.</p>
+    <p>My old "solution" was Photo Booth. Fun for a bit… until it's the same silly face, every day, forever. Also: I'm trying to raise a kid, not a personal‑brand influencer.</p>
+    <p>So I made Tiny Hands Play: quick little browser games you can pop open fullscreen. No installs, no accounts, no "wait where's the app." Just bookmark it and deploy when tiny hands arrive.</p>
+    <p>They get colors, sounds, and "I DID IT!" moments. Your work stays safe(ish). You stay in the room. Everyone wins for two minutes.</p>
+    <p class="story-sign">— A dad who just wanted to finish one thing</p>
   </div>
 </div>
 
@@ -570,7 +717,9 @@
   <!-- Stack & Smash game layer -->
   <div id="stackGame">
     <div class="stack-camera" id="stackCamera">
-      <div class="stack-ball" id="stackBall">⚽</div>
+      <div class="stack-tower" id="stackTower">
+        <div class="stack-ball" id="stackBall">⚽</div>
+      </div>
       <div class="stack-crane" id="stackCrane">🏗️</div>
     </div>
     <div class="stack-score" id="stackScore">0</div>
@@ -889,6 +1038,126 @@
     }, 500);
   }
 
+  // Stack & Smash additional sounds
+
+  function playWhoosh() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Filtered noise swoosh using rapid frequency sweep
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(800, now);
+    osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
+    gain.gain.setValueAtTime(0.06, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.18);
+    // Secondary breathy layer
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(400, now);
+    osc2.frequency.exponentialRampToValueAtTime(100, now + 0.12);
+    gain2.gain.setValueAtTime(0.04, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    osc2.connect(gain2).connect(audioCtx.destination);
+    osc2.start(now);
+    osc2.stop(now + 0.12);
+  }
+
+  function playCreak() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Wobbly creaking sound
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    const base = 80 + Math.random() * 40;
+    osc.frequency.setValueAtTime(base, now);
+    osc.frequency.setValueAtTime(base * 1.3, now + 0.05);
+    osc.frequency.setValueAtTime(base * 0.9, now + 0.1);
+    osc.frequency.setValueAtTime(base * 1.1, now + 0.15);
+    gain.gain.setValueAtTime(0.03, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.2);
+  }
+
+  function playPerfectClick() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Sharp satisfying click
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(2000, now);
+    osc.frequency.exponentialRampToValueAtTime(800, now + 0.02);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.04);
+  }
+
+  function playHeightPing(height) {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Rising pitch based on tower height
+    const baseFreq = 300 + height * 40;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.2, now + 0.1);
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }
+
+  function playDangerBuzz() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Low warning buzz
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(60, now);
+    gain.gain.setValueAtTime(0.04, now);
+    gain.gain.setValueAtTime(0.04, now + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }
+
+  function playBounce() {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Bouncy impact — higher pitched thud
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(250, now);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.03);
+    osc.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.12);
+  }
+
   // ===== Entry Animation & Fullscreen =====
 
   function playEntryAnimation(originBtn, callback) {
@@ -960,6 +1229,7 @@
     currentGame = game;
     landing.style.display = 'none';
     playground.style.display = 'block';
+    document.body.classList.add('game-active');
 
     initAudio();
 
@@ -980,6 +1250,7 @@
 
     playground.style.display = 'none';
     landing.style.display = 'flex';
+    document.body.classList.remove('game-active');
 
     // Remove any lingering particles
     playground.querySelectorAll('.particle').forEach(p => p.remove());
@@ -1005,6 +1276,33 @@
       e.preventDefault();
       launchGame(btn.dataset.game, btn);
     });
+  });
+
+  // =========================================================
+  //  Story Modal
+  // =========================================================
+  const storyBackdrop = document.getElementById('storyBackdrop');
+  const storyClose = document.getElementById('storyClose');
+  const whyLink = document.getElementById('whyLink');
+
+  whyLink.addEventListener('click', () => {
+    storyBackdrop.style.display = 'flex';
+    requestAnimationFrame(() => storyBackdrop.classList.add('show'));
+    document.body.style.overflow = 'hidden';
+  });
+
+  function closeStory() {
+    storyBackdrop.classList.remove('show');
+    setTimeout(() => { storyBackdrop.style.display = 'none'; }, 300);
+    document.body.style.overflow = '';
+  }
+
+  storyClose.addEventListener('click', closeStory);
+  storyBackdrop.addEventListener('click', (e) => {
+    if (e.target === storyBackdrop) closeStory();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && storyBackdrop.classList.contains('show')) closeStory();
   });
 
   // =========================================================
@@ -1128,6 +1426,7 @@
 
   const stackGameEl    = document.getElementById('stackGame');
   const stackCameraEl  = document.getElementById('stackCamera');
+  const stackTowerEl   = document.getElementById('stackTower');
   const stackScoreEl   = document.getElementById('stackScore');
   const stackHint      = document.getElementById('stackHint');
   const stackCelebrate = document.getElementById('stackCelebrate');
@@ -1138,16 +1437,16 @@
   const BALL_SIZE = 50;
   const GROUND_H = BALL_SIZE - 5;
   const PENDULUM_MAX_ANGLE = 0.4;
-  const CABLE_EXTEND_SPEED = 1.2;
+  const CABLE_EXTEND_SPEED = 1.0;
   const CABLE_START_LENGTH = 120;
   const CRANE_HOOK_Y = 50;
   const PERFECT_THRESHOLD = 0.08;
-  const INSTABILITY_THRESHOLD = 4.0;
-  const DANGER_ZONE = 2.5;
-  const WOBBLE_SCALE = 0.6;
+  const INSTABILITY_THRESHOLD = 5.0;
+  const DANGER_ZONE = 3.0;
+  const WOBBLE_SCALE = 0.7;
   const LEAN_SCALE = 2.5;
-  const MAX_WOBBLE_ANGLE = 12;
-  const SWAY_SPEEDS = [1.0, 1.4, 1.8, 2.2];
+  const MAX_WOBBLE_ANGLE = 14;
+  const SWAY_SPEEDS = [0.7, 1.0, 1.3, 1.6];
 
   let stTowerBlocks = [];
   let stActiveEl = null;
@@ -1173,14 +1472,48 @@
   let stPendulumAngle = 0;
 
   function stGetSwaySpeed() {
-    if (stBlockCount < 5) return SWAY_SPEEDS[0];
-    if (stBlockCount < 10) return SWAY_SPEEDS[1];
-    if (stBlockCount < 16) return SWAY_SPEEDS[2];
+    if (stBlockCount < 7) return SWAY_SPEEDS[0];
+    if (stBlockCount < 14) return SWAY_SPEEDS[1];
+    if (stBlockCount < 20) return SWAY_SPEEDS[2];
     return SWAY_SPEEDS[3];
   }
 
   function stGetTowerTopY() {
     return GROUND_H + stTowerBlocks.length * BLOCK_H;
+  }
+
+  // Recalculate instability & lean from actual center of mass of all blocks
+  function stRecalcBalance() {
+    if (stTowerBlocks.length === 0) {
+      stInstability = 0;
+      stLeanDirection = 0;
+      return;
+    }
+
+    // Weighted center of mass — higher blocks contribute more to instability
+    let totalWeight = 0;
+    let weightedOffset = 0;
+
+    for (let i = 0; i < stTowerBlocks.length; i++) {
+      const block = stTowerBlocks[i];
+      const blockCenter = block.x + block.w / 2;
+      const offset = blockCenter - stIdealCenterX;
+      // Higher blocks have more leverage (torque)
+      const heightWeight = 1 + i * 0.3;
+      weightedOffset += offset * heightWeight;
+      totalWeight += heightWeight;
+    }
+
+    // Normalized lean: how far off-center the weighted mass is
+    const avgOffset = weightedOffset / totalWeight;
+    const normalizedLean = avgOffset / stOriginalWidth;
+
+    // Lean direction is directly proportional to center of mass offset
+    stLeanDirection = normalizedLean * 2.5;
+
+    // Instability is the absolute imbalance, scaled by tower height
+    const heightScale = 1 + stTowerBlocks.length * 0.08;
+    stInstability = Math.abs(normalizedLean) * heightScale * 3.0;
   }
 
   function stUpdateDangerVignette() {
@@ -1241,7 +1574,7 @@
     stackCameraEl.appendChild(el);
     stActiveEl = el;
 
-    // Create cable as SVG line
+    // Create cable as SVG line (stays in camera so it doesn't wobble)
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', 'stack-cable');
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1270,6 +1603,7 @@
 
     // Remove cable
     if (stCableEl) { stCableEl.remove(); stCableEl = null; }
+    playWhoosh();
 
     stActiveEl.classList.remove('active');
   }
@@ -1299,17 +1633,14 @@
       stActiveEl.style.bottom = GROUND_H + 'px';
       stActiveEl.style.left = landedX + 'px';
       stActiveEl.classList.remove('active');
+      stackTowerEl.appendChild(stActiveEl);
 
       // Ideal center is ball center
       stIdealCenterX = ballCenterX;
       stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: GROUND_H });
 
-      // Off-center landing adds instability
-      const absOffset = Math.abs(normalizedOffset);
-      if (absOffset > PERFECT_THRESHOLD) {
-        stInstability += absOffset * 1.2;
-        stLeanDirection += normalizedOffset * 1.2;
-      }
+      // Recalculate balance from center of mass
+      stRecalcBalance();
 
       stBlockCount++;
       stackScoreEl.textContent = stBlockCount;
@@ -1317,7 +1648,8 @@
       stDropping = false;
       stGameState = 'idle';
       playThud();
-      spawnParticles(blockCenterX, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
+      playBounce();
+      spawnParticles(blockCenterX, window.innerHeight - GROUND_H - BLOCK_H, stackTowerEl);
       stUpdateDangerVignette();
       stStartSway();
       return;
@@ -1347,8 +1679,6 @@
     const blockCenterX = landedX + landedW / 2;
     const offsetFromIdeal = blockCenterX - stIdealCenterX;
     const normalizedOffset = Math.abs(offsetFromIdeal) / stOriginalWidth;
-    const blockIndex = stTowerBlocks.length;
-    const heightFactor = 1 + blockIndex * 0.25;
 
     const isPerfect = normalizedOffset < PERFECT_THRESHOLD;
 
@@ -1356,27 +1686,37 @@
       // Snap to ideal center
       const snappedX = stIdealCenterX - landedW / 2;
       stActiveEl.style.left = snappedX + 'px';
+      stackTowerEl.appendChild(stActiveEl);
       stTowerBlocks.push({ el: stActiveEl, x: snappedX, w: landedW, y: towerY });
 
       stPerfectStreak++;
       stActiveEl.classList.add('perfect-flash');
       playPerfectDing();
-      spawnParticles(stIdealCenterX, window.innerHeight - towerY - BLOCK_H, stackCameraEl);
+      playPerfectClick();
+      playHeightPing(stTowerBlocks.length);
+      spawnParticles(stIdealCenterX, window.innerHeight - towerY - BLOCK_H, stackTowerEl);
 
       if (stPerfectStreak >= 3) {
         stActiveEl.classList.add('streak-flash');
         playStreakChime();
       }
     } else {
-      // Non-perfect: add instability
+      stackTowerEl.appendChild(stActiveEl);
       stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: towerY });
       stPerfectStreak = 0;
 
-      stInstability += normalizedOffset * heightFactor;
-      stLeanDirection += (offsetFromIdeal / stOriginalWidth) * heightFactor;
-
       playThud();
       playSnap();
+      playHeightPing(stTowerBlocks.length);
+    }
+
+    // Recalculate balance from actual center of mass
+    stRecalcBalance();
+
+    // Warning sounds when tower is getting unstable
+    if (stInstability >= DANGER_ZONE) {
+      playDangerBuzz();
+      playCreak();
     }
 
     stBlockCount++;
@@ -1387,8 +1727,9 @@
 
     stUpdateDangerVignette();
 
-    // Check instability threshold
-    if (stInstability >= INSTABILITY_THRESHOLD) {
+    // Check instability threshold OR excessive lean (too much weight on one side)
+    const LEAN_COLLAPSE_THRESHOLD = 2.8;
+    if (stInstability >= INSTABILITY_THRESHOLD || Math.abs(stLeanDirection) >= LEAN_COLLAPSE_THRESHOLD) {
       setTimeout(() => stTriggerCollapse(), 400);
       return;
     }
@@ -1412,13 +1753,13 @@
       block.el.style.opacity = '0';
 
       if (i % 2 === 0) {
-        spawnParticles(block.x + block.w / 2, window.innerHeight - block.y - BLOCK_H / 2, stackCameraEl);
+        spawnParticles(block.x + block.w / 2, window.innerHeight - block.y - BLOCK_H / 2, stackTowerEl);
       }
     });
 
-    // Animate camera tilt during collapse
-    stackCameraEl.style.transition = 'transform 1s ease-in';
-    stackCameraEl.style.transform = `rotate(${collapseDir * 25}deg)`;
+    // Animate tower tilt during collapse (crane stays fixed)
+    stackTowerEl.style.transition = 'transform 1s ease-in';
+    stackTowerEl.style.transform = `rotate(${collapseDir * 25}deg)`;
 
     // Show score
     stackCelebrate.innerHTML = `${stBlockCount} blocks! 💥<span class="sub-text">Tap to play again!</span>`;
@@ -1480,7 +1821,7 @@
     if (stCableEl) { stCableEl.remove(); stCableEl = null; }
 
     stackGameEl.querySelectorAll('.stack-confetti').forEach(c => c.remove());
-    stackCameraEl.querySelectorAll('.particle').forEach(p => p.remove());
+    stackTowerEl.querySelectorAll('.particle').forEach(p => p.remove());
 
     stackCelebrate.classList.remove('show');
     stackCelebrate.innerHTML = '';
@@ -1495,8 +1836,8 @@
     stIdealCenterX = 0;
     stWobbleTime = 0;
 
-    stackCameraEl.style.transition = 'none';
-    stackCameraEl.style.transform = 'rotate(0deg)';
+    stackTowerEl.style.transition = 'none';
+    stackTowerEl.style.transform = 'rotate(0deg)';
     if (stackDangerEl) stackDangerEl.style.setProperty('--danger-opacity', '0');
 
     stackScoreEl.textContent = '0';
@@ -1557,7 +1898,7 @@
       }
     }
 
-    // Tower wobble (replaces camera panning)
+    // Tower wobble (only the tower, crane stays fixed)
     if (stTowerBlocks.length > 0 && stGameState !== 'collapsing') {
       stWobbleTime += 0.016;
 
@@ -1568,9 +1909,9 @@
       const leanAngle = stLeanDirection * LEAN_SCALE;
       const totalAngle = Math.max(-15, Math.min(15, leanAngle + wobbleOsc));
 
-      stackCameraEl.style.transform = `rotate(${totalAngle}deg)`;
+      stackTowerEl.style.transform = `rotate(${totalAngle}deg)`;
     } else if (stGameState !== 'collapsing') {
-      stackCameraEl.style.transform = 'rotate(0deg)';
+      stackTowerEl.style.transform = 'rotate(0deg)';
     }
 
     stAnimFrame = requestAnimationFrame(stGameLoop);
@@ -1597,8 +1938,8 @@
       stActiveEl = null;
       stDropping = false;
       stGameState = 'idle';
-      stackCameraEl.style.transition = 'none';
-      stackCameraEl.style.transform = 'rotate(0deg)';
+      stackTowerEl.style.transition = 'none';
+      stackTowerEl.style.transform = 'rotate(0deg)';
       if (stackDangerEl) stackDangerEl.style.setProperty('--danger-opacity', '0');
       stackScoreEl.textContent = '0';
 
@@ -1618,12 +1959,12 @@
       stackCelebrate.classList.remove('show');
       stackCelebrate.innerHTML = '';
       stackGameEl.querySelectorAll('.stack-confetti').forEach(c => c.remove());
-      stackCameraEl.querySelectorAll('.particle').forEach(p => p.remove());
+      stackTowerEl.querySelectorAll('.particle').forEach(p => p.remove());
       stInstability = 0;
       stLeanDirection = 0;
       stWobbleTime = 0;
-      stackCameraEl.style.transition = 'none';
-      stackCameraEl.style.transform = 'rotate(0deg)';
+      stackTowerEl.style.transition = 'none';
+      stackTowerEl.style.transform = 'rotate(0deg)';
       if (stackDangerEl) stackDangerEl.style.setProperty('--danger-opacity', '0');
       stGameState = 'idle';
     },
