@@ -11,6 +11,7 @@ import { stackSmash } from './games/stack-smash.js';
 const landing    = document.getElementById('landing');
 const playground = document.getElementById('playground');
 const escHint    = document.getElementById('escHint');
+const exitBtn    = document.getElementById('exitGame');
 const overlay    = document.getElementById('transition-overlay');
 
 // ---- Shared state ----
@@ -103,7 +104,7 @@ function startGame(game) {
 
   // Show appropriate exit hint based on input type
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  escHint.textContent = isTouchDevice ? 'Swipe down to exit' : 'Press ESC to exit';
+  escHint.textContent = isTouchDevice ? 'Tap ✕ to exit' : 'Press ESC to exit';
   escHint.style.opacity = '1';
   setTimeout(() => { escHint.style.opacity = '0'; }, 3000);
 
@@ -145,6 +146,25 @@ document.querySelectorAll('.play-btn[data-game]').forEach(btn => {
     e.preventDefault();
     launchGame(btn.dataset.game, btn);
   });
+});
+
+// ===== Exit Button (touch + desktop) =====
+exitBtn.addEventListener('click', () => {
+  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if (fsEl) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else {
+    stopGame();
+  }
+});
+exitBtn.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if (fsEl) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else {
+    stopGame();
+  }
 });
 
 // ===== Story Modal =====
