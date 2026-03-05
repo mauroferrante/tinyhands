@@ -263,7 +263,7 @@
       popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
       emojiFloat var(--float-dur) ease-in-out infinite var(--float-delay);
     z-index: 110;
-    transition: opacity 3s ease;
+    transition: opacity 2s ease;
   }
 
   @keyframes popIn {
@@ -356,32 +356,26 @@
 
   // ---- Letter → Emoji mapping ----
   const KEY_MAP = {
-    a: '🍎',  // apple
-    b: '🐝',  // bee
-    c: '🐱',  // cat
-    d: '🐶',  // dog
-    e: '🐘',  // elephant
-    f: '🐸',  // frog
-    g: '🦒',  // giraffe
-    h: '🐴',  // horse
-    i: '🍦',  // ice cream
-    j: '🃏',  // joker
-    k: '🪁',  // kite
-    l: '🦁',  // lion
-    m: '🐵',  // monkey
-    n: '🌙',  // night/moon
-    o: '🐙',  // octopus
-    p: '🐧',  // penguin
-    q: '👑',  // queen
-    r: '🌈',  // rainbow
-    s: '⭐',  // star
-    t: '🐢',  // turtle
-    u: '🦄',  // unicorn
-    v: '🌋',  // volcano
-    w: '🐋',  // whale
-    x: '✨',  // sparkles (x marks the magic)
-    y: '🪀',  // yo-yo
-    z: '🦓',  // zebra
+    // Letters
+    a: '🍎',  b: '🐝',  c: '🐱',  d: '🐶',  e: '🐘',
+    f: '🐸',  g: '🦒',  h: '🐴',  i: '🍦',  j: '🃏',
+    k: '🪁',  l: '🦁',  m: '🐵',  n: '🌙',  o: '🐙',
+    p: '🐧',  q: '👑',  r: '🌈',  s: '⭐',  t: '🐢',
+    u: '🦄',  v: '🌋',  w: '🐋',  x: '✨',  y: '🪀',
+    z: '🦓',
+    // Number row
+    '1': '🎸',  '2': '🎲',  '3': '🎪',  '4': '🍀',  '5': '🖐️',
+    '6': '🎵',  '7': '🌟',  '8': '🎱',  '9': '🎈',  '0': '⚽',
+    // Punctuation & symbols
+    ' ': '🚀',   ',': '🐞',   '.': '🌻',   '/': '⚡',
+    ';': '🍩',   "'": '💎',
+    '[': '🎁',   ']': '🧩',   '\\': '🔮',
+    '-': '🍭',   '=': '🎯',   '`': '🌸',
+    // Special keys
+    'Enter': '🎉',  'Tab': '🦋',  'Backspace': '💫',
+    'ArrowUp': '🚁',  'ArrowDown': '🐠',  'ArrowLeft': '🦀',  'ArrowRight': '🐎',
+    'Shift': '🔥',  'Control': '❄️',  'Alt': '🌊',  'Meta': '💜',
+    'CapsLock': '🎩',  'Escape': '🌀',
   };
 
   // ---- Config ----
@@ -538,8 +532,9 @@
     hidePlayHint();
 
     // Pick emoji: mapped letter or random
-    const letter = key ? key.toLowerCase() : null;
-    const char = (letter && KEY_MAP[letter]) ? KEY_MAP[letter] : EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    const char = (key && KEY_MAP[key]) ? KEY_MAP[key]
+               : (key && KEY_MAP[key.toLowerCase()]) ? KEY_MAP[key.toLowerCase()]
+               : EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
 
     // Random rotation between -15 and 15 degrees
     const rot = (Math.random() * 30 - 15);
@@ -568,15 +563,15 @@
     playground.appendChild(el);
     activeEmojis.push(el);
 
-    // Fade out after 8s, remove after 11s (8s visible + 3s fade)
+    // Fade out after 5s, remove after 7s (5s visible + 2s fade)
     setTimeout(() => {
       el.classList.add('fade-out');
       setTimeout(() => {
         el.remove();
         const idx = activeEmojis.indexOf(el);
         if (idx !== -1) activeEmojis.splice(idx, 1);
-      }, 3000);
-    }, 8000);
+      }, 2000);
+    }, 5000);
 
     // Spawn particles
     spawnParticles(x, y);
