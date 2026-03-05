@@ -464,11 +464,10 @@
 
   .stack-cable {
     position: absolute;
-    width: 2px;
-    background: rgba(100, 100, 100, 0.4);
+    inset: 0;
     z-index: 109;
     pointer-events: none;
-    transform-origin: top center;
+    overflow: visible;
   }
 
   .stack-ground-line {
@@ -1137,7 +1136,7 @@
   const GROUND_H = 20;
   const PENDULUM_MAX_ANGLE = 0.4;
   const CABLE_EXTEND_SPEED = 1.2;
-  const CABLE_START_LENGTH = 20;
+  const CABLE_START_LENGTH = 120;
   const CRANE_HOOK_Y = 50;
   const PERFECT_THRESHOLD = 0.08;
   const INSTABILITY_THRESHOLD = 6.0;
@@ -1194,11 +1193,13 @@
   function stUpdateCable() {
     if (!stCableEl) return;
     const craneX = window.innerWidth / 2;
-
-    stCableEl.style.height = stCableLength + 'px';
-    stCableEl.style.left = craneX + 'px';
-    stCableEl.style.top = CRANE_HOOK_Y + 'px';
-    stCableEl.style.transform = `rotate(${stPendulumAngle * (180 / Math.PI)}deg)`;
+    const blockCenterX = craneX + stCableLength * Math.sin(stPendulumAngle);
+    const blockTopY = CRANE_HOOK_Y + stCableLength * Math.cos(stPendulumAngle);
+    const line = stCableEl.firstChild;
+    line.setAttribute('x1', craneX);
+    line.setAttribute('y1', CRANE_HOOK_Y);
+    line.setAttribute('x2', blockCenterX);
+    line.setAttribute('y2', blockTopY);
   }
 
   function stStartSway() {
@@ -1237,10 +1238,15 @@
     stackCameraEl.appendChild(el);
     stActiveEl = el;
 
-    // Create cable
-    stCableEl = document.createElement('div');
-    stCableEl.className = 'stack-cable';
-    stackCameraEl.appendChild(stCableEl);
+    // Create cable as SVG line
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'stack-cable');
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('stroke', 'rgba(100,100,100,0.4)');
+    line.setAttribute('stroke-width', '2');
+    svg.appendChild(line);
+    stackCameraEl.appendChild(svg);
+    stCableEl = svg;
     stUpdateCable();
 
     stGameState = 'swaying';
