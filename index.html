@@ -470,14 +470,16 @@
     overflow: visible;
   }
 
-  .stack-ground-line {
+  .stack-ball {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(to right, transparent, rgba(124, 92, 252, 0.2), transparent);
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 50px;
+    line-height: 1;
     z-index: 109;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
   }
 
   .stack-celebrate {
@@ -568,7 +570,7 @@
   <!-- Stack & Smash game layer -->
   <div id="stackGame">
     <div class="stack-camera" id="stackCamera">
-      <div class="stack-ground-line"></div>
+      <div class="stack-ball" id="stackBall">⚽</div>
       <div class="stack-crane" id="stackCrane">🏗️</div>
     </div>
     <div class="stack-score" id="stackScore">0</div>
@@ -1133,7 +1135,8 @@
 
   const BLOCK_COLORS = ['#FF6B8A','#FFB347','#7C5CFC','#4ECDC4','#FF85A1','#FFC75F','#845EC2','#00C9A7','#F9844A','#90BE6D'];
   const BLOCK_H = 35;
-  const GROUND_H = 20;
+  const BALL_SIZE = 50;
+  const GROUND_H = BALL_SIZE - 5;
   const PENDULUM_MAX_ANGLE = 0.4;
   const CABLE_EXTEND_SPEED = 1.2;
   const CABLE_START_LENGTH = 120;
@@ -1278,21 +1281,45 @@
     const landedW = stBlockWidth;
     const towerY = stGetTowerTopY();
 
-    // First block — sets ideal center
+    // First block — lands on ball, ideal center is ball center (screen center)
     if (stTowerBlocks.length === 0) {
       stActiveEl.style.bottom = GROUND_H + 'px';
       stActiveEl.style.left = landedX + 'px';
       stActiveEl.classList.remove('active');
 
-      stIdealCenterX = landedX + landedW / 2;
-      stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: GROUND_H });
+      // Ideal center is always the ball center (screen center)
+      const screenW = window.innerWidth;
+      stIdealCenterX = screenW / 2;
+
+      // First block offset from ball center adds instability
+      const blockCenterX = landedX + landedW / 2;
+      const offsetFromBall = blockCenterX - stIdealCenterX;
+      const normalizedOffset = Math.abs(offsetFromBall) / stOriginalWidth;
+      const isPerfect = normalizedOffset < PERFECT_THRESHOLD;
+
+      if (isPerfect) {
+        const snappedX = stIdealCenterX - landedW / 2;
+        stActiveEl.style.left = snappedX + 'px';
+        stTowerBlocks.push({ el: stActiveEl, x: snappedX, w: landedW, y: GROUND_H });
+        stPerfectStreak++;
+        stActiveEl.classList.add('perfect-flash');
+        playPerfectDing();
+        spawnParticles(stIdealCenterX, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
+      } else {
+        stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: GROUND_H });
+        stPerfectStreak = 0;
+        stInstability += normalizedOffset * 1.5;
+        stLeanDirection += (offsetFromBall / stOriginalWidth) * 1.5;
+        playThud();
+        spawnParticles(landedX + landedW / 2, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
+      }
+
       stBlockCount++;
       stackScoreEl.textContent = stBlockCount;
       stActiveEl = null;
       stDropping = false;
       stGameState = 'idle';
-      playThud();
-      spawnParticles(landedX + landedW / 2, window.innerHeight - GROUND_H - BLOCK_H, stackCameraEl);
+      stUpdateDangerVignette();
       stStartSway();
       return;
     }
