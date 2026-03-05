@@ -1135,15 +1135,17 @@
   const BLOCK_COLORS = ['#FF6B8A','#FFB347','#7C5CFC','#4ECDC4','#FF85A1','#FFC75F','#845EC2','#00C9A7','#F9844A','#90BE6D'];
   const BLOCK_H = 35;
   const GROUND_H = 20;
-  const SWING_AMPLITUDE_RATIO = 0.8;
-  const DESCENT_SPEED = 1.2;
+  const PENDULUM_MAX_ANGLE = 0.4;
+  const CABLE_EXTEND_SPEED = 1.2;
+  const CABLE_START_LENGTH = 20;
+  const CRANE_HOOK_Y = 50;
   const PERFECT_THRESHOLD = 0.08;
   const INSTABILITY_THRESHOLD = 6.0;
   const DANGER_ZONE = 4.0;
   const WOBBLE_SCALE = 0.3;
   const LEAN_SCALE = 1.5;
   const MAX_WOBBLE_ANGLE = 8;
-  const SWAY_SPEEDS = [1.5, 2.5, 3.5, 4.5];
+  const SWAY_SPEEDS = [1.0, 1.4, 1.8, 2.2];
 
   let stTowerBlocks = [];
   let stActiveEl = null;
@@ -1164,10 +1166,9 @@
   let stRestartTimer = null;
   let stGameState = 'idle';
   let stAnimFrame = null;
-  let stSwingCenterX = 0;
-  let stSwingAmplitude = 0;
-  let stDescendY = 0;
+  let stCableLength = 0;
   let stSwingAngle = 0;
+  let stPendulumAngle = 0;
 
   function stGetSwaySpeed() {
     if (stBlockCount < 5) return SWAY_SPEEDS[0];
@@ -1191,27 +1192,13 @@
   }
 
   function stUpdateCable() {
-    if (!stCableEl || !stActiveEl) return;
-    const screenW = window.innerWidth;
+    if (!stCableEl) return;
+    const craneX = window.innerWidth / 2;
 
-    // Crane hook position (center of crane emoji)
-    const craneX = screenW / 2;
-    const craneY = 50;
-
-    // Block top-center position
-    const blockX = stSwayX + stBlockWidth / 2;
-    const blockY = stDescendY;
-
-    // Calculate cable length and angle
-    const dx = blockX - craneX;
-    const dy = blockY - craneY;
-    const length = Math.sqrt(dx * dx + dy * dy);
-    const angle = Math.atan2(dx, dy) * (180 / Math.PI);
-
-    stCableEl.style.height = length + 'px';
+    stCableEl.style.height = stCableLength + 'px';
     stCableEl.style.left = craneX + 'px';
-    stCableEl.style.top = craneY + 'px';
-    stCableEl.style.transform = `rotate(${angle}deg)`;
+    stCableEl.style.top = CRANE_HOOK_Y + 'px';
+    stCableEl.style.transform = `rotate(${stPendulumAngle * (180 / Math.PI)}deg)`;
   }
 
   function stStartSway() {
@@ -1221,28 +1208,28 @@
     const screenH = window.innerHeight;
     stSwaySpeed = stGetSwaySpeed();
 
-    // Check if tower has filled the screen
     const towerTopFromBottom = stGetTowerTopY();
     if (towerTopFromBottom + BLOCK_H + 60 >= screenH) {
       stTriggerTowerComplete();
       return;
     }
 
-    // Swing config
-    stSwingCenterX = screenW / 2 - stBlockWidth / 2;
-    stSwingAmplitude = stBlockWidth * SWING_AMPLITUDE_RATIO;
+    // Pendulum config
+    stCableLength = CABLE_START_LENGTH;
     stSwingAngle = 0;
-    stDescendY = 70;  // start below crane
+    stPendulumAngle = 0;
+
+    // Initial position: straight down from crane
+    const craneX = screenW / 2;
+    const blockTopY = CRANE_HOOK_Y + stCableLength;
+    stSwayX = craneX - stBlockWidth / 2;
 
     const el = document.createElement('div');
     el.className = 'stack-block active';
     el.style.width = stBlockWidth + 'px';
     el.style.height = BLOCK_H + 'px';
     el.style.backgroundColor = BLOCK_COLORS[stBlockCount % BLOCK_COLORS.length];
-
-    // Position from top, converted to bottom
-    el.style.bottom = (screenH - stDescendY - BLOCK_H) + 'px';
-    stSwayX = stSwingCenterX;
+    el.style.bottom = (screenH - blockTopY - BLOCK_H) + 'px';
     el.style.left = stSwayX + 'px';
 
     stackCameraEl.appendChild(el);
@@ -1255,10 +1242,7 @@
     stUpdateCable();
 
     stGameState = 'swaying';
-
-    if (stBlockCount > 0) {
-      stackHint.style.opacity = '0';
-    }
+    if (stBlockCount > 0) stackHint.style.opacity = '0';
   }
 
   function stDropBlock() {
@@ -1269,9 +1253,9 @@
     stDropping = true;
     stDropVy = 0;
 
-    // Drop from current descent position
-    const screenH = window.innerHeight;
-    stDropY = screenH - stDescendY - BLOCK_H;
+    // Drop from current pendulum position
+    const blockTopY = CRANE_HOOK_Y + stCableLength * Math.cos(stPendulumAngle);
+    stDropY = window.innerHeight - blockTopY - BLOCK_H;
 
     // Remove cable
     if (stCableEl) { stCableEl.remove(); stCableEl = null; }
@@ -1493,16 +1477,24 @@
 
     // Pendulum swing + descent
     if (stGameState === 'swaying' && stActiveEl) {
+      const screenW = window.innerWidth;
       const screenH = window.innerHeight;
+      const craneX = screenW / 2;
 
-      // Pendulum swing
-      stSwingAngle += stSwaySpeed * 0.04;
-      stSwayX = stSwingCenterX + Math.sin(stSwingAngle) * stSwingAmplitude;
+      // Pendulum swing — sine-driven angle
+      stSwingAngle += stSwaySpeed * 0.03;
+      stPendulumAngle = PENDULUM_MAX_ANGLE * Math.sin(stSwingAngle);
+
+      // Cable extends = block descends
+      stCableLength += CABLE_EXTEND_SPEED;
+
+      // Block position DERIVED from pendulum
+      const blockCenterX = craneX + stCableLength * Math.sin(stPendulumAngle);
+      const blockTopY = CRANE_HOOK_Y + stCableLength * Math.cos(stPendulumAngle);
+      stSwayX = blockCenterX - stBlockWidth / 2;
+
       stActiveEl.style.left = stSwayX + 'px';
-
-      // Slow descent
-      stDescendY += DESCENT_SPEED;
-      const bottomVal = screenH - stDescendY - BLOCK_H;
+      const bottomVal = screenH - blockTopY - BLOCK_H;
       stActiveEl.style.bottom = bottomVal + 'px';
 
       // Update cable
