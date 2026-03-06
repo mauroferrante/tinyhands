@@ -68,7 +68,7 @@
 
 /* ===== Emoji Display ===== */
 .spell-emoji {
-  font-size: clamp(100px, 30vw, 220px);
+  font-size: clamp(80px, 22vw, 160px);
   line-height: 1;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }
