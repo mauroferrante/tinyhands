@@ -72,6 +72,14 @@
 </head>
 <body>
 
+<!-- ===== Post-Game Share Banner (top, pushes content down) ===== -->
+<div class="share-banner" id="shareBanner" role="complementary" aria-label="Share with a fellow parent">
+  <p class="share-banner-text">Did that buy you a few minutes? 😌 Share the secret with another WFH parent.</p>
+  <button class="share-banner-btn" id="shareBannerBtn">Send to a fellow WFH parent</button>
+  <button class="share-banner-close" id="shareBannerClose" aria-label="Dismiss">✕</button>
+  <span class="share-banner-copied" id="shareBannerCopied">Copied! Paste it to a friend.</span>
+</div>
+
 <!-- ===== Landing Screen ===== -->
 <main id="landing">
   <header>
@@ -193,13 +201,6 @@
 </div>
 
 <!-- ===== Post-Game Share Banner ===== -->
-<div class="share-banner" id="shareBanner" role="complementary" aria-label="Share with a fellow parent">
-  <p class="share-banner-text">Did that buy you a few minutes? 😌 Share the secret with another WFH parent.</p>
-  <button class="share-banner-btn" id="shareBannerBtn">Send to a fellow WFH parent</button>
-  <button class="share-banner-close" id="shareBannerClose" aria-label="Dismiss">✕</button>
-  <span class="share-banner-copied" id="shareBannerCopied">Copied! Paste it to a friend.</span>
-</div>
-
 <script type="module" src="js/game-manager.js"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script defer src="/_vercel/speed-insights/script.js"></script>
