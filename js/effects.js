@@ -24,12 +24,15 @@ export function spawnParticles(x, y, container) {
   }
 }
 
+const BG_EMOJIS = ['😀','🍕','🍩','🎈','🐸','🦁','🦄','🐝','🎲','🐱','🚀'];
+
 export function createBgEmojis(landingEl) {
-  const count = 12;
-  for (let i = 0; i < count; i++) {
+  // Shuffle and use each emoji once — no duplicates
+  const shuffled = [...BG_EMOJIS].sort(() => Math.random() - 0.5);
+  for (let i = 0; i < shuffled.length; i++) {
     const el = document.createElement('span');
     el.className = 'bg-emoji';
-    el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    el.textContent = shuffled[i];
     el.style.left = Math.random() * 90 + 5 + '%';
     el.style.top  = Math.random() * 90 + 5 + '%';
     el.style.animationDuration = (4 + Math.random() * 4) + 's';
