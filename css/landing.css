@@ -291,6 +291,7 @@
   gap: 0.6rem;
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+  pointer-events: none;
 }
 .game-card.flipped .card-flipper {
   transform: rotateY(180deg);
@@ -304,6 +305,7 @@
   align-items: center;
   gap: 0.6rem;
   width: 100%;
+  pointer-events: auto;
 }
 
 .card-back {
@@ -320,6 +322,7 @@
   padding: 1.8rem 1.4rem 1.4rem;
   border-radius: 24px;
   background: var(--color-surface);
+  pointer-events: auto;
 }
 
 /* ===== Card Info Button ===== */
@@ -441,11 +444,6 @@ body.game-active .bg-emoji {
   box-shadow: 0 12px 40px rgba(124, 107, 191, 0.12);
 }
 
-.game-card:active {
-  transform: translateY(2px) scale(0.97);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition-duration: 0.1s;
-}
 
 .game-card .card-icon {
   font-size: 4rem;
