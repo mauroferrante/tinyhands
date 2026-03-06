@@ -11,6 +11,13 @@
   cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><text y='32' font-size='32'>🖐️</text></svg>") 20 20, auto;
 }
 
+#landing a,
+#landing button,
+#landing .game-card,
+#landing [role="button"] {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><text y='32' font-size='32'>☝️</text></svg>") 16 4, pointer;
+}
+
 #landing header {
   display: flex;
   flex-direction: column;
@@ -103,7 +110,6 @@
   font-size: 0.9rem;
   color: #FF6B8A;
   font-weight: 600;
-  cursor: pointer;
   text-decoration: none;
   transition: color 0.2s;
   z-index: 10;
