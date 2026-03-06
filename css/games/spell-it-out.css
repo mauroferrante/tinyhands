@@ -62,8 +62,8 @@
   align-items: center;
   gap: 2.5rem;
   z-index: 110;
-  width: 90%;
-  max-width: 600px;
+  width: 95%;
+  max-width: 900px;
 }
 
 /* ===== Emoji Display ===== */
@@ -88,7 +88,7 @@
   display: flex;
   gap: clamp(6px, 1.5vw, 10px);
   justify-content: center;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
 .spell-tiles-exit {
@@ -113,7 +113,10 @@
 
 .spell-tile {
   width: clamp(42px, 11vw, 72px);
+  min-width: 0;
   height: clamp(42px, 11vw, 72px);
+  flex-shrink: 1;
+  aspect-ratio: 1;
   border-radius: clamp(8px, 2vw, 14px);
   display: flex;
   align-items: center;
