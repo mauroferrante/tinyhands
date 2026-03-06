@@ -168,11 +168,6 @@ document.querySelectorAll('.game-card').forEach(card => {
     if (e.target.closest('.play-btn')) return; // let button handle its own click
     launchGame(btn.dataset.game, btn);
   });
-  card.addEventListener('touchend', (e) => {
-    if (e.target.closest('.play-btn')) return;
-    e.preventDefault();
-    launchGame(btn.dataset.game, btn);
-  });
 });
 
 // Play buttons still handle their own clicks
