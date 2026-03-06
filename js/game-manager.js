@@ -3,7 +3,7 @@
  * ========================================================= */
 
 import { initAudio, playFanfare } from './audio.js';
-import { EMOJIS } from './effects.js';
+import { EMOJIS, createBgEmojis } from './effects.js';
 import { splatKeys } from './games/splat-keys.js';
 import { stackSmash } from './games/stack-smash.js';
 import { spellItOut } from './games/spell-it-out.js';
@@ -22,6 +22,9 @@ const postgameNudgeClose  = document.getElementById('postgameNudgeClose');
 const postgameNudgeShare  = document.getElementById('postgameNudgeShare');
 const postgameNudgeTip    = document.getElementById('postgameNudgeTip');
 const postgameNudgeCopied = document.getElementById('postgameNudgeCopied');
+
+// ---- Floating background emojis ----
+createBgEmojis(landing);
 
 // ---- Shared state ----
 let currentGame     = null;

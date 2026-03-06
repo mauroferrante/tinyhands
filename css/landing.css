@@ -21,6 +21,7 @@
   padding: 2rem 1.5rem 0;
   max-width: 960px;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 #landing header {
@@ -300,6 +301,24 @@
   .game-card .card-icon {
     animation: none;
   }
+  .bg-emoji {
+    animation: none !important;
+    opacity: 0.08 !important;
+  }
+}
+
+/* ===== Floating Background Emojis ===== */
+.bg-emoji {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.12;
+  animation: bgEmojiFloat 6s ease-in-out infinite;
+}
+
+@keyframes bgEmojiFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-15px) rotate(8deg); }
 }
 
 .game-card:hover {
