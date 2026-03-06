@@ -297,7 +297,6 @@
 }
 
 .card-front {
-  position: relative;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   display: flex;
@@ -338,8 +337,8 @@
   line-height: 1;
   cursor: pointer;
   z-index: 50;
-  isolation: isolate;
   pointer-events: auto;
+  transform: translateZ(0);
   transition: color 0.2s ease, background 0.2s ease;
   padding: 0;
   display: flex;
