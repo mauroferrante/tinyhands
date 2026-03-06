@@ -23,11 +23,18 @@ let emojiEls = [];
 let originalEmojis = [];
 let currentReaction = 'idle';
 let reactionTimer = null;
+let resizeObserver = null;
+let parentRef = null;
+let buildTimer = null;
 
-// ---- Create & Destroy ----
+// ---- Build (internal) ----
 
-export function createAudience(parent) {
-  if (containerEl) destroyAudience();
+function buildAudienceNow(parent) {
+  // Remove old container if rebuilding
+  if (containerEl) { containerEl.remove(); }
+  emojiEls = [];
+  originalEmojis = [];
+  currentReaction = 'idle';
 
   containerEl = document.createElement('div');
   containerEl.className = 'stack-audience audience-idle';
@@ -98,12 +105,33 @@ export function createAudience(parent) {
   parent.appendChild(containerEl);
 }
 
+// ---- Create & Destroy ----
+
+export function createAudience(parent) {
+  if (containerEl) destroyAudience();
+  parentRef = parent;
+
+  buildAudienceNow(parent);
+
+  // Rebuild when container resizes (e.g. fullscreen transition)
+  resizeObserver = new ResizeObserver(() => {
+    clearTimeout(buildTimer);
+    buildTimer = setTimeout(() => {
+      if (parentRef) buildAudienceNow(parentRef);
+    }, 50);
+  });
+  resizeObserver.observe(parent);
+}
+
 export function destroyAudience() {
+  if (resizeObserver) { resizeObserver.disconnect(); resizeObserver = null; }
+  if (buildTimer) { clearTimeout(buildTimer); buildTimer = null; }
   if (reactionTimer) { clearTimeout(reactionTimer); reactionTimer = null; }
   if (containerEl) { containerEl.remove(); containerEl = null; }
   emojiEls = [];
   originalEmojis = [];
   currentReaction = 'idle';
+  parentRef = null;
 }
 
 // ---- Reactions ----
