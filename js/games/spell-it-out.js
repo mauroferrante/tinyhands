@@ -6,6 +6,21 @@
 import { playCorrectDing, playWrongBoop, playLifeLost, playSpellWhoosh,
          playWinFanfare, playStreakChime, playStreakFanfare } from '../audio.js';
 import { spawnParticles } from '../effects.js';
+import { shareOrCopy } from '../share.js';
+
+function wireEndcardShare(container) {
+  const btn = container.querySelector('[data-share]');
+  if (!btn) return;
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const result = await shareOrCopy();
+    if (result.method === 'copy' && result.success) {
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => { btn.textContent = '📤 Share with a parent'; }, 2500);
+    }
+  });
+  btn.addEventListener('touchend', (e) => e.stopPropagation());
+}
 
 // ---- Word Pool ----
 const WORD_POOL = [
@@ -395,9 +410,11 @@ function triggerGameOver() {
       ${isNewBest ? '<div class="spell-endcard-best">🏆 New Best!</div>' :
         bestScore > 0 ? `<div class="spell-endcard-best-small">Best: ${bestScore}</div>` : ''}
       <div class="spell-endcard-restart">Tap or press Space to play again</div>
+      <button class="endcard-share-btn" data-share>📤 Share with a parent</button>
     </div>
   `;
   spellCelebrateEl.classList.add('show');
+  wireEndcardShare(spellCelebrateEl);
 }
 
 function triggerWin() {
@@ -414,9 +431,11 @@ function triggerWin() {
       <div class="spell-endcard-score">Score: ${score} / ${WORD_POOL.length}</div>
       <div class="spell-endcard-best">Amazing! 🎉</div>
       <div class="spell-endcard-restart">Tap or press Space to play again</div>
+      <button class="endcard-share-btn" data-share>📤 Share with a parent</button>
     </div>
   `;
   spellCelebrateEl.classList.add('show');
+  wireEndcardShare(spellCelebrateEl);
 }
 
 // ---- Progressive Streak Celebrations ----

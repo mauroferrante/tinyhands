@@ -5,7 +5,22 @@ import {
   playCrowdCheer, playCrowdGasp, playCrowdRoar
 } from '../audio.js';
 import { spawnParticles } from '../effects.js';
+import { shareOrCopy } from '../share.js';
 import { createAudience, destroyAudience, audienceReact } from './stack-audience.js';
+
+function wireEndcardShare(container) {
+  const btn = container.querySelector('[data-share]');
+  if (!btn) return;
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const result = await shareOrCopy();
+    if (result.method === 'copy' && result.success) {
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => { btn.textContent = '📤 Share with a parent'; }, 2500);
+    }
+  });
+  btn.addEventListener('touchend', (e) => e.stopPropagation());
+}
 
 const stackGameEl    = document.getElementById('stackGame');
 const stackCameraEl  = document.getElementById('stackCamera');
@@ -412,8 +427,9 @@ function stTriggerCollapse() {
   stackTowerEl.style.transform = `rotate(${collapseDir * 25}deg)`;
 
   const bestText = stIsNewBest ? '<br>🏆 New best!' : '';
-  stackCelebrate.innerHTML = `${stBlockCount} blocks! 💥<span class="sub-text">Tap to play again!${bestText}</span>`;
+  stackCelebrate.innerHTML = `${stBlockCount} blocks! 💥<span class="sub-text">Tap to play again!${bestText}</span><button class="endcard-share-btn" data-share>📤 Share with a parent</button>`;
   stackCelebrate.classList.add('show');
+  wireEndcardShare(stackCelebrate);
 }
 
 function stTriggerTowerComplete() {
@@ -455,8 +471,9 @@ function stTriggerTowerComplete() {
   }
 
   const bestText = stIsNewBest ? '<br>🏆 New best!' : '';
-  stackCelebrate.innerHTML = `🏆 You Win! 🏆<span class="sub-text">${stBlockCount} blocks stacked!${bestText}<br>Tap to play again</span>`;
+  stackCelebrate.innerHTML = `🏆 You Win! 🏆<span class="sub-text">${stBlockCount} blocks stacked!${bestText}<br>Tap to play again</span><button class="endcard-share-btn" data-share>📤 Share with a parent</button>`;
   stackCelebrate.classList.add('show');
+  wireEndcardShare(stackCelebrate);
 }
 
 function stResetStack() {

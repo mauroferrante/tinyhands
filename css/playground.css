@@ -101,6 +101,33 @@
   opacity: 0 !important;
 }
 
+/* ===== End Card Share Button ===== */
+.endcard-share-btn {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #FF6B8A;
+  background: rgba(255, 107, 138, 0.12);
+  border: none;
+  border-radius: 30px;
+  padding: 8px 20px;
+  cursor: pointer;
+  margin-top: 0.8rem;
+  transition: background 0.2s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 500;
+  pointer-events: auto;
+}
+
+.endcard-share-btn:hover {
+  background: rgba(255, 107, 138, 0.22);
+  transform: scale(1.05);
+}
+
+.endcard-share-btn:active {
+  transform: scale(0.97);
+}
+
 /* ===== Confetti Particle ===== */
 .particle {
   position: absolute;
