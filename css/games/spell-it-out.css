@@ -7,11 +7,11 @@
   background: linear-gradient(135deg, #FFF8E7 0%, #F0E6FF 50%, #E0F7FA 100%);
 }
 
-/* ===== Lives (top-left) ===== */
+/* ===== Lives (top-right, above score) ===== */
 .spell-lives {
   position: fixed;
-  top: 16px;
-  left: 20px;
+  top: 14px;
+  right: 20px;
   font-size: clamp(1.2rem, 3vw, 1.6rem);
   z-index: 200;
   pointer-events: none;
@@ -39,10 +39,10 @@
   100% { transform: scale(0); opacity: 0; }
 }
 
-/* ===== Score Bar (top-right) ===== */
+/* ===== Score Bar (top-right, below lives) ===== */
 .spell-score-bar {
   position: fixed;
-  top: 16px;
+  top: 44px;
   right: 20px;
   font-family: 'Fredoka One', cursive;
   font-size: clamp(0.9rem, 2.5vw, 1.2rem);
