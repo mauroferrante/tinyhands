@@ -46,6 +46,7 @@ const WOBBLE_SCALE = 2.0;
 const LEAN_SCALE = 5.0;
 const MAX_WOBBLE_ANGLE = 20;
 const FIRST_BLOCK_MAX_OFFSET = 0.40; // max offset ratio on ball before game over
+const MIN_OVERLAP_RATIO = 0.35;      // block must overlap at least 35% of its width
 const SWAY_SPEEDS = [0.6, 0.9, 1.2, 1.5, 1.8, 2.1];
 
 // ---- High Score ----
@@ -350,12 +351,31 @@ function stOnLanded() {
   const overlapLeft = Math.max(landedX, below.x);
   const overlapRight = Math.min(landedX + landedW, below.x + below.w);
   const overlap = overlapRight - overlapLeft;
+  const minRequired = Math.min(landedW, below.w) * MIN_OVERLAP_RATIO;
 
-  if (overlap <= 0) {
-    stActiveEl.remove();
-    stActiveEl = null;
-    stDropping = false;
-    stTriggerCollapse();
+  if (overlap < minRequired) {
+    // Not enough overlap — block slides off
+    if (overlap > 0) {
+      // Show it briefly before collapsing
+      stActiveEl.style.left = landedX + 'px';
+      stActiveEl.style.bottom = towerY + 'px';
+      stActiveEl.classList.remove('active');
+      stackTowerEl.appendChild(stActiveEl);
+      stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: towerY });
+      stBlockCount++;
+      stackScoreEl.textContent = stBlockCount;
+      stActiveEl = null;
+      stDropping = false;
+      playThud();
+      audienceReact('gasp');
+      playCrowdGasp();
+      setTimeout(() => stTriggerCollapse(), 300);
+    } else {
+      stActiveEl.remove();
+      stActiveEl = null;
+      stDropping = false;
+      stTriggerCollapse();
+    }
     return;
   }
 
