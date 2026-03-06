@@ -159,7 +159,22 @@ function onFullscreenChange() {
 document.addEventListener('fullscreenchange', onFullscreenChange);
 document.addEventListener('webkitfullscreenchange', onFullscreenChange);
 
-// ===== Game card play buttons =====
+// ===== Game card click (entire card is clickable) =====
+document.querySelectorAll('.game-card').forEach(card => {
+  const btn = card.querySelector('.play-btn[data-game]');
+  if (!btn) return;
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.play-btn')) return; // let button handle its own click
+    launchGame(btn.dataset.game, btn);
+  });
+  card.addEventListener('touchend', (e) => {
+    if (e.target.closest('.play-btn')) return;
+    e.preventDefault();
+    launchGame(btn.dataset.game, btn);
+  });
+});
+
+// Play buttons still handle their own clicks
 document.querySelectorAll('.play-btn[data-game]').forEach(btn => {
   btn.addEventListener('click', () => launchGame(btn.dataset.game, btn));
   btn.addEventListener('touchend', (e) => {
