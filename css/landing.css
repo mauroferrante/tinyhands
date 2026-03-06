@@ -396,8 +396,8 @@ body.game-active .bg-emoji {
 }
 
 .play-btn.accent-salmon { background: #F4845F; }
-.play-btn.accent-amber  { background: #E8A87C; }
-.play-btn.accent-purple { background: #7C6BBF; }
+.play-btn.accent-amber  { background: #F4845F; }
+.play-btn.accent-purple { background: #F4845F; }
 
 .play-btn:hover {
   transform: scale(1.08) translateY(-2px);
