@@ -29,12 +29,18 @@ const BG_EMOJIS = ['😀','🍕','🍩','🎈','🐸','🦁','🦄','🐝','🎲
 export function createBgEmojis(landingEl) {
   // Shuffle and use each emoji once — no duplicates
   const shuffled = [...BG_EMOJIS].sort(() => Math.random() - 0.5);
+
+  // Place emojis only in the margins (left/right edges) to avoid text/cards
+  // Left edge: 0-8%, Right edge: 92-100%
   for (let i = 0; i < shuffled.length; i++) {
     const el = document.createElement('span');
     el.className = 'bg-emoji';
     el.textContent = shuffled[i];
-    el.style.left = Math.random() * 90 + 5 + '%';
-    el.style.top  = Math.random() * 90 + 5 + '%';
+    const onLeft = Math.random() < 0.5;
+    el.style.left = onLeft
+      ? (Math.random() * 8) + '%'
+      : (92 + Math.random() * 8) + '%';
+    el.style.top  = (5 + Math.random() * 85) + '%';
     el.style.animationDuration = (4 + Math.random() * 4) + 's';
     el.style.animationDelay    = (Math.random() * 4) + 's';
     el.style.fontSize = (1.8 + Math.random() * 1.5) + 'rem';
