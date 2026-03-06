@@ -15,15 +15,15 @@
 <!-- Open Graph (Facebook, LinkedIn, iMessage, etc.) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tinyhandsplay.com/">
-<meta property="og:title" content="Tiny Hands Play — Free Toddler & Kids Browser Games">
-<meta property="og:description" content="Free browser games for toddlers and kids. No installs, no accounts, no ads. Just open and play.">
+<meta property="og:title" content="Tiny Hands Play — Bookmark This, Open in Case of Tiny Emergency">
+<meta property="og:description" content="Free browser games for toddlers. No installs, no ads. Bookmark this and open it next time tiny hands invade the home office.">
 <meta property="og:image" content="https://tinyhandsplay.com/og-image.jpg">
 <meta property="og:site_name" content="Tiny Hands Play">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Tiny Hands Play — Free Toddler & Kids Browser Games">
-<meta name="twitter:description" content="Free browser games for toddlers and kids. No installs, no ads. Just open and play.">
+<meta name="twitter:title" content="Tiny Hands Play — Bookmark This, Open in Case of Tiny Emergency">
+<meta name="twitter:description" content="Free browser games for toddlers. No installs, no ads. Bookmark this and open it next time tiny hands invade the home office.">
 <meta name="twitter:image" content="https://tinyhandsplay.com/og-image.jpg">
 
 <!-- Favicon -->
@@ -116,6 +116,13 @@
       <a href="https://paypal.me/mauroferrante/5" target="_blank" rel="noopener" class="tip-jar">☕ Buy me a coffee?</a>
       <a href="https://paypal.me/mauroferrante/5" target="_blank" rel="noopener"><img src="qrcode.png" alt="PayPal QR Code" class="qr-code" width="140" height="140"></a>
     </aside>
+    <div class="share-link-section">
+      <button class="share-link-btn" id="footerShareBtn">
+        <span class="share-link-icon" aria-hidden="true">💌</span>
+        Send to a fellow WFH parent
+      </button>
+      <span class="share-link-copied" id="footerShareCopied">Copied! Paste it to a friend.</span>
+    </div>
     <p class="footer-signature">Made with ❤️ by a work‑from‑home dad.</p>
   </footer>
 </main>
@@ -187,6 +194,14 @@
 
   <button id="exitGame" aria-label="Exit game">✕</button>
   <div id="escHint">Press ESC to exit</div>
+</div>
+
+<!-- ===== Post-Game Share Banner ===== -->
+<div class="share-banner" id="shareBanner" role="complementary" aria-label="Share with a fellow parent">
+  <p class="share-banner-text">Did that buy you a few minutes? 😌 Share the secret with another WFH parent.</p>
+  <button class="share-banner-btn" id="shareBannerBtn">Send to a fellow WFH parent</button>
+  <button class="share-banner-close" id="shareBannerClose" aria-label="Dismiss">✕</button>
+  <span class="share-banner-copied" id="shareBannerCopied">Copied! Paste it to a friend.</span>
 </div>
 
 <script type="module" src="js/game-manager.js"></script>

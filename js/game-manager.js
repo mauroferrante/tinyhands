@@ -7,6 +7,7 @@ import { EMOJIS, createBgEmojis } from './effects.js';
 import { splatKeys } from './games/splat-keys.js';
 import { stackSmash } from './games/stack-smash.js';
 import { spellItOut } from './games/spell-it-out.js';
+import { shareOrCopy } from './share.js';
 
 // ---- Element references ----
 const landing    = document.getElementById('landing');
@@ -15,11 +16,20 @@ const escHint    = document.getElementById('escHint');
 const exitBtn    = document.getElementById('exitGame');
 const overlay    = document.getElementById('transition-overlay');
 
+// ---- Share banner references ----
+const shareBanner       = document.getElementById('shareBanner');
+const shareBannerBtn    = document.getElementById('shareBannerBtn');
+const shareBannerClose  = document.getElementById('shareBannerClose');
+const shareBannerCopied = document.getElementById('shareBannerCopied');
+const footerShareBtn    = document.getElementById('footerShareBtn');
+const footerShareCopied = document.getElementById('footerShareCopied');
+
 // ---- Shared state ----
-let currentGame  = null;
-let pendingGame  = null;
-let cursorTimer  = null;
-let cursorActive = false;
+let currentGame     = null;
+let pendingGame     = null;
+let cursorTimer     = null;
+let cursorActive    = false;
+let shareBannerShown = false;
 
 // ---- Game Registry ----
 const GAMES = {
@@ -128,6 +138,12 @@ function stopGame() {
   document.body.classList.remove('game-active');
 
   playground.querySelectorAll('.particle').forEach(p => p.remove());
+
+  // Show share banner once per session after first game exit
+  if (!shareBannerShown) {
+    shareBannerShown = true;
+    setTimeout(() => { shareBanner.classList.add('show'); }, 800);
+  }
 }
 
 // ===== Fullscreen change listener =====
@@ -195,6 +211,22 @@ storyBackdrop.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && storyBackdrop.classList.contains('show')) closeStory();
 });
+
+// ===== Share Buttons =====
+
+async function handleShare(copiedEl) {
+  const result = await shareOrCopy();
+  if (result.method === 'copy' && result.success) {
+    copiedEl.classList.add('visible');
+    setTimeout(() => copiedEl.classList.remove('visible'), 2500);
+  }
+}
+
+shareBannerBtn.addEventListener('click', () => handleShare(shareBannerCopied));
+shareBannerClose.addEventListener('click', () => {
+  shareBanner.classList.remove('show');
+});
+footerShareBtn.addEventListener('click', () => handleShare(footerShareCopied));
 
 // ===== Global Event Listeners =====
 
