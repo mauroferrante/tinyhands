@@ -263,7 +263,10 @@ document.addEventListener('mousedown', (e) => {
 // Touch
 document.addEventListener('touchstart', (e) => {
   if (!currentGame) return;
-  e.preventDefault();
+  // Don't preventDefault on spell keyboard — it needs click events to fire
+  if (!e.target.closest('#spellKeyboard')) {
+    e.preventDefault();
+  }
   currentGame.onTouch(e);
 }, { passive: false });
 
