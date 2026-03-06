@@ -41,39 +41,44 @@
   letter-spacing: 0.5px;
 }
 
-#landing .tip-jar {
+.footer-tip-copy {
   font-family: 'Quicksand', sans-serif;
   font-size: 0.9rem;
-  color: #7C5CFC;
-  text-decoration: none;
-  font-weight: 600;
-  padding: 8px 20px;
-  border-radius: 30px;
-  background: rgba(124, 92, 252, 0.08);
-  transition: background 0.2s ease, transform 0.15s ease;
-  z-index: 10;
-  position: relative;
+  color: #999;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 0.6em;
 }
 
-#landing .tip-jar:hover {
-  background: rgba(124, 92, 252, 0.16);
-  transform: scale(1.05);
-}
-
-.footer-actions {
+.footer-tip-buttons {
   display: flex;
-  align-items: center;
-  gap: 0.8em;
+  gap: 0.6em;
   flex-wrap: wrap;
   justify-content: center;
   z-index: 10;
   position: relative;
 }
 
-.footer-dot {
-  color: #ccc;
-  font-size: 0.9rem;
-  user-select: none;
+.footer-tip-btn {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888;
+  text-decoration: none;
+  padding: 7px 16px;
+  border-radius: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.4);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, color 0.2s ease;
+  z-index: 10;
+  position: relative;
+}
+
+.footer-tip-btn:hover {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(124, 92, 252, 0.25);
+  color: #666;
+  transform: scale(1.04);
 }
 
 #landing .qr-code {
@@ -393,173 +398,135 @@
   100% { transform: translateY(0) rotate(0deg); }
 }
 
-/* ===== Persistent Share Link (Footer) ===== */
-.share-link-section {
-  position: relative;
-  display: flex;
+/* ===== Post-Game Nudge Banner ===== */
+.postgame-nudge {
+  display: none;
   flex-direction: column;
   align-items: center;
-  gap: 0.3em;
-  z-index: 10;
-}
-
-.share-link-btn {
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #FF6B8A;
-  background: rgba(255, 107, 138, 0.08);
-  border: none;
-  border-radius: 30px;
-  padding: 8px 20px;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.4em;
-}
-
-.share-link-btn:hover {
-  background: rgba(255, 107, 138, 0.16);
-  transform: scale(1.05);
-}
-
-.share-link-btn:active {
-  transform: scale(0.97);
-}
-
-.share-link-copied {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Quicksand', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #4ECDC4;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-.share-link-copied.visible {
-  opacity: 1;
-}
-
-/* ===== Post-Game Share Banner (top, pushes content down) ===== */
-.share-banner {
-  display: none;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1.2rem 2rem 1rem;
   background: rgba(255, 248, 231, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(124, 92, 252, 0.12);
-  padding: 0.8rem 1.5rem;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   position: relative;
   z-index: 50;
-  animation: bannerSlideDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
-.share-banner.show {
+.postgame-nudge.show {
   display: flex;
+  opacity: 1;
+  transform: translateY(0);
 }
 
-@keyframes bannerSlideDown {
-  from { opacity: 0; transform: translateY(-100%); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-body.game-active .share-banner {
+body.game-active .postgame-nudge {
   display: none !important;
 }
 
-.share-banner-text {
-  font-family: 'Quicksand', sans-serif;
-  font-size: 0.9rem;
-  color: #666;
-  font-weight: 500;
-  flex-shrink: 1;
-}
-
-.share-banner-btn {
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 700;
-  font-size: 0.85rem;
-  background: linear-gradient(135deg, #FF6B8A, #7C5CFC);
-  color: #fff;
-  border: none;
-  border-radius: 24px;
-  padding: 0.5em 1.2em;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 10px rgba(124, 92, 252, 0.2);
-}
-
-.share-banner-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(124, 92, 252, 0.35);
-}
-
-.share-banner-btn:active {
-  transform: scale(0.97);
-}
-
-.share-banner-close {
+.postgame-nudge-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
   background: none;
   border: none;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: #bbb;
   cursor: pointer;
   padding: 4px 8px;
   line-height: 1;
-  flex-shrink: 0;
   transition: color 0.2s;
 }
 
-.share-banner-close:hover {
+.postgame-nudge-close:hover {
   color: #666;
 }
 
-.share-banner-copied {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
+.postgame-nudge-text {
   font-family: 'Quicksand', sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
+  color: #555;
   font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 20px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  white-space: nowrap;
+  margin: 0;
 }
 
-.share-banner-copied.visible {
+.postgame-nudge-sub {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.85rem;
+  color: #888;
+  font-weight: 500;
+  margin: 0.2em 0 0.8em;
+}
+
+.postgame-nudge-actions {
+  display: flex;
+  gap: 0.6em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.postgame-nudge-tip {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888;
+  text-decoration: none;
+  padding: 7px 16px;
+  border-radius: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, color 0.2s ease;
+}
+
+.postgame-nudge-tip:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(124, 92, 252, 0.25);
+  color: #666;
+  transform: scale(1.04);
+}
+
+.postgame-nudge-share {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888;
+  padding: 7px 16px;
+  border-radius: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, color 0.2s ease;
+}
+
+.postgame-nudge-share:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 107, 138, 0.25);
+  color: #666;
+  transform: scale(1.04);
+}
+
+.postgame-nudge-copied {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4ECDC4;
+  margin-top: 0.4em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.postgame-nudge-copied.visible {
   opacity: 1;
 }
 
 @media (max-width: 540px) {
-  .footer-dot { display: none; }
-  .footer-actions { gap: 0.5em; }
-  .share-banner {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.6rem;
-    padding: 1rem;
-  }
-  .share-banner-close {
-    position: absolute;
-    top: 6px;
-    right: 10px;
+  .postgame-nudge {
+    max-width: 100%;
+    border-radius: 0;
+    padding: 1rem 1.2rem 0.8rem;
   }
 }

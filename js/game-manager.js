@@ -16,20 +16,18 @@ const escHint    = document.getElementById('escHint');
 const exitBtn    = document.getElementById('exitGame');
 const overlay    = document.getElementById('transition-overlay');
 
-// ---- Share banner references ----
-const shareBanner       = document.getElementById('shareBanner');
-const shareBannerBtn    = document.getElementById('shareBannerBtn');
-const shareBannerClose  = document.getElementById('shareBannerClose');
-const shareBannerCopied = document.getElementById('shareBannerCopied');
-const footerShareBtn    = document.getElementById('footerShareBtn');
-const footerShareCopied = document.getElementById('footerShareCopied');
+// ---- Post-game nudge references ----
+const postgameNudge       = document.getElementById('postgameNudge');
+const postgameNudgeClose  = document.getElementById('postgameNudgeClose');
+const postgameNudgeShare  = document.getElementById('postgameNudgeShare');
+const postgameNudgeTip    = document.getElementById('postgameNudgeTip');
+const postgameNudgeCopied = document.getElementById('postgameNudgeCopied');
 
 // ---- Shared state ----
 let currentGame     = null;
 let pendingGame     = null;
 let cursorTimer     = null;
 let cursorActive    = false;
-let shareBannerShown = false;
 
 // ---- Game Registry ----
 const GAMES = {
@@ -139,10 +137,13 @@ function stopGame() {
 
   playground.querySelectorAll('.particle').forEach(p => p.remove());
 
-  // Show share banner once per session after first game exit
-  if (!shareBannerShown) {
-    shareBannerShown = true;
-    setTimeout(() => { shareBanner.classList.add('show'); }, 800);
+  // Show post-game nudge once per session after first game exit
+  if (!sessionStorage.getItem('tipNudgeShown')) {
+    sessionStorage.setItem('tipNudgeShown', 'true');
+    setTimeout(() => {
+      postgameNudge.style.display = 'flex';
+      requestAnimationFrame(() => postgameNudge.classList.add('show'));
+    }, 1000);
   }
 }
 
@@ -227,21 +228,26 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && storyBackdrop.classList.contains('show')) closeStory();
 });
 
-// ===== Share Buttons =====
+// ===== Post-Game Nudge =====
 
-async function handleShare(copiedEl) {
-  const result = await shareOrCopy();
-  if (result.method === 'copy' && result.success) {
-    copiedEl.classList.add('visible');
-    setTimeout(() => copiedEl.classList.remove('visible'), 2500);
-  }
+function dismissNudge() {
+  postgameNudge.classList.remove('show');
+  setTimeout(() => { postgameNudge.style.display = 'none'; }, 300);
 }
 
-shareBannerBtn.addEventListener('click', () => handleShare(shareBannerCopied));
-shareBannerClose.addEventListener('click', () => {
-  shareBanner.classList.remove('show');
+postgameNudgeClose.addEventListener('click', dismissNudge);
+
+postgameNudgeTip.addEventListener('click', () => {
+  sessionStorage.setItem('tipNudgeShown', 'true');
 });
-footerShareBtn.addEventListener('click', () => handleShare(footerShareCopied));
+
+postgameNudgeShare.addEventListener('click', async () => {
+  const result = await shareOrCopy();
+  if (result.method === 'copy' && result.success) {
+    postgameNudgeCopied.classList.add('visible');
+    setTimeout(() => postgameNudgeCopied.classList.remove('visible'), 2500);
+  }
+});
 
 // ===== Global Event Listeners =====
 
