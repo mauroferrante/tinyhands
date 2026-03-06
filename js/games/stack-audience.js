@@ -58,7 +58,7 @@ function buildAudienceNow(parent) {
 
   for (let r = 0; r < numRows; r++) {
     const radius = MIN_RADIUS + r * RADIUS_STEP;
-    const emojisInRow = Math.floor(6 + r * 0.8);
+    const emojisInRow = Math.floor(3 + r * 0.4);
     const t = r / (numRows - 1); // 0 = front, 1 = back
 
     const fontSize = 1.6 - t * 1.05; // 1.6rem → 0.55rem
