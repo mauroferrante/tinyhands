@@ -26,8 +26,6 @@ const postgameNudgeCopied = document.getElementById('postgameNudgeCopied');
 // ---- Shared state ----
 let currentGame     = null;
 let pendingGame     = null;
-let cursorTimer     = null;
-let cursorActive    = false;
 
 // ---- Game Registry ----
 const GAMES = {
@@ -122,8 +120,6 @@ function startGame(game) {
 
 function stopGame() {
   if (!currentGame) return;
-  cursorActive = false;
-  playground.classList.remove('show-cursor');
 
   currentGame.stop();
   currentGame = null;
@@ -267,19 +263,7 @@ document.addEventListener('touchstart', (e) => {
   currentGame.onTouch(e);
 }, { passive: false });
 
-// Cursor visibility
-document.addEventListener('mousemove', (e) => {
-  if (!currentGame) return;
-  if (!cursorActive) {
-    cursorActive = true;
-    return;
-  }
-  playground.classList.add('show-cursor');
-  clearTimeout(cursorTimer);
-  cursorTimer = setTimeout(() => {
-    playground.classList.remove('show-cursor');
-  }, 2000);
-});
+// Cursor stays hidden in all games (#playground has cursor: none)
 
 // Prevent context menu
 document.addEventListener('contextmenu', (e) => {

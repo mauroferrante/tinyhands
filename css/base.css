@@ -34,6 +34,24 @@ body.game-active {
 
 body {
   font-family: 'Nunito', sans-serif;
-  background: radial-gradient(ellipse at 30% 20%, #F5F0FF 0%, #EFF8F8 50%, #F3EEFA 100%);
+  background: linear-gradient(135deg, #F0EBFF, #E8F4F8, #FFF0EB, #F0EBFF, #E8F8F0, #F5EEFF);
+  background-size: 400% 400%;
+  animation: gradientDrift 20s ease infinite;
   color: var(--color-text);
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>🖐️</text></svg>") 16 16, auto;
+}
+
+@keyframes gradientDrift {
+  0%   { background-position: 0% 50%; }
+  25%  { background-position: 100% 0%; }
+  50%  { background-position: 100% 100%; }
+  75%  { background-position: 0% 100%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+    background: #F0EBFF;
+  }
 }
