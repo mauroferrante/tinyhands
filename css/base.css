@@ -10,7 +10,7 @@
   --color-primary: #F4845F;
   --color-primary-light: #FFF0EB;
   --color-primary-dark: #D96B47;
-  --color-background: #FFFAF7;
+  --color-background: #F5F0FF;
   --color-surface: #FFFFFF;
   --color-text: #2D2D2D;
   --color-text-muted: #8B8580;
@@ -34,6 +34,6 @@ body.game-active {
 
 body {
   font-family: 'Nunito', sans-serif;
-  background: var(--color-background);
+  background: radial-gradient(ellipse at 30% 20%, #F5F0FF 0%, #EFF6FB 50%, #F3EEFA 100%);
   color: var(--color-text);
 }

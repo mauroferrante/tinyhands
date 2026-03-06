@@ -4,6 +4,7 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  background: linear-gradient(135deg, #FFF8E7 0%, #F0E6FF 50%, #E0F7FA 100%);
 }
 
 .stack-camera {

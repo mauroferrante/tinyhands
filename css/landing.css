@@ -279,8 +279,19 @@
   padding: 3px 12px;
   border-radius: 20px;
   letter-spacing: 0.3px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+}
+
+.game-card:nth-child(1) .age-badge {
+  background: rgba(244, 132, 95, 0.12);
+  color: #F4845F;
+}
+.game-card:nth-child(2) .age-badge {
+  background: rgba(232, 168, 124, 0.15);
+  color: #D4956B;
+}
+.game-card:nth-child(3) .age-badge {
+  background: rgba(139, 124, 200, 0.12);
+  color: #8B7CC8;
 }
 
 .game-card .card-desc {
@@ -310,7 +321,7 @@
 
 .play-btn.accent-salmon { background: #F4845F; }
 .play-btn.accent-amber  { background: #E8A87C; }
-.play-btn.accent-rose   { background: #D4796B; }
+.play-btn.accent-purple { background: #8B7CC8; }
 
 .play-btn:hover {
   filter: brightness(0.92);
