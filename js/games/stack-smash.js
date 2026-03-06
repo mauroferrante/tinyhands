@@ -45,7 +45,7 @@ const DANGER_ZONE = 1.6;
 const WOBBLE_SCALE = 2.0;
 const LEAN_SCALE = 5.0;
 const MAX_WOBBLE_ANGLE = 20;
-const FIRST_BLOCK_MAX_OFFSET = 0.35; // max offset ratio on ball before game over
+const FIRST_BLOCK_MAX_OFFSET = 0.40; // max offset ratio on ball before game over
 const SWAY_SPEEDS = [0.6, 0.9, 1.2, 1.5, 1.8, 2.1];
 
 // ---- High Score ----
@@ -223,9 +223,10 @@ function stStartSway() {
     stBlockWidth = stOriginalWidth;
   }
 
-  stCableLength = CABLE_START_LENGTH;
-  stSwingAngle = Math.PI * 0.25 + Math.random() * Math.PI * 0.5;
-  if (Math.random() < 0.5) stSwingAngle += Math.PI;
+  // Randomize cable length so blocks arrive from different heights/timings
+  stCableLength = CABLE_START_LENGTH + Math.random() * 60 - 30;
+  // Full random starting position in swing arc — prevents spam-key wins
+  stSwingAngle = Math.random() * Math.PI * 2;
   stPendulumAngle = PENDULUM_MAX_ANGLE * Math.sin(stSwingAngle);
 
   const craneX = screenW / 2;
