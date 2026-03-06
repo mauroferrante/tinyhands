@@ -309,11 +309,15 @@
 
 /* ===== Floating Background Emojis ===== */
 .bg-emoji {
-  position: absolute;
+  position: fixed;
   pointer-events: none;
   z-index: 0;
   opacity: 0.12;
   animation: bgEmojiFloat 6s ease-in-out infinite;
+}
+
+body.game-active .bg-emoji {
+  display: none;
 }
 
 @keyframes bgEmojiFloat {
