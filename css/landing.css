@@ -303,6 +303,15 @@
 .game-card:hover {
   transform: translateY(-6px) scale(1.02);
   box-shadow: 0 12px 40px rgba(124, 107, 191, 0.12);
+  animation: cardWobble 0.5s ease-in-out;
+}
+
+@keyframes cardWobble {
+  0%   { transform: translateY(-6px) scale(1.02) rotate(0deg); }
+  25%  { transform: translateY(-6px) scale(1.02) rotate(-2deg); }
+  50%  { transform: translateY(-6px) scale(1.02) rotate(2deg); }
+  75%  { transform: translateY(-6px) scale(1.02) rotate(-1deg); }
+  100% { transform: translateY(-6px) scale(1.02) rotate(0deg); }
 }
 
 .game-card:active {
