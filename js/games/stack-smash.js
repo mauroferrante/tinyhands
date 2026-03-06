@@ -40,11 +40,12 @@ const CABLE_EXTEND_SPEED = 1.0;
 const CABLE_START_LENGTH = 120;
 const CRANE_HOOK_Y = 50;
 const PERFECT_THRESHOLD = 0.01;
-const INSTABILITY_THRESHOLD = 2.8;
-const DANGER_ZONE = 2.5;
-const WOBBLE_SCALE = 1.2;
-const LEAN_SCALE = 3.2;
-const MAX_WOBBLE_ANGLE = 14;
+const INSTABILITY_THRESHOLD = 2.0;
+const DANGER_ZONE = 1.6;
+const WOBBLE_SCALE = 2.0;
+const LEAN_SCALE = 5.0;
+const MAX_WOBBLE_ANGLE = 20;
+const FIRST_BLOCK_MAX_OFFSET = 0.35; // max offset ratio on ball before game over
 const SWAY_SPEEDS = [0.6, 0.9, 1.2, 1.5, 1.8, 2.1];
 
 // ---- High Score ----
@@ -134,13 +135,13 @@ function stRecalcBalance() {
 
   // --- Counterbalance-aware structural stress ---
   // Natural settling: small decay each block (tower "settles")
-  stStructuralStress *= 0.92;
+  stStructuralStress *= 0.82;
 
   const lastBlock = stTowerBlocks[stTowerBlocks.length - 1];
   const lastCenter = lastBlock.x + lastBlock.w / 2;
   const lastSignedOffset = (lastCenter - stIdealCenterX) / stOriginalWidth;
   const blockHeight = stTowerBlocks.length;
-  const rawStress = Math.abs(lastSignedOffset) * (1 + blockHeight * 0.1) * 0.4;
+  const rawStress = Math.abs(lastSignedOffset) * (1 + blockHeight * 0.15) * 0.7;
 
   // Compute lean from all blocks EXCEPT the latest to see prior lean
   if (stTowerBlocks.length >= 2) {
@@ -150,7 +151,7 @@ function stRecalcBalance() {
       const block = stTowerBlocks[i];
       const bCenter = block.x + block.w / 2;
       const bOffset = bCenter - stIdealCenterX;
-      const hw = 1 + i * 0.3;
+      const hw = 1 + i * 0.4;
       priorWeightedOffset += bOffset * hw;
       priorTotalWeight += hw;
     }
@@ -158,11 +159,11 @@ function stRecalcBalance() {
 
     // Block on opposite side of prior lean = counterbalancing
     if (lastSignedOffset * priorLean < 0) {
-      // Reward: reduce stress — skillful rebalancing pays off
-      const relief = rawStress * 0.6;
+      // Reward: reduce stress — skillful rebalancing pays off (but less generous)
+      const relief = rawStress * 0.3;
       stStructuralStress = Math.max(0, stStructuralStress - relief);
     } else {
-      // Penalty: add stress as before
+      // Penalty: add stress — same-side blocks compound instability
       stStructuralStress += rawStress;
     }
   } else {
@@ -170,10 +171,10 @@ function stRecalcBalance() {
     stStructuralStress += rawStress;
   }
 
-  stLeanDirection = normalizedLean * 2.5;
+  stLeanDirection = normalizedLean * 3.0;
 
-  const heightScale = 1 + stTowerBlocks.length * 0.08;
-  const balanceInstability = Math.abs(normalizedLean) * heightScale * 3.5;
+  const heightScale = 1 + stTowerBlocks.length * 0.12;
+  const balanceInstability = Math.abs(normalizedLean) * heightScale * 5.0;
   stInstability = balanceInstability + stStructuralStress;
 }
 
@@ -288,6 +289,29 @@ function stOnLanded() {
     const offset = blockCenterX - ballCenterX;
     const normalizedOffset = offset / (landedW / 2);
 
+    // First block: if too far off-center on the ball, game over
+    if (Math.abs(normalizedOffset) > FIRST_BLOCK_MAX_OFFSET) {
+      // Show the block tilting off dramatically before collapsing
+      const MAX_TILT = 35;
+      const tiltDeg = normalizedOffset * MAX_TILT;
+      const ballRelativeX = ballCenterX - landedX;
+      stActiveEl.style.transformOrigin = ballRelativeX + 'px bottom';
+      stActiveEl.style.bottom = GROUND_H + 'px';
+      stActiveEl.style.left = landedX + 'px';
+      stActiveEl.classList.remove('active');
+      stackTowerEl.appendChild(stActiveEl);
+      stTowerBlocks.push({ el: stActiveEl, x: landedX, w: landedW, y: GROUND_H });
+      stBlockCount++;
+      stackScoreEl.textContent = stBlockCount;
+      stActiveEl = null;
+      stDropping = false;
+      playThud();
+      audienceReact('gasp');
+      playCrowdGasp();
+      setTimeout(() => stTriggerCollapse(), 300);
+      return;
+    }
+
     const MAX_TILT = 10;
     const tiltDeg = normalizedOffset * MAX_TILT;
     const ballRelativeX = ballCenterX - landedX;
@@ -393,7 +417,7 @@ function stOnLanded() {
 
   stUpdateDangerVignette();
 
-  const LEAN_COLLAPSE_THRESHOLD = 2.1;
+  const LEAN_COLLAPSE_THRESHOLD = 1.5;
   if (stInstability >= INSTABILITY_THRESHOLD || Math.abs(stLeanDirection) >= LEAN_COLLAPSE_THRESHOLD) {
     setTimeout(() => stTriggerCollapse(), 400);
     return;
