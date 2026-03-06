@@ -9,13 +9,9 @@ const AUDIENCE_EMOJIS = [
 ];
 const WORRY_EMOJIS = ['😰','😱','🙈','😬','🫣'];
 
-// ---- Stadium layout constants ----
-const MIN_RADIUS    = 80;    // front row arc radius (px)
-const RADIUS_STEP   = 22;    // spacing between rows
-const CLEAR_ZONE    = 70;    // no emojis within this distance of ball center
-const ARC_START_DEG = 15;    // arc start angle (degrees from right)
-const ARC_END_DEG   = 165;   // arc end angle
-const REACTIVE_ROWS = 8;     // rows 0-7 get full reaction animations
+// ---- Layout constants ----
+const EMOJI_SPACING = 28;    // horizontal spacing between emojis (px)
+const BALL_GAP      = 60;    // clear gap on each side of the ball center
 
 let containerEl = null;
 let emojiEls = [];
@@ -39,70 +35,52 @@ function buildAudienceNow(parent) {
   containerEl.className = 'stack-audience audience-idle';
   containerEl.setAttribute('aria-hidden', 'true');
 
-  // Use parent container dimensions so arcs are centered on the ball
-  // (ball uses left:50% of the same container)
   const rect = parent.getBoundingClientRect();
   const screenW = rect.width;
-  const screenH = rect.height;
   const centerX = screenW / 2;
-  const ballCenterY = screenH - 25; // approximate ball visual center
 
-  const startAngle = ARC_START_DEG * Math.PI / 180;
-  const endAngle   = ARC_END_DEG * Math.PI / 180;
-
-  // Dynamic row count: enough rows so arcs reach beyond the screen diagonal
-  const screenDiag = Math.sqrt(screenW * screenW + screenH * screenH);
-  const numRows = Math.ceil((screenDiag - MIN_RADIUS) / RADIUS_STEP) + 2;
+  // Place emojis in a single row at the bottom, left and right of the ball
+  const leftStart = 10;
+  const leftEnd   = centerX - BALL_GAP;
+  const rightStart = centerX + BALL_GAP;
+  const rightEnd   = screenW - 10;
 
   let globalIndex = 0;
 
-  for (let r = 0; r < numRows; r++) {
-    const radius = MIN_RADIUS + r * RADIUS_STEP;
-    const emojisInRow = Math.floor(3 + r * 0.4);
-    const t = r / (numRows - 1); // 0 = front, 1 = back
+  // Left side
+  for (let x = leftStart; x <= leftEnd; x += EMOJI_SPACING) {
+    const span = document.createElement('span');
+    const emoji = AUDIENCE_EMOJIS[Math.floor(Math.random() * AUDIENCE_EMOJIS.length)];
+    span.className = 'audience-emoji reactive-row';
+    span.textContent = emoji;
+    span.style.left = x + 'px';
+    span.style.bottom = '4px';
+    span.style.fontSize = '1.4rem';
+    span.style.opacity = '0.85';
+    span.style.setProperty('--audience-delay', (globalIndex * 0.04) + 's');
+    span.style.setProperty('--idle-offset', (Math.random() * 3) + 's');
+    containerEl.appendChild(span);
+    emojiEls.push(span);
+    originalEmojis.push(emoji);
+    globalIndex++;
+  }
 
-    const fontSize = 1.6 - t * 1.05; // 1.6rem → 0.55rem
-    const opacity  = 0.85 - t * 0.55; // 0.85 → 0.30
-    const isReactive = r < REACTIVE_ROWS;
-
-    for (let j = 0; j < emojisInRow; j++) {
-      const angle = emojisInRow === 1
-        ? (startAngle + endAngle) / 2
-        : startAngle + j * (endAngle - startAngle) / (emojisInRow - 1);
-
-      const x = centerX + radius * Math.cos(angle);
-      const y = screenH - radius * Math.sin(angle);
-
-      // Skip emojis too close to the ball
-      const dx = x - centerX;
-      const dy = y - ballCenterY;
-      if (Math.sqrt(dx * dx + dy * dy) < CLEAR_ZONE) continue;
-
-      // Skip emojis outside screen bounds
-      if (x < -10 || x > screenW + 10 || y < -10 || y > screenH + 10) continue;
-
-      const span = document.createElement('span');
-      const emoji = AUDIENCE_EMOJIS[Math.floor(Math.random() * AUDIENCE_EMOJIS.length)];
-      span.className = 'audience-emoji';
-      span.textContent = emoji;
-
-      span.style.left = x + 'px';
-      span.style.bottom = (screenH - y) + 'px';
-      span.style.fontSize = fontSize + 'rem';
-      span.style.opacity = opacity;
-
-      span.classList.add(isReactive ? 'reactive-row' : 'ambient-row');
-
-      // Stagger delay for wave/reaction animations
-      span.style.setProperty('--audience-delay', (globalIndex * 0.04) + 's');
-      // Random idle offset for desynchronized bobbing
-      span.style.setProperty('--idle-offset', (Math.random() * 3) + 's');
-
-      containerEl.appendChild(span);
-      emojiEls.push(span);
-      originalEmojis.push(emoji);
-      globalIndex++;
-    }
+  // Right side
+  for (let x = rightStart; x <= rightEnd; x += EMOJI_SPACING) {
+    const span = document.createElement('span');
+    const emoji = AUDIENCE_EMOJIS[Math.floor(Math.random() * AUDIENCE_EMOJIS.length)];
+    span.className = 'audience-emoji reactive-row';
+    span.textContent = emoji;
+    span.style.left = x + 'px';
+    span.style.bottom = '4px';
+    span.style.fontSize = '1.4rem';
+    span.style.opacity = '0.85';
+    span.style.setProperty('--audience-delay', (globalIndex * 0.04) + 's');
+    span.style.setProperty('--idle-offset', (Math.random() * 3) + 's');
+    containerEl.appendChild(span);
+    emojiEls.push(span);
+    originalEmojis.push(emoji);
+    globalIndex++;
   }
 
   parent.appendChild(containerEl);
