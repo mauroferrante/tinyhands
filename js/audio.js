@@ -348,7 +348,7 @@ export function playBounce() {
   osc.stop(now + 0.12);
 }
 
-// ===== Crowd Sounds (Stack & Smash Audience) =====
+// ===== Crowd Sounds (Stack It Up Audience) =====
 
 export function playCrowdCheer() {
   if (!audioCtx) return;

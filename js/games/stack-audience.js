@@ -1,5 +1,5 @@
 /* =========================================================
- *  Stack & Smash — Stadium Audience
+ *  Stack It Up — Stadium Audience
  *  Reactive emoji crowd in semicircular stadium bowl layout
  * ========================================================= */
 
