@@ -7,9 +7,9 @@
 
 /* ===== Design Tokens ===== */
 :root {
-  --color-primary: #F4845F;
-  --color-primary-light: #FFF0EB;
-  --color-primary-dark: #D96B47;
+  --color-primary: #7C6BBF;
+  --color-primary-light: #F0EBFF;
+  --color-primary-dark: #6354A4;
   --color-background: #F5F0FF;
   --color-surface: #FFFFFF;
   --color-text: #2D2D2D;
@@ -34,6 +34,6 @@ body.game-active {
 
 body {
   font-family: 'Nunito', sans-serif;
-  background: radial-gradient(ellipse at 30% 20%, #F5F0FF 0%, #EFF6FB 50%, #F3EEFA 100%);
+  background: radial-gradient(ellipse at 30% 20%, #F5F0FF 0%, #EFF8F8 50%, #F3EEFA 100%);
   color: var(--color-text);
 }
