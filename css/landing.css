@@ -283,8 +283,8 @@
   position: absolute;
   top: 10px;
   right: 12px;
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: 50%;
   background: transparent;
@@ -292,7 +292,9 @@
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
-  z-index: 20;
+  z-index: 50;
+  isolation: isolate;
+  pointer-events: auto;
   transition: color 0.2s ease, background 0.2s ease;
   padding: 0;
   display: flex;
@@ -312,7 +314,9 @@
   inset: 0;
   border-radius: 24px;
   background: var(--color-surface);
-  z-index: 15;
+  z-index: 40;
+  isolation: isolate;
+  pointer-events: auto;
   padding: 2rem 1.4rem 1.4rem;
   flex-direction: column;
   justify-content: center;
@@ -332,12 +336,13 @@
   right: 12px;
   background: none;
   border: none;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--color-text-light);
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 4px 8px;
   line-height: 1;
-  z-index: 20;
+  z-index: 50;
+  pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
 }
 .card-info-close:hover { color: var(--color-text); }
@@ -421,6 +426,9 @@ body.game-active .bg-emoji {
   line-height: 1;
   animation: iconFloat 3s ease-in-out infinite;
   animation-delay: inherit;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .game-card:nth-child(1) .card-icon { animation-delay: 0s; }
