@@ -157,54 +157,25 @@ document.addEventListener('fullscreenchange', onFullscreenChange);
 document.addEventListener('webkitfullscreenchange', onFullscreenChange);
 
 // ===== Card Info Button (flip toggle) =====
-// Track whether ⓘ was just tapped so we can block game launch
-let infoJustClicked = false;
-
 document.querySelectorAll('.card-info-btn').forEach(btn => {
-  // Use capture phase so this fires before anything else
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    infoJustClicked = true;
+  btn.addEventListener('click', () => {
     btn.closest('.game-card').classList.add('flipped');
-    setTimeout(() => { infoJustClicked = false; }, 0);
-  }, true);
-
-  btn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    infoJustClicked = true;
-    btn.closest('.game-card').classList.add('flipped');
-    setTimeout(() => { infoJustClicked = false; }, 300);
-  }, true);
+  });
 });
 
-// ===== Game card click (entire card is clickable) =====
+// ===== Flip back: click anywhere on a flipped card =====
 document.querySelectorAll('.game-card').forEach(card => {
-  const btn = card.querySelector('.play-btn[data-game]');
-  if (!btn) return;
   card.addEventListener('click', (e) => {
-    // Block if ⓘ was just clicked
-    if (infoJustClicked) return;
-    // If card is flipped, clicking anywhere flips it back (no game launch)
-    if (card.classList.contains('flipped')) {
-      card.classList.remove('flipped');
-      return;
-    }
-    if (e.target.closest('.play-btn') || e.target.closest('.card-info-btn')) return;
-    launchGame(btn.dataset.game, btn);
+    if (!card.classList.contains('flipped')) return;
+    if (e.target.closest('.card-info-btn')) return;
+    card.classList.remove('flipped');
   });
 });
 
-// Play buttons still handle their own clicks
+// ===== Play buttons launch games =====
 document.querySelectorAll('.play-btn[data-game]').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    if (infoJustClicked) return;
-    launchGame(btn.dataset.game, btn);
-  });
+  btn.addEventListener('click', () => launchGame(btn.dataset.game, btn));
   btn.addEventListener('touchend', (e) => {
-    if (infoJustClicked) return;
     e.preventDefault();
     launchGame(btn.dataset.game, btn);
   });
