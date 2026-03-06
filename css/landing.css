@@ -297,6 +297,7 @@
 }
 
 .card-front {
+  position: relative;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   display: flex;
