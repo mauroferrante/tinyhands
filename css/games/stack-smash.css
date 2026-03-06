@@ -143,7 +143,7 @@
 
 /* ===== Stadium Audience ===== */
 .stack-audience {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 105;
   pointer-events: none;

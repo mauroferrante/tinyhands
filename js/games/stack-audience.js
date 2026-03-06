@@ -33,8 +33,11 @@ export function createAudience(parent) {
   containerEl.className = 'stack-audience audience-idle';
   containerEl.setAttribute('aria-hidden', 'true');
 
-  const screenW = window.innerWidth;
-  const screenH = window.innerHeight;
+  // Use parent container dimensions so arcs are centered on the ball
+  // (ball uses left:50% of the same container)
+  const rect = parent.getBoundingClientRect();
+  const screenW = rect.width;
+  const screenH = rect.height;
   const centerX = screenW / 2;
   const ballCenterY = screenH - 25; // approximate ball visual center
 
