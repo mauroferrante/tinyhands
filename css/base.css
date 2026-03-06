@@ -34,7 +34,7 @@ body.game-active {
 
 body {
   font-family: 'Nunito', sans-serif;
-  background: linear-gradient(135deg, #F0EBFF, #E8F4F8, #FFF0EB, #F0EBFF, #E8F8F0, #F5EEFF);
+  background: linear-gradient(135deg, #DDD0FF, #C8E8F0, #FFD9C4, #D8CCFF, #C4F0D8, #E0D4FF);
   background-size: 400% 400%;
   animation: gradientDrift 20s ease infinite;
   color: var(--color-text);
