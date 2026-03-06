@@ -156,12 +156,27 @@ function onFullscreenChange() {
 document.addEventListener('fullscreenchange', onFullscreenChange);
 document.addEventListener('webkitfullscreenchange', onFullscreenChange);
 
+// ===== Card Info Button =====
+document.querySelectorAll('.card-info-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const overlay = btn.nextElementSibling;
+    overlay.classList.add('show');
+  });
+});
+document.querySelectorAll('.card-info-close').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn.closest('.card-info-overlay').classList.remove('show');
+  });
+});
+
 // ===== Game card click (entire card is clickable) =====
 document.querySelectorAll('.game-card').forEach(card => {
   const btn = card.querySelector('.play-btn[data-game]');
   if (!btn) return;
   card.addEventListener('click', (e) => {
-    if (e.target.closest('.play-btn')) return; // let button handle its own click
+    if (e.target.closest('.play-btn') || e.target.closest('.card-info-btn') || e.target.closest('.card-info-overlay')) return;
     launchGame(btn.dataset.game, btn);
   });
 });
