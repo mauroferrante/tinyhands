@@ -69,7 +69,7 @@ const WORD_POOL = [
   { emoji: '🔔', word: 'BELL' },
   { emoji: '👑', word: 'CROWN' },
   { emoji: '🎸', word: 'GUITAR' },
-  { emoji: '🎹', word: 'KEYBOARD' },
+  { emoji: '🎹', word: 'PIANO' },
   { emoji: '🥁', word: 'DRUM' },
   { emoji: '⚽', word: 'BALL' },
   { emoji: '🏈', word: 'FOOTBALL' },
