@@ -4,7 +4,7 @@
  * ========================================================= */
 
 import { playCorrectDing, playWrongBoop, playLifeLost, playSpellWhoosh,
-         playWinFanfare, playStreakChime } from '../audio.js';
+         playWinFanfare, playStreakChime, playStreakFanfare } from '../audio.js';
 import { spawnParticles } from '../effects.js';
 
 // ---- Word Pool ----
@@ -299,10 +299,16 @@ function handleCorrect(blankTile, letter) {
   streak++;
   updateScoreBar();
 
-  // Streak milestone
+  // Streak milestone celebrations (progressive at 5, 10, 15, 20, 25…)
   if (streak > 0 && streak % 5 === 0) {
-    playStreakChime();
-    showFeedback(`🔥 ${streak} in a row!`, 'streak');
+    spawnStreakCelebration(streak);
+    if (streak >= 20) {
+      showFeedback(`🚀 ${streak} IN A ROW!!!`, 'streak');
+    } else if (streak >= 10) {
+      showFeedback(`🔥🔥 ${streak} in a row!!`, 'streak');
+    } else {
+      showFeedback(`🔥 ${streak} in a row!`, 'streak');
+    }
   } else {
     showFeedback('✨ Correct!', 'correct');
   }
@@ -411,6 +417,89 @@ function triggerWin() {
     </div>
   `;
   spellCelebrateEl.classList.add('show');
+}
+
+// ---- Progressive Streak Celebrations ----
+
+const STREAK_EMOJIS_SMALL = ['⭐', '✨', '🌟'];
+const STREAK_EMOJIS_MED   = ['⭐', '✨', '🌟', '🔥', '💫', '🎉'];
+const STREAK_EMOJIS_BIG   = ['⭐', '✨', '🌟', '🔥', '💫', '🎉', '🎊', '🏆', '💥', '🚀'];
+
+function spawnStreakCelebration(streakCount) {
+  // Determine celebration level
+  let level, count, emojis, fontSize, duration;
+
+  if (streakCount >= 20) {
+    level = 3;
+    count = 35;
+    emojis = STREAK_EMOJIS_BIG;
+    fontSize = [1.2, 2.2];
+    duration = [2.0, 3.5];
+  } else if (streakCount >= 10) {
+    level = 2;
+    count = 20;
+    emojis = STREAK_EMOJIS_MED;
+    fontSize = [1.0, 1.8];
+    duration = [1.8, 3.0];
+  } else {
+    level = 1;
+    count = 10;
+    emojis = STREAK_EMOJIS_SMALL;
+    fontSize = [0.8, 1.4];
+    duration = [1.5, 2.5];
+  }
+
+  // Audio — progressive fanfare
+  playStreakFanfare(level);
+
+  // Spawn confetti emojis
+  for (let i = 0; i < count; i++) {
+    const conf = document.createElement('span');
+    conf.className = 'spell-confetti';
+    conf.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    conf.style.left = (Math.random() * 100) + '%';
+    conf.style.top = '-40px';
+    const size = fontSize[0] + Math.random() * (fontSize[1] - fontSize[0]);
+    conf.style.fontSize = size + 'rem';
+    const fallDur = duration[0] + Math.random() * (duration[1] - duration[0]);
+    conf.style.setProperty('--fall-dist', (window.innerHeight + 80) + 'px');
+    conf.style.setProperty('--fall-rot', (Math.random() * 720 - 360) + 'deg');
+    conf.style.setProperty('--fall-dur', fallDur + 's');
+    conf.style.setProperty('--sway', (Math.random() * 100 - 50) + 'px');
+    conf.style.animationDelay = (Math.random() * (level >= 3 ? 1.2 : level >= 2 ? 0.8 : 0.5)) + 's';
+    spellGameEl.appendChild(conf);
+    conf.addEventListener('animationend', () => conf.remove());
+  }
+
+  // Level 2+: Add a screen flash pulse
+  if (level >= 2) {
+    const flash = document.createElement('div');
+    flash.className = 'spell-streak-flash';
+    if (level >= 3) flash.classList.add('spell-streak-flash-big');
+    spellGameEl.appendChild(flash);
+    flash.addEventListener('animationend', () => flash.remove());
+  }
+
+  // Level 3: Add emoji ring burst from center
+  if (level >= 3) {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    for (let i = 0; i < 12; i++) {
+      const ring = document.createElement('span');
+      ring.className = 'spell-streak-ring';
+      ring.textContent = STREAK_EMOJIS_BIG[Math.floor(Math.random() * STREAK_EMOJIS_BIG.length)];
+      const angle = (Math.PI * 2 / 12) * i;
+      const dist = 200 + Math.random() * 150;
+      ring.style.left = cx + 'px';
+      ring.style.top = cy + 'px';
+      ring.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      ring.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      ring.style.setProperty('--tr', (Math.random() * 360 - 180) + 'deg');
+      ring.style.fontSize = (1.5 + Math.random() * 1) + 'rem';
+      spellGameEl.appendChild(ring);
+      ring.addEventListener('animationend', () => ring.remove());
+    }
+  }
 }
 
 function spawnWinConfetti() {
@@ -535,8 +624,8 @@ function cleanup() {
 
   destroyMobileKeyboard();
 
-  // Remove any lingering confetti
-  spellGameEl.querySelectorAll('.spell-confetti').forEach(c => c.remove());
+  // Remove any lingering confetti & streak effects
+  spellGameEl.querySelectorAll('.spell-confetti, .spell-streak-flash, .spell-streak-ring').forEach(c => c.remove());
   // Remove any lingering particles
   spellGameEl.querySelectorAll('.particle').forEach(p => p.remove());
 }

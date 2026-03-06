@@ -483,6 +483,50 @@ export function playSpellWhoosh() {
   osc.stop(now + 0.12);
 }
 
+export function playStreakFanfare(level) {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Progressive fanfare: more notes & richer harmonics at higher levels
+  // level 1 = 5-streak (3 notes), level 2 = 10-streak (4 notes + chord), level 3 = 20-streak (5 notes + big chord)
+  const notesets = [
+    [523, 659, 784],                        // 5-streak: C-E-G
+    [523, 659, 784, 1047],                   // 10-streak: C-E-G-C
+    [523, 587, 659, 784, 1047]               // 20-streak: C-D-E-G-C
+  ];
+  const notes = notesets[Math.min(level - 1, 2)];
+  const vol = 0.1 + level * 0.02;
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now + i * 0.09);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.setValueAtTime(Math.min(vol, 0.18), now + i * 0.09);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.35);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now + i * 0.09);
+    osc.stop(now + i * 0.09 + 0.35);
+  });
+  // Add shimmer chord for level 2+
+  if (level >= 2) {
+    const delay = notes.length * 0.09 + 0.1;
+    const chord = level >= 3 ? [523, 659, 784, 1047, 1319] : [523, 659, 784, 1047];
+    chord.forEach(freq => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + delay);
+      gain.gain.setValueAtTime(0, now + delay - 0.01);
+      gain.gain.linearRampToValueAtTime(0.05, now + delay + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.7);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now + delay);
+      osc.stop(now + delay + 0.7);
+    });
+  }
+}
+
 export function playCrowdRoar() {
   if (!audioCtx) return;
   if (audioCtx.state === 'suspended') audioCtx.resume();
