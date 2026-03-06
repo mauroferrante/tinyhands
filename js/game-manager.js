@@ -156,18 +156,11 @@ function onFullscreenChange() {
 document.addEventListener('fullscreenchange', onFullscreenChange);
 document.addEventListener('webkitfullscreenchange', onFullscreenChange);
 
-// ===== Card Info Button =====
+// ===== Card Info Button (flip toggle) =====
 document.querySelectorAll('.card-info-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    const overlay = btn.nextElementSibling;
-    overlay.classList.add('show');
-  });
-});
-document.querySelectorAll('.card-info-close').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    btn.closest('.card-info-overlay').classList.remove('show');
+    btn.closest('.game-card').classList.add('flipped');
   });
 });
 
@@ -176,7 +169,12 @@ document.querySelectorAll('.game-card').forEach(card => {
   const btn = card.querySelector('.play-btn[data-game]');
   if (!btn) return;
   card.addEventListener('click', (e) => {
-    if (e.target.closest('.play-btn') || e.target.closest('.card-info-btn') || e.target.closest('.card-info-overlay')) return;
+    // If card is flipped, clicking anywhere flips it back (no game launch)
+    if (card.classList.contains('flipped')) {
+      card.classList.remove('flipped');
+      return;
+    }
+    if (e.target.closest('.play-btn') || e.target.closest('.card-info-btn')) return;
     launchGame(btn.dataset.game, btn);
   });
 });
