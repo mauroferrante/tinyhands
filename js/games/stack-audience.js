@@ -11,11 +11,11 @@ const WORRY_EMOJIS = ['😰','😱','🙈','😬','🫣'];
 
 // ---- Stadium layout constants ----
 const MIN_RADIUS    = 80;    // front row arc radius (px)
-const RADIUS_STEP   = 18;    // spacing between rows (tighter packing)
+const RADIUS_STEP   = 22;    // spacing between rows
 const CLEAR_ZONE    = 70;    // no emojis within this distance of ball center
-const ARC_START_DEG = 10;    // arc start angle (degrees from right, wider)
-const ARC_END_DEG   = 170;   // arc end angle (wider)
-const REACTIVE_ROWS = 10;    // rows 0-9 get full reaction animations
+const ARC_START_DEG = 15;    // arc start angle (degrees from right)
+const ARC_END_DEG   = 165;   // arc end angle
+const REACTIVE_ROWS = 8;     // rows 0-7 get full reaction animations
 
 let containerEl = null;
 let emojiEls = [];
@@ -58,7 +58,7 @@ function buildAudienceNow(parent) {
 
   for (let r = 0; r < numRows; r++) {
     const radius = MIN_RADIUS + r * RADIUS_STEP;
-    const emojisInRow = Math.floor(9 + r * 1.2);  // 1.5x density
+    const emojisInRow = Math.floor(6 + r * 0.8);
     const t = r / (numRows - 1); // 0 = front, 1 = back
 
     const fontSize = 1.6 - t * 1.05; // 1.6rem → 0.55rem
