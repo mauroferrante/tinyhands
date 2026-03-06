@@ -117,13 +117,45 @@ function stRecalcBalance() {
   const avgOffset = weightedOffset / totalWeight;
   const normalizedLean = avgOffset / stOriginalWidth;
 
-  stLeanDirection = normalizedLean * 2.5;
+  // --- Counterbalance-aware structural stress ---
+  // Natural settling: small decay each block (tower "settles")
+  stStructuralStress *= 0.92;
 
   const lastBlock = stTowerBlocks[stTowerBlocks.length - 1];
   const lastCenter = lastBlock.x + lastBlock.w / 2;
-  const lastOffset = Math.abs(lastCenter - stIdealCenterX) / stOriginalWidth;
+  const lastSignedOffset = (lastCenter - stIdealCenterX) / stOriginalWidth;
   const blockHeight = stTowerBlocks.length;
-  stStructuralStress += lastOffset * (1 + blockHeight * 0.1) * 0.4;
+  const rawStress = Math.abs(lastSignedOffset) * (1 + blockHeight * 0.1) * 0.4;
+
+  // Compute lean from all blocks EXCEPT the latest to see prior lean
+  if (stTowerBlocks.length >= 2) {
+    let priorWeightedOffset = 0;
+    let priorTotalWeight = 0;
+    for (let i = 0; i < stTowerBlocks.length - 1; i++) {
+      const block = stTowerBlocks[i];
+      const bCenter = block.x + block.w / 2;
+      const bOffset = bCenter - stIdealCenterX;
+      const hw = 1 + i * 0.3;
+      priorWeightedOffset += bOffset * hw;
+      priorTotalWeight += hw;
+    }
+    const priorLean = priorWeightedOffset / priorTotalWeight;
+
+    // Block on opposite side of prior lean = counterbalancing
+    if (lastSignedOffset * priorLean < 0) {
+      // Reward: reduce stress — skillful rebalancing pays off
+      const relief = rawStress * 0.6;
+      stStructuralStress = Math.max(0, stStructuralStress - relief);
+    } else {
+      // Penalty: add stress as before
+      stStructuralStress += rawStress;
+    }
+  } else {
+    // First block: just add stress normally
+    stStructuralStress += rawStress;
+  }
+
+  stLeanDirection = normalizedLean * 2.5;
 
   const heightScale = 1 + stTowerBlocks.length * 0.08;
   const balanceInstability = Math.abs(normalizedLean) * heightScale * 3.5;
