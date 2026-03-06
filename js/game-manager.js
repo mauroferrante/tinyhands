@@ -3,7 +3,7 @@
  * ========================================================= */
 
 import { initAudio, playFanfare } from './audio.js';
-import { EMOJIS, createBgEmojis } from './effects.js';
+import { EMOJIS } from './effects.js';
 import { splatKeys } from './games/splat-keys.js';
 import { stackSmash } from './games/stack-smash.js';
 import { spellItOut } from './games/spell-it-out.js';
@@ -35,9 +35,6 @@ const GAMES = {
   'stack-smash': stackSmash,
   'spell-it-out': spellItOut
 };
-
-// ---- Floating background emojis on landing ----
-createBgEmojis(landing);
 
 // ===== Entry Animation & Fullscreen =====
 
