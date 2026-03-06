@@ -144,11 +144,7 @@
 /* ===== Stadium Audience ===== */
 .stack-audience {
   position: fixed;
-  bottom: 4px;
-  bottom: calc(4px + env(safe-area-inset-bottom, 0px));
-  left: 0;
-  right: 0;
-  height: 80px;
+  inset: 0;
   z-index: 105;
   pointer-events: none;
   overflow: hidden;
@@ -158,18 +154,16 @@
   position: absolute;
   transform: translateX(-50%);
   line-height: 1;
-  transition: transform 0.15s ease;
-}
-.audience-emoji.front-row {
-  font-size: 2.2rem;
-}
-.audience-emoji.back-row {
-  font-size: 1.6rem;
-  opacity: 0.75;
 }
 
-/* --- Idle: gentle staggered bobbing --- */
-.audience-idle .audience-emoji {
+/* Ambient rows: always gentle idle, ignore reaction classes */
+.audience-emoji.ambient-row {
+  animation: audienceIdle 2.5s ease-in-out infinite !important;
+  animation-delay: var(--idle-offset) !important;
+}
+
+/* --- Idle: gentle staggered bobbing (reactive rows) --- */
+.audience-idle .audience-emoji.reactive-row {
   animation: audienceIdle 2s ease-in-out infinite;
   animation-delay: var(--idle-offset);
 }
@@ -179,7 +173,7 @@
 }
 
 /* --- Cheer: quick bounce --- */
-.audience-cheer .audience-emoji {
+.audience-cheer .audience-emoji.reactive-row {
   animation: audienceCheer 0.35s ease-out;
   animation-delay: var(--audience-delay);
 }
@@ -190,7 +184,7 @@
 }
 
 /* --- Wild: big bounce + wiggle (perfect placement) --- */
-.audience-wild .audience-emoji {
+.audience-wild .audience-emoji.reactive-row {
   animation: audienceWild 0.5s ease-out;
   animation-delay: var(--audience-delay);
 }
@@ -203,7 +197,7 @@
 }
 
 /* --- Wave: mexican wave (staggered delays) --- */
-.audience-wave .audience-emoji {
+.audience-wave .audience-emoji.reactive-row {
   animation: audienceWave 0.6s ease-out;
   animation-delay: var(--audience-delay);
 }
@@ -215,7 +209,7 @@
 }
 
 /* --- Worry: shrink + shake --- */
-.audience-worry .audience-emoji {
+.audience-worry .audience-emoji.reactive-row {
   animation: audienceWorry 0.4s ease-out infinite;
   animation-delay: var(--audience-delay);
 }
@@ -226,7 +220,7 @@
 }
 
 /* --- Gasp: jump back + scatter --- */
-.audience-gasp .audience-emoji {
+.audience-gasp .audience-emoji.reactive-row {
   animation: audienceGasp 0.6s ease-out forwards;
 }
 @keyframes audienceGasp {
@@ -236,7 +230,7 @@
 }
 
 /* --- Party: continuous bouncing (win) --- */
-.audience-party .audience-emoji {
+.audience-party .audience-emoji.reactive-row {
   animation: audienceParty 0.5s ease-in-out infinite;
   animation-delay: var(--audience-delay);
 }
