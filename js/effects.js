@@ -36,7 +36,7 @@ export function createBgEmojis(landingEl) {
     const el = document.createElement('span');
     el.className = 'bg-emoji';
     el.textContent = shuffled[i];
-    const onLeft = Math.random() < 0.5;
+    const onLeft = i % 2 === 0;
     el.style.left = onLeft
       ? (2 + Math.random() * 10) + '%'
       : (88 + Math.random() * 10) + '%';
