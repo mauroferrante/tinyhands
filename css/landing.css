@@ -33,9 +33,9 @@
 }
 
 #landing h1 {
-  font-family: 'Baloo 2', cursive;
+  font-family: 'Fredoka', cursive;
   font-size: clamp(2.5rem, 7vw, 3.5rem);
-  font-weight: 800;
+  font-weight: 700;
   color: var(--color-primary);
   margin-bottom: 0.1em;
 }
