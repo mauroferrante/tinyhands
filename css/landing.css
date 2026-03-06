@@ -294,6 +294,12 @@
   box-shadow: 0 12px 40px rgba(124, 107, 191, 0.12);
 }
 
+.game-card:active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition-duration: 0.1s;
+}
+
 .game-card .card-icon {
   font-size: 4rem;
   line-height: 1;
