@@ -172,6 +172,18 @@ document.querySelectorAll('.play-btn[data-game]').forEach(btn => {
   });
 });
 
+// ===== Card Wobble on Hover =====
+document.querySelectorAll('.game-card').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    card.classList.add('wobble');
+  });
+  card.addEventListener('animationend', (e) => {
+    if (e.animationName === 'cardWobble') {
+      card.classList.remove('wobble');
+    }
+  });
+});
+
 // ===== Exit Button (touch + desktop) =====
 exitBtn.addEventListener('click', () => {
   const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
