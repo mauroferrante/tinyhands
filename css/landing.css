@@ -264,6 +264,11 @@
   color: #7C5CFC;
 }
 
+.age-badge.purple {
+  background: rgba(132, 94, 194, 0.12);
+  color: #845EC2;
+}
+
 .game-card .card-desc {
   font-size: 0.9rem;
   color: #777;
@@ -295,6 +300,11 @@
 
 .play-btn.gradient-cool {
   background: linear-gradient(135deg, #7C5CFC, #4ECDC4, #FFB347, #FF6B8A, #7C5CFC);
+  background-size: 300% 300%;
+}
+
+.play-btn.gradient-spell {
+  background: linear-gradient(135deg, #845EC2, #4ECDC4, #FFB347, #845EC2);
   background-size: 300% 300%;
 }
 

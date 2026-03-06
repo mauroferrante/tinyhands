@@ -1,0 +1,364 @@
+/* ===== Spell It Out Game ===== */
+#spellGame {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #FFF8E7 0%, #F0E6FF 50%, #E0F7FA 100%);
+}
+
+/* ===== Lives (top-left) ===== */
+.spell-lives {
+  position: fixed;
+  top: 16px;
+  left: 20px;
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  z-index: 200;
+  pointer-events: none;
+  display: flex;
+  gap: 4px;
+}
+
+.spell-heart {
+  display: inline-block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.spell-heart.lost {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.spell-heart-breaking {
+  animation: heartBreak 0.5s ease-out forwards;
+}
+
+@keyframes heartBreak {
+  0%   { transform: scale(1); opacity: 1; }
+  30%  { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+/* ===== Score Bar (top-right) ===== */
+.spell-score-bar {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+  color: rgba(124, 92, 252, 0.85);
+  z-index: 200;
+  pointer-events: none;
+}
+
+/* ===== Stage (centered area) ===== */
+.spell-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  z-index: 110;
+  width: 90%;
+  max-width: 600px;
+}
+
+/* ===== Emoji Display ===== */
+.spell-emoji {
+  font-size: clamp(80px, 22vw, 160px);
+  line-height: 1;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+}
+
+.spell-emoji-enter {
+  animation: emojiEntrance 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes emojiEntrance {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== Letter Tiles ===== */
+.spell-tiles {
+  display: flex;
+  gap: clamp(6px, 1.5vw, 10px);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.spell-tiles-exit {
+  animation: slideOutLeft 0.3s ease-in forwards;
+}
+
+.spell-tiles-enter .spell-tile {
+  animation: tilePopIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}
+
+@keyframes slideOutLeft {
+  0%   { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(-60px); opacity: 0; }
+}
+
+@keyframes tilePopIn {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.spell-tile {
+  width: clamp(42px, 11vw, 72px);
+  height: clamp(42px, 11vw, 72px);
+  border-radius: clamp(8px, 2vw, 14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.4rem, 5vw, 2.6rem);
+  color: #fff;
+  background: #7C5CFC;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  text-transform: uppercase;
+}
+
+/* Blank tile (the missing letter) */
+.spell-tile.spell-blank {
+  background: rgba(124, 92, 252, 0.15);
+  border: 3px dashed rgba(124, 92, 252, 0.5);
+  color: rgba(124, 92, 252, 0.4);
+  box-shadow: none;
+  animation: pulseBlank 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseBlank {
+  0%, 100% { transform: scale(1); border-color: rgba(124, 92, 252, 0.4); }
+  50%      { transform: scale(1.06); border-color: rgba(124, 92, 252, 0.7); }
+}
+
+/* Correct answer */
+.spell-tile.spell-correct {
+  animation: tileCorrectPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  box-shadow: 0 0 20px rgba(78, 205, 196, 0.4), 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes tileCorrectPop {
+  0%   { transform: scale(0.8); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Wrong answer */
+.spell-tile.spell-wrong {
+  background: #FF6B8A !important;
+  animation: tileShake 0.4s ease-out;
+}
+
+@keyframes tileShake {
+  0%, 100% { transform: translateX(0); }
+  15%      { transform: translateX(-8px); }
+  30%      { transform: translateX(8px); }
+  45%      { transform: translateX(-5px); }
+  60%      { transform: translateX(5px); }
+  75%      { transform: translateX(-2px); }
+  90%      { transform: translateX(2px); }
+}
+
+/* Revealed correct letter (after wrong guess) */
+.spell-tile.spell-revealed {
+  background: #845EC2 !important;
+  animation: tileReveal 0.4s ease-out forwards;
+}
+
+@keyframes tileReveal {
+  0%   { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== Feedback Messages ===== */
+.spell-feedback {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  min-height: 2em;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.spell-feedback-show {
+  opacity: 1;
+}
+
+.spell-feedback-correct {
+  color: #4ECDC4;
+}
+
+.spell-feedback-streak {
+  color: #FFB347;
+  animation: feedbackPulse 0.5s ease-out;
+}
+
+.spell-feedback-wrong {
+  color: #FF6B8A;
+}
+
+@keyframes feedbackPulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ===== Mobile Keyboard ===== */
+.spell-keyboard {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 4px 12px;
+  z-index: 300;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@media (pointer: coarse) {
+  .spell-keyboard {
+    display: block;
+  }
+  .spell-stage {
+    transform: translate(-50%, -65%);
+  }
+}
+
+.spell-key-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.spell-key {
+  min-width: 32px;
+  min-height: 44px;
+  flex: 1;
+  max-width: 44px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(124, 92, 252, 0.12);
+  color: #333;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.spell-key:active {
+  background: rgba(124, 92, 252, 0.3);
+  transform: scale(0.92);
+}
+
+.spell-key-disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* ===== Celebrate / End Card ===== */
+.spell-celebrate {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: rgba(255, 248, 231, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.spell-celebrate.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.spell-endcard {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  animation: endcardEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes endcardEntrance {
+  0%   { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.spell-endcard-emoji {
+  font-size: clamp(4rem, 15vw, 7rem);
+  line-height: 1;
+}
+
+.spell-endcard-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  color: #333;
+}
+
+.spell-endcard-score {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  color: rgba(124, 92, 252, 0.85);
+}
+
+.spell-endcard-best {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  color: #FFB347;
+  animation: feedbackPulse 0.6s ease-out;
+}
+
+.spell-endcard-best-small {
+  font-family: 'Quicksand', sans-serif;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+  color: #999;
+  font-weight: 600;
+}
+
+.spell-endcard-restart {
+  font-family: 'Quicksand', sans-serif;
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  color: #aaa;
+  margin-top: 0.8rem;
+  font-weight: 600;
+}
+
+/* ===== Win Confetti ===== */
+.spell-confetti {
+  position: fixed;
+  pointer-events: none;
+  z-index: 350;
+  animation: spellConfettiFall var(--fall-dur) linear forwards;
+}
+
+@keyframes spellConfettiFall {
+  0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
+  50%  { transform: translateY(calc(var(--fall-dist) * 0.5)) translateX(var(--sway)) rotate(180deg); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(var(--fall-dist)) translateX(calc(var(--sway) * -0.5)) rotate(var(--fall-rot)); opacity: 0; }
+}
+
+/* ===== Play Hint ===== */
+#spellHint {
+  z-index: 200;
+}

@@ -6,8 +6,8 @@
 <title>Tiny Hands Play 🖐️ — Free Toddler & Kids Browser Games</title>
 
 <!-- SEO Meta Tags -->
-<meta name="description" content="Free browser games for toddlers and kids aged 6 months to 5 years. No installs, no accounts, no ads. Just open and play. Kaboom Keys and Stack It Up — safe, colorful fun when tiny hands invade the home office.">
-<meta name="keywords" content="toddler games, free kids games, browser games for toddlers, baby keyboard game, stacking game for kids, no install games, preschool games online, free online games for toddlers, toddler safe games, kids games no ads, baby games online free">
+<meta name="description" content="Free browser games for toddlers and kids aged 6 months to 7 years. No installs, no accounts, no ads. Just open and play. Kaboom Keys, Stack It Up, and Spell It Out — safe, colorful fun when tiny hands invade the home office.">
+<meta name="keywords" content="toddler games, free kids games, browser games for toddlers, baby keyboard game, stacking game for kids, spelling game for kids, no install games, preschool games online, free online games for toddlers, toddler safe games, kids games no ads, baby games online free">
 <meta name="author" content="Mauro Ferrante">
 <meta name="theme-color" content="#FFDEE9">
 <link rel="canonical" href="https://tinyhandsplay.com/">
@@ -40,6 +40,7 @@
 <link rel="stylesheet" href="css/playground.css">
 <link rel="stylesheet" href="css/games/splat-keys.css">
 <link rel="stylesheet" href="css/games/stack-smash.css">
+<link rel="stylesheet" href="css/games/spell-it-out.css">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -48,7 +49,7 @@
   "@type": "WebApplication",
   "name": "Tiny Hands Play",
   "url": "https://tinyhandsplay.com",
-  "description": "Free browser games for toddlers and kids aged 6 months to 5 years. No installs, no accounts, no ads.",
+  "description": "Free browser games for toddlers and kids aged 6 months to 7 years. No installs, no accounts, no ads.",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any",
   "browserRequirements": "Requires a modern web browser",
@@ -60,7 +61,7 @@
   "audience": {
     "@type": "PeopleAudience",
     "suggestedMinAge": "0",
-    "suggestedMaxAge": "5"
+    "suggestedMaxAge": "7"
   },
   "creator": {
     "@type": "Person",
@@ -86,7 +87,7 @@
       <h2>Kaboom Keys</h2>
       <span class="age-badge green">6 months – 3 years</span>
       <p class="card-desc">Smash the keyboard and make it rain emojis!</p>
-      <button class="play-btn gradient-warm" data-game="splat-keys">Play! 🎉</button>
+      <button class="play-btn gradient-warm" data-game="splat-keys">Play!</button>
     </article>
 
     <!-- Stack It Up Card -->
@@ -95,7 +96,16 @@
       <h2>Stack It Up</h2>
       <span class="age-badge blue">3 – 5 years</span>
       <p class="card-desc">How tall can you build your tower?</p>
-      <button class="play-btn gradient-cool" data-game="stack-smash">Play! 🏗️</button>
+      <button class="play-btn gradient-cool" data-game="stack-smash">Play!</button>
+    </article>
+
+    <!-- Spell It Out Card -->
+    <article class="game-card">
+      <span class="card-icon" aria-hidden="true">🔤</span>
+      <h2>Spell It Out</h2>
+      <span class="age-badge purple">4 – 7 years</span>
+      <p class="card-desc">Find the missing letter!</p>
+      <button class="play-btn gradient-spell" data-game="spell-it-out">Play!</button>
     </article>
   </section>
 
@@ -117,6 +127,7 @@
     <p>Free browser games for toddlers and kids aged 6 months to 5 years.</p>
     <p><strong>Kaboom Keys</strong> (6 months – 3 years): Smash the keyboard and make it rain emojis!</p>
     <p><strong>Stack It Up</strong> (3 – 5 years): How tall can you build your tower?</p>
+    <p><strong>Spell It Out</strong> (4 – 7 years): Find the missing letter!</p>
     <p>No installs, no accounts, no ads. Please enable JavaScript to play.</p>
   </div>
 </noscript>
@@ -143,6 +154,20 @@
   <!-- Kaboom Keys game layer -->
   <div id="splatKeysGame">
     <div class="play-hint" id="splatHint">Press any key and watch the magic!</div>
+  </div>
+
+  <!-- Spell It Out game layer -->
+  <div id="spellGame">
+    <div class="spell-lives" id="spellLives"></div>
+    <div class="spell-score-bar" id="spellScoreBar"></div>
+    <div class="spell-stage" id="spellStage">
+      <div class="spell-emoji" id="spellEmoji"></div>
+      <div class="spell-tiles" id="spellTiles"></div>
+      <div class="spell-feedback" id="spellFeedback"></div>
+    </div>
+    <div class="spell-keyboard" id="spellKeyboard"></div>
+    <div class="spell-celebrate" id="spellCelebrate"></div>
+    <div class="play-hint" id="spellHint">Press the missing letter!</div>
   </div>
 
   <!-- Stack It Up game layer -->

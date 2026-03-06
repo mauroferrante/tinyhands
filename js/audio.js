@@ -395,6 +395,94 @@ export function playCrowdGasp() {
   });
 }
 
+// ===== Spell It Out Sounds =====
+
+export function playCorrectDing() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Bright ascending two-note: satisfying reward
+  const osc1 = audioCtx.createOscillator();
+  const gain1 = audioCtx.createGain();
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(600, now);
+  gain1.gain.setValueAtTime(0.14, now);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+  osc1.connect(gain1).connect(audioCtx.destination);
+  osc1.start(now);
+  osc1.stop(now + 0.15);
+  const osc2 = audioCtx.createOscillator();
+  const gain2 = audioCtx.createGain();
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(800, now + 0.1);
+  gain2.gain.setValueAtTime(0, now);
+  gain2.gain.setValueAtTime(0.14, now + 0.1);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.start(now + 0.1);
+  osc2.stop(now + 0.3);
+}
+
+export function playWrongBoop() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Gentle descending two-note: soft "oops"
+  const osc1 = audioCtx.createOscillator();
+  const gain1 = audioCtx.createGain();
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(400, now);
+  gain1.gain.setValueAtTime(0.1, now);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+  osc1.connect(gain1).connect(audioCtx.destination);
+  osc1.start(now);
+  osc1.stop(now + 0.12);
+  const osc2 = audioCtx.createOscillator();
+  const gain2 = audioCtx.createGain();
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(300, now + 0.08);
+  gain2.gain.setValueAtTime(0, now);
+  gain2.gain.setValueAtTime(0.1, now + 0.08);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.start(now + 0.08);
+  osc2.stop(now + 0.22);
+}
+
+export function playLifeLost() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Low triangle wave with downward pitch bend: subtle "wah"
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(200, now);
+  osc.frequency.exponentialRampToValueAtTime(100, now + 0.25);
+  gain.gain.setValueAtTime(0.12, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.3);
+}
+
+export function playSpellWhoosh() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Short filtered noise-like burst: subtle transition
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(600, now);
+  osc.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+  gain.gain.setValueAtTime(0.04, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.12);
+}
+
 export function playCrowdRoar() {
   if (!audioCtx) return;
   if (audioCtx.state === 'suspended') audioCtx.resume();

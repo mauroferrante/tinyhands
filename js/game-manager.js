@@ -6,6 +6,7 @@ import { initAudio, playFanfare } from './audio.js';
 import { EMOJIS, createBgEmojis } from './effects.js';
 import { splatKeys } from './games/splat-keys.js';
 import { stackSmash } from './games/stack-smash.js';
+import { spellItOut } from './games/spell-it-out.js';
 
 // ---- Element references ----
 const landing    = document.getElementById('landing');
@@ -23,7 +24,8 @@ let cursorActive = false;
 // ---- Game Registry ----
 const GAMES = {
   'splat-keys': splatKeys,
-  'stack-smash': stackSmash
+  'stack-smash': stackSmash,
+  'spell-it-out': spellItOut
 };
 
 // ---- Floating background emojis on landing ----
