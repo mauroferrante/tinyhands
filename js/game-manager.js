@@ -163,6 +163,17 @@ document.querySelectorAll('.game-card').forEach(card => {
   });
 });
 
+// Release entrance animation so hover transitions work
+document.querySelectorAll('.game-card').forEach(card => {
+  card.addEventListener('animationend', (e) => {
+    if (e.animationName === 'cardBounceIn') {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0) scale(1)';
+      card.style.animation = 'none';
+    }
+  });
+});
+
 // Play buttons still handle their own clicks
 document.querySelectorAll('.play-btn[data-game]').forEach(btn => {
   btn.addEventListener('click', () => launchGame(btn.dataset.game, btn));
