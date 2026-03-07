@@ -628,3 +628,21 @@ export function playCardSettle() {
   osc.start(now);
   osc.stop(now + 0.05);
 }
+
+export function playBubblePop(pitch = 0) {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  const base = 500 + pitch * 80;
+  osc.frequency.setValueAtTime(base, now);
+  osc.frequency.exponentialRampToValueAtTime(base * 1.6, now + 0.04);
+  osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
+  gain.gain.setValueAtTime(0.1, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.14);
+}

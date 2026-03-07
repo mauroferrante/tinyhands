@@ -2,7 +2,7 @@
  *  Tiny Hands Play — Game Manager (Entry Point)
  * ========================================================= */
 
-import { initAudio, playFanfare } from './audio.js';
+import { initAudio, playFanfare, playBubblePop } from './audio.js';
 import { EMOJIS, createBgEmojis } from './effects.js';
 import { splatKeys } from './games/splat-keys.js';
 import { stackSmash } from './games/stack-smash.js';
@@ -172,6 +172,11 @@ document.querySelectorAll('.game-card').forEach(card => {
     if (e.target.closest('.card-info-btn')) return;
     card.classList.remove('flipped');
   });
+});
+
+// ===== Bubble pop sound on card entrance animation =====
+document.querySelectorAll('.game-card').forEach((card, i) => {
+  card.addEventListener('animationend', () => playBubblePop(i), { once: true });
 });
 
 // ===== Play buttons launch games =====
