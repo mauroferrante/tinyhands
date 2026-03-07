@@ -3,7 +3,7 @@
  * ========================================================= */
 
 import { playCardFlip, playMatchChime, playNoMatchBoop,
-         playCardSettle, playWinFanfare } from '../audio.js';
+         playCardSettle, playCardSwoosh, playWinFanfare } from '../audio.js';
 import { spawnParticles } from '../effects.js';
 import { shareOrCopy } from '../share.js';
 
@@ -170,12 +170,12 @@ function startRound(difficulty) {
     return { emoji, index: i, matched: false, element: el };
   });
 
-  // Trigger deal animation + staggered deal sounds
+  // Trigger deal animation + staggered swoosh sounds
   requestAnimationFrame(() => {
     memoryBoardEl.classList.add('memory-dealt');
-    // Play a settle sound per card as each one lands
+    // Play a card swoosh per card as each one lands
     cards.forEach((_, i) => {
-      setTimeout(() => playCardSettle(), i * 25 + 300);
+      setTimeout(() => playCardSwoosh(), i * 25 + 300);
     });
   });
 }

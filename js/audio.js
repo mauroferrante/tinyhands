@@ -629,6 +629,31 @@ export function playCardSettle() {
   osc.stop(now + 0.05);
 }
 
+export function playCardSwoosh() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // White noise burst shaped like a card swoosh
+  const bufSize = audioCtx.sampleRate * 0.08;
+  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buf;
+  // Bandpass filter for papery texture
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(3000 + Math.random() * 1500, now);
+  filter.Q.value = 0.8;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.12, now);
+  gain.gain.linearRampToValueAtTime(0.06, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+  noise.connect(filter).connect(gain).connect(audioCtx.destination);
+  noise.start(now);
+  noise.stop(now + 0.08);
+}
+
 export function playBubblePop(pitch = 0) {
   if (!audioCtx) return;
   if (audioCtx.state === 'suspended') audioCtx.resume();
