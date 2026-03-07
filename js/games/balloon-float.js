@@ -82,7 +82,7 @@ const POWERUP_EMOJIS = {
 
 const POWERUP_DURATIONS = {
   [PU_RAINBOW]: 5.0,
-  [PU_MAGNET]:  5.0,
+  [PU_MAGNET]:  10.0,
   [PU_SLOWMO]:  3.0,
 };
 
@@ -226,52 +226,162 @@ function createBgClouds() {
   }
 }
 
-// ===== Parallax Landscape (bottom decoration) =====
+// ===== Parallax Landscape (green hills with clustered features) =====
 
 function createLandscape() {
   landscapeLayers = [];
+  const totalW = W + 600;
 
-  const backItems = [];
-  const mountainEmojis = ['\u{1F3D4}\uFE0F', '\u26F0\uFE0F', '\u{1F5FB}', '\u{1F30B}'];
-  let bx = 30, mi = 0;
-  while (bx < W + 400) {
-    backItems.push({
-      emoji: mountainEmojis[mi % mountainEmojis.length],
-      x: bx, size: 52 + ((mi * 17) % 22),
-      yOffset: -((mi * 11) % 16)
-    });
-    bx += 90 + ((mi * 73) % 50);
-    mi++;
+  // --- Back layer: distant rolling hills with mountain clusters & volcanos ---
+  const backHills = [];
+  const backClusters = [];
+  // Generate hill control points
+  let bhx = 0;
+  while (bhx < totalW + 200) {
+    backHills.push({ x: bhx, h: 30 + ((bhx * 7 + 13) % 35) });
+    bhx += 60 + ((bhx * 3 + 7) % 40);
   }
-  landscapeLayers.push({ speed: 0.08, alpha: 0.25, yBase: H - 30, items: backItems });
+  // Place sparse mountain clusters and occasional volcano
+  let bcx = 80, bci = 0;
+  const mtnEmojis = ['\u{1F3D4}\uFE0F', '\u26F0\uFE0F', '\u{1F5FB}'];
+  while (bcx < totalW) {
+    const kind = (bci * 37 + 11) % 100;
+    if (kind < 25) {
+      // Mountain cluster (2-3)
+      const count = 2 + ((bci * 13) % 2);
+      for (let i = 0; i < count; i++) {
+        backClusters.push({
+          emoji: mtnEmojis[(bci + i) % mtnEmojis.length],
+          x: bcx + i * 35, size: 44 + ((bci * 11 + i * 7) % 18), yOffset: -(10 + i * 5)
+        });
+      }
+      bcx += 120 + count * 35;
+    } else if (kind < 35) {
+      // Volcano (rare)
+      backClusters.push({
+        emoji: '\u{1F30B}', x: bcx, size: 52 + ((bci * 17) % 14), yOffset: -18
+      });
+      bcx += 160;
+    } else {
+      // Empty rolling hills
+      bcx += 100 + ((bci * 53) % 80);
+    }
+    bci++;
+  }
+  landscapeLayers.push({
+    speed: 0.08, alpha: 0.30, yBase: H - 20,
+    hills: backHills, hillColor: 'rgba(90, 160, 80, 0.35)',
+    hillHeight: 45, items: backClusters
+  });
 
-  const midItems = [];
-  const buildingEmojis = ['\u{1F3E2}', '\u{1F3ED}', '\u{1F3DB}\uFE0F', '\u{1F3DF}\uFE0F', '\u{1F3F0}', '\u{1F3EF}', '\u{1F3E3}'];
-  let mx = 50, bi = 0;
-  while (mx < W + 400) {
-    midItems.push({
-      emoji: buildingEmojis[bi % buildingEmojis.length],
-      x: mx, size: 34 + ((bi * 13) % 14),
-      yOffset: -((bi * 7) % 12)
-    });
-    mx += 65 + ((bi * 47) % 35);
-    bi++;
+  // --- Middle layer: towns and forests ---
+  const midHills = [];
+  const midClusters = [];
+  let mhx = 0;
+  while (mhx < totalW + 200) {
+    midHills.push({ x: mhx, h: 18 + ((mhx * 11 + 5) % 22) });
+    mhx += 40 + ((mhx * 7 + 3) % 30);
   }
-  landscapeLayers.push({ speed: 0.15, alpha: 0.35, yBase: H - 18, items: midItems });
+  const townEmojis = ['\u{1F3E0}', '\u{1F3E1}', '\u{1F3E2}', '\u26EA\uFE0F', '\u{1F3E3}', '\u{1F3ED}'];
+  const treeEmojis = ['\u{1F333}', '\u{1F332}', '\u{1F334}', '\u{1F333}'];
+  let mcx = 60, mci = 0;
+  while (mcx < totalW) {
+    const kind = (mci * 43 + 7) % 100;
+    if (kind < 30) {
+      // Town cluster (3-5 buildings)
+      const count = 3 + ((mci * 11) % 3);
+      for (let i = 0; i < count; i++) {
+        midClusters.push({
+          emoji: townEmojis[(mci + i) % townEmojis.length],
+          x: mcx + i * 22, size: 26 + ((mci * 7 + i * 5) % 10), yOffset: -(4 + ((i * 3) % 6))
+        });
+      }
+      mcx += 80 + count * 22;
+    } else if (kind < 55) {
+      // Forest cluster (3-6 trees)
+      const count = 3 + ((mci * 17) % 4);
+      for (let i = 0; i < count; i++) {
+        midClusters.push({
+          emoji: treeEmojis[(mci + i) % treeEmojis.length],
+          x: mcx + i * 18, size: 22 + ((mci * 5 + i * 9) % 8), yOffset: -(2 + ((i * 7) % 5))
+        });
+      }
+      mcx += 60 + count * 18;
+    } else {
+      // Empty green hills
+      mcx += 80 + ((mci * 59) % 70);
+    }
+    mci++;
+  }
+  landscapeLayers.push({
+    speed: 0.18, alpha: 0.45, yBase: H - 8,
+    hills: midHills, hillColor: 'rgba(80, 170, 60, 0.50)',
+    hillHeight: 30, items: midClusters
+  });
 
-  const frontItems = [];
-  const houseEmojis = ['\u{1F3E1}', '\u{1F334}', '\u{1F3E0}', '\u{1F333}', '\u{1F6D6}', '\u26EA\uFE0F', '\u{1F3D8}\uFE0F', '\u{1F333}'];
-  let fx = 20, fi = 0;
-  while (fx < W + 400) {
-    frontItems.push({
-      emoji: houseEmojis[fi % houseEmojis.length],
-      x: fx, size: 24 + ((fi * 11) % 12),
-      yOffset: -((fi * 5) % 9)
-    });
-    fx += 45 + ((fi * 37) % 30);
-    fi++;
+  // --- Front layer: close-up small hills with occasional houses/trees ---
+  const frontHills = [];
+  const frontClusters = [];
+  let fhx = 0;
+  while (fhx < totalW + 200) {
+    frontHills.push({ x: fhx, h: 10 + ((fhx * 13 + 9) % 14) });
+    fhx += 30 + ((fhx * 5 + 11) % 25);
   }
-  landscapeLayers.push({ speed: 0.25, alpha: 0.45, yBase: H - 10, items: frontItems });
+  const smallEmojis = ['\u{1F333}', '\u{1F3E1}', '\u{1F332}', '\u{1F334}'];
+  let fcx = 100, fci = 0;
+  while (fcx < totalW) {
+    const kind = (fci * 31 + 19) % 100;
+    if (kind < 20) {
+      // Small house + tree
+      frontClusters.push({
+        emoji: '\u{1F3E1}', x: fcx, size: 20, yOffset: -4
+      });
+      frontClusters.push({
+        emoji: smallEmojis[(fci * 3) % smallEmojis.length],
+        x: fcx + 20, size: 18, yOffset: -3
+      });
+      fcx += 80;
+    } else if (kind < 35) {
+      // Couple of trees
+      for (let i = 0; i < 2; i++) {
+        frontClusters.push({
+          emoji: smallEmojis[(fci + i) % smallEmojis.length],
+          x: fcx + i * 16, size: 16 + ((fci * 7) % 6), yOffset: -2
+        });
+      }
+      fcx += 60;
+    } else {
+      fcx += 70 + ((fci * 41) % 60);
+    }
+    fci++;
+  }
+  landscapeLayers.push({
+    speed: 0.30, alpha: 0.55, yBase: H - 2,
+    hills: frontHills, hillColor: 'rgba(70, 180, 50, 0.55)',
+    hillHeight: 18, items: frontClusters
+  });
+}
+
+function drawHillTerrain(layer) {
+  if (!layer.hills || layer.hills.length < 2) return;
+  ctx.save();
+  ctx.globalAlpha = layer.alpha;
+  ctx.fillStyle = layer.hillColor;
+  ctx.beginPath();
+  ctx.moveTo(layer.hills[0].x, layer.yBase);
+  for (let i = 0; i < layer.hills.length - 1; i++) {
+    const curr = layer.hills[i];
+    const next = layer.hills[i + 1];
+    const cpx = (curr.x + next.x) / 2;
+    ctx.quadraticCurveTo(curr.x, layer.yBase - curr.h, cpx, layer.yBase - (curr.h + next.h) / 2);
+  }
+  const last = layer.hills[layer.hills.length - 1];
+  ctx.lineTo(last.x, layer.yBase);
+  ctx.lineTo(last.x, H + 10);
+  ctx.lineTo(layer.hills[0].x - 10, H + 10);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
 }
 
 // ===== String Physics =====
@@ -939,19 +1049,9 @@ function render() {
   skyGrad.addColorStop(0, '#C8DCF0');
   skyGrad.addColorStop(0.4, '#D8E8F5');
   skyGrad.addColorStop(0.7, '#E8F0F8');
-  skyGrad.addColorStop(0.85, '#FFECD2');
-  skyGrad.addColorStop(1, '#FFECD2');
+  skyGrad.addColorStop(1, '#EAF4E8');
   ctx.fillStyle = skyGrad;
   ctx.fillRect(0, 0, W, H);
-
-  // --- Water / lake at the bottom ---
-  const waterTop = H - 55;
-  const waterGrad = ctx.createLinearGradient(0, waterTop, 0, H);
-  waterGrad.addColorStop(0, 'rgba(135, 206, 235, 0.35)');
-  waterGrad.addColorStop(0.3, 'rgba(100, 180, 220, 0.50)');
-  waterGrad.addColorStop(1, 'rgba(70, 140, 190, 0.60)');
-  ctx.fillStyle = waterGrad;
-  ctx.fillRect(0, waterTop, W, H - waterTop);
 
   // --- Slow-mo tint overlay ---
   if (slowMoFactor < 1.0) {
@@ -969,9 +1069,10 @@ function render() {
   }
   ctx.globalAlpha = 1;
 
-  // --- Parallax landscape ---
+  // --- Parallax landscape (green hills + emoji clusters) ---
   if (landscapeLayers) {
     for (const layer of landscapeLayers) {
+      drawHillTerrain(layer);
       ctx.globalAlpha = layer.alpha;
       for (const item of layer.items) {
         drawSprite(item.emoji, item.size, item.x, layer.yBase + item.yOffset);
@@ -980,50 +1081,52 @@ function render() {
     ctx.globalAlpha = 1;
   }
 
-  // --- Magnet visual effects ---
+  // --- Magnet visual effects (magnetic field around balloon) ---
   if (activeTimedEffect && activeTimedEffect.type === PU_MAGNET) {
     ctx.save();
-    ctx.globalAlpha = 0.08 + Math.sin(gameTime * 3) * 0.04;
-    ctx.strokeStyle = '#FFDD44';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([8, 6]);
-    ctx.beginPath();
-    ctx.arc(balloonX, balloonY, MAGNET_RADIUS, 0, Math.PI * 2);
-    ctx.stroke();
+    const t = gameTime;
+
+    // Concentric rotating field rings
+    for (let ring = 0; ring < 3; ring++) {
+      const radius = 35 + ring * 28;
+      const rotSpeed = (ring % 2 === 0 ? 1 : -1) * (1.5 - ring * 0.3);
+      const baseAlpha = 0.25 - ring * 0.06;
+      ctx.globalAlpha = baseAlpha + Math.sin(t * 3 + ring) * 0.08;
+      ctx.strokeStyle = ring === 0 ? '#66BBFF' : ring === 1 ? '#4499EE' : '#3377CC';
+      ctx.lineWidth = 2.5 - ring * 0.5;
+      ctx.setLineDash([10 + ring * 4, 8 + ring * 3]);
+      ctx.lineDashOffset = t * 60 * rotSpeed;
+      ctx.beginPath();
+      ctx.arc(balloonX, balloonY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+    }
     ctx.setLineDash([]);
 
-    ctx.lineWidth = 2;
+    // Subtle radial glow
+    const glowGrad = ctx.createRadialGradient(balloonX, balloonY, 15, balloonX, balloonY, 90);
+    glowGrad.addColorStop(0, 'rgba(100, 180, 255, 0.12)');
+    glowGrad.addColorStop(1, 'rgba(100, 180, 255, 0.0)');
+    ctx.globalAlpha = 0.6 + Math.sin(t * 4) * 0.15;
+    ctx.fillStyle = glowGrad;
+    ctx.fillRect(balloonX - 90, balloonY - 90, 180, 180);
+
+    // Attraction lines to nearby stars
     for (const star of stars) {
       const dx = balloonX - star.x;
       const dy = balloonY - star.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < MAGNET_RADIUS) {
         const strength = 1 - dist / MAGNET_RADIUS;
-        ctx.globalAlpha = 0.3 + strength * 0.5;
-        ctx.strokeStyle = '#FFDD44';
+        ctx.globalAlpha = 0.15 + strength * 0.35;
+        ctx.strokeStyle = '#66BBFF';
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(balloonX, balloonY);
         ctx.lineTo(star.x, star.y);
         ctx.stroke();
-        const midX = (balloonX + star.x) / 2 + (Math.random() - 0.5) * 10;
-        const midY = (balloonY + star.y) / 2 + (Math.random() - 0.5) * 10;
-        ctx.globalAlpha = 0.6 * strength;
-        ctx.fillStyle = '#FFD700';
-        ctx.beginPath();
-        ctx.arc(midX, midY, 2 + strength * 2, 0, Math.PI * 2);
-        ctx.fill();
       }
     }
-    ctx.restore();
-    ctx.globalAlpha = 1;
 
-    ctx.save();
-    ctx.globalAlpha = 0.7 + Math.sin(gameTime * 5) * 0.2;
-    ctx.font = 'bold 14px "Fredoka One", cursive';
-    ctx.fillStyle = '#FFDD44';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('MAGNET!', balloonX, balloonY - BALLOON_RADIUS - 20);
     ctx.restore();
     ctx.globalAlpha = 1;
   }
@@ -1363,12 +1466,24 @@ function gameLoop(timestamp) {
 
   if (landscapeLayers) {
     for (const layer of landscapeLayers) {
+      // Scroll hill control points
+      if (layer.hills) {
+        for (const hp of layer.hills) {
+          hp.x -= layer.speed;
+          if (hp.x < -100) {
+            let maxX = 0;
+            for (const other of layer.hills) { if (other.x > maxX) maxX = other.x; }
+            hp.x = maxX + 40 + ((hp.h * 7) % 30);
+          }
+        }
+      }
+      // Scroll emoji clusters
       for (const item of layer.items) {
         item.x -= layer.speed;
         if (item.x < -80) {
           let maxX = 0;
           for (const other of layer.items) { if (other.x > maxX) maxX = other.x; }
-          item.x = maxX + 60 + ((item.size * 7) % 40);
+          item.x = maxX + 40 + ((item.size * 7) % 40);
         }
       }
     }
