@@ -382,22 +382,30 @@ function createLandscape() {
 
 function drawHillTerrain(layer) {
   if (!layer.hills || layer.hills.length < 2) return;
+
+  // Sort hills left-to-right so curves never cross
+  layer.hills.sort((a, b) => a.x - b.x);
+
   ctx.save();
   ctx.globalAlpha = 1;
   ctx.fillStyle = layer.hillColor;
   ctx.beginPath();
-  const firstX = layer.hills[0].x - 20;
-  ctx.moveTo(firstX, H + 10);
-  ctx.lineTo(firstX, layer.yBase);
+
+  // Always start from far left edge
+  ctx.moveTo(-50, H + 10);
+  ctx.lineTo(-50, layer.yBase - layer.hills[0].h);
+
   for (let i = 0; i < layer.hills.length - 1; i++) {
     const curr = layer.hills[i];
     const next = layer.hills[i + 1];
     const cpx = (curr.x + next.x) / 2;
     ctx.quadraticCurveTo(curr.x, layer.yBase - curr.h, cpx, layer.yBase - (curr.h + next.h) / 2);
   }
+
+  // Always extend to far right edge
   const last = layer.hills[layer.hills.length - 1];
-  ctx.lineTo(last.x + 20, layer.yBase);
-  ctx.lineTo(last.x + 20, H + 10);
+  ctx.lineTo(W + 50, layer.yBase - last.h);
+  ctx.lineTo(W + 50, H + 10);
   ctx.closePath();
   ctx.fill();
   ctx.restore();
@@ -1489,20 +1497,32 @@ function gameLoop(timestamp) {
       if (layer.hills) {
         for (const hp of layer.hills) {
           hp.x -= layer.speed;
-          if (hp.x < -100) {
-            let maxX = 0;
-            for (const other of layer.hills) { if (other.x > maxX) maxX = other.x; }
-            hp.x = maxX + 40 + ((hp.h * 7) % 30);
-          }
+        }
+        // Recycle leftmost point to the right when it's far off-screen
+        // Sort first so we always check the actual leftmost
+        layer.hills.sort((a, b) => a.x - b.x);
+        while (layer.hills[0] && layer.hills[0].x < -200) {
+          const recycled = layer.hills.shift();
+          const rightmost = layer.hills[layer.hills.length - 1];
+          recycled.x = rightmost.x + 50 + ((recycled.h * 7) % 40);
+          recycled.h = 35 + ((recycled.x * 7 + 13) % 65);
+          layer.hills.push(recycled);
         }
       }
       // Scroll emoji clusters
       for (const item of layer.items) {
         item.x -= layer.speed;
-        if (item.x < -80) {
-          let maxX = 0;
-          for (const other of layer.items) { if (other.x > maxX) maxX = other.x; }
-          item.x = maxX + 40 + ((item.size * 7) % 40);
+      }
+      // Recycle leftmost clusters
+      let minClusterX = Infinity, maxClusterX = -Infinity;
+      for (const item of layer.items) {
+        if (item.x < minClusterX) minClusterX = item.x;
+        if (item.x > maxClusterX) maxClusterX = item.x;
+      }
+      for (const item of layer.items) {
+        if (item.x < -150) {
+          item.x = maxClusterX + 50 + ((item.size * 7) % 50);
+          maxClusterX = Math.max(maxClusterX, item.x);
         }
       }
     }
