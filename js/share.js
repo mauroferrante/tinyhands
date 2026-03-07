@@ -4,7 +4,7 @@
  * ========================================================= */
 
 export const SHARE_MESSAGE =
-  'Bookmark this \u2014 open it next time your toddler hijacks your keyboard \u2192 tinyhandsplay.com';
+  'Free fun and educational games for toddlers and kids \u2014 no ads, no installs, just play \u2192 tinyhandsplay.com';
 
 const SHARE_DATA = {
   title: 'Tiny Hands Play',
