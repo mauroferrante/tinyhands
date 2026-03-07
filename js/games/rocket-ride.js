@@ -1045,12 +1045,14 @@ function render() {
     ctx.save();
     ctx.globalAlpha = padAlpha;
     const padX = W * 0.5;
-    // Crane (launch tower) — to the right of the rocket, twice as tall
-    drawSprite('\u{1F3D7}\uFE0F', 120, padX + 55, launchPadY - 30);
-    // NASA office buildings — smaller, flanking the pad
-    drawSprite('\u{1F3E2}', 40, padX - 80, launchPadY + 10);
-    drawSprite('\u{1F3E2}', 34, padX - 115, launchPadY + 14);
-    drawSprite('\u{1F3E2}', 36, padX + 110, launchPadY + 12);
+    // Ground level = front layer base (where hills sit)
+    const groundY = landscapeLayers ? landscapeLayers[2].yBase - 15 * (landscapeScale || 1) : launchPadY;
+    // Crane (launch tower) — base on ground, tower extends up next to rocket
+    drawSprite('\u{1F3D7}\uFE0F', 120, padX + 55, groundY - 25 * (landscapeScale || 1));
+    // NASA office buildings — on the ground, flanking the pad
+    drawSprite('\u{1F3E2}', 40, padX - 80, groundY);
+    drawSprite('\u{1F3E2}', 34, padX - 115, groundY + 4);
+    drawSprite('\u{1F3E2}', 36, padX + 115, groundY + 2);
     ctx.restore();
   }
 
