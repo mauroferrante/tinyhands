@@ -1429,7 +1429,9 @@ function gameLoop(timestamp) {
 
   if (gameState === 'ready') {
     // Idle bob
-    rocketY = H * 0.82 + Math.sin(gameTime * 2) * 3;
+    // Anchor to landscape mid-layer hills
+    const midBase = landscapeLayers ? landscapeLayers[1].yBase : H + 10;
+    rocketY = midBase - 55 * (landscapeScale || 1) + Math.sin(gameTime * 2) * 3;
     gameTime += dt;
   }
 
@@ -1486,7 +1488,6 @@ function resetAndStart() {
   celebrateEl.innerHTML = '';
 
   rocketX = W * 0.5;
-  rocketY = H * 0.82;
   rocketVX = 0;
   rocketVY = 0;
   rocketTilt = 0;
@@ -1499,9 +1500,13 @@ function resetAndStart() {
   lastBoostState = false;
   nearMissCooldown = 0;
   autoBoostTimer = 0;
-  launchPadY = H * 0.82;
 
   createLandscape();
+
+  // Anchor rocket + launch pad to actual landscape (mid-layer hill tops)
+  const midBase = landscapeLayers[1].yBase;
+  rocketY = midBase - 55 * landscapeScale;
+  launchPadY = rocketY;
 
   obstacles = [];
   lastObstacleSpawn = 0;
