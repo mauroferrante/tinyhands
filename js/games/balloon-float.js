@@ -167,6 +167,17 @@ function initCanvas() {
   ctx.scale(dpr, dpr);
 }
 
+let resizeHandler = null;
+
+function onResize() {
+  const oldH = H;
+  initCanvas();
+  if (Math.abs(H - oldH) > 5) {
+    createBgClouds();
+    createLandscape();
+  }
+}
+
 // ===== Opaque Emoji Sprite Cache =====
 
 const spriteCache = {};
@@ -1591,6 +1602,10 @@ function cleanup() {
   shieldActive = false;
   shieldTimer = 0;
   landscapeLayers = null;
+  if (resizeHandler) {
+    window.removeEventListener('resize', resizeHandler);
+    resizeHandler = null;
+  }
   celebrateEl.classList.remove('show');
   celebrateEl.innerHTML = '';
   hudEl.style.display = 'none';
@@ -1609,6 +1624,8 @@ export const balloonFloat = {
     createBgClouds();
     createLandscape();
     resetAndStart();
+    resizeHandler = onResize;
+    window.addEventListener('resize', resizeHandler);
     animFrame = requestAnimationFrame(gameLoop);
   },
 
