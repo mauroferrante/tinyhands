@@ -152,6 +152,7 @@ let lastExtraLifeCheck;
 
 // ---- Landscape state ----
 let landscapeLayers;
+let landscapeScale;  // scale factor based on screen height
 
 // ===== Canvas Setup =====
 
@@ -243,12 +244,17 @@ function createLandscape() {
   landscapeLayers = [];
   const totalW = W + 800;
 
+  // Scale landscape proportionally to screen height so features are visible
+  landscapeScale = Math.max(H / 500, 1);
+
+  const s = landscapeScale;
+
   // --- Back layer: tall distant hills with mountain ranges & volcanos ---
   const backHills = [];
   const backClusters = [];
   let bhx = -20;
   while (bhx < totalW + 300) {
-    backHills.push({ x: bhx, h: 55 + ((bhx * 7 + 13) % 65) });
+    backHills.push({ x: bhx, h: (55 + ((bhx * 7 + 13) % 65)) * s });
     bhx += 70 + ((bhx * 3 + 7) % 50);
   }
   const mtnEmojis = ['\u{1F3D4}\uFE0F', '\u26F0\uFE0F', '\u{1F5FB}'];
@@ -261,16 +267,16 @@ function createLandscape() {
       for (let i = 0; i < count; i++) {
         backClusters.push({
           emoji: mtnEmojis[(bci + i) % mtnEmojis.length],
-          x: bcx + i * 45, size: 55 + ((bci * 11 + i * 7) % 20),
-          yOffset: -(45 + ((bci * 7 + i * 13) % 35))
+          x: bcx + i * 45, size: (55 + ((bci * 11 + i * 7) % 20)) * s,
+          yOffset: -(45 + ((bci * 7 + i * 13) % 35)) * s
         });
       }
       bcx += 140 + count * 45;
     } else if (kind < 38) {
       // Volcano (rare, placed high)
       backClusters.push({
-        emoji: '\u{1F30B}', x: bcx, size: 58 + ((bci * 17) % 16),
-        yOffset: -(55 + ((bci * 11) % 25))
+        emoji: '\u{1F30B}', x: bcx, size: (58 + ((bci * 17) % 16)) * s,
+        yOffset: -(55 + ((bci * 11) % 25)) * s
       });
       bcx += 180;
     } else {
@@ -289,7 +295,7 @@ function createLandscape() {
   const midClusters = [];
   let mhx = -10;
   while (mhx < totalW + 300) {
-    midHills.push({ x: mhx, h: 35 + ((mhx * 11 + 5) % 50) });
+    midHills.push({ x: mhx, h: (35 + ((mhx * 11 + 5) % 50)) * s });
     mhx += 50 + ((mhx * 7 + 3) % 40);
   }
   const townEmojis = ['\u{1F3E0}', '\u{1F3E1}', '\u{1F3E2}', '\u26EA\uFE0F', '\u{1F3E3}', '\u{1F3ED}', '\u{1F3EF}'];
@@ -304,8 +310,8 @@ function createLandscape() {
       for (let i = 0; i < count; i++) {
         midClusters.push({
           emoji: townEmojis[(mci + i) % townEmojis.length],
-          x: mcx + i * 26, size: 28 + ((mci * 7 + i * 5) % 12),
-          yOffset: -(baseY + ((i * 7) % 10))
+          x: mcx + i * 26, size: (28 + ((mci * 7 + i * 5) % 12)) * s,
+          yOffset: -(baseY + ((i * 7) % 10)) * s
         });
       }
       mcx += 90 + count * 26;
@@ -316,8 +322,8 @@ function createLandscape() {
       for (let i = 0; i < count; i++) {
         midClusters.push({
           emoji: treeEmojis[(mci + i) % treeEmojis.length],
-          x: mcx + i * 20, size: 24 + ((mci * 5 + i * 9) % 10),
-          yOffset: -(baseY + ((i * 11) % 12))
+          x: mcx + i * 20, size: (24 + ((mci * 5 + i * 9) % 10)) * s,
+          yOffset: -(baseY + ((i * 11) % 12)) * s
         });
       }
       mcx += 70 + count * 20;
@@ -337,7 +343,7 @@ function createLandscape() {
   const frontClusters = [];
   let fhx = -10;
   while (fhx < totalW + 300) {
-    frontHills.push({ x: fhx, h: 20 + ((fhx * 13 + 9) % 30) });
+    frontHills.push({ x: fhx, h: (20 + ((fhx * 13 + 9) % 30)) * s });
     fhx += 35 + ((fhx * 5 + 11) % 30);
   }
   const smallEmojis = ['\u{1F333}', '\u{1F3E1}', '\u{1F332}', '\u{1F334}'];
@@ -348,13 +354,13 @@ function createLandscape() {
       // Small house + tree
       const baseY = 10 + ((fci * 13) % 15);
       frontClusters.push({
-        emoji: '\u{1F3E1}', x: fcx, size: 22,
-        yOffset: -(baseY + 4)
+        emoji: '\u{1F3E1}', x: fcx, size: 22 * s,
+        yOffset: -(baseY + 4) * s
       });
       frontClusters.push({
         emoji: smallEmojis[(fci * 3) % smallEmojis.length],
-        x: fcx + 22, size: 20,
-        yOffset: -(baseY + 2)
+        x: fcx + 22, size: 20 * s,
+        yOffset: -(baseY + 2) * s
       });
       fcx += 90;
     } else if (kind < 32) {
@@ -363,8 +369,8 @@ function createLandscape() {
       for (let i = 0; i < 2; i++) {
         frontClusters.push({
           emoji: smallEmojis[(fci + i) % smallEmojis.length],
-          x: fcx + i * 18, size: 18 + ((fci * 7) % 6),
-          yOffset: -(baseY + ((i * 5) % 6))
+          x: fcx + i * 18, size: (18 + ((fci * 7) % 6)) * s,
+          yOffset: -(baseY + ((i * 5) % 6)) * s
         });
       }
       fcx += 70;
@@ -1505,7 +1511,7 @@ function gameLoop(timestamp) {
           const recycled = layer.hills.shift();
           const rightmost = layer.hills[layer.hills.length - 1];
           recycled.x = rightmost.x + 50 + ((recycled.h * 7) % 40);
-          recycled.h = 35 + ((recycled.x * 7 + 13) % 65);
+          recycled.h = (35 + ((recycled.x * 7 + 13) % 65)) * (landscapeScale || 1);
           layer.hills.push(recycled);
         }
       }
