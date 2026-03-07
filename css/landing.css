@@ -359,6 +359,11 @@
   opacity: 0;
 }
 
+/* Hide card front content when flipped (Safari backface-visibility fix) */
+.game-card.flipped .card-front {
+  visibility: hidden;
+}
+
 /* ===== Card Back Content ===== */
 .card-info-desc {
   font-size: 0.88rem;
