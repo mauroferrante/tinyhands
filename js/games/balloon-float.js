@@ -226,139 +226,146 @@ function createBgClouds() {
   }
 }
 
-// ===== Parallax Landscape (green hills with clustered features) =====
+// ===== Parallax Landscape (tall green hills with clustered features) =====
 
 function createLandscape() {
   landscapeLayers = [];
-  const totalW = W + 600;
+  const totalW = W + 800;
 
-  // --- Back layer: distant rolling hills with mountain clusters & volcanos ---
+  // --- Back layer: tall distant hills with mountain ranges & volcanos ---
   const backHills = [];
   const backClusters = [];
-  // Generate hill control points
-  let bhx = 0;
-  while (bhx < totalW + 200) {
-    backHills.push({ x: bhx, h: 30 + ((bhx * 7 + 13) % 35) });
-    bhx += 60 + ((bhx * 3 + 7) % 40);
+  let bhx = -20;
+  while (bhx < totalW + 300) {
+    backHills.push({ x: bhx, h: 55 + ((bhx * 7 + 13) % 65) });
+    bhx += 70 + ((bhx * 3 + 7) % 50);
   }
-  // Place sparse mountain clusters and occasional volcano
-  let bcx = 80, bci = 0;
   const mtnEmojis = ['\u{1F3D4}\uFE0F', '\u26F0\uFE0F', '\u{1F5FB}'];
+  let bcx = 80, bci = 0;
   while (bcx < totalW) {
     const kind = (bci * 37 + 11) % 100;
     if (kind < 25) {
-      // Mountain cluster (2-3)
+      // Mountain cluster (2-3) perched high on hills
       const count = 2 + ((bci * 13) % 2);
       for (let i = 0; i < count; i++) {
         backClusters.push({
           emoji: mtnEmojis[(bci + i) % mtnEmojis.length],
-          x: bcx + i * 35, size: 44 + ((bci * 11 + i * 7) % 18), yOffset: -(10 + i * 5)
+          x: bcx + i * 45, size: 55 + ((bci * 11 + i * 7) % 20),
+          yOffset: -(45 + ((bci * 7 + i * 13) % 35))
         });
       }
-      bcx += 120 + count * 35;
-    } else if (kind < 35) {
-      // Volcano (rare)
+      bcx += 140 + count * 45;
+    } else if (kind < 38) {
+      // Volcano (rare, placed high)
       backClusters.push({
-        emoji: '\u{1F30B}', x: bcx, size: 52 + ((bci * 17) % 14), yOffset: -18
+        emoji: '\u{1F30B}', x: bcx, size: 58 + ((bci * 17) % 16),
+        yOffset: -(55 + ((bci * 11) % 25))
       });
-      bcx += 160;
+      bcx += 180;
     } else {
-      // Empty rolling hills
-      bcx += 100 + ((bci * 53) % 80);
+      bcx += 120 + ((bci * 53) % 100);
     }
     bci++;
   }
   landscapeLayers.push({
-    speed: 0.08, alpha: 0.30, yBase: H - 20,
-    hills: backHills, hillColor: 'rgba(90, 160, 80, 0.35)',
-    hillHeight: 45, items: backClusters
+    speed: 0.06, alpha: 0.30, yBase: H + 15,
+    hills: backHills, hillColor: 'rgba(120, 175, 100, 0.40)',
+    items: backClusters
   });
 
-  // --- Middle layer: towns and forests ---
+  // --- Middle layer: towns, forests on rolling hills ---
   const midHills = [];
   const midClusters = [];
-  let mhx = 0;
-  while (mhx < totalW + 200) {
-    midHills.push({ x: mhx, h: 18 + ((mhx * 11 + 5) % 22) });
-    mhx += 40 + ((mhx * 7 + 3) % 30);
+  let mhx = -10;
+  while (mhx < totalW + 300) {
+    midHills.push({ x: mhx, h: 35 + ((mhx * 11 + 5) % 50) });
+    mhx += 50 + ((mhx * 7 + 3) % 40);
   }
-  const townEmojis = ['\u{1F3E0}', '\u{1F3E1}', '\u{1F3E2}', '\u26EA\uFE0F', '\u{1F3E3}', '\u{1F3ED}'];
+  const townEmojis = ['\u{1F3E0}', '\u{1F3E1}', '\u{1F3E2}', '\u26EA\uFE0F', '\u{1F3E3}', '\u{1F3ED}', '\u{1F3EF}'];
   const treeEmojis = ['\u{1F333}', '\u{1F332}', '\u{1F334}', '\u{1F333}'];
   let mcx = 60, mci = 0;
   while (mcx < totalW) {
     const kind = (mci * 43 + 7) % 100;
-    if (kind < 30) {
-      // Town cluster (3-5 buildings)
+    if (kind < 28) {
+      // Town cluster (3-5 buildings) at varying heights
       const count = 3 + ((mci * 11) % 3);
+      const baseY = 20 + ((mci * 19) % 30);
       for (let i = 0; i < count; i++) {
         midClusters.push({
           emoji: townEmojis[(mci + i) % townEmojis.length],
-          x: mcx + i * 22, size: 26 + ((mci * 7 + i * 5) % 10), yOffset: -(4 + ((i * 3) % 6))
+          x: mcx + i * 26, size: 28 + ((mci * 7 + i * 5) % 12),
+          yOffset: -(baseY + ((i * 7) % 10))
         });
       }
-      mcx += 80 + count * 22;
+      mcx += 90 + count * 26;
     } else if (kind < 55) {
-      // Forest cluster (3-6 trees)
+      // Forest cluster (3-6 trees) at different elevations
       const count = 3 + ((mci * 17) % 4);
+      const baseY = 15 + ((mci * 23) % 25);
       for (let i = 0; i < count; i++) {
         midClusters.push({
           emoji: treeEmojis[(mci + i) % treeEmojis.length],
-          x: mcx + i * 18, size: 22 + ((mci * 5 + i * 9) % 8), yOffset: -(2 + ((i * 7) % 5))
+          x: mcx + i * 20, size: 24 + ((mci * 5 + i * 9) % 10),
+          yOffset: -(baseY + ((i * 11) % 12))
         });
       }
-      mcx += 60 + count * 18;
+      mcx += 70 + count * 20;
     } else {
-      // Empty green hills
-      mcx += 80 + ((mci * 59) % 70);
+      mcx += 90 + ((mci * 59) % 80);
     }
     mci++;
   }
   landscapeLayers.push({
-    speed: 0.18, alpha: 0.45, yBase: H - 8,
-    hills: midHills, hillColor: 'rgba(80, 170, 60, 0.50)',
-    hillHeight: 30, items: midClusters
+    speed: 0.14, alpha: 0.50, yBase: H + 10,
+    hills: midHills, hillColor: 'rgba(90, 180, 65, 0.55)',
+    items: midClusters
   });
 
-  // --- Front layer: close-up small hills with occasional houses/trees ---
+  // --- Front layer: close foreground hills with scattered details ---
   const frontHills = [];
   const frontClusters = [];
-  let fhx = 0;
-  while (fhx < totalW + 200) {
-    frontHills.push({ x: fhx, h: 10 + ((fhx * 13 + 9) % 14) });
-    fhx += 30 + ((fhx * 5 + 11) % 25);
+  let fhx = -10;
+  while (fhx < totalW + 300) {
+    frontHills.push({ x: fhx, h: 20 + ((fhx * 13 + 9) % 30) });
+    fhx += 35 + ((fhx * 5 + 11) % 30);
   }
   const smallEmojis = ['\u{1F333}', '\u{1F3E1}', '\u{1F332}', '\u{1F334}'];
-  let fcx = 100, fci = 0;
+  let fcx = 80, fci = 0;
   while (fcx < totalW) {
     const kind = (fci * 31 + 19) % 100;
-    if (kind < 20) {
+    if (kind < 18) {
       // Small house + tree
+      const baseY = 10 + ((fci * 13) % 15);
       frontClusters.push({
-        emoji: '\u{1F3E1}', x: fcx, size: 20, yOffset: -4
+        emoji: '\u{1F3E1}', x: fcx, size: 22,
+        yOffset: -(baseY + 4)
       });
       frontClusters.push({
         emoji: smallEmojis[(fci * 3) % smallEmojis.length],
-        x: fcx + 20, size: 18, yOffset: -3
+        x: fcx + 22, size: 20,
+        yOffset: -(baseY + 2)
       });
-      fcx += 80;
-    } else if (kind < 35) {
-      // Couple of trees
+      fcx += 90;
+    } else if (kind < 32) {
+      // Small tree cluster
+      const baseY = 8 + ((fci * 17) % 12);
       for (let i = 0; i < 2; i++) {
         frontClusters.push({
           emoji: smallEmojis[(fci + i) % smallEmojis.length],
-          x: fcx + i * 16, size: 16 + ((fci * 7) % 6), yOffset: -2
+          x: fcx + i * 18, size: 18 + ((fci * 7) % 6),
+          yOffset: -(baseY + ((i * 5) % 6))
         });
       }
-      fcx += 60;
+      fcx += 70;
     } else {
-      fcx += 70 + ((fci * 41) % 60);
+      fcx += 80 + ((fci * 41) % 70);
     }
     fci++;
   }
   landscapeLayers.push({
-    speed: 0.30, alpha: 0.55, yBase: H - 2,
-    hills: frontHills, hillColor: 'rgba(70, 180, 50, 0.55)',
-    hillHeight: 18, items: frontClusters
+    speed: 0.25, alpha: 0.60, yBase: H + 5,
+    hills: frontHills, hillColor: 'rgba(75, 185, 55, 0.60)',
+    items: frontClusters
   });
 }
 
@@ -368,7 +375,9 @@ function drawHillTerrain(layer) {
   ctx.globalAlpha = layer.alpha;
   ctx.fillStyle = layer.hillColor;
   ctx.beginPath();
-  ctx.moveTo(layer.hills[0].x, layer.yBase);
+  const firstX = layer.hills[0].x - 20;
+  ctx.moveTo(firstX, H + 10);
+  ctx.lineTo(firstX, layer.yBase);
   for (let i = 0; i < layer.hills.length - 1; i++) {
     const curr = layer.hills[i];
     const next = layer.hills[i + 1];
@@ -376,9 +385,8 @@ function drawHillTerrain(layer) {
     ctx.quadraticCurveTo(curr.x, layer.yBase - curr.h, cpx, layer.yBase - (curr.h + next.h) / 2);
   }
   const last = layer.hills[layer.hills.length - 1];
-  ctx.lineTo(last.x, layer.yBase);
-  ctx.lineTo(last.x, H + 10);
-  ctx.lineTo(layer.hills[0].x - 10, H + 10);
+  ctx.lineTo(last.x + 20, layer.yBase);
+  ctx.lineTo(last.x + 20, H + 10);
   ctx.closePath();
   ctx.fill();
   ctx.restore();
