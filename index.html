@@ -6,7 +6,7 @@
 <title>Tiny Hands Play — Free Toddler & Kids Browser Games</title>
 
 <!-- SEO Meta Tags -->
-<meta name="description" content="Free browser games for toddlers and kids aged 6 months to 7 years. No installs, no accounts, no ads. Just open and play. Kaboom Keys, Stack It Up, and Spell It Out — safe, colorful fun when tiny hands invade the home office.">
+<meta name="description" content="Free browser games for toddlers and kids aged 6 months to 8 years. No installs, no accounts, no ads. Just open and play. Kaboom Keys, Stack It Up, Spell It Out, and Memory Match — safe, colorful fun when tiny hands invade the home office.">
 <meta name="keywords" content="toddler games, free kids games, browser games for toddlers, baby keyboard game, stacking game for kids, spelling game for kids, no install games, preschool games online, free online games for toddlers, toddler safe games, kids games no ads, baby games online free">
 <meta name="author" content="Mauro Ferrante">
 <meta name="theme-color" content="#FFFAF7">
@@ -41,6 +41,7 @@
 <link rel="stylesheet" href="css/games/splat-keys.css">
 <link rel="stylesheet" href="css/games/stack-smash.css">
 <link rel="stylesheet" href="css/games/spell-it-out.css">
+<link rel="stylesheet" href="css/games/memory-match.css">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -49,7 +50,7 @@
   "@type": "WebApplication",
   "name": "Tiny Hands Play",
   "url": "https://tinyhandsplay.com",
-  "description": "Free browser games for toddlers and kids aged 6 months to 7 years. No installs, no accounts, no ads.",
+  "description": "Free browser games for toddlers and kids aged 6 months to 8 years. No installs, no accounts, no ads.",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any",
   "browserRequirements": "Requires a modern web browser",
@@ -61,7 +62,7 @@
   "audience": {
     "@type": "PeopleAudience",
     "suggestedMinAge": "0",
-    "suggestedMaxAge": "7"
+    "suggestedMaxAge": "8"
   },
   "creator": {
     "@type": "Person",
@@ -148,6 +149,25 @@
       </div>
       <button class="card-info-btn" aria-label="Game info">ⓘ</button>
     </article>
+
+    <!-- Memory Match Card -->
+    <article class="game-card">
+      <div class="card-flipper">
+        <div class="card-front">
+          <span class="card-icon" aria-hidden="true">🧠</span>
+          <h2>Memory Match</h2>
+          <span class="age-badge">3 – 8 years</span>
+          <p class="card-desc">Find the matching pairs!</p>
+          <button class="play-btn accent-teal" data-game="memory-match">Play</button>
+        </div>
+        <div class="card-back">
+          <p class="card-info-desc">Flip cards to find matching emoji pairs. Remember where they are!</p>
+          <p class="card-info-edu">🧒 <strong>What they learn:</strong> Visual memory, concentration, and pattern recognition. Strengthens working memory by recalling card positions.</p>
+          <span class="card-back-hint">Tap to flip back</span>
+        </div>
+      </div>
+      <button class="card-info-btn" aria-label="Game info">ⓘ</button>
+    </article>
   </section>
 
   <a class="why-link" id="whyLink">Why Tiny Hands Play? →</a>
@@ -165,10 +185,11 @@
 <noscript>
   <div style="padding: 2rem; text-align: center; font-family: sans-serif;">
     <h1>Tiny Hands Play</h1>
-    <p>Free browser games for toddlers and kids aged 6 months to 5 years.</p>
+    <p>Free browser games for toddlers and kids aged 6 months to 8 years.</p>
     <p><strong>Kaboom Keys</strong> (6 months – 3 years): Smash the keyboard and make it rain emojis!</p>
     <p><strong>Stack It Up</strong> (3 – 5 years): How tall can you build your tower?</p>
     <p><strong>Spell It Out</strong> (4 – 7 years): Find the missing letter!</p>
+    <p><strong>Memory Match</strong> (3 – 8 years): Find the matching pairs!</p>
     <p>No installs, no accounts, no ads. Please enable JavaScript to play.</p>
   </div>
 </noscript>
@@ -223,6 +244,37 @@
     <div class="play-hint" id="stackHint">Tap to stack blocks!<br>Keep the tower from falling! 🏗️</div>
     <div class="stack-celebrate" id="stackCelebrate"></div>
     <div class="stack-danger-vignette" id="stackDanger"></div>
+  </div>
+
+  <!-- Memory Match game layer -->
+  <div id="memoryGame">
+    <div class="memory-difficulty" id="memoryDifficulty">
+      <div class="memory-diff-title">Pick a size!</div>
+      <div class="memory-diff-options">
+        <button class="memory-diff-btn" data-diff="easy">
+          <span class="memory-diff-grid">3 x 4</span>
+          <span class="memory-diff-label">Easy</span>
+          <span class="memory-diff-best" id="memoryBestEasy"></span>
+        </button>
+        <button class="memory-diff-btn" data-diff="medium">
+          <span class="memory-diff-grid">4 x 6</span>
+          <span class="memory-diff-label">Medium</span>
+          <span class="memory-diff-best" id="memoryBestMedium"></span>
+        </button>
+        <button class="memory-diff-btn" data-diff="hard">
+          <span class="memory-diff-grid">6 x 6</span>
+          <span class="memory-diff-label">Hard</span>
+          <span class="memory-diff-best" id="memoryBestHard"></span>
+        </button>
+      </div>
+    </div>
+    <div class="memory-hud" id="memoryHud">
+      <span id="memoryFlips">Flips: 0</span>
+      <span id="memoryPairs"></span>
+      <span id="memoryTime">0:00</span>
+    </div>
+    <div class="memory-board" id="memoryBoard"></div>
+    <div class="memory-celebrate" id="memoryCelebrate"></div>
   </div>
 
   <button id="exitGame" aria-label="Exit game">✕</button>

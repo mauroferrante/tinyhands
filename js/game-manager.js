@@ -7,6 +7,7 @@ import { EMOJIS, createBgEmojis } from './effects.js';
 import { splatKeys } from './games/splat-keys.js';
 import { stackSmash } from './games/stack-smash.js';
 import { spellItOut } from './games/spell-it-out.js';
+import { memoryMatch } from './games/memory-match.js';
 import { shareOrCopy } from './share.js';
 
 // ---- Element references ----
@@ -34,7 +35,8 @@ let pendingGame     = null;
 const GAMES = {
   'splat-keys': splatKeys,
   'stack-smash': stackSmash,
-  'spell-it-out': spellItOut
+  'spell-it-out': spellItOut,
+  'memory-match': memoryMatch
 };
 
 // ===== Entry Animation & Fullscreen =====
@@ -265,8 +267,8 @@ document.addEventListener('mousedown', (e) => {
 // Touch
 document.addEventListener('touchstart', (e) => {
   if (!currentGame) return;
-  // Don't preventDefault on spell keyboard — it needs click events to fire
-  if (!e.target.closest('#spellKeyboard')) {
+  // Don't preventDefault on spell keyboard or memory game — they need click events to fire
+  if (!e.target.closest('#spellKeyboard') && !e.target.closest('#memoryGame')) {
     e.preventDefault();
   }
   currentGame.onTouch(e);
