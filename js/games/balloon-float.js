@@ -939,9 +939,19 @@ function render() {
   skyGrad.addColorStop(0, '#C8DCF0');
   skyGrad.addColorStop(0.4, '#D8E8F5');
   skyGrad.addColorStop(0.7, '#E8F0F8');
+  skyGrad.addColorStop(0.85, '#FFECD2');
   skyGrad.addColorStop(1, '#FFECD2');
   ctx.fillStyle = skyGrad;
   ctx.fillRect(0, 0, W, H);
+
+  // --- Water / lake at the bottom ---
+  const waterTop = H - 55;
+  const waterGrad = ctx.createLinearGradient(0, waterTop, 0, H);
+  waterGrad.addColorStop(0, 'rgba(135, 206, 235, 0.35)');
+  waterGrad.addColorStop(0.3, 'rgba(100, 180, 220, 0.50)');
+  waterGrad.addColorStop(1, 'rgba(70, 140, 190, 0.60)');
+  ctx.fillStyle = waterGrad;
+  ctx.fillRect(0, waterTop, W, H - waterTop);
 
   // --- Slow-mo tint overlay ---
   if (slowMoFactor < 1.0) {
