@@ -164,7 +164,7 @@ function startRound(difficulty) {
     el.innerHTML =
       '<div class="memory-card-inner">' +
         '<div class="memory-card-back"></div>' +
-        '<div class="memory-card-front">' + emoji + '</div>' +
+        '<div class="memory-card-front"><span>' + emoji + '</span></div>' +
       '</div>';
     memoryBoardEl.appendChild(el);
     return { emoji, index: i, matched: false, element: el };

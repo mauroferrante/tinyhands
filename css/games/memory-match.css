@@ -222,6 +222,12 @@
   justify-content: center;
   font-size: clamp(1.8rem, 6vw, 3rem);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  container-type: inline-size;
+}
+
+.memory-card-front span {
+  font-size: 55cqi;
+  line-height: 1;
 }
 
 /* Matched state */
@@ -234,20 +240,9 @@
   pointer-events: none;
 }
 
-/* Difficulty-based emoji sizing */
-.memory-easy .memory-card-front {
-  font-size: clamp(2rem, 8vw, 3.5rem);
-}
+/* Difficulty-based back-star sizing */
 .memory-easy .memory-card-back::after {
   font-size: clamp(1.6rem, 5vw, 2.8rem);
-}
-
-.memory-medium .memory-card-front {
-  font-size: clamp(1.6rem, 5vw, 2.5rem);
-}
-
-.memory-hard .memory-card-front {
-  font-size: clamp(1.2rem, 3.5vw, 2rem);
 }
 .memory-hard .memory-card-back::after {
   font-size: clamp(1rem, 2.5vw, 1.5rem);
