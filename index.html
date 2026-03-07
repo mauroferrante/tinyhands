@@ -6,7 +6,7 @@
 <title>Tiny Hands Play — Free Toddler & Kids Browser Games</title>
 
 <!-- SEO Meta Tags -->
-<meta name="description" content="Free fun and educational browser games for toddlers and kids aged 6 months to 8 years. No installs, no accounts, no ads. Just open and play — Kaboom Keys, Stack It Up, Spell It Out, Memory Match, and Balloon Float.">
+<meta name="description" content="Free fun and educational browser games for toddlers and kids aged 6 months to 9 years. No installs, no accounts, no ads. Just open and play — Kaboom Keys, Stack It Up, Spell It Out, Memory Match, Balloon Float, and Rocket Ride.">
 <meta name="keywords" content="toddler games, free kids games, browser games for toddlers, baby keyboard game, stacking game for kids, spelling game for kids, no install games, preschool games online, free online games for toddlers, toddler safe games, kids games no ads, baby games online free">
 <meta name="author" content="Mauro Ferrante">
 <meta name="theme-color" content="#FFFAF7">
@@ -43,6 +43,7 @@
 <link rel="stylesheet" href="css/games/spell-it-out.css">
 <link rel="stylesheet" href="css/games/memory-match.css">
 <link rel="stylesheet" href="css/games/balloon-float.css">
+<link rel="stylesheet" href="css/games/rocket-ride.css">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -187,6 +188,24 @@
       </div>
       <button class="card-info-btn" aria-label="Game info">ⓘ</button>
     </article>
+    <!-- Rocket Ride Card -->
+    <article class="game-card">
+      <div class="card-flipper">
+        <div class="card-front">
+          <span class="card-icon" aria-hidden="true">🚀</span>
+          <h2>Rocket Ride</h2>
+          <span class="age-badge">5 – 9 years</span>
+          <p class="card-desc">Blast off and dodge the asteroids!</p>
+          <button class="play-btn accent-indigo" data-game="rocket-ride">Play</button>
+        </div>
+        <div class="card-back">
+          <p class="card-info-desc">Use arrow keys or tilt your device to steer through space. Boost to fly faster, collect stars, and dodge asteroids!</p>
+          <p class="card-info-edu">🧒 <strong>What they learn:</strong> Spatial reasoning, reaction time, and directional control. Kids master momentum-based movement and learn to plan ahead while navigating obstacles.</p>
+          <span class="card-back-hint">Tap to flip back</span>
+        </div>
+      </div>
+      <button class="card-info-btn" aria-label="Game info">ⓘ</button>
+    </article>
   </section>
 
   <a class="why-link" id="whyLink">Why Tiny Hands Play? →</a>
@@ -210,6 +229,7 @@
     <p><strong>Spell It Out</strong> (4 – 7 years): Find the missing letter!</p>
     <p><strong>Memory Match</strong> (3 – 8 years): Find the matching pairs!</p>
     <p><strong>Balloon Float</strong> (3 – 7 years): Tap to float, dodge the clouds!</p>
+    <p><strong>Rocket Ride</strong> (5 – 9 years): Blast off and dodge the asteroids!</p>
     <p>No installs, no accounts, no ads. Please enable JavaScript to play.</p>
   </div>
 </noscript>
@@ -312,6 +332,16 @@
       <span class="balloon-shield-indicator" id="balloonShield">🛡️</span>
     </div>
     <div class="balloon-celebrate" id="balloonCelebrate"></div>
+  </div>
+
+  <!-- Rocket Ride game layer -->
+  <div id="rocketGame">
+    <canvas id="rocketCanvas"></canvas>
+    <div class="rocket-hud" id="rocketHud">
+      <span id="rocketAltitude">0m</span>
+      <span id="rocketStars">⭐ 0</span>
+    </div>
+    <div class="rocket-celebrate" id="rocketCelebrate"></div>
   </div>
 
   <button id="exitGame" aria-label="Exit game">✕</button>

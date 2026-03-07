@@ -433,9 +433,19 @@ function updateString() {
   for (let i = 1; i < stringPoints.length; i++) {
     const prev = stringPoints[i - 1];
     const curr = stringPoints[i];
-    curr.x += (prev.x - curr.x) * 0.15;
-    curr.y += (prev.y - curr.y) * 0.15;
+    curr.x += (prev.x - curr.x) * 0.35;
+    curr.y += (prev.y - curr.y) * 0.35;
     curr.y += 0.3;
+    // Constrain max distance so string stays attached
+    const dx = curr.x - prev.x;
+    const dy = curr.y - prev.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const maxDist = 14;
+    if (dist > maxDist) {
+      const scale = maxDist / dist;
+      curr.x = prev.x + dx * scale;
+      curr.y = prev.y + dy * scale;
+    }
   }
 }
 

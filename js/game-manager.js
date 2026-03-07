@@ -9,6 +9,7 @@ import { stackSmash } from './games/stack-smash.js';
 import { spellItOut } from './games/spell-it-out.js';
 import { memoryMatch } from './games/memory-match.js';
 import { balloonFloat } from './games/balloon-float.js';
+import { rocketRide } from './games/rocket-ride.js';
 import { shareOrCopy } from './share.js';
 
 // ---- Element references ----
@@ -38,7 +39,8 @@ const GAMES = {
   'stack-smash': stackSmash,
   'spell-it-out': spellItOut,
   'memory-match': memoryMatch,
-  'balloon-float': balloonFloat
+  'balloon-float': balloonFloat,
+  'rocket-ride': rocketRide
 };
 
 // ===== Entry Animation & Fullscreen =====
