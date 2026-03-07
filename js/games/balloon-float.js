@@ -269,7 +269,7 @@ function createLandscape() {
   }
   landscapeLayers.push({
     speed: 0.06, alpha: 0.30, yBase: H + 15,
-    hills: backHills, hillColor: 'rgba(120, 175, 100, 0.40)',
+    hills: backHills, hillColor: '#B8D8A8',
     items: backClusters
   });
 
@@ -317,7 +317,7 @@ function createLandscape() {
   }
   landscapeLayers.push({
     speed: 0.14, alpha: 0.50, yBase: H + 10,
-    hills: midHills, hillColor: 'rgba(90, 180, 65, 0.55)',
+    hills: midHills, hillColor: '#8CC87C',
     items: midClusters
   });
 
@@ -364,7 +364,7 @@ function createLandscape() {
   }
   landscapeLayers.push({
     speed: 0.25, alpha: 0.60, yBase: H + 5,
-    hills: frontHills, hillColor: 'rgba(75, 185, 55, 0.60)',
+    hills: frontHills, hillColor: '#6BB85A',
     items: frontClusters
   });
 }
@@ -372,7 +372,7 @@ function createLandscape() {
 function drawHillTerrain(layer) {
   if (!layer.hills || layer.hills.length < 2) return;
   ctx.save();
-  ctx.globalAlpha = layer.alpha;
+  ctx.globalAlpha = 1;
   ctx.fillStyle = layer.hillColor;
   ctx.beginPath();
   const firstX = layer.hills[0].x - 20;
