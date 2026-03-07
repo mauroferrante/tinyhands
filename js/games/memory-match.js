@@ -132,6 +132,7 @@ function startRound(difficulty) {
   timerStart = null;
   flippedCards = [];
   isProcessing = false;
+  gameActive = true;
 
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 
