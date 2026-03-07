@@ -1489,7 +1489,7 @@ function resetAndStart() {
   celebrateEl.classList.remove('show');
   celebrateEl.innerHTML = '';
 
-  rocketX = W * 0.5;
+  rocketX = W * 0.5 + 95;  // Under the crane hook
   rocketVX = 0;
   rocketVY = 0;
   rocketTilt = 0;
