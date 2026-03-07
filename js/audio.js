@@ -1,26 +1,33 @@
 let audioCtx = null;
 let iosUnlocked = false;
 
-function unlockSilentBuffer() {
-  if (!iosUnlocked && audioCtx) {
-    iosUnlocked = true;
-    const buf = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
-    const src = audioCtx.createBufferSource();
-    src.buffer = buf;
-    src.connect(audioCtx.destination);
-    src.start(0);
-  }
-}
-
 export function initAudio() {
+  // Create context on very first call
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
+
+  // Always try to resume if suspended
   if (audioCtx.state === 'suspended') {
-    // resume() is async on iOS — unlock after it resolves
-    audioCtx.resume().then(() => unlockSilentBuffer());
-  } else {
-    unlockSilentBuffer();
+    audioCtx.resume();
+  }
+
+  // iOS Safari requires an audio node to be started synchronously
+  // inside a user-gesture handler to unlock audio output.
+  // Keep retrying on each gesture until the context is confirmed running.
+  if (!iosUnlocked) {
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      gain.gain.value = 0.001;               // near-silent
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(0);
+      osc.stop(audioCtx.currentTime + 0.05);
+    } catch (e) { /* ignore */ }
+
+    if (audioCtx.state === 'running') {
+      iosUnlocked = true;
+    }
   }
 }
 
@@ -687,4 +694,374 @@ export function playBubblePop(pitch = 0) {
   osc.connect(gain).connect(audioCtx.destination);
   osc.start(now);
   osc.stop(now + 0.14);
+}
+
+// ===== Balloon Float Sounds =====
+
+export function playWindPuff() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const bufSize = Math.floor(audioCtx.sampleRate * 0.06);
+  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buf;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.setValueAtTime(4000 + Math.random() * 2000, now);
+  filter.Q.value = 0.5;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.08, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+  noise.connect(filter).connect(gain).connect(audioCtx.destination);
+  noise.start(now);
+  noise.stop(now + 0.06);
+}
+
+export function playStarCollect() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const osc1 = audioCtx.createOscillator();
+  const gain1 = audioCtx.createGain();
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(1047, now);
+  gain1.gain.setValueAtTime(0.1, now);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+  osc1.connect(gain1).connect(audioCtx.destination);
+  osc1.start(now);
+  osc1.stop(now + 0.1);
+  const osc2 = audioCtx.createOscillator();
+  const gain2 = audioCtx.createGain();
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(1319, now + 0.06);
+  gain2.gain.setValueAtTime(0, now);
+  gain2.gain.setValueAtTime(0.1, now + 0.06);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.start(now + 0.06);
+  osc2.stop(now + 0.18);
+}
+
+export function playUfoCollect() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Sci-fi warble: two detuned oscillators with vibrato
+  const notes = [523, 659, 784];
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = i === 2 ? 'triangle' : 'sine';
+    osc.frequency.setValueAtTime(freq, now + i * 0.07);
+    // Add slight vibrato for sci-fi feel
+    osc.frequency.setValueAtTime(freq * 1.02, now + i * 0.07 + 0.03);
+    osc.frequency.setValueAtTime(freq * 0.98, now + i * 0.07 + 0.06);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.setValueAtTime(0.08, now + i * 0.07);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.2);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now + i * 0.07);
+    osc.stop(now + i * 0.07 + 0.2);
+  });
+}
+
+export function playNearMiss() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const bufSize = Math.floor(audioCtx.sampleRate * 0.08);
+  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buf;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(2000, now);
+  filter.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+  filter.Q.value = 1.0;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.04, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+  noise.connect(filter).connect(gain).connect(audioCtx.destination);
+  noise.start(now);
+  noise.stop(now + 0.08);
+}
+
+export function playBalloonPop() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Low thump
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(100, now);
+  osc.frequency.exponentialRampToValueAtTime(40, now + 0.05);
+  gain.gain.setValueAtTime(0.15, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.06);
+  // High crackle burst
+  const bufSize = Math.floor(audioCtx.sampleRate * 0.1);
+  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buf;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(3500, now);
+  filter.Q.value = 0.6;
+  const gain2 = audioCtx.createGain();
+  gain2.gain.setValueAtTime(0.12, now);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+  noise.connect(filter).connect(gain2).connect(audioCtx.destination);
+  noise.start(now);
+  noise.stop(now + 0.1);
+}
+
+export function playBirdChirp() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(2000, now);
+  osc.frequency.exponentialRampToValueAtTime(3000, now + 0.03);
+  osc.frequency.exponentialRampToValueAtTime(1800, now + 0.08);
+  gain.gain.setValueAtTime(0.03, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.08);
+}
+
+export function playPlaneZoom() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(800, now);
+  osc.frequency.exponentialRampToValueAtTime(200, now + 0.2);
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(600, now);
+  filter.Q.value = 0.8;
+  gain.gain.setValueAtTime(0.06, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+  osc.connect(filter).connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.2);
+}
+
+// ---- Balloon Float: Power-Up Sounds ----
+
+export function playPowerupCollect() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Rising triangle chime C6→E6
+  const notes = [1047, 1319];
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, now + i * 0.08);
+    gain.gain.setValueAtTime(0.12, now + i * 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.15);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now + i * 0.08);
+    osc.stop(now + i * 0.08 + 0.15);
+  });
+}
+
+export function playShieldActivate() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Low sine sweep up + high shimmer
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(200, now);
+  osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+  gain.gain.setValueAtTime(0.1, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.2);
+  // Shimmer overlay
+  const osc2 = audioCtx.createOscillator();
+  const gain2 = audioCtx.createGain();
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(1800, now);
+  osc2.frequency.exponentialRampToValueAtTime(2400, now + 0.12);
+  gain2.gain.setValueAtTime(0.04, now);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.start(now);
+  osc2.stop(now + 0.12);
+}
+
+export function playShieldBreak() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Crystalline shatter: descending sine bursts
+  [2000, 1500, 1000, 600].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now + i * 0.03);
+    osc.frequency.exponentialRampToValueAtTime(freq * 0.5, now + i * 0.03 + 0.06);
+    gain.gain.setValueAtTime(0.08, now + i * 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.03 + 0.06);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now + i * 0.03);
+    osc.stop(now + i * 0.03 + 0.06);
+  });
+  // Noise crackle burst
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1);
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buf;
+  const filt = audioCtx.createBiquadFilter();
+  filt.type = 'highpass';
+  filt.frequency.value = 3000;
+  const ng = audioCtx.createGain();
+  ng.gain.setValueAtTime(0.06, now);
+  ng.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+  noise.connect(filt).connect(ng).connect(audioCtx.destination);
+  noise.start(now);
+  noise.stop(now + 0.1);
+}
+
+export function playRainbowActivate() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Ascending arpeggio C-E-G-B-C (octave)
+  const notes = [523, 659, 784, 988, 1047];
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    const t = now + i * 0.05;
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(0.08, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.12);
+  });
+}
+
+export function playMagnetActivate() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Low electric hum with vibrato
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(80, now);
+  // Vibrato via LFO
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = 12;
+  lfoGain.gain.value = 15;
+  lfo.connect(lfoGain).connect(osc.frequency);
+  lfo.start(now);
+  lfo.stop(now + 0.2);
+  gain.gain.setValueAtTime(0.06, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.2);
+}
+
+export function playSlowMoActivate() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Descending pitch bend — time slowing
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(800, now);
+  osc.frequency.exponentialRampToValueAtTime(200, now + 0.3);
+  gain.gain.setValueAtTime(0.1, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.35);
+}
+
+export function playColorChange() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // 3 rapid high-frequency sparkle pings
+  for (let i = 0; i < 3; i++) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    const freq = 1200 + Math.random() * 800;
+    const t = now + i * 0.04;
+    osc.frequency.setValueAtTime(freq, t);
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.5, t + 0.06);
+    gain.gain.setValueAtTime(0.08, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.08);
+  }
+}
+
+export function playMysteryBoxOpen() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Rapid clicking/ticking — slot machine
+  for (let i = 0; i < 8; i++) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    const t = now + i * 0.08;
+    osc.frequency.setValueAtTime(1500 + i * 50, t);
+    gain.gain.setValueAtTime(0.05, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.03);
+  }
+}
+
+export function playMysteryBoxReveal() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  // Triumphant two-note reveal G5→C6
+  const notes = [784, 1047];
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = i === 0 ? 'sine' : 'triangle';
+    const t = now + i * 0.1;
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(0.12, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.25);
+  });
 }

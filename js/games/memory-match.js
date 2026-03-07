@@ -320,7 +320,7 @@ function wireShare(container) {
     e.stopPropagation();
     const result = await shareOrCopy();
     if (result.method === 'copy' && result.success) {
-      btn.textContent = '\u{2705} Copied!';
+      btn.textContent = '\u{2705} Link copied!';
       setTimeout(() => { btn.textContent = '\u{1F4E4} Share with a parent'; }, 2500);
     }
   });

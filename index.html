@@ -6,7 +6,7 @@
 <title>Tiny Hands Play — Free Toddler & Kids Browser Games</title>
 
 <!-- SEO Meta Tags -->
-<meta name="description" content="Free fun and educational browser games for toddlers and kids aged 6 months to 8 years. No installs, no accounts, no ads. Just open and play — Kaboom Keys, Stack It Up, Spell It Out, and Memory Match.">
+<meta name="description" content="Free fun and educational browser games for toddlers and kids aged 6 months to 8 years. No installs, no accounts, no ads. Just open and play — Kaboom Keys, Stack It Up, Spell It Out, Memory Match, and Balloon Float.">
 <meta name="keywords" content="toddler games, free kids games, browser games for toddlers, baby keyboard game, stacking game for kids, spelling game for kids, no install games, preschool games online, free online games for toddlers, toddler safe games, kids games no ads, baby games online free">
 <meta name="author" content="Mauro Ferrante">
 <meta name="theme-color" content="#FFFAF7">
@@ -42,6 +42,7 @@
 <link rel="stylesheet" href="css/games/stack-smash.css">
 <link rel="stylesheet" href="css/games/spell-it-out.css">
 <link rel="stylesheet" href="css/games/memory-match.css">
+<link rel="stylesheet" href="css/games/balloon-float.css">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -50,7 +51,7 @@
   "@type": "WebApplication",
   "name": "Tiny Hands Play",
   "url": "https://tinyhandsplay.com",
-  "description": "Free fun and educational browser games for toddlers and kids aged 6 months to 8 years. No installs, no accounts, no ads.",
+  "description": "Free fun and educational browser games for toddlers and kids aged 6 months to 8 years. No installs, no accounts, no ads. Kaboom Keys, Stack It Up, Spell It Out, Memory Match, and Balloon Float.",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any",
   "browserRequirements": "Requires a modern web browser",
@@ -168,6 +169,24 @@
       </div>
       <button class="card-info-btn" aria-label="Game info">ⓘ</button>
     </article>
+    <!-- Balloon Float Card -->
+    <article class="game-card">
+      <div class="card-flipper">
+        <div class="card-front">
+          <span class="card-icon" aria-hidden="true">🎈</span>
+          <h2>Balloon Float</h2>
+          <span class="age-badge">3 – 7 years</span>
+          <p class="card-desc">Tap to float, dodge the clouds!</p>
+          <button class="play-btn accent-sky" data-game="balloon-float">Play</button>
+        </div>
+        <div class="card-back">
+          <p class="card-info-desc">Tap or press any key to puff the balloon upward. Dodge clouds, birds, and planes while collecting stars!</p>
+          <p class="card-info-edu">🧒 <strong>What they learn:</strong> Timing, rhythm, and anticipation. Kids develop hand-eye coordination and learn to predict movement patterns.</p>
+          <span class="card-back-hint">Tap to flip back</span>
+        </div>
+      </div>
+      <button class="card-info-btn" aria-label="Game info">ⓘ</button>
+    </article>
   </section>
 
   <a class="why-link" id="whyLink">Why Tiny Hands Play? →</a>
@@ -190,6 +209,7 @@
     <p><strong>Stack It Up</strong> (3 – 5 years): How tall can you build your tower?</p>
     <p><strong>Spell It Out</strong> (4 – 7 years): Find the missing letter!</p>
     <p><strong>Memory Match</strong> (3 – 8 years): Find the matching pairs!</p>
+    <p><strong>Balloon Float</strong> (3 – 7 years): Tap to float, dodge the clouds!</p>
     <p>No installs, no accounts, no ads. Please enable JavaScript to play.</p>
   </div>
 </noscript>
@@ -275,6 +295,23 @@
     </div>
     <div class="memory-board" id="memoryBoard"></div>
     <div class="memory-celebrate" id="memoryCelebrate"></div>
+  </div>
+
+  <!-- Balloon Float game layer -->
+  <div id="balloonGame">
+    <canvas id="balloonCanvas"></canvas>
+    <div class="balloon-lives" id="balloonLives"></div>
+    <div class="balloon-hud" id="balloonHud">
+      <span id="balloonScore">0</span>
+      <div class="balloon-powerup-indicator" id="balloonPowerup">
+        <span class="balloon-pu-icon" id="balloonPuIcon"></span>
+        <div class="balloon-pu-bar-bg">
+          <div class="balloon-pu-bar" id="balloonPuBar"></div>
+        </div>
+      </div>
+      <span class="balloon-shield-indicator" id="balloonShield">🛡️</span>
+    </div>
+    <div class="balloon-celebrate" id="balloonCelebrate"></div>
   </div>
 
   <button id="exitGame" aria-label="Exit game">✕</button>

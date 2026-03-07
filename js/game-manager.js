@@ -8,6 +8,7 @@ import { splatKeys } from './games/splat-keys.js';
 import { stackSmash } from './games/stack-smash.js';
 import { spellItOut } from './games/spell-it-out.js';
 import { memoryMatch } from './games/memory-match.js';
+import { balloonFloat } from './games/balloon-float.js';
 import { shareOrCopy } from './share.js';
 
 // ---- Element references ----
@@ -36,7 +37,8 @@ const GAMES = {
   'splat-keys': splatKeys,
   'stack-smash': stackSmash,
   'spell-it-out': spellItOut,
-  'memory-match': memoryMatch
+  'memory-match': memoryMatch,
+  'balloon-float': balloonFloat
 };
 
 // ===== Entry Animation & Fullscreen =====
@@ -289,5 +291,7 @@ document.addEventListener('contextmenu', (e) => {
 // Unlock & keep audio alive on every user interaction (iOS requirement)
 // iOS Safari can re-suspend AudioContext after fullscreen transitions or inactivity,
 // so we resume on every touch/click, not just the first one.
+// touchend is included because some iOS versions only allow audio unlock on touchend.
 document.addEventListener('touchstart', () => { initAudio(); });
+document.addEventListener('touchend', () => { initAudio(); });
 document.addEventListener('click', () => { initAudio(); });

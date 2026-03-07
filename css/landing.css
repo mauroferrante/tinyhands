@@ -400,6 +400,7 @@
 .game-card:nth-child(2) { animation-delay: 250ms; }
 .game-card:nth-child(3) { animation-delay: 400ms; }
 .game-card:nth-child(4) { animation-delay: 550ms; }
+.game-card:nth-child(5) { animation-delay: 700ms; }
 
 @keyframes cardBounceIn {
   from {
@@ -465,6 +466,7 @@ body.game-active .bg-emoji {
 .game-card:nth-child(2) .card-icon { animation-delay: 1s; }
 .game-card:nth-child(3) .card-icon { animation-delay: 2s; }
 .game-card:nth-child(4) .card-icon { animation-delay: 3s; }
+.game-card:nth-child(5) .card-icon { animation-delay: 4s; }
 
 @keyframes iconFloat {
   0%, 100% { transform: translateY(0); }
@@ -518,6 +520,7 @@ body.game-active .bg-emoji {
 .play-btn.accent-amber  { background: #F4845F; }
 .play-btn.accent-purple { background: #F4845F; }
 .play-btn.accent-teal   { background: #F4845F; }
+.play-btn.accent-sky    { background: #F4845F; }
 
 .play-btn:hover {
   transform: scale(1.08) translateY(-2px);

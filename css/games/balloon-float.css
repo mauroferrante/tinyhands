@@ -1,0 +1,271 @@
+/* ===== Balloon Float Game ===== */
+
+#balloonGame {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: none !important;
+}
+
+/* ===== Canvas ===== */
+
+#balloonCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== HUD ===== */
+
+.balloon-hud {
+  display: none;
+  position: fixed;
+  top: 14px;
+  right: 20px;
+  z-index: 200;
+  pointer-events: none;
+  gap: 0.6rem;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(0.8rem, 2.2vw, 1.1rem);
+  color: rgba(107, 175, 207, 0.9);
+}
+
+.balloon-hud span {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* ===== Lives Hearts ===== */
+
+.balloon-lives {
+  position: fixed;
+  top: 14px;
+  left: 20px;
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  z-index: 200;
+  pointer-events: none;
+  display: none;
+  gap: 4px;
+}
+
+.balloon-lives.active {
+  display: flex;
+}
+
+.balloon-heart {
+  display: inline-block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.balloon-heart.lost {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.balloon-heart-breaking {
+  animation: balloonHeartBreak 0.5s ease-out forwards;
+}
+
+@keyframes balloonHeartBreak {
+  0%   { transform: scale(1); opacity: 1; }
+  30%  { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+/* ===== Hint ===== */
+
+.balloon-hint {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  color: rgba(107, 175, 207, 0.85);
+  z-index: 200;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  text-align: center;
+}
+
+/* ===== Game Over Overlay ===== */
+
+.balloon-celebrate {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: rgba(200, 225, 240, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.balloon-celebrate.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.balloon-endcard {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  animation: balloonEndcardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes balloonEndcardIn {
+  0%   { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.balloon-endcard-emoji {
+  font-size: clamp(4rem, 15vw, 7rem);
+  line-height: 1;
+}
+
+.balloon-endcard-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  color: #333;
+}
+
+.balloon-endcard-stats {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  color: rgba(107, 175, 207, 0.9);
+  display: flex;
+  gap: 1.5rem;
+}
+
+.balloon-endcard-best {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  color: #FFB347;
+}
+
+.balloon-endcard-best-small {
+  font-family: 'Quicksand', sans-serif;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+  color: #999;
+  font-weight: 600;
+}
+
+.balloon-endcard-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.balloon-endcard-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.5em 1.5em;
+  border: none;
+  border-radius: 50px;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>👆</text></svg>") 16 4, pointer !important;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.balloon-btn-again {
+  background: #6BAFCF;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(107, 175, 207, 0.3);
+}
+
+.balloon-endcard-btn:hover {
+  transform: scale(1.05) translateY(-2px);
+}
+
+.balloon-endcard-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== Power-Up HUD ===== */
+
+.balloon-powerup-indicator {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 4px 10px;
+  border-radius: 20px;
+  min-width: 90px;
+}
+
+.balloon-powerup-indicator.active {
+  display: flex;
+}
+
+.balloon-pu-icon {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.balloon-pu-bar-bg {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 50px;
+}
+
+.balloon-pu-bar {
+  height: 100%;
+  width: 100%;
+  border-radius: 3px;
+  background: #fff;
+  transition: width 0.1s linear, background-color 0.3s ease;
+}
+
+.balloon-shield-indicator {
+  display: none;
+  background: rgba(100, 180, 255, 0.5) !important;
+  font-size: 1.1em;
+  animation: shieldPulse 1.5s ease-in-out infinite;
+}
+
+.balloon-shield-indicator.active {
+  display: inline-block;
+}
+
+@keyframes shieldPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 480px) {
+  .balloon-hud {
+    top: 10px;
+    right: 12px;
+    gap: 0.4rem;
+  }
+  .balloon-hud span {
+    padding: 3px 8px;
+  }
+  .balloon-lives {
+    top: 10px;
+    left: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .balloon-endcard {
+    animation: none;
+    opacity: 1;
+  }
+}

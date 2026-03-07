@@ -3,13 +3,12 @@
  *  Web Share API on mobile, clipboard copy on desktop.
  * ========================================================= */
 
-export const SHARE_MESSAGE =
-  'Free fun and educational games for toddlers and kids \u2014 no ads, no installs, just play \u2192 tinyhandsplay.com';
+export const SHARE_URL = 'https://tinyhandsplay.com';
 
 const SHARE_DATA = {
   title: 'Tiny Hands Play',
-  text: SHARE_MESSAGE,
-  url: 'https://tinyhandsplay.com'
+  text: 'Free fun and educational games for toddlers and kids — no ads, no installs, just play!',
+  url: SHARE_URL
 };
 
 function isMobileDevice() {
@@ -54,9 +53,9 @@ export async function shareOrCopy() {
 
   // Clipboard API (desktop or mobile fallback)
   try {
-    await navigator.clipboard.writeText(SHARE_MESSAGE);
+    await navigator.clipboard.writeText(SHARE_URL);
     return { method: 'copy', success: true };
   } catch (err) {
-    return fallbackCopy(SHARE_MESSAGE);
+    return fallbackCopy(SHARE_URL);
   }
 }
