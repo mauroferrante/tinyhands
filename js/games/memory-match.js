@@ -2,7 +2,7 @@
  *  Memory Match — Emoji Memory Card Game
  * ========================================================= */
 
-import { playCardFlip, playMatchChime, playNoMatchBoop,
+import { initAudio, playCardFlip, playMatchChime, playNoMatchBoop,
          playCardSettle, playCardSwoosh, playWinFanfare } from '../audio.js';
 import { spawnParticles } from '../effects.js';
 import { shareOrCopy } from '../share.js';
@@ -113,6 +113,7 @@ function showDifficultyPicker() {
 }
 
 function onDifficultyClick(e) {
+  initAudio(); // Ensure iOS audio is unlocked on this user gesture
   const btn = e.target.closest('.memory-diff-btn');
   if (!btn) return;
   const diff = btn.dataset.diff;
@@ -348,6 +349,7 @@ function spawnWinConfetti() {
 // ===== Input handler (delegated) =====
 
 function handleCardTap(e) {
+  initAudio(); // Keep iOS audio alive on every tap
   const cardEl = e.target.closest('.memory-card');
   if (!cardEl) return;
   const idx = parseInt(cardEl.dataset.index, 10);

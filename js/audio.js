@@ -1,10 +1,23 @@
 let audioCtx = null;
+let iosUnlocked = false;
 
 export function initAudio() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  // iOS Safari requires playing a silent buffer from a user gesture
+  // to truly unlock audio playback. Do this once.
+  if (!iosUnlocked && audioCtx.state === 'running') {
+    iosUnlocked = true;
+    const buf = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.connect(audioCtx.destination);
+    src.start(0);
+  }
 }
 
 function playPop(now) {

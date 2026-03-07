@@ -286,6 +286,8 @@ document.addEventListener('contextmenu', (e) => {
   if (currentGame) e.preventDefault();
 });
 
-// Unlock audio on first user interaction (iOS requirement)
-document.addEventListener('touchstart', () => { initAudio(); }, { once: true });
-document.addEventListener('click', () => { initAudio(); }, { once: true });
+// Unlock & keep audio alive on every user interaction (iOS requirement)
+// iOS Safari can re-suspend AudioContext after fullscreen transitions or inactivity,
+// so we resume on every touch/click, not just the first one.
+document.addEventListener('touchstart', () => { initAudio(); });
+document.addEventListener('click', () => { initAudio(); });
