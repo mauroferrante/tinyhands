@@ -133,6 +133,16 @@ let milestoneText, milestoneTimer;
 let starLayers;
 let nebulaBlobs;
 
+// ---- Landscape ----
+let landscapeLayers;
+let landscapeScale;
+
+// ---- Launch boost ----
+let autoBoostTimer;
+
+// ---- Launch pad ----
+let launchPadY;
+
 // ---- Misc ----
 let hintEl;
 let milestonesReached;
@@ -161,6 +171,7 @@ function onResize() {
   if (Math.abs(H - oldH) > 5) {
     createStarfield();
     createNebulae();
+    createLandscape();
   }
 }
 
@@ -236,6 +247,168 @@ function createNebulae() {
   }
 }
 
+// ===== Earth Landscape (adapted from balloon-float) =====
+
+function createLandscape() {
+  landscapeLayers = [];
+  const totalW = W + 800;
+  landscapeScale = Math.max(H / 500, 1);
+  const s = landscapeScale;
+
+  // --- Back layer: tall distant hills with mountains & volcanos ---
+  const backHills = [];
+  const backClusters = [];
+  let bhx = -20;
+  while (bhx < totalW + 300) {
+    backHills.push({ x: bhx, h: (55 + ((bhx * 7 + 13) % 65)) * s });
+    bhx += 70 + ((bhx * 3 + 7) % 50);
+  }
+  const mtnEmojis = ['\u{1F3D4}\uFE0F', '\u26F0\uFE0F', '\u{1F5FB}'];
+  let bcx = 80, bci = 0;
+  while (bcx < totalW) {
+    const kind = (bci * 37 + 11) % 100;
+    if (kind < 25) {
+      const count = 2 + ((bci * 13) % 2);
+      for (let i = 0; i < count; i++) {
+        backClusters.push({
+          emoji: mtnEmojis[(bci + i) % mtnEmojis.length],
+          x: bcx + i * 45, size: (55 + ((bci * 11 + i * 7) % 20)) * s,
+          yOffset: -(45 + ((bci * 7 + i * 13) % 35)) * s
+        });
+      }
+      bcx += 140 + count * 45;
+    } else if (kind < 38) {
+      backClusters.push({
+        emoji: '\u{1F30B}', x: bcx, size: (58 + ((bci * 17) % 16)) * s,
+        yOffset: -(55 + ((bci * 11) % 25)) * s
+      });
+      bcx += 180;
+    } else {
+      bcx += 120 + ((bci * 53) % 100);
+    }
+    bci++;
+  }
+  landscapeLayers.push({
+    speed: 0.06, alpha: 0.30, yBase: H + 15,
+    hills: backHills, hillColor: '#B8D8A8',
+    items: backClusters
+  });
+
+  // --- Middle layer: towns, forests on rolling hills ---
+  const midHills = [];
+  const midClusters = [];
+  let mhx = -10;
+  while (mhx < totalW + 300) {
+    midHills.push({ x: mhx, h: (35 + ((mhx * 11 + 5) % 50)) * s });
+    mhx += 50 + ((mhx * 7 + 3) % 40);
+  }
+  const townEmojis = ['\u{1F3E0}', '\u{1F3E1}', '\u{1F3E2}', '\u26EA\uFE0F', '\u{1F3E3}', '\u{1F3ED}', '\u{1F3EF}'];
+  const treeEmojis = ['\u{1F333}', '\u{1F332}', '\u{1F334}', '\u{1F333}'];
+  let mcx = 60, mci = 0;
+  while (mcx < totalW) {
+    const kind = (mci * 43 + 7) % 100;
+    if (kind < 28) {
+      const count = 3 + ((mci * 11) % 3);
+      const baseY = 20 + ((mci * 19) % 30);
+      for (let i = 0; i < count; i++) {
+        midClusters.push({
+          emoji: townEmojis[(mci + i) % townEmojis.length],
+          x: mcx + i * 26, size: (28 + ((mci * 7 + i * 5) % 12)) * s,
+          yOffset: -(baseY + ((i * 7) % 10)) * s
+        });
+      }
+      mcx += 90 + count * 26;
+    } else if (kind < 55) {
+      const count = 3 + ((mci * 17) % 4);
+      const baseY = 15 + ((mci * 23) % 25);
+      for (let i = 0; i < count; i++) {
+        midClusters.push({
+          emoji: treeEmojis[(mci + i) % treeEmojis.length],
+          x: mcx + i * 20, size: (24 + ((mci * 5 + i * 9) % 10)) * s,
+          yOffset: -(baseY + ((i * 11) % 12)) * s
+        });
+      }
+      mcx += 70 + count * 20;
+    } else {
+      mcx += 90 + ((mci * 59) % 80);
+    }
+    mci++;
+  }
+  landscapeLayers.push({
+    speed: 0.14, alpha: 0.50, yBase: H + 10,
+    hills: midHills, hillColor: '#8CC87C',
+    items: midClusters
+  });
+
+  // --- Front layer: close foreground hills with scattered details ---
+  const frontHills = [];
+  const frontClusters = [];
+  let fhx = -10;
+  while (fhx < totalW + 300) {
+    frontHills.push({ x: fhx, h: (20 + ((fhx * 13 + 9) % 30)) * s });
+    fhx += 35 + ((fhx * 5 + 11) % 30);
+  }
+  const smallEmojis = ['\u{1F333}', '\u{1F3E1}', '\u{1F332}', '\u{1F334}'];
+  let fcx = 80, fci = 0;
+  while (fcx < totalW) {
+    const kind = (fci * 31 + 19) % 100;
+    if (kind < 18) {
+      const baseY = 10 + ((fci * 13) % 15);
+      frontClusters.push({
+        emoji: '\u{1F3E1}', x: fcx, size: 22 * s,
+        yOffset: -(baseY + 4) * s
+      });
+      frontClusters.push({
+        emoji: smallEmojis[(fci * 3) % smallEmojis.length],
+        x: fcx + 22, size: 20 * s,
+        yOffset: -(baseY + 2) * s
+      });
+      fcx += 90;
+    } else if (kind < 32) {
+      const baseY = 8 + ((fci * 17) % 12);
+      for (let i = 0; i < 2; i++) {
+        frontClusters.push({
+          emoji: smallEmojis[(fci + i) % smallEmojis.length],
+          x: fcx + i * 18, size: (18 + ((fci * 7) % 6)) * s,
+          yOffset: -(baseY + ((i * 5) % 6)) * s
+        });
+      }
+      fcx += 70;
+    } else {
+      fcx += 80 + ((fci * 41) % 70);
+    }
+    fci++;
+  }
+  landscapeLayers.push({
+    speed: 0.25, alpha: 0.60, yBase: H + 5,
+    hills: frontHills, hillColor: '#6BB85A',
+    items: frontClusters
+  });
+}
+
+function drawHillTerrain(layer) {
+  if (!layer.hills || layer.hills.length < 2) return;
+  layer.hills.sort((a, b) => a.x - b.x);
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = layer.hillColor;
+  ctx.beginPath();
+  ctx.moveTo(-50, H + 10);
+  ctx.lineTo(-50, layer.yBase - layer.hills[0].h);
+  for (let i = 0; i < layer.hills.length - 1; i++) {
+    const curr = layer.hills[i];
+    const next = layer.hills[i + 1];
+    const cpx = (curr.x + next.x) / 2;
+    ctx.quadraticCurveTo(curr.x, layer.yBase - curr.h, cpx, layer.yBase - (curr.h + next.h) / 2);
+  }
+  const last = layer.hills[layer.hills.length - 1];
+  ctx.lineTo(W + 50, layer.yBase - last.h);
+  ctx.lineTo(W + 50, H + 10);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
 // ===== Key Mapping =====
 
 function keyToAction(key) {
@@ -252,7 +425,8 @@ function keyToAction(key) {
 
 function updateRocket(dt) {
   const dtNorm = dt * 60;
-  const isBoosting = keysDown.has('boost') || touchBoosting;
+  const isBoosting = keysDown.has('boost') || touchBoosting || autoBoostTimer > 0;
+  if (autoBoostTimer > 0) autoBoostTimer -= dt;
   const isBraking  = keysDown.has('brake');
   const isLeft     = keysDown.has('left');
   const isRight    = keysDown.has('right');
@@ -809,7 +983,8 @@ function updateCountdown(dt) {
     if (launchTextTimer <= 0) {
       gameState = 'playing';
       hudEl.style.display = 'flex';
-      rocketVY = -3.0; // Launch boost
+      rocketVY = -MAX_VERTICAL_VEL; // Full launch surge
+      autoBoostTimer = 2.0; // 2 seconds of free boost
     }
   }
 }
@@ -817,18 +992,22 @@ function updateCountdown(dt) {
 // ===== Render =====
 
 function render() {
-  // Sky gradient based on altitude
+  // Sky gradient — light blue (Earth) → deep blue → black (space)
   const grad = ctx.createLinearGradient(0, 0, 0, H);
-  if (altitude < 500) {
-    const t = Math.min(altitude / 500, 1);
-    grad.addColorStop(0, lerpColor('#2D1B69', '#1A0A3E', t));
-    grad.addColorStop(1, lerpColor('#1B2A4A', '#0D0D2B', t));
-  } else if (altitude < 1000) {
-    const t = Math.min((altitude - 500) / 500, 1);
-    grad.addColorStop(0, lerpColor('#1A0A3E', '#0A0520', t));
-    grad.addColorStop(1, lerpColor('#0D0D2B', '#050215', t));
+  if (altitude < 200) {
+    const t = Math.min(altitude / 200, 1);
+    grad.addColorStop(0, lerpColor('#87CEEB', '#5B9BD5', t));
+    grad.addColorStop(1, lerpColor('#B0E0FF', '#7AB8E0', t));
+  } else if (altitude < 800) {
+    const t = Math.min((altitude - 200) / 600, 1);
+    grad.addColorStop(0, lerpColor('#5B9BD5', '#1B3A6B', t));
+    grad.addColorStop(1, lerpColor('#7AB8E0', '#0D1B3A', t));
+  } else if (altitude < 1500) {
+    const t = Math.min((altitude - 800) / 700, 1);
+    grad.addColorStop(0, lerpColor('#1B3A6B', '#060818', t));
+    grad.addColorStop(1, lerpColor('#0D1B3A', '#020010', t));
   } else {
-    grad.addColorStop(0, '#0A0520');
+    grad.addColorStop(0, '#060818');
     grad.addColorStop(1, '#020010');
   }
   ctx.fillStyle = grad;
@@ -845,10 +1024,48 @@ function render() {
   ctx.save();
   ctx.translate(shakeX, shakeY);
 
-  // Far star layer
-  if (starLayers) drawStarLayer(0);
+  // Earth landscape (fades out as we leave atmosphere)
+  if (landscapeLayers && altitude < 1500) {
+    const landAlpha = Math.max(0, 1 - altitude / 1200);
+    ctx.save();
+    for (const layer of landscapeLayers) {
+      ctx.globalAlpha = landAlpha;
+      drawHillTerrain(layer);
+      ctx.globalAlpha = landAlpha * layer.alpha;
+      for (const item of layer.items) {
+        drawSprite(item.emoji, item.size, item.x, layer.yBase + item.yOffset);
+      }
+    }
+    ctx.restore();
+  }
 
-  // Nebulae (above 1000m)
+  // Launch pad (crane + NASA buildings) — scrolls with landscape
+  if (launchPadY < H + 200 && altitude < 1500) {
+    const padAlpha = Math.max(0, 1 - altitude / 1200);
+    ctx.save();
+    ctx.globalAlpha = padAlpha;
+    const padX = W * 0.5;
+    // Crane (launch tower) — to the right of the rocket, twice as tall
+    drawSprite('\u{1F3D7}\uFE0F', 120, padX + 55, launchPadY - 30);
+    // NASA office buildings — smaller, flanking the pad
+    drawSprite('\u{1F3E2}', 40, padX - 80, launchPadY + 10);
+    drawSprite('\u{1F3E2}', 34, padX - 115, launchPadY + 14);
+    drawSprite('\u{1F3E2}', 36, padX + 110, launchPadY + 12);
+    ctx.restore();
+  }
+
+  // Stars fade in as sky darkens
+  const starAlpha = Math.min(Math.max((altitude - 200) / 400, 0), 1);
+
+  // Far star layer
+  if (starLayers && starAlpha > 0) {
+    ctx.save();
+    ctx.globalAlpha = starAlpha;
+    drawStarLayer(0);
+    ctx.restore();
+  }
+
+  // Nebulae (above 800m)
   if (altitude > 800 && nebulaBlobs) {
     const nebAlpha = Math.min((altitude - 800) / 400, 1);
     for (const nb of nebulaBlobs) {
@@ -864,7 +1081,12 @@ function render() {
   }
 
   // Mid star layer
-  if (starLayers) drawStarLayer(1);
+  if (starLayers && starAlpha > 0) {
+    ctx.save();
+    ctx.globalAlpha = starAlpha;
+    drawStarLayer(1);
+    ctx.restore();
+  }
 
   // Obstacles
   for (const obs of obstacles) {
@@ -918,7 +1140,12 @@ function render() {
   }
 
   // Near star layer
-  if (starLayers) drawStarLayer(2);
+  if (starLayers && starAlpha > 0) {
+    ctx.save();
+    ctx.globalAlpha = starAlpha;
+    drawStarLayer(2);
+    ctx.restore();
+  }
 
   // Rainbow trail
   if (rainbowTrail.length > 0) {
@@ -1087,7 +1314,7 @@ function drawStarLayer(layerIdx) {
 }
 
 function drawThrustFlames() {
-  const isBoosting = keysDown.has('boost') || touchBoosting;
+  const isBoosting = keysDown.has('boost') || touchBoosting || autoBoostTimer > 0;
   const isBraking  = keysDown.has('brake');
   const isLeft     = keysDown.has('left');
   const isRight    = keysDown.has('right');
@@ -1202,7 +1429,7 @@ function gameLoop(timestamp) {
 
   if (gameState === 'ready') {
     // Idle bob
-    rocketY = H * 0.7 + Math.sin(gameTime * 2) * 5;
+    rocketY = H * 0.82 + Math.sin(gameTime * 2) * 3;
     gameTime += dt;
   }
 
@@ -1227,6 +1454,15 @@ function gameLoop(timestamp) {
     score = altitude + starCount * STAR_POINTS;
     if (nearMissCooldown > 0) nearMissCooldown -= dt;
     if (milestoneTimer > 0) milestoneTimer -= dt;
+
+    // Scroll landscape + launch pad downward as rocket ascends
+    if (landscapeLayers) {
+      const dtNorm = dt * 60;
+      for (const layer of landscapeLayers) {
+        layer.yBase += scrollSpeed * dtNorm * (0.5 + layer.speed * 6);
+      }
+      launchPadY += scrollSpeed * dtNorm * (0.5 + 0.25 * 6);
+    }
   }
 
   if (gameState === 'crashing') {
@@ -1250,7 +1486,7 @@ function resetAndStart() {
   celebrateEl.innerHTML = '';
 
   rocketX = W * 0.5;
-  rocketY = H * 0.7;
+  rocketY = H * 0.82;
   rocketVX = 0;
   rocketVY = 0;
   rocketTilt = 0;
@@ -1262,6 +1498,10 @@ function resetAndStart() {
   starCount = 0;
   lastBoostState = false;
   nearMissCooldown = 0;
+  autoBoostTimer = 0;
+  launchPadY = H * 0.82;
+
+  createLandscape();
 
   obstacles = [];
   lastObstacleSpawn = 0;

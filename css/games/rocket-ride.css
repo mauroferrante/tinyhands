@@ -47,12 +47,13 @@
 
 .rocket-hint {
   position: fixed;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: 'Fredoka One', cursive;
   font-size: clamp(1.5rem, 4vw, 2.2rem);
-  color: rgba(180, 200, 255, 0.85);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 0, 0, 0.2);
   z-index: 200;
   pointer-events: none;
   transition: opacity 0.5s ease;
