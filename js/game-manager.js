@@ -267,8 +267,8 @@ document.addEventListener('mousedown', (e) => {
 // Touch
 document.addEventListener('touchstart', (e) => {
   if (!currentGame) return;
-  // Don't preventDefault on spell keyboard or memory game — they need click events to fire
-  if (!e.target.closest('#spellKeyboard') && !e.target.closest('#memoryGame')) {
+  // Don't preventDefault on elements that need click events to fire
+  if (!e.target.closest('#spellKeyboard') && !e.target.closest('#memoryGame') && !e.target.closest('.endcard-share-btn') && !e.target.closest('#postgameNudge')) {
     e.preventDefault();
   }
   currentGame.onTouch(e);

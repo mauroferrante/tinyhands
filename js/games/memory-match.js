@@ -170,11 +170,14 @@ function startRound(difficulty) {
     return { emoji, index: i, matched: false, element: el };
   });
 
-  // Trigger deal animation
-  requestAnimationFrame(() => memoryBoardEl.classList.add('memory-dealt'));
-
-  // Subtle settle sound after deal
-  setTimeout(() => playCardSettle(), cards.length * 25 + 400);
+  // Trigger deal animation + staggered deal sounds
+  requestAnimationFrame(() => {
+    memoryBoardEl.classList.add('memory-dealt');
+    // Play a settle sound per card as each one lands
+    cards.forEach((_, i) => {
+      setTimeout(() => playCardSettle(), i * 25 + 300);
+    });
+  });
 }
 
 function flipCard(index) {

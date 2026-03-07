@@ -6,7 +6,7 @@
   inset: 0;
   overflow: hidden;
   background: linear-gradient(135deg, #E8F8F5 0%, #F0E6FF 50%, #E0F7FA 100%);
-  cursor: default;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>🖐️</text></svg>") 16 16, auto !important;
 }
 
 /* ===== Difficulty Picker ===== */
@@ -44,7 +44,7 @@
   border: 3px solid rgba(124, 107, 191, 0.2);
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>👆</text></svg>") 16 4, pointer !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   min-width: 140px;
@@ -135,7 +135,7 @@
 .memory-card {
   aspect-ratio: 1;
   perspective: 600px;
-  cursor: pointer;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>👆</text></svg>") 16 4, pointer !important;
   -webkit-tap-highlight-color: transparent;
   opacity: 0;
 }
@@ -360,7 +360,7 @@
   padding: 0.5em 1.5em;
   border: none;
   border-radius: 50px;
-  cursor: pointer;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>👆</text></svg>") 16 4, pointer !important;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
