@@ -6,8 +6,6 @@ import { spawnParticles } from '../effects.js';
  * ============================================================= */
 
 // ---- Constants ----
-const BALL_R = 25;
-const CHAR_R = 32;
 const PAD = 20;
 const BALL_DRAG = 0.995;       // per-frame at 60 fps
 const CHAR_DRAG = 0.975;
@@ -16,7 +14,48 @@ const CHAR_WALL_REST = 0.7;
 const BALL_CHAR_REST = 0.8;
 const MIN_SPEED = 0.3;
 const LAUNCH_SPEED = 18;
-const MAX_CHARS = 8;
+
+// ---- Responsive sizing (computed in init) ----
+// Base values tuned for iPhone (~375px wide)
+const BASE_W = 375;
+const BASE_BALL_R = 25;
+const BASE_CHAR_R = 32;
+const BASE_BALL_FONT = 50;
+const BASE_CHAR_FONT = 60;
+const MAX_BALL_FONT = 90;   // cap to avoid emoji blurriness
+const MAX_CHAR_FONT = 100;
+const BASE_CHARS = 5;       // min characters (small screens)
+const MAX_CHARS_SMALL = 8;  // max on small screens
+const MAX_CHARS_LARGE = 12; // max on large screens
+
+let BALL_R = BASE_BALL_R;
+let CHAR_R = BASE_CHAR_R;
+let BALL_FONT = BASE_BALL_FONT;
+let CHAR_FONT = BASE_CHAR_FONT;
+let INITIAL_CHARS = BASE_CHARS;
+let MAX_CHARS = MAX_CHARS_SMALL;
+
+function computeSizes() {
+  const screenW = window.innerWidth;
+  const screenH = window.innerHeight;
+  const screenMin = Math.min(screenW, screenH);
+
+  // Scale factor: 1.0 at 375px, grows linearly, capped so fonts don't exceed max
+  const scale = Math.max(1, screenMin / BASE_W);
+
+  BALL_FONT = Math.min(Math.round(BASE_BALL_FONT * scale), MAX_BALL_FONT);
+  CHAR_FONT = Math.min(Math.round(BASE_CHAR_FONT * scale), MAX_CHAR_FONT);
+
+  // Radii scale proportionally with font size
+  BALL_R = Math.round(BASE_BALL_R * (BALL_FONT / BASE_BALL_FONT));
+  CHAR_R = Math.round(BASE_CHAR_R * (CHAR_FONT / BASE_CHAR_FONT));
+
+  // More characters on bigger screens (based on screen area relative to iPhone)
+  const areaRatio = (screenW * screenH) / (375 * 667); // iPhone SE area
+  INITIAL_CHARS = Math.min(Math.round(BASE_CHARS + (areaRatio - 1) * 2), 10);
+  INITIAL_CHARS = Math.max(BASE_CHARS, INITIAL_CHARS);
+  MAX_CHARS = areaRatio > 2 ? MAX_CHARS_LARGE : MAX_CHARS_SMALL;
+}
 const CHAR_POOL = ['🐱','🐶','🐸','🦁','🐷','🐧','🐼','🦊','🐮','🐔','🐵','🐰','🐻','🦄','🐹'];
 const REACTIONS = ['squash','spin','bounce','flip','shock'];
 
@@ -167,12 +206,14 @@ function makeEl(emoji, cls) {
 
 function makeBall(emoji, x, y) {
   const el = makeEl(emoji, 'bb-ball');
+  el.style.fontSize = BALL_FONT + 'px';
   gameEl.appendChild(el);
   return { x, y, vx: 0, vy: 0, r: BALL_R, rotation: 0, el, emoji };
 }
 
 function makeChar(emoji, x, y) {
   const el = makeEl(emoji, 'bb-char');
+  el.style.fontSize = CHAR_FONT + 'px';
   const starsDiv = document.createElement('div');
   starsDiv.className = 'bb-stars';
   el.appendChild(starsDiv);
@@ -556,8 +597,8 @@ function shuffleCharacters() {
       const idx = characters.indexOf(c);
       if (idx !== -1) characters.splice(idx, 1);
     });
-    // Spawn fresh 5-6
-    const count = 5 + Math.floor(Math.random() * 2);
+    // Spawn fresh batch scaled to screen
+    const count = INITIAL_CHARS + Math.floor(Math.random() * 2);
     for (let i = 0; i < count; i++) {
       setTimeout(() => spawnNewCharacter(), i * 300);
     }
@@ -700,6 +741,9 @@ function init() {
   W = window.innerWidth;
   H = window.innerHeight;
 
+  // Compute responsive sizes based on screen dimensions
+  computeSizes();
+
   // Clear previous
   gameEl.innerHTML = '';
   characters = [];
@@ -714,12 +758,12 @@ function init() {
   // Create ball near center
   ball = makeBall('⚽', W / 2, H / 2);
 
-  // Create 5-6 characters
-  const count = 5 + Math.floor(Math.random() * 2);
+  // Spawn characters scaled to screen size
+  const count = INITIAL_CHARS + Math.floor(Math.random() * 2);
   const pool = shuffle([...CHAR_POOL]).slice(0, count);
   const placed = [{ x: W / 2, y: H / 2 }]; // exclude ball center
   pool.forEach(emoji => {
-    const pos = randomPos(placed, 120);
+    const pos = randomPos(placed, CHAR_R * 3.5);
     placed.push(pos);
     characters.push(makeChar(emoji, pos.x, pos.y));
   });
@@ -736,6 +780,20 @@ function cleanup() {
 function onResize() {
   W = window.innerWidth;
   H = window.innerHeight;
+  computeSizes();
+  // Update existing entity radii and font sizes
+  if (ball) {
+    ball.r = BALL_R;
+    ball.el.style.fontSize = BALL_FONT + 'px';
+  }
+  characters.forEach(c => {
+    c.r = CHAR_R;
+    c.el.style.fontSize = CHAR_FONT + 'px';
+  });
+  bonusBalls.forEach(b => {
+    b.r = BALL_R;
+    b.el.style.fontSize = BALL_FONT + 'px';
+  });
 }
 
 // ---- Export ----
