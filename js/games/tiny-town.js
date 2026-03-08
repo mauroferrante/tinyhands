@@ -432,42 +432,42 @@ function generateCountryside() {
   const phase = () => rng(0, Math.PI*2);
 
   // === FOREST (700, 700) — Dense trees ===
+  // Dark green zone is fillRect(100, 620, 1300, 780) → x:100-1400, y:620-1400
   // Road runs vertically at x≈700 (y700→y1100) and horizontally at y≈1100 (x400→x900)
-  // Avoid a corridor ±30px around road lines
   const forestRoadOk = (x,y) => {
-    if (y > 1060 && y < 1140 && x > 360 && x < 940) return false; // horizontal road
-    if (x > 660 && x < 740 && y > 660 && y < 1140) return false;  // vertical road
+    if (y > 1060 && y < 1140 && x > 360 && x < 940) return false;
+    if (x > 660 && x < 740 && y > 660 && y < 1140) return false;
     return true;
   };
-  for (let i = 0; i < 140; i++) {
-    const x = rng(100, 1400), y = rng(200, 1050);
+  for (let i = 0; i < 160; i++) {
+    const x = rng(120, 1380), y = rng(640, 1380);
     if (!forestRoadOk(x,y)) continue;
     const emoji = Math.random() < 0.7 ? '🌲' : '🌳';
     scenery.push({ x, y, emoji, size: 42+rng(0,28), layer:'forest' });
   }
   // Forest floor: mushrooms, ferns, logs
   for (let i = 0; i < 20; i++) {
-    scenery.push({ x:rng(200,1300), y:rng(250,1000), emoji:'🍄', size:18+rng(0,12), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(150,1350), y:rng(660,1350), emoji:'🍄', size:18+rng(0,12), layer:'sway', wobble:phase() });
   }
   for (let i = 0; i < 12; i++) {
-    scenery.push({ x:rng(200,1300), y:rng(250,1000), emoji:'🌿', size:16+rng(0,10), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(150,1350), y:rng(660,1350), emoji:'🌿', size:16+rng(0,10), layer:'sway', wobble:phase() });
   }
   for (let i = 0; i < 6; i++) {
-    scenery.push({ x:rng(200,1300), y:rng(300,950), emoji:'🪵', size:20+rng(0,8), layer:'forest' });
+    scenery.push({ x:rng(150,1350), y:rng(680,1300), emoji:'🪵', size:20+rng(0,8), layer:'forest' });
   }
   // Forest critters
   for (let i = 0; i < 7; i++) {
-    scenery.push({ x:rng(250,1300), y:rng(350,950), emoji:'🐿️', size:18+rng(0,8), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(150,1350), y:rng(680,1300), emoji:'🐿️', size:18+rng(0,8), layer:'sway', wobble:phase() });
   }
   for (let i = 0; i < 4; i++) {
-    scenery.push({ x:rng(250,1300), y:rng(350,950), emoji:'🦔', size:16+rng(0,6), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(150,1350), y:rng(680,1300), emoji:'🦔', size:16+rng(0,6), layer:'sway', wobble:phase() });
   }
   // Additional forest animals
   for (let i = 0; i < 4; i++) {
-    scenery.push({ x:rng(200,1300), y:rng(300,900), emoji:'🦉', size:20+rng(0,8), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(150,1350), y:rng(680,1250), emoji:'🦉', size:20+rng(0,8), layer:'sway', wobble:phase() });
   }
   for (let i = 0; i < 3; i++) {
-    scenery.push({ x:rng(250,1200), y:rng(400,950), emoji:'🦌', size:28+rng(0,10), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(200,1300), y:rng(700,1250), emoji:'🦌', size:28+rng(0,10), layer:'sway', wobble:phase() });
   }
 
   // === GARDEN (700, 2000) — Lush flower garden ===
@@ -591,18 +591,27 @@ function generateCountryside() {
   for (let i = 0; i < 25; i++) {
     scenery.push({ x:4100+rng(0,600), y:900+rng(0,400), emoji:'🌾', size:28+rng(0,10), layer:'sway', wobble:phase() });
   }
-  // Farm animals
-  for (let i = 0; i < 5; i++) {
-    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🐄', size:30+rng(0,10), layer:'sway', wobble:phase() });
+  // Farm animals — spread across a grid so they don't cluster
+  const farmAnimals = [
+    '🐄','🐄','🐄','🐄','🐄','🐄','🐄','🐄','🐄','🐄',
+    '🐔','🐔','🐔','🐔','🐔','🐔',
+    '🐖','🐖','🐖','🐖','🐖','🐖','🐖','🐖','🐖',
+    '🐑','🐑','🐑','🐑',
+    '🦚','🦚','🦚',
+    '🪿','🪿','🪿','🪿','🪿',
+  ];
+  // Shuffle and place on a grid with jitter
+  for (let fi = farmAnimals.length - 1; fi > 0; fi--) {
+    const fj = Math.floor(Math.random() * (fi + 1));
+    [farmAnimals[fi], farmAnimals[fj]] = [farmAnimals[fj], farmAnimals[fi]];
   }
-  for (let i = 0; i < 6; i++) {
-    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🐔', size:20+rng(0,8), layer:'sway', wobble:phase() });
-  }
-  for (let i = 0; i < 3; i++) {
-    scenery.push({ x:rng(4200,4600), y:rng(1000,1250), emoji:'🐖', size:24+rng(0,8), layer:'sway', wobble:phase() });
-  }
-  for (let i = 0; i < 4; i++) {
-    scenery.push({ x:rng(4200,4600), y:rng(1000,1250), emoji:'🐑', size:22+rng(0,8), layer:'sway', wobble:phase() });
+  const farmCols = 7, farmRows = Math.ceil(farmAnimals.length / farmCols);
+  for (let fi = 0; fi < farmAnimals.length; fi++) {
+    const col = fi % farmCols, row = Math.floor(fi / farmCols);
+    const fx = 4120 + col * 75 + rng(-20,20);
+    const fy = 920 + row * 70 + rng(-15,15);
+    const fsize = farmAnimals[fi] === '🐄' ? 28+rng(0,10) : 22+rng(0,8);
+    scenery.push({ x:fx, y:fy, emoji:farmAnimals[fi], size:fsize, layer:'sway', wobble:phase() });
   }
   // Farm structures
   scenery.push({ x:4300, y:1050, emoji:'🚜', size:40, layer:'farm' });
@@ -613,19 +622,6 @@ function generateCountryside() {
   // Hay bales
   for (let i = 0; i < 5; i++) {
     scenery.push({ x:rng(4150,4650), y:rng(950,1250), emoji:'🌾', size:36+rng(0,8), layer:'farm' });
-  }
-  // Additional farm animals
-  for (let i = 0; i < 3; i++) {
-    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🦚', size:24+rng(0,8), layer:'sway', wobble:phase() });
-  }
-  for (let i = 0; i < 5; i++) {
-    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🪿', size:22+rng(0,8), layer:'sway', wobble:phase() });
-  }
-  for (let i = 0; i < 6; i++) {
-    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🐖', size:24+rng(0,8), layer:'sway', wobble:phase() });
-  }
-  for (let i = 0; i < 5; i++) {
-    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🐄', size:28+rng(0,10), layer:'sway', wobble:phase() });
   }
   // Tree line surrounding the farm
   for (let x2 = 4050; x2 <= 4700; x2 += 55) {
@@ -1162,17 +1158,17 @@ function drawBeachTown(c) {
 }
 
 function drawIndustrialArea(c) {
-  // Factory buildings east of city
+  // Factory buildings east of city — road at x≈4600 (y2000→y2600), keep clear ±50px
   const factories = [
-    { x:4380, y:2000, emoji:'🏭', size:72 },
-    { x:4520, y:2020, emoji:'🏭', size:80 },
-    { x:4680, y:1990, emoji:'🏭', size:68 },
-    { x:4450, y:2180, emoji:'🏭', size:74 },
-    { x:4600, y:2200, emoji:'🏭', size:82 },
-    { x:4750, y:2170, emoji:'🏭', size:70 },
-    { x:4400, y:2380, emoji:'🏭', size:66 },
-    { x:4560, y:2400, emoji:'🏭', size:76 },
-    { x:4720, y:2370, emoji:'🏭', size:72 },
+    { x:4350, y:2000, emoji:'🏭', size:72 },
+    { x:4480, y:2020, emoji:'🏭', size:80 },
+    { x:4720, y:1990, emoji:'🏭', size:68 },
+    { x:4370, y:2180, emoji:'🏭', size:74 },
+    { x:4490, y:2200, emoji:'🏭', size:78 },
+    { x:4760, y:2170, emoji:'🏭', size:70 },
+    { x:4350, y:2380, emoji:'🏭', size:66 },
+    { x:4480, y:2400, emoji:'🏭', size:76 },
+    { x:4740, y:2370, emoji:'🏭', size:72 },
   ];
   for (const f of factories) drawSprite(c, f.emoji, f.x, f.y, f.size);
   // Smokestacks/chimneys (smaller accent buildings)
@@ -1180,9 +1176,9 @@ function drawIndustrialArea(c) {
   drawSprite(c, '🏢', 4830, 2250, 50);
   // Trucks and containers
   drawSprite(c, '🚛', 4350, 2500, 32);
-  drawSprite(c, '🚛', 4550, 2520, 30);
-  drawSprite(c, '📦', 4700, 2510, 28);
-  drawSprite(c, '📦', 4750, 2500, 24);
+  drawSprite(c, '🚛', 4480, 2520, 30);
+  drawSprite(c, '📦', 4740, 2510, 28);
+  drawSprite(c, '📦', 4790, 2500, 24);
 }
 
 function drawAirport(c) {
@@ -1208,8 +1204,8 @@ function drawAirport(c) {
   drawSprite(c, '🛩️', 5200, 1380, 40);
   drawSprite(c, '🛩️', 5300, 1380, 40);
   // Parked large planes
-  drawSprite(c, '✈️', 4850, 1400, 52);
-  drawSprite(c, '✈️', 4980, 1400, 52);
+  drawSprite(c, '✈️', 4800, 1400, 52);
+  drawSprite(c, '✈️', 4960, 1400, 52);
   // Fence
   c.strokeStyle = '#888'; c.lineWidth = 2;
   c.strokeRect(4660, 1200, 1080, 420);
