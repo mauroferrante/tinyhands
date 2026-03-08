@@ -355,13 +355,35 @@ function removeBonusBall(b) {
   const idx = bonusBalls.indexOf(b);
   if (idx !== -1) {
     bonusBalls.splice(idx, 1);
-    b.el.style.transition = 'opacity 0.5s';
-    b.el.style.opacity = '0';
-    setTimeout(() => b.el.remove(), 500);
+    // Fly off toward nearest edge
+    const edges = [
+      { vx: 0, vy: -25 },   // top
+      { vx: 0, vy: 25 },    // bottom
+      { vx: -25, vy: 0 },   // left
+      { vx: 25, vy: 0 },    // right
+    ];
+    const pick = edges[Math.floor(Math.random() * 4)];
+    b.vx = pick.vx;
+    b.vy = pick.vy;
+    // Keep rendering it until off-screen, then remove
+    const flyOut = () => {
+      b.x += b.vx;
+      b.y += b.vy;
+      b.el.style.transform = `translate(${b.x - b.r}px, ${b.y - b.r}px)`;
+      b.el.style.opacity = String(Math.max(0, 1 - Math.max(
+        Math.max(-b.x, b.x - W, -b.y, b.y - H) / 60, 0
+      )));
+      if (b.x < -100 || b.x > W + 100 || b.y < -100 || b.y > H + 100) {
+        b.el.remove();
+      } else {
+        requestAnimationFrame(flyOut);
+      }
+    };
+    requestAnimationFrame(flyOut);
   }
 }
 
-// -- Star effect: spawn a bonus ball for 20s --
+// -- Star effect: spawn a bonus ball for 30s --
 function effectStar(x, y) {
   sndCollectStar();
   showEventText('⭐ BONUS BALL!', x, y);
@@ -371,7 +393,7 @@ function effectStar(x, y) {
   b.vx = Math.cos(angle) * LAUNCH_SPEED;
   b.vy = Math.sin(angle) * LAUNCH_SPEED;
   bonusBalls.push(b);
-  setTimeout(() => removeBonusBall(b), 20000);
+  setTimeout(() => removeBonusBall(b), 30000);
 }
 
 // -- Clock effect: speed everything up for 10s --
@@ -393,7 +415,7 @@ function effectClock(x, y) {
   }, 10000);
 }
 
-// -- Circus effect: +50% characters --
+// -- Circus effect: +50% characters for 30s --
 function effectCircus(x, y) {
   sndCollectCircus();
   gameEl.classList.add('bb-shaking');
@@ -401,9 +423,39 @@ function effectCircus(x, y) {
   const toAdd = Math.max(2, Math.ceil(characters.length * 0.5));
   showEventText('🎪 MORE FRIENDS!', x, y);
   spawnParticles(x, y, gameEl);
+  const extraChars = [];
   for (let i = 0; i < toAdd; i++) {
-    setTimeout(() => spawnNewCharacter(), i * 250);
+    setTimeout(() => {
+      const before = characters.length;
+      spawnNewCharacter();
+      // Track newly added character
+      if (characters.length > before) {
+        extraChars.push(characters[characters.length - 1]);
+      }
+    }, i * 250);
   }
+  // After 30s, walk extras off-screen and remove
+  setTimeout(() => {
+    extraChars.forEach(c => {
+      if (!characters.includes(c)) return; // already gone
+      const edge = Math.floor(Math.random() * 4);
+      if (edge === 0)      { c.targetX = c.x; c.targetY = -CHAR_R * 3; }
+      else if (edge === 1) { c.targetX = c.x; c.targetY = H + CHAR_R * 3; }
+      else if (edge === 2) { c.targetX = -CHAR_R * 3; c.targetY = c.y; }
+      else                 { c.targetX = W + CHAR_R * 3; c.targetY = c.y; }
+      c.state = 'walking';
+    });
+    // Remove them once they've had time to walk off
+    setTimeout(() => {
+      extraChars.forEach(c => {
+        const idx = characters.indexOf(c);
+        if (idx !== -1) {
+          characters.splice(idx, 1);
+          c.el.remove();
+        }
+      });
+    }, 3000);
+  }, 30000);
 }
 
 function collectBallHitsCollectible(b) {
@@ -719,6 +771,11 @@ function handleInput() {
   idleTime = 0;
 }
 
+function kickBall(b, vx, vy) {
+  b.vx += vx;
+  b.vy += vy;
+}
+
 function launchBallRandom() {
   handleInput();
   const angle = Math.random() * Math.PI * 2;
@@ -729,6 +786,11 @@ function launchBallRandom() {
     ball.vx += Math.cos(angle) * LAUNCH_SPEED * 0.8;
     ball.vy += Math.sin(angle) * LAUNCH_SPEED * 0.8;
   }
+  // Bonus balls also get a random kick
+  bonusBalls.forEach(b => {
+    const a = Math.random() * Math.PI * 2;
+    kickBall(b, Math.cos(a) * LAUNCH_SPEED * 0.6, Math.sin(a) * LAUNCH_SPEED * 0.6);
+  });
   sndLaunch();
 }
 
@@ -743,6 +805,15 @@ function launchBallToward(tx, ty) {
   const ny = dy / d;
   ball.vx += nx * Math.max(spd, 8);
   ball.vy += ny * Math.max(spd, 8);
+  // Bonus balls also get kicked toward tap
+  bonusBalls.forEach(b => {
+    const bDx = tx - b.x;
+    const bDy = ty - b.y;
+    const bD = Math.hypot(bDx, bDy);
+    if (bD > 1) {
+      kickBall(b, (bDx / bD) * Math.max(spd, 6), (bDy / bD) * Math.max(spd, 6));
+    }
+  });
   sndLaunch();
 }
 
