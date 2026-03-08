@@ -539,38 +539,97 @@ function updateCamera() {
 
 // === RENDERING ===
 function drawSky(c) {
-  if (cy > 600) return; // Sky not visible
-  const grad = c.createLinearGradient(0, 0, 0, Math.max(1, 600 - cy));
-  grad.addColorStop(0, '#5AAEE8');
-  grad.addColorStop(1, '#C0E8FF');
+  if (cy > 700) return; // Sky not visible
+  const grad = c.createLinearGradient(0, -100, 0, 650);
+  grad.addColorStop(0, '#3A7BD5');
+  grad.addColorStop(0.3, '#5AAEE8');
+  grad.addColorStop(0.7, '#87CEEB');
+  grad.addColorStop(1, '#C8E8FF');
   c.fillStyle = grad;
-  c.fillRect(-cx, -cy, MAP_W, 600);
+  c.fillRect(-cx, -cy, MAP_W + cx, 700);
 }
 
 function drawMountains(c) {
-  const peaks = [
-    { x:300,  y:580, size:180, emoji:'🏔️' },
-    { x:800,  y:560, size:150, emoji:'🏔️' },
-    { x:1400, y:550, size:160, emoji:'🏔️' },
-    { x:2200, y:580, size:130, emoji:'🏔️' },
-    { x:2900, y:540, size:170, emoji:'🏔️' },
-    { x:3600, y:570, size:140, emoji:'🌋'  },
-    { x:4300, y:555, size:155, emoji:'🏔️' },
-    { x:5000, y:565, size:145, emoji:'🏔️' },
-    { x:5600, y:575, size:130, emoji:'🏔️' },
+  // --- Back layer: large distant snow-capped peaks ---
+  const backPeaks = [
+    { x:-60,  y:220, size:260, emoji:'🏔️' },
+    { x:350,  y:180, size:300, emoji:'🏔️' },
+    { x:800,  y:210, size:270, emoji:'🏔️' },
+    { x:1250, y:170, size:310, emoji:'🏔️' },
+    { x:1700, y:200, size:280, emoji:'🏔️' },
+    { x:2100, y:230, size:250, emoji:'🏔️' },
+    { x:2550, y:175, size:300, emoji:'🏔️' },
+    { x:3000, y:195, size:290, emoji:'🏔️' },
+    { x:3450, y:220, size:260, emoji:'🏔️' },
+    { x:3850, y:180, size:305, emoji:'🏔️' },
+    { x:4300, y:210, size:275, emoji:'🏔️' },
+    { x:4750, y:190, size:295, emoji:'🏔️' },
+    { x:5200, y:225, size:265, emoji:'🏔️' },
+    { x:5650, y:200, size:280, emoji:'🏔️' },
   ];
+  // Distant haze
+  c.globalAlpha = 0.5;
+  for (const p of backPeaks) drawSprite(c, p.emoji, p.x, p.y, p.size);
+  c.globalAlpha = 1.0;
+
+  // --- Mid layer: medium mountains ---
+  const midPeaks = [
+    { x:100,  y:380, size:220, emoji:'🏔️' },
+    { x:550,  y:350, size:240, emoji:'🏔️' },
+    { x:1050, y:370, size:230, emoji:'🏔️' },
+    { x:1500, y:340, size:250, emoji:'🏔️' },
+    { x:1950, y:380, size:220, emoji:'🏔️' },
+    { x:2400, y:350, size:240, emoji:'🏔️' },
+    { x:2850, y:330, size:260, emoji:'🏔️' },
+    { x:3300, y:370, size:225, emoji:'🌋'  },
+    { x:3700, y:345, size:250, emoji:'🏔️' },
+    { x:4150, y:365, size:235, emoji:'🏔️' },
+    { x:4600, y:340, size:255, emoji:'🏔️' },
+    { x:5050, y:375, size:225, emoji:'🏔️' },
+    { x:5500, y:355, size:240, emoji:'🏔️' },
+    { x:5900, y:380, size:220, emoji:'🏔️' },
+  ];
+  c.globalAlpha = 0.75;
+  for (const p of midPeaks) drawSprite(c, p.emoji, p.x, p.y, p.size);
+  c.globalAlpha = 1.0;
+
+  // --- Front layer: prominent foreground peaks ---
+  const frontPeaks = [
+    { x:200,  y:480, size:200, emoji:'🏔️' },
+    { x:700,  y:460, size:220, emoji:'🏔️' },
+    { x:1200, y:475, size:210, emoji:'🏔️' },
+    { x:1650, y:450, size:230, emoji:'🏔️' },
+    { x:2100, y:470, size:215, emoji:'🏔️' },
+    { x:2600, y:445, size:235, emoji:'🏔️' },
+    { x:3100, y:465, size:220, emoji:'🏔️' },
+    { x:3550, y:455, size:225, emoji:'🏔️' },
+    { x:4000, y:480, size:200, emoji:'🏔️' },
+    { x:4500, y:450, size:230, emoji:'🏔️' },
+    { x:4950, y:470, size:215, emoji:'🏔️' },
+    { x:5400, y:460, size:220, emoji:'🏔️' },
+    { x:5850, y:475, size:210, emoji:'🏔️' },
+  ];
+  for (const p of frontPeaks) drawSprite(c, p.emoji, p.x, p.y, p.size);
+
+  // --- Foothills: small rocky hills along the base ---
   const foothills = [
-    {x:500,y:600,s:90},{x:1100,y:600,s:80},{x:1900,y:600,s:85},
-    {x:2600,y:600,s:75},{x:3300,y:600,s:88},{x:4000,y:600,s:78},
-    {x:4700,y:600,s:82},{x:5300,y:600,s:72},
+    {x:80,y:590,s:100},{x:380,y:600,s:85},{x:650,y:595,s:95},
+    {x:950,y:605,s:80},{x:1200,y:590,s:100},{x:1500,y:600,s:88},
+    {x:1800,y:595,s:92},{x:2100,y:605,s:82},{x:2400,y:590,s:98},
+    {x:2700,y:600,s:86},{x:3000,y:595,s:94},{x:3300,y:605,s:80},
+    {x:3600,y:590,s:100},{x:3900,y:600,s:88},{x:4200,y:595,s:92},
+    {x:4500,y:605,s:82},{x:4800,y:590,s:96},{x:5100,y:600,s:85},
+    {x:5400,y:595,s:90},{x:5700,y:605,s:80},
   ];
   for (const f of foothills) drawSprite(c, '⛰️', f.x, f.y, f.s);
-  for (const p of peaks) drawSprite(c, p.emoji, p.x, p.y, p.size);
-  const fog = c.createLinearGradient(0, 550, 0, 630);
+
+  // --- Soft fog transition into meadow ---
+  const fog = c.createLinearGradient(0, 520, 0, 650);
   fog.addColorStop(0, 'rgba(255,255,255,0)');
-  fog.addColorStop(1, 'rgba(255,255,255,0.45)');
+  fog.addColorStop(0.5, 'rgba(255,255,255,0.3)');
+  fog.addColorStop(1, 'rgba(165,212,142,0.6)');
   c.fillStyle = fog;
-  c.fillRect(0, 550, MAP_W, 80);
+  c.fillRect(0, 520, MAP_W, 130);
 }
 
 function drawTerrain(c) {
@@ -605,8 +664,11 @@ function drawTerrain(c) {
   // Pond water
   c.fillStyle = '#6AB8D0';
   c.beginPath(); c.ellipse(2000, 1020, 160, 100, 0, 0, Math.PI*2); c.fill();
-  // Mountain hill base
-  c.fillStyle = C.hillGreen; c.fillRect(0, 580, MAP_W, 60);
+  // Mountain-to-meadow transition (subtle green blend)
+  const hillGrad = c.createLinearGradient(0, 580, 0, 650);
+  hillGrad.addColorStop(0, 'rgba(122,154,106,0.3)');
+  hillGrad.addColorStop(1, C.meadow);
+  c.fillStyle = hillGrad; c.fillRect(0, 580, MAP_W, 70);
   // Airport tarmac
   c.fillStyle = '#808080'; c.fillRect(4600, 1200, 1200, 800);
 }
