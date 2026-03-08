@@ -1,6 +1,11 @@
 let audioCtx = null;
 let iosUnlocked = false;
 
+export function getAudioCtx() {
+  if (!audioCtx) initAudio();
+  return audioCtx;
+}
+
 export function initAudio() {
   // Create context on very first call
   if (!audioCtx) {

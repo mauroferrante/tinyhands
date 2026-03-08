@@ -10,6 +10,7 @@ import { spellItOut } from './games/spell-it-out.js';
 import { memoryMatch } from './games/memory-match.js';
 import { balloonFloat } from './games/balloon-float.js';
 import { rocketRide } from './games/rocket-ride.js';
+import { ballBonanza } from './games/ball-bonanza.js';
 import { shareOrCopy } from './share.js';
 
 // ---- Element references ----
@@ -40,7 +41,8 @@ const GAMES = {
   'spell-it-out': spellItOut,
   'memory-match': memoryMatch,
   'balloon-float': balloonFloat,
-  'rocket-ride': rocketRide
+  'rocket-ride': rocketRide,
+  'ball-bonanza': ballBonanza
 };
 
 // ===== Entry Animation & Fullscreen =====

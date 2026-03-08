@@ -44,6 +44,7 @@
 <link rel="stylesheet" href="css/games/memory-match.css">
 <link rel="stylesheet" href="css/games/balloon-float.css">
 <link rel="stylesheet" href="css/games/rocket-ride.css">
+<link rel="stylesheet" href="css/games/ball-bonanza.css">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -108,6 +109,25 @@
         <div class="card-back">
           <p class="card-info-desc">Press any key or tap the screen — emojis pop up with fun sounds and colors!</p>
           <p class="card-info-edu">🧒 <strong>What they learn:</strong> Cause-and-effect thinking, fine motor skills, and sensory exploration. Every keypress gets a response, teaching little ones that their actions make things happen.</p>
+          <span class="card-back-hint">Tap to flip back</span>
+        </div>
+      </div>
+      <button class="card-info-btn" aria-label="Game info">ⓘ</button>
+    </article>
+
+    <!-- Ball Bonanza Card -->
+    <article class="game-card">
+      <div class="card-flipper">
+        <div class="card-front">
+          <span class="card-icon" aria-hidden="true">🎪</span>
+          <h2>Ball Bonanza</h2>
+          <span class="age-badge">2 – 5 years</span>
+          <p class="card-desc">Tap, bounce, and cause emoji chaos!</p>
+          <button class="play-btn accent-salmon" data-game="ball-bonanza">Play</button>
+        </div>
+        <div class="card-back">
+          <p class="card-info-desc">Press any key or tap to send a bouncy ball flying around the screen, knocking into emoji characters who react with hilarious animations and sounds!</p>
+          <p class="card-info-edu">🧒 <strong>What they learn:</strong> Cause-and-effect thinking, spatial awareness, and sensory delight. Every action creates a chain reaction of bouncing, spinning fun.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -333,6 +353,9 @@
     </div>
     <div class="balloon-celebrate" id="balloonCelebrate"></div>
   </div>
+
+  <!-- Ball Bonanza game layer -->
+  <div id="ballBonanzaGame"></div>
 
   <!-- Rocket Ride game layer -->
   <div id="rocketGame">
