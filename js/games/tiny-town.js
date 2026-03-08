@@ -429,37 +429,218 @@ function generateHouses() {
 function generateCountryside() {
   scenery = [];
   const rng = (a,b) => a + Math.random()*(b-a);
-  // Dense forest NW
+  const phase = () => rng(0, Math.PI*2);
+
+  // === FOREST (700, 700) — Dense trees ===
   for (let i = 0; i < 90; i++) {
     const x = rng(200, 1400), y = rng(200, 1200);
     const emoji = Math.random() < 0.6 ? '🌲' : '🌳';
     scenery.push({ x, y, emoji, size: 42+rng(0,28), layer:'forest' });
   }
-  // Farm NE
+  // Forest floor: mushrooms, ferns, logs
+  for (let i = 0; i < 20; i++) {
+    scenery.push({ x:rng(300,1200), y:rng(300,1100), emoji:'🍄', size:18+rng(0,12), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 12; i++) {
+    scenery.push({ x:rng(300,1200), y:rng(300,1100), emoji:'🌿', size:16+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(300,1200), y:rng(400,1000), emoji:'🪵', size:20+rng(0,8), layer:'forest' });
+  }
+  // Forest critters
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(400,1100), y:rng(400,1000), emoji:'🐿️', size:18+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(400,1100), y:rng(400,1000), emoji:'🦔', size:16+rng(0,6), layer:'sway', wobble:phase() });
+  }
+
+  // === GARDEN (700, 2000) — Lush flower garden ===
+  const gardenEmojis = ['🌷','🌹','🌻','🌺','🌸','🪻','🌼','💐'];
+  for (let i = 0; i < 50; i++) {
+    const x = rng(350, 1050), y = rng(1750, 2250);
+    const emoji = gardenEmojis[Math.floor(rng(0, gardenEmojis.length))];
+    scenery.push({ x, y, emoji, size:20+rng(0,16), layer:'sway', wobble:phase() });
+  }
+  // Garden hedges and pots
+  for (let i = 0; i < 10; i++) {
+    scenery.push({ x:rng(400,1000), y:rng(1800,2200), emoji:'🪴', size:24+rng(0,12), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(400,1000), y:rng(1800,2200), emoji:'🌳', size:36+rng(0,14), layer:'garden' });
+  }
+  // Garden butterflies
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(400,1000), y:rng(1800,2200), emoji:'🦋', size:16+rng(0,8), layer:'butterfly', wobble:phase() });
+  }
+  // Garden bees
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(450,950), y:rng(1850,2150), emoji:'🐝', size:14+rng(0,6), layer:'butterfly', wobble:phase() });
+  }
+
+  // === PETS (1100, 3200) — Pet park ===
+  const petEmojis = ['🐕','🐈','🐩','🐾','🦴','🎾'];
+  for (let i = 0; i < 25; i++) {
+    const x = rng(800, 1400), y = rng(3000, 3400);
+    const emoji = petEmojis[Math.floor(rng(0, petEmojis.length))];
+    scenery.push({ x, y, emoji, size:18+rng(0,14), layer:'sway', wobble:phase() });
+  }
+  // Pet park trees and bushes
   for (let i = 0; i < 8; i++) {
-    scenery.push({ x: 4200+rng(0,400), y: 1000+rng(0,300), emoji:'🌾', size:32, layer:'farm' });
+    scenery.push({ x:rng(800,1400), y:rng(3050,3350), emoji:'🌳', size:34+rng(0,14), layer:'pets' });
   }
-  scenery.push({ x:4300, y:1150, emoji:'🚜', size:40, layer:'farm' });
-  scenery.push({ x:4500, y:1050, emoji:'🐄', size:36, layer:'farm' });
-  scenery.push({ x:4350, y:1220, emoji:'🐔', size:28, layer:'farm' });
-  for (let x2 = 4100; x2 < 4700; x2 += 60) {
-    scenery.push({ x:x2, y:950, emoji:'🪵', size:18, layer:'farm' });
+  // Pet park birds
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(850,1350), y:rng(3050,3300), emoji:'🐦', size:14+rng(0,8), layer:'butterfly', wobble:phase() });
   }
-  // Orchard rows
-  for (let row = 0; row < 4; row++) {
-    for (let col = 0; col < 6; col++) {
-      scenery.push({ x: 3500+col*80, y: 450+row*80, emoji:'🌳', size:44, layer:'orchard' });
+  // Paw print trail
+  for (let i = 0; i < 10; i++) {
+    scenery.push({ x:rng(850,1350), y:rng(3050,3350), emoji:'🐾', size:12+rng(0,6), layer:'pets' });
+  }
+
+  // === POND (2000, 1000) — Rich pond ecosystem ===
+  // Water plants
+  for (let i = 0; i < 15; i++) {
+    scenery.push({ x:rng(1750,2250), y:rng(850,1150), emoji:'🪷', size:18+rng(0,12), layer:'bob', wobble:phase() });
+  }
+  for (let i = 0; i < 10; i++) {
+    scenery.push({ x:rng(1700,2300), y:rng(800,1200), emoji:'🌿', size:16+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  // Pond creatures
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(1800,2200), y:rng(900,1100), emoji:'🐸', size:18+rng(0,8), layer:'bob', wobble:phase() });
+  }
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(1800,2200), y:rng(900,1100), emoji:'🦆', size:20+rng(0,8), layer:'bob', wobble:phase() });
+  }
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(1850,2150), y:rng(920,1080), emoji:'🐢', size:16+rng(0,8), layer:'bob', wobble:phase() });
+  }
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(1850,2150), y:rng(920,1080), emoji:'🐟', size:14+rng(0,6), layer:'bob', wobble:phase() });
+  }
+  // Pond dragonflies
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(1800,2200), y:rng(850,1100), emoji:'🪰', size:12+rng(0,6), layer:'butterfly', wobble:phase() });
+  }
+  // Reeds and cattails around edge
+  for (let i = 0; i < 12; i++) {
+    const angle = rng(0, Math.PI*2);
+    const r = rng(180, 280);
+    scenery.push({ x:2000+Math.cos(angle)*r, y:1000+Math.sin(angle)*r, emoji:'🌾', size:22+rng(0,10), layer:'sway', wobble:phase() });
+  }
+
+  // === ORCHARD (3800, 600) — Expanded orchard with fruit ===
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 7; col++) {
+      scenery.push({ x: 3450+col*80, y: 380+row*80, emoji:'🌳', size:44+rng(0,10), layer:'orchard' });
     }
   }
-  // Pond details
-  scenery.push({ x:2000, y:1000, emoji:'🐸', size:22, layer:'pond' });
-  scenery.push({ x:1950, y:1060, emoji:'🦆', size:26, layer:'pond' });
-  scenery.push({ x:2100, y:980,  emoji:'🪷', size:24, layer:'pond' });
+  // Fallen fruit and baskets
+  const fruitEmojis = ['🍎','🍐','🍊','🍋'];
+  for (let i = 0; i < 20; i++) {
+    scenery.push({ x:rng(3450,4010), y:rng(380,780), emoji:fruitEmojis[Math.floor(rng(0,4))], size:14+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(3500,3950), y:rng(450,700), emoji:'🧺', size:20+rng(0,8), layer:'orchard' });
+  }
+  // Orchard bees
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(3500,3950), y:rng(400,750), emoji:'🐝', size:12+rng(0,6), layer:'butterfly', wobble:phase() });
+  }
+  // Orchard birds
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(3500,3950), y:rng(400,700), emoji:'🐦', size:14+rng(0,6), layer:'butterfly', wobble:phase() });
+  }
+
+  // === FARM (4400, 1100) — Bustling farm ===
+  // Crops
+  for (let i = 0; i < 25; i++) {
+    scenery.push({ x:4100+rng(0,600), y:900+rng(0,400), emoji:'🌾', size:28+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  // Farm animals
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🐄', size:30+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🐔', size:20+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(4200,4600), y:rng(1000,1250), emoji:'🐖', size:24+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(4200,4600), y:rng(1000,1250), emoji:'🐑', size:22+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  // Farm structures
+  scenery.push({ x:4300, y:1050, emoji:'🚜', size:40, layer:'farm' });
+  scenery.push({ x:4550, y:950, emoji:'🏚️', size:44, layer:'farm' });
+  for (let x2 = 4100; x2 < 4700; x2 += 50) {
+    scenery.push({ x:x2, y:880, emoji:'🪵', size:16+rng(0,4), layer:'farm' });
+  }
+  // Hay bales
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(4150,4650), y:rng(950,1250), emoji:'🌾', size:36+rng(0,8), layer:'farm' });
+  }
+
+  // === AIRPORT (5200, 1600) — Airport surroundings ===
+  for (let i = 0; i < 8; i++) {
+    scenery.push({ x:rng(4900,5500), y:rng(1400,1800), emoji:'🧳', size:18+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(4900,5400), y:rng(1400,1750), emoji:'🏢', size:36+rng(0,14), layer:'airport_s' });
+  }
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(4950,5450), y:rng(1450,1750), emoji:'🚐', size:24+rng(0,8), layer:'airport_s' });
+  }
+  // Wind socks and flags
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(4950,5450), y:rng(1400,1800), emoji:'🪁', size:16+rng(0,8), layer:'butterfly', wobble:phase() });
+  }
+
+  // === BEACH (2400, 3800) — Beach decorations ===
+  const beachEmojis = ['🐚','🦀','⭐','🪸','🐙'];
+  for (let i = 0; i < 25; i++) {
+    const x = rng(1800, 3000), y = rng(3600, 4000);
+    scenery.push({ x, y, emoji:beachEmojis[Math.floor(rng(0,5))], size:16+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  // Sand castles
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(1900,2900), y:rng(3650,3950), emoji:'🏖️', size:28+rng(0,12), layer:'beach_s' });
+  }
+  // Beach umbrellas
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(1800,3000), y:rng(3650,3950), emoji:'⛱️', size:30+rng(0,10), layer:'beach_s' });
+  }
+  // Seagulls
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(1800,3000), y:rng(3600,3950), emoji:'🕊️', size:16+rng(0,8), layer:'butterfly', wobble:phase() });
+  }
+
+  // === BAKERY (2300, 2100) — Bakery surroundings ===
+  const bakeryEmojis = ['🧁','🍞','🥐','🍪','🎂','🍰'];
+  for (let i = 0; i < 15; i++) {
+    const x = rng(2100, 2500), y = rng(1950, 2250);
+    scenery.push({ x, y, emoji:bakeryEmojis[Math.floor(rng(0,6))], size:16+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  // Cafe tables and chairs
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(2150,2450), y:rng(2000,2200), emoji:'☕', size:18+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  // Potted plants outside bakery
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(2150,2450), y:rng(2000,2200), emoji:'🪴', size:20+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  // Bakery aroma swirls (floating)
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(2200,2400), y:rng(2000,2150), emoji:'💨', size:12+rng(0,6), layer:'butterfly', wobble:phase() });
+  }
+
+  // === GENERAL COUNTRYSIDE ===
   // Meadow flowers
   for (let i = 0; i < 35; i++) {
     const x = rng(1500, 3500), y = rng(700, 1300);
     const emoji = ['🌸','🌼','🌺','🌻'][Math.floor(rng(0,4))];
-    scenery.push({ x, y, emoji, size:20+rng(0,12), layer:'meadow' });
+    scenery.push({ x, y, emoji, size:20+rng(0,12), layer:'sway', wobble:phase() });
   }
   // Rocks
   for (let i = 0; i < 15; i++) {
@@ -467,7 +648,7 @@ function generateCountryside() {
   }
   // Butterflies (animated)
   for (let i = 0; i < 8; i++) {
-    scenery.push({ x:rng(600,3000), y:rng(600,1400), emoji:'🦋', size:18+rng(0,10), layer:'butterfly', wobble: rng(0,Math.PI*2) });
+    scenery.push({ x:rng(600,3000), y:rng(600,1400), emoji:'🦋', size:18+rng(0,10), layer:'butterfly', wobble: phase() });
   }
 }
 
@@ -650,6 +831,10 @@ function drawTerrain(c) {
   c.fillStyle = C.meadow; c.fillRect(0, 0, MAP_W, 1400);
   // Forest dark zone
   c.fillStyle = C.forestDark; c.fillRect(100, 620, 1300, 780);
+  // Garden zone (rich soil/green)
+  c.fillStyle = '#7AAF5E'; c.fillRect(300, 1750, 800, 500);
+  // Pet park zone (light park green)
+  c.fillStyle = '#88BC6E'; c.fillRect(750, 3000, 700, 450);
   // Farm soil
   c.fillStyle = C.farmSoil; c.fillRect(4100, 820, 1600, 600);
   // Orchard pasture
@@ -879,9 +1064,21 @@ function drawBuildings(c) {
 function drawScenery(c) {
   const t = frameCount * 0.03;
   for (const s of scenery) {
-    let sx = s.x, sy = s.y;
-    if (s.layer === 'butterfly') { sx += Math.sin(t + s.wobble)*14; sy += Math.cos(t*0.7 + s.wobble)*8; }
-    drawSprite(c, s.emoji, sx, sy, s.size);
+    let sx = s.x, sy = s.y, sz = s.size;
+    if (s.layer === 'butterfly') {
+      // Flying motion: figure-eight drift
+      sx += Math.sin(t + s.wobble) * 14;
+      sy += Math.cos(t * 0.7 + s.wobble) * 8;
+    } else if (s.layer === 'sway') {
+      // Gentle side-to-side sway (flowers, mushrooms, animals)
+      sx += Math.sin(t * 0.8 + s.wobble) * 3;
+      sz *= 1 + Math.sin(t * 1.2 + s.wobble) * 0.04;
+    } else if (s.layer === 'bob') {
+      // Gentle up-down bob (water items, lily pads)
+      sy += Math.sin(t * 0.6 + s.wobble) * 3;
+      sx += Math.cos(t * 0.4 + s.wobble) * 1.5;
+    }
+    drawSprite(c, s.emoji, sx, sy, sz);
   }
 }
 
