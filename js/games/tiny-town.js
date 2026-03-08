@@ -6,7 +6,7 @@ const PLAYER_SIZE = 45, PLAYER_SPEED = 5;
 const EMOJI_CURSOR = `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>👆</text></svg>") 16 4, pointer`;
 const AREA_RADIUS = 80, NODE_STOP = 6;
 const CAM_LERP = 0.08, CAM_AHEAD = 60;
-const INV_MAX = 15;
+const DEST_ORDER = ['garden','pets','forest','pond','orchard','farm','airport','beach','bakery'];
 
 const C = {
   grass: '#8FBF6F', grass2: '#7DB362',
@@ -62,7 +62,7 @@ const nodeMap = {
   c01: { x:2000, y:2400 }, c11: { x:2600, y:2400 }, c21: { x:3200, y:2400 }, c31: { x:3800, y:2400 },
   c02: { x:2000, y:2800 }, c12: { x:2600, y:2800 }, c22: { x:3200, y:2800 }, c32: { x:3800, y:2800 },
   // North suburbs
-  s_nw:    { x:1400, y:1400 },
+  s_nw:    { x:1100, y:1400 },
   s_n1:    { x:2000, y:1400 },
   s_n2:    { x:2600, y:1400 },
   s_n3:    { x:3200, y:1400 },
@@ -73,12 +73,12 @@ const nodeMap = {
   s_e1:    { x:4600, y:2000 },
   s_e2:    { x:4600, y:2600 },
   // South suburbs
-  s_sw:    { x:1400, y:3000 },
+  s_sw:    { x:1100, y:3000 },
   s_s1:    { x:2000, y:3000 },
   s_s2:    { x:3200, y:3000 },
   s_se:    { x:4000, y:3000 },
   // Suburb destinations
-  garden:  { x:700,  y:2300 },
+  garden:  { x:700,  y:2000 },
   pets:    { x:1100, y:3200 },
   // Countryside junctions
   cnt_nw:  { x:900,  y:1100 },
@@ -96,10 +96,32 @@ const nodeMap = {
   ap_entry:{ x:4800, y:1600 },
   airport: { x:5200, y:1600 },
   // Beach town
-  bt_w:    { x:1000, y:3400 },
+  bt_w:    { x:1100, y:3400 },
   bt_c:    { x:2400, y:3400 },
   bt_e:    { x:3800, y:3400 },
   beach:   { x:2400, y:3800 },
+  // City destination
+  bakery:  { x:2300, y:2100 },
+  // Elbow nodes (orthogonal routing)
+  elb_ne1: { x:4600, y:1400 },
+  elb_ne2: { x:4800, y:1400 },
+  elb_se:  { x:4000, y:2600 },
+  elb_btc: { x:2400, y:3000 },
+  elb_bte: { x:3800, y:3000 },
+  elb_cnw: { x:900,  y:1400 },
+  elb_cn1: { x:1800, y:1400 },
+  elb_cn3: { x:3600, y:1400 },
+  elb_cw:  { x:400,  y:2000 },
+  elb_nw1: { x:1800, y:1100 },
+  elb_n12: { x:2600, y:800  },
+  elb_n23: { x:3600, y:700  },
+  elb_n3e: { x:4800, y:900  },
+  elb_nww: { x:400,  y:1100 },
+  elb_for: { x:700,  y:1100 },
+  elb_pond:{ x:2000, y:800  },
+  elb_orch:{ x:3800, y:900  },
+  elb_farm:{ x:4400, y:1000 },
+  elb_bak: { x:2300, y:2000 },
 };
 
 const edges = [
@@ -112,52 +134,61 @@ const edges = [
   { a:'c10',b:'c11',type:'city' }, { a:'c11',b:'c12',type:'city' },
   { a:'c20',b:'c21',type:'city' }, { a:'c21',b:'c22',type:'city' },
   { a:'c30',b:'c31',type:'city' }, { a:'c31',b:'c32',type:'city' },
-  // City to north suburbs
+  // City to north suburbs (vertical)
   { a:'c00',b:'s_n1',type:'suburban' }, { a:'c10',b:'s_n2',type:'suburban' },
   { a:'c20',b:'s_n3',type:'suburban' }, { a:'c30',b:'s_ne',type:'suburban' },
-  // City to west/east
-  { a:'c00',b:'s_w1',type:'suburban' }, { a:'c01',b:'s_w1',type:'suburban' },
-  { a:'c30',b:'s_e1',type:'suburban' }, { a:'c31',b:'s_e2',type:'suburban' },
-  // City to south suburbs
-  { a:'c02',b:'s_s1',type:'suburban' }, { a:'c12',b:'s_s1',type:'suburban' },
-  { a:'c22',b:'s_s2',type:'suburban' }, { a:'c32',b:'s_se',type:'suburban' },
-  // North suburb ring
+  // City to west/east (horizontal)
+  { a:'c00',b:'s_w1',type:'suburban' },
+  { a:'c30',b:'s_e1',type:'suburban' },
+  // City to south (vertical)
+  { a:'c02',b:'s_s1',type:'suburban' }, { a:'c22',b:'s_s2',type:'suburban' },
+  // North suburb ring (horizontal)
   { a:'s_nw',b:'s_n1',type:'suburban' }, { a:'s_n1',b:'s_n2',type:'suburban' },
   { a:'s_n2',b:'s_n3',type:'suburban' }, { a:'s_n3',b:'s_ne',type:'suburban' },
-  // West suburbs
+  // West suburbs (vertical)
   { a:'s_nw',b:'s_w1',type:'suburban' }, { a:'s_w1',b:'s_w2',type:'suburban' },
   { a:'s_w2',b:'s_sw',type:'suburban' },
-  // East suburbs
-  { a:'s_ne',b:'s_e1',type:'suburban' }, { a:'s_e1',b:'s_e2',type:'suburban' },
-  { a:'s_e2',b:'s_se',type:'suburban' },
-  // South suburb ring
+  // East suburbs via elbows
+  { a:'s_ne',b:'elb_ne1',type:'suburban' }, { a:'elb_ne1',b:'s_e1',type:'suburban' },
+  { a:'s_e1',b:'s_e2',type:'suburban' },
+  { a:'s_e2',b:'elb_se',type:'suburban' }, { a:'elb_se',b:'s_se',type:'suburban' },
+  // South suburb ring (horizontal)
   { a:'s_sw',b:'s_s1',type:'suburban' }, { a:'s_s1',b:'s_s2',type:'suburban' },
   { a:'s_s2',b:'s_se',type:'suburban' },
   // Suburb destination spurs
-  { a:'s_w1',b:'garden',type:'suburban' }, { a:'s_w2',b:'garden',type:'suburban' },
-  { a:'s_w2',b:'pets',  type:'suburban' }, { a:'s_sw',b:'pets',  type:'suburban' },
-  // Suburb to countryside
-  { a:'s_nw',b:'cnt_nw',type:'dirt' }, { a:'s_n1',b:'cnt_n1',type:'dirt' },
-  { a:'s_n2',b:'cnt_n2',type:'dirt' }, { a:'s_n3',b:'cnt_n3',type:'dirt' },
-  { a:'s_ne',b:'cnt_ne',type:'dirt' }, { a:'s_w1',b:'cnt_w', type:'dirt' },
-  // Countryside connections
-  { a:'cnt_nw',b:'cnt_n1',type:'dirt' }, { a:'cnt_n1',b:'cnt_n2',type:'dirt' },
-  { a:'cnt_n2',b:'cnt_n3',type:'dirt' }, { a:'cnt_n3',b:'cnt_ne',type:'dirt' },
-  { a:'cnt_nw',b:'cnt_w', type:'dirt' },
-  // Countryside destinations
-  { a:'cnt_nw',b:'forest', type:'dirt' }, { a:'cnt_w', b:'forest', type:'dirt' },
-  { a:'cnt_n1',b:'pond',   type:'dirt' }, { a:'cnt_n2',b:'pond',   type:'dirt' },
-  { a:'cnt_n3',b:'orchard',type:'dirt' }, { a:'cnt_ne',b:'orchard',type:'dirt' },
-  { a:'cnt_ne',b:'farm',   type:'dirt' },
-  // Airport
-  { a:'s_ne',   b:'ap_entry',type:'airport' }, { a:'cnt_ne',b:'ap_entry',type:'airport' },
+  { a:'s_w1',b:'garden',type:'suburban' },
+  { a:'s_w2',b:'pets',type:'suburban' }, { a:'s_sw',b:'pets',type:'suburban' },
+  // Suburb to countryside via elbows
+  { a:'s_nw',b:'elb_cnw',type:'dirt' }, { a:'elb_cnw',b:'cnt_nw',type:'dirt' },
+  { a:'s_n1',b:'elb_cn1',type:'dirt' }, { a:'elb_cn1',b:'cnt_n1',type:'dirt' },
+  { a:'s_n2',b:'cnt_n2',type:'dirt' },
+  { a:'s_n3',b:'elb_cn3',type:'dirt' }, { a:'elb_cn3',b:'cnt_n3',type:'dirt' },
+  { a:'elb_ne1',b:'elb_ne2',type:'suburban' },
+  { a:'elb_ne2',b:'cnt_ne',type:'dirt' },
+  { a:'s_w1',b:'elb_cw',type:'dirt' }, { a:'elb_cw',b:'cnt_w',type:'dirt' },
+  // Countryside connections via elbows
+  { a:'cnt_nw',b:'elb_nw1',type:'dirt' }, { a:'elb_nw1',b:'cnt_n1',type:'dirt' },
+  { a:'cnt_n1',b:'elb_n12',type:'dirt' }, { a:'elb_n12',b:'cnt_n2',type:'dirt' },
+  { a:'cnt_n2',b:'elb_n23',type:'dirt' }, { a:'elb_n23',b:'cnt_n3',type:'dirt' },
+  { a:'cnt_n3',b:'elb_n3e',type:'dirt' }, { a:'elb_n3e',b:'cnt_ne',type:'dirt' },
+  { a:'cnt_nw',b:'elb_nww',type:'dirt' }, { a:'elb_nww',b:'cnt_w',type:'dirt' },
+  // Countryside destinations via elbows
+  { a:'cnt_nw',b:'elb_for',type:'dirt' }, { a:'elb_for',b:'forest',type:'dirt' },
+  { a:'cnt_n1',b:'elb_pond',type:'dirt' }, { a:'elb_pond',b:'pond',type:'dirt' },
+  { a:'cnt_n3',b:'elb_orch',type:'dirt' }, { a:'elb_orch',b:'orchard',type:'dirt' },
+  { a:'cnt_ne',b:'elb_farm',type:'dirt' }, { a:'elb_farm',b:'farm',type:'dirt' },
+  // Airport via elbow chain
+  { a:'elb_ne2',b:'ap_entry',type:'airport' }, { a:'cnt_ne',b:'ap_entry',type:'airport' },
   { a:'ap_entry',b:'airport',type:'airport' },
-  // South suburb to beach town
-  { a:'s_sw',b:'bt_w',type:'suburban' }, { a:'s_s1',b:'bt_c',type:'suburban' },
-  { a:'s_s2',b:'bt_e',type:'suburban' },
+  // South suburb to beach town via elbows
+  { a:'s_sw',b:'bt_w',type:'suburban' },
+  { a:'s_s1',b:'elb_btc',type:'suburban' }, { a:'elb_btc',b:'bt_c',type:'suburban' },
+  { a:'s_s2',b:'elb_bte',type:'suburban' }, { a:'elb_bte',b:'bt_e',type:'suburban' },
   // Beach town
   { a:'bt_w',b:'bt_c',type:'boardwalk' }, { a:'bt_c',b:'bt_e',type:'boardwalk' },
   { a:'bt_c',b:'beach',type:'boardwalk' },
+  // City destination via elbow
+  { a:'c00',b:'elb_bak',type:'city' }, { a:'elb_bak',b:'bakery',type:'city' },
 ];
 
 // Build adjacency
@@ -202,14 +233,15 @@ function nearestNode(wx, wy) {
 
 // === DESTINATIONS ===
 const DESTINATIONS = {
-  garden:  { emoji:'🌷',  label:'Garden',  rewards:['🌷','🌻','🌹','🌸','💐','🌺','🌼'], sound:'sparkle' },
-  pets:    { emoji:'🐾',  label:'Pets',    rewards:['🐕','🐈','🐇','🐹','🦜','🐢','🐠'], sound:'bark' },
-  forest:  { emoji:'🌲',  label:'Forest',  rewards:['🌲','🍄','🦋','🐿️','🦉','🌰','🍂'], sound:'rustle' },
-  pond:    { emoji:'🐸',  label:'Pond',    rewards:['🐸','🐟','🦆','🐢','💧','🪷','🦢'], sound:'splash' },
-  orchard: { emoji:'🌳',  label:'Orchard', rewards:['🍎','🍐','🍊','🍋','🍑','🍒','🥝'], sound:'shake' },
-  farm:    { emoji:'🐄',  label:'Farm',    rewards:['🐄','🐔','🐷','🥚','🥛','🌾','🚜'], sound:'moo' },
-  airport: { emoji:'✈️', label:'Airport', rewards:['✈️','🧳','🎫','🌍','🏖️','🗼','🗺️'], sound:'jet' },
-  beach:   { emoji:'🏖️', label:'Beach',   rewards:['🐚','🦀','🏄','⛱️','🐠','🌴','🍦'], sound:'wave' },
+  garden:  { emoji:'🌷',  label:'Garden',  reward:'🌹', sound:'sparkle' },
+  pets:    { emoji:'🐾',  label:'Pets',    reward:'🐕', sound:'bark' },
+  forest:  { emoji:'🌲',  label:'Forest',  reward:'🍄', sound:'rustle' },
+  pond:    { emoji:'🐸',  label:'Pond',    reward:'🐟', sound:'splash' },
+  orchard: { emoji:'🌳',  label:'Orchard', reward:'🍎', sound:'shake' },
+  farm:    { emoji:'🐄',  label:'Farm',    reward:'🥚', sound:'moo' },
+  airport: { emoji:'✈️', label:'Airport', reward:'🎫', sound:'jet' },
+  beach:   { emoji:'🏖️', label:'Beach',   reward:'🐚', sound:'wave' },
+  bakery:  { emoji:'🧁',  label:'Bakery',  reward:'🎂', sound:'chime' },
 };
 
 // === STATE ===
@@ -219,8 +251,7 @@ let running = false, animFrame = null;
 let selectingChar = false;
 let player = { x:2600, y:2400, node:'c11', sourceNode:null, targetNode:null, path:[], moving:false, keyDriven:false, dir:0, bobT:0, emoji:'🧒' };
 let keysDown = {};
-let inventory = [];
-let areaCooldowns = {};
+let collected = {};
 let destAnimations = [];
 let collectAnimations = [];
 let buildings = [], houses = [], scenery = [];
@@ -231,6 +262,8 @@ let npcs = [];
 let frameCount = 0;
 let stepTimer = 0;
 let pendingTimeouts = [];
+let showIntro = false;
+let introTimer = 0;
 
 // === SPRITE CACHE ===
 const spriteCache = {};
@@ -716,6 +749,60 @@ function drawRoads(c) {
     c.lineTo(na.x-px*(aw/2), na.y-py*(aw/2));
     c.closePath(); c.fill();
   }
+  // City spurs (non-grid city roads like bakery)
+  for (const e of edges) {
+    if (e.type !== 'city') continue;
+    if (/^c\d\d$/.test(e.a) && /^c\d\d$/.test(e.b)) continue;
+    const na = nodeMap[e.a], nb = nodeMap[e.b];
+    const dx2 = nb.x-na.x, dy2 = nb.y-na.y;
+    const d = Math.sqrt(dx2*dx2+dy2*dy2); if (d < 1) continue;
+    const px = -dy2/d, py = dx2/d;
+    c.fillStyle = C.road;
+    c.beginPath();
+    c.moveTo(na.x+px*(rw/2), na.y+py*(rw/2));
+    c.lineTo(nb.x+px*(rw/2), nb.y+py*(rw/2));
+    c.lineTo(nb.x-px*(rw/2), nb.y-py*(rw/2));
+    c.lineTo(na.x-px*(rw/2), na.y-py*(rw/2));
+    c.closePath(); c.fill();
+    c.fillStyle = C.sidewalk;
+    for (const side of [-1, 1]) {
+      const o1 = side*(rw/2), o2 = side*(rw/2+sw);
+      c.beginPath();
+      c.moveTo(na.x+px*o1, na.y+py*o1); c.lineTo(nb.x+px*o1, nb.y+py*o1);
+      c.lineTo(nb.x+px*o2, nb.y+py*o2); c.lineTo(na.x+px*o2, na.y+py*o2);
+      c.closePath(); c.fill();
+    }
+    c.setLineDash([18, 14]); c.strokeStyle = C.roadLine; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(na.x, na.y); c.lineTo(nb.x, nb.y); c.stroke();
+    c.setLineDash([]);
+  }
+  // Road junction circles (fill gaps at 90° turns)
+  const jTypes = {
+    suburban: { r: subW/2, sw: subSW, rc: C.subRoad, sc: C.sidewalk },
+    dirt:     { r: 14, sw: 0, rc: C.dirtPath },
+    boardwalk:{ r: 15, sw: 0, rc: C.boardwalk },
+    airport:  { r: 20, sw: 0, rc: '#707070' },
+    city:     { r: rw/2, sw: sw, rc: C.road, sc: C.sidewalk },
+  };
+  for (const [id, node] of Object.entries(nodeMap)) {
+    const tc = {};
+    for (const e of edges) {
+      if (e.a !== id && e.b !== id) continue;
+      tc[e.type] = (tc[e.type] || 0) + 1;
+    }
+    for (const [type, cnt] of Object.entries(tc)) {
+      if (cnt < 2) continue;
+      const jt = jTypes[type];
+      if (!jt) continue;
+      if (type === 'city' && /^c\d\d$/.test(id)) continue;
+      if (jt.sw > 0) {
+        c.fillStyle = jt.sc;
+        c.beginPath(); c.arc(node.x, node.y, jt.r + jt.sw, 0, Math.PI*2); c.fill();
+      }
+      c.fillStyle = jt.rc;
+      c.beginPath(); c.arc(node.x, node.y, jt.r, 0, Math.PI*2); c.fill();
+    }
+  }
 }
 
 function drawBuildings(c) {
@@ -860,6 +947,7 @@ function drawPlayer(c) {
 
 function drawApproachGlow(c) {
   for (const [id, dest] of Object.entries(DESTINATIONS)) {
+    if (collected[id]) continue;
     const n = nodeMap[id]; if (!n) continue;
     const dx = player.x-n.x, dy = player.y-n.y;
     const dist = Math.sqrt(dx*dx+dy*dy);
@@ -889,6 +977,13 @@ function drawDestinationMarkers(c) {
     const id = destKeys[i];
     const dest = DESTINATIONS[id];
     const n = nodeMap[id]; if (!n) continue;
+    if (collected[id]) {
+      // Collected: dim static marker, no aura
+      c.save(); c.globalAlpha = 0.3;
+      drawSprite(c, dest.emoji, n.x, n.y - 24, 36);
+      c.restore();
+      continue;
+    }
     // Pulsing aura glow
     const pulse = 0.5 + 0.5 * Math.sin(t * 2 + i * 0.8);
     const auraR = 50 + pulse * 20;
@@ -951,7 +1046,7 @@ function updatePlayer() {
   const kdy = (down?1:0) - (up?1:0);
   const hasKeys = kdx !== 0 || kdy !== 0;
 
-  // --- Keyboard takes control ---
+  // --- Keyboard takes control (hold-to-move) ---
   if (hasKeys) {
     if (!player.keyDriven) {
       player.path = [];
@@ -1012,17 +1107,7 @@ function updatePlayer() {
       player.targetNode = null;
       player.sourceNode = null;
       checkAreaTrigger(arrived);
-      if (player.keyDriven && hasKeys) {
-        const next = bestNodeInDir(arrived, kdx, kdy);
-        if (next) {
-          player.sourceNode = arrived;
-          player.targetNode = next;
-          player.node = null;
-        } else {
-          player.moving = false;
-          player.keyDriven = false;
-        }
-      } else if (!player.keyDriven && player.path.length > 0) {
+      if (!player.keyDriven && player.path.length > 0) {
         const next = player.path.shift();
         player.sourceNode = arrived;
         player.targetNode = next;
@@ -1048,19 +1133,26 @@ function updatePlayer() {
 // === AREA TRIGGER ===
 function checkAreaTrigger(nodeId) {
   if (!DESTINATIONS[nodeId]) return;
-  const now = Date.now();
-  if (areaCooldowns[nodeId] && now - areaCooldowns[nodeId] < 4000) return;
-  areaCooldowns[nodeId] = now;
+  if (collected[nodeId]) return;
   triggerDestination(nodeId);
+}
+
+function getSlotPos(nodeId) {
+  const idx = DEST_ORDER.indexOf(nodeId);
+  const slotW = 42, gap = 5, pad = 10;
+  const barW = DEST_ORDER.length * slotW + (DEST_ORDER.length - 1) * gap + pad * 2;
+  const bx = (W - barW) / 2;
+  return { x: bx + pad + idx * (slotW + gap) + slotW / 2, y: H - 30 };
 }
 
 function triggerDestination(nodeId) {
   const dest = DESTINATIONS[nodeId]; if (!dest) return;
-  const reward = dest.rewards[Math.floor(Math.random()*dest.rewards.length)];
-  if (inventory.length < INV_MAX) inventory.push(reward);
+  collected[nodeId] = true;
   const n = nodeMap[nodeId];
-  // Big celebration particles (8-12 emojis burst outward)
-  const burstEmojis = dest.rewards.slice(0, 6);
+  const reward = dest.reward;
+  const count = DEST_ORDER.filter(id => collected[id]).length;
+  // Burst particles
+  const burstEmojis = ['✨','⭐','🌟','💫','🎉','🎊'];
   for (let i = 0; i < 10; i++) {
     const angle = (i / 10) * Math.PI * 2 + Math.random() * 0.4;
     const speed = 1.5 + Math.random() * 2;
@@ -1080,26 +1172,59 @@ function triggerDestination(nodeId) {
       startSize: 20 + Math.random() * 10,
     });
   }
-  // Main reward — starts LARGE then collects to inventory
+  // Main reward — large rising emoji with "found" message
   destAnimations.push({
-    x: n.x, y: n.y, emoji: reward, t: 0, maxT: 110, type: 'reward',
-    startSize: 80, label: dest.label,
+    x: n.x, y: n.y, emoji: reward, t: 0, maxT: 140, type: 'reward',
+    startSize: 80, label: reward + ' Found!  ' + count + '/' + DEST_ORDER.length,
   });
-  // Flash glow effect
+  // Flash glow
   destAnimations.push({
     x: n.x, y: n.y, emoji: '', t: 0, maxT: 40, type: 'flash',
   });
-  // Collect animation (delayed to start after the big reward shows)
+  // Collect animation flies to the correct slot
+  const slot = getSlotPos(nodeId);
   const tid = setTimeout(() => {
     if (!running) return;
     collectAnimations.push({
       x: n.x - cx, y: n.y - cy - 50, emoji: reward, t: 0, maxT: 45,
-      tx: W / 2, ty: H - 30, startSize: 50,
+      tx: slot.x, ty: slot.y, startSize: 50,
     });
+    // Check completion after collect animation finishes
+    const tid2 = setTimeout(() => {
+      if (!running) return;
+      if (count === DEST_ORDER.length) triggerCompletion();
+    }, 800);
+    pendingTimeouts.push(tid2);
   }, 800);
   pendingTimeouts.push(tid);
   const soundFn = SOUND_MAP[dest.sound];
   if (soundFn) soundFn();
+}
+
+let completionPlayed = false;
+function triggerCompletion() {
+  if (completionPlayed) return;
+  completionPlayed = true;
+  // Play celebratory chord
+  playChord();
+  setTimeout(() => { if (running) playChime(); }, 300);
+  // Burst confetti from center of screen (world coords)
+  const wx = player.x, wy = player.y;
+  const confetti = ['🎉','🎊','⭐','🌟','✨','🏆','💫','🥳'];
+  for (let i = 0; i < 20; i++) {
+    const angle = (i / 20) * Math.PI * 2 + Math.random() * 0.3;
+    const speed = 2 + Math.random() * 3;
+    destAnimations.push({
+      x: wx, y: wy, emoji: confetti[i % confetti.length], t: 0, maxT: 120, type: 'burst',
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2,
+      startSize: 50 + Math.random() * 30, spin: (Math.random() - 0.5) * 0.15,
+    });
+  }
+  // "All collected!" banner animation
+  destAnimations.push({
+    x: wx, y: wy - 40, emoji: '🏆', t: 0, maxT: 180, type: 'reward',
+    startSize: 100, label: 'All Collected!',
+  });
 }
 
 // === INPUT HANDLERS ===
@@ -1175,46 +1300,72 @@ function onTouchHandler(e) {
 
 // === CHARACTER SELECTION ===
 const CHAR_OPTIONS = ['🦄','🐵','🦁','🐸','🧚'];
+const TILE_W = 90, TILE_H = 90, TILE_GAP = 12;
+
+function getCharTiles() {
+  const count = CHAR_OPTIONS.length;
+  const cols = count;
+  const totalW = cols * TILE_W + (cols - 1) * TILE_GAP;
+  const startX = (W - totalW) / 2;
+  const startY = (H - TILE_H) / 2 + 10;
+  const tiles = [];
+  for (let i = 0; i < count; i++) {
+    tiles.push({
+      x: startX + i * (TILE_W + TILE_GAP),
+      y: startY,
+      w: TILE_W, h: TILE_H,
+      emoji: CHAR_OPTIONS[i],
+    });
+  }
+  return tiles;
+}
 
 function drawCharSelect(c) {
   c.fillStyle = 'rgba(20,40,80,0.82)';
   c.fillRect(0, 0, W, H);
-  const pw = Math.min(580, W - 30), ph = Math.min(340, H - 30);
-  const px = (W-pw)/2, py = (H-ph)/2;
+  const tiles = getCharTiles();
+  const pad = 30;
+  const gridL = tiles[0].x - pad;
+  const gridR = tiles[tiles.length-1].x + TILE_W + pad;
+  const gridT = tiles[0].y - 70;
+  const gridB = tiles[0].y + TILE_H + 50;
+  // Panel background
   c.fillStyle = 'rgba(255,255,255,0.13)';
-  c.beginPath(); c.roundRect(px-10, py-10, pw+20, ph+20, 24); c.fill();
+  c.beginPath(); c.roundRect(gridL-10, gridT-10, gridR-gridL+20, gridB-gridT+20, 24); c.fill();
   c.fillStyle = '#FFFDE7';
-  c.beginPath(); c.roundRect(px, py, pw, ph, 18); c.fill();
-  c.font = 'bold 28px sans-serif';
+  c.beginPath(); c.roundRect(gridL, gridT, gridR-gridL, gridB-gridT, 18); c.fill();
+  // Title
+  c.font = 'bold 24px sans-serif';
   c.textAlign = 'center'; c.textBaseline = 'top';
   c.fillStyle = '#4A3000';
-  c.fillText('Choose your character!', W/2, py+16);
-  const count = CHAR_OPTIONS.length;
-  const spacing = pw / count;
-  for (let i = 0; i < count; i++) {
-    const cxi = px + spacing*i + spacing/2;
-    const cyi = py + 120;
-    const bob = Math.sin(frameCount * 0.06 + i * 1.2) * 4;
-    c.fillStyle = 'rgba(255,220,50,0.18)';
-    c.beginPath(); c.arc(cxi, cyi, 42, 0, Math.PI*2); c.fill();
-    drawSprite(c, CHAR_OPTIONS[i], cxi, cyi + bob, 58);
+  c.fillText('Choose your character!', W/2, gridT + 14);
+  // Tiles
+  for (let i = 0; i < tiles.length; i++) {
+    const t = tiles[i];
+    const bob = Math.sin(frameCount * 0.06 + i * 1.2) * 3;
+    // Tile background
+    c.fillStyle = 'rgba(255,220,50,0.15)';
+    c.beginPath(); c.roundRect(t.x, t.y, t.w, t.h, 14); c.fill();
+    c.strokeStyle = 'rgba(200,170,60,0.3)';
+    c.lineWidth = 2;
+    c.beginPath(); c.roundRect(t.x, t.y, t.w, t.h, 14); c.stroke();
+    drawSprite(c, t.emoji, t.x + t.w/2, t.y + t.h/2 + bob, 52);
   }
-  c.font = '18px sans-serif';
+  // Subtitle
+  c.font = '16px sans-serif';
   c.fillStyle = '#7A6030';
-  c.fillText('Tap to pick!', W/2, py+ph-34);
+  c.fillText('Tap to pick!', W/2, gridB - 30);
 }
 
 function handleCharSelect(mx, my) {
-  const pw = Math.min(580, W - 30), ph = Math.min(340, H - 30);
-  const px = (W-pw)/2, py = (H-ph)/2;
-  const count = CHAR_OPTIONS.length;
-  const spacing = pw / count;
-  for (let i = 0; i < count; i++) {
-    const cxi = px + spacing*i + spacing/2;
-    const cyi = py + 120;
-    if (Math.hypot(mx-cxi, my-cyi) < 46) {
+  const tiles = getCharTiles();
+  for (let i = 0; i < tiles.length; i++) {
+    const t = tiles[i];
+    if (mx >= t.x && mx <= t.x + t.w && my >= t.y && my <= t.y + t.h) {
       player.emoji = CHAR_OPTIONS[i];
       selectingChar = false;
+      showIntro = true;
+      introTimer = 0;
       canvas.style.cursor = 'none';
       playChime();
       return;
@@ -1242,17 +1393,46 @@ function drawMinimap(c) {
 }
 
 // === INVENTORY BAR ===
-function drawInventoryBar(c) {
-  if (inventory.length===0) return;
-  const itemW=38, pad=8;
-  const barW=inventory.length*itemW+pad*2;
-  const bx=(W-barW)/2, by=H-56;
+function drawCollectibleBar(c) {
+  const slotW = 42, gap = 5, pad = 10;
+  const barW = DEST_ORDER.length * slotW + (DEST_ORDER.length - 1) * gap + pad * 2;
+  const bx = (W - barW) / 2, by = H - 56;
   c.save();
-  c.fillStyle='rgba(0,0,0,0.38)';
-  c.beginPath(); c.roundRect(bx-4,by-4,barW+8,itemW+16,12); c.fill();
-  for (let i=0;i<inventory.length;i++) {
-    drawSprite(c, inventory[i], bx+pad+i*itemW+itemW/2-1, by+itemW/2+4, 28);
+  // Bar background
+  c.fillStyle = 'rgba(0,0,0,0.45)';
+  c.beginPath(); c.roundRect(bx, by, barW, slotW + 14, 14); c.fill();
+  // Slots
+  for (let i = 0; i < DEST_ORDER.length; i++) {
+    const id = DEST_ORDER[i];
+    const dest = DESTINATIONS[id];
+    const sx = bx + pad + i * (slotW + gap);
+    const sy = by + 7;
+    const cxSlot = sx + slotW / 2;
+    const cySlot = sy + slotW / 2;
+    if (collected[id]) {
+      // Collected: bright slot with glow
+      c.fillStyle = 'rgba(255,255,255,0.15)';
+      c.beginPath(); c.roundRect(sx, sy, slotW, slotW, 8); c.fill();
+      const glow = 0.12 + Math.sin(frameCount * 0.04 + i) * 0.06;
+      c.fillStyle = `rgba(255,220,80,${glow})`;
+      c.beginPath(); c.roundRect(sx, sy, slotW, slotW, 8); c.fill();
+      drawSprite(c, dest.reward, cxSlot, cySlot, 26);
+    } else {
+      // Uncollected: dim slot with question mark
+      c.fillStyle = 'rgba(255,255,255,0.06)';
+      c.beginPath(); c.roundRect(sx, sy, slotW, slotW, 8); c.fill();
+      c.font = 'bold 18px sans-serif';
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillStyle = 'rgba(255,255,255,0.3)';
+      c.fillText('?', cxSlot, cySlot);
+    }
   }
+  // Progress counter
+  const count = DEST_ORDER.filter(id => collected[id]).length;
+  c.font = 'bold 12px sans-serif';
+  c.textAlign = 'center'; c.textBaseline = 'top';
+  c.fillStyle = 'rgba(255,255,255,0.5)';
+  c.fillText(count + '/' + DEST_ORDER.length, W / 2, by - 16);
   c.restore();
 }
 
@@ -1334,6 +1514,32 @@ function updateCollectAnimations(c) {
   }
 }
 
+// === INTRO MESSAGE ===
+function drawIntroMessage(c) {
+  if (!showIntro) return;
+  introTimer++;
+  const dur = 240; // ~4 seconds
+  if (introTimer > dur) { showIntro = false; return; }
+  const prog = introTimer / dur;
+  let alpha = 1;
+  if (prog < 0.1) alpha = prog / 0.1;
+  else if (prog > 0.8) alpha = (1 - prog) / 0.2;
+  c.save(); c.globalAlpha = alpha;
+  // Banner
+  const bw = Math.min(400, W - 40), bh = 80;
+  const bx = (W - bw) / 2, by = H * 0.25;
+  c.fillStyle = 'rgba(0,0,0,0.6)';
+  c.beginPath(); c.roundRect(bx, by, bw, bh, 16); c.fill();
+  c.font = 'bold 18px sans-serif';
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillStyle = '#FFD54F';
+  c.fillText('Explore the town!', W/2, by + bh/2 - 14);
+  c.font = '15px sans-serif';
+  c.fillStyle = 'white';
+  c.fillText('Find all ' + DEST_ORDER.length + ' hidden treasures', W/2, by + bh/2 + 14);
+  c.restore();
+}
+
 // === ZONE LABEL ===
 function drawZoneLabel(c) {
   const zones = [
@@ -1389,8 +1595,8 @@ function initCanvas() {
 function resetState() {
   player = { x: 2600, y: 2400, node: 'c11', sourceNode: null, targetNode: null, path: [], moving: false, keyDriven: false, dir: 0, bobT: 0, emoji: '🧒' };
   keysDown = {};
-  inventory = [];
-  areaCooldowns = {};
+  collected = {};
+  completionPlayed = false;
   destAnimations = [];
   collectAnimations = [];
   pendingTimeouts.forEach(t => clearTimeout(t));
@@ -1402,6 +1608,8 @@ function resetState() {
   npcs = [];
   frameCount = 0;
   stepTimer = 0;
+  showIntro = false;
+  introTimer = 0;
   cx = player.x - W / 2;
   cy = player.y - H / 2;
   initWorld();
@@ -1438,9 +1646,10 @@ function render() {
 
   // HUD (screen-space)
   updateCollectAnimations(c);
-  drawInventoryBar(c);
+  drawCollectibleBar(c);
   drawMinimap(c);
   drawZoneLabel(c);
+  drawIntroMessage(c);
 }
 
 // === UPDATE ===
