@@ -239,15 +239,15 @@ function nearestNode(wx, wy) {
 
 // === DESTINATIONS ===
 const DESTINATIONS = {
-  garden:  { emoji:'🌷',  label:'Garden',  reward:'🌹', sound:'sparkle' },
-  pets:    { emoji:'🐾',  label:'Pets',    reward:'🐕', sound:'bark' },
-  forest:  { emoji:'🌲',  label:'Forest',  reward:'🍄', sound:'rustle' },
-  pond:    { emoji:'🐸',  label:'Pond',    reward:'🐟', sound:'splash' },
-  orchard: { emoji:'🌳',  label:'Orchard', reward:'🍎', sound:'shake' },
-  farm:    { emoji:'🐄',  label:'Farm',    reward:'🥚', sound:'moo' },
-  airport: { emoji:'✈️', label:'Airport', reward:'🎫', sound:'jet' },
-  beach:   { emoji:'🏖️', label:'Beach',   reward:'🐚', sound:'wave' },
-  bakery:  { emoji:'🧁',  label:'Bakery',  reward:'🎂', sound:'chime' },
+  garden:  { emoji:'👩🏻‍🌾', label:'Garden',  reward:'🌹', sound:'sparkle' },
+  pets:    { emoji:'👱‍♀️', label:'Pets',    reward:'🐕', sound:'sparkle' },
+  forest:  { emoji:'🧙‍♂️', label:'Forest',  reward:'🍄', sound:'sparkle' },
+  pond:    { emoji:'🐸',  label:'Pond',    reward:'🐟', sound:'sparkle' },
+  orchard: { emoji:'👩‍🦳', label:'Orchard', reward:'🍎', sound:'sparkle' },
+  farm:    { emoji:'👨🏻‍🌾', label:'Farm',    reward:'🥚', sound:'sparkle' },
+  airport: { emoji:'👨‍✈️', label:'Airport', reward:'🎫', sound:'sparkle' },
+  beach:   { emoji:'🧘‍♀️', label:'Beach',   reward:'🐚', sound:'sparkle' },
+  bakery:  { emoji:'🧑‍🍳', label:'Bakery',  reward:'🎂', sound:'sparkle' },
 };
 
 // === STATE ===
@@ -432,27 +432,42 @@ function generateCountryside() {
   const phase = () => rng(0, Math.PI*2);
 
   // === FOREST (700, 700) — Dense trees ===
-  for (let i = 0; i < 90; i++) {
-    const x = rng(200, 1400), y = rng(200, 1200);
-    const emoji = Math.random() < 0.6 ? '🌲' : '🌳';
+  // Road runs vertically at x≈700 (y700→y1100) and horizontally at y≈1100 (x400→x900)
+  // Avoid a corridor ±30px around road lines
+  const forestRoadOk = (x,y) => {
+    if (y > 1060 && y < 1140 && x > 360 && x < 940) return false; // horizontal road
+    if (x > 660 && x < 740 && y > 660 && y < 1140) return false;  // vertical road
+    return true;
+  };
+  for (let i = 0; i < 140; i++) {
+    const x = rng(100, 1400), y = rng(200, 1050);
+    if (!forestRoadOk(x,y)) continue;
+    const emoji = Math.random() < 0.7 ? '🌲' : '🌳';
     scenery.push({ x, y, emoji, size: 42+rng(0,28), layer:'forest' });
   }
   // Forest floor: mushrooms, ferns, logs
   for (let i = 0; i < 20; i++) {
-    scenery.push({ x:rng(300,1200), y:rng(300,1100), emoji:'🍄', size:18+rng(0,12), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(200,1300), y:rng(250,1000), emoji:'🍄', size:18+rng(0,12), layer:'sway', wobble:phase() });
   }
   for (let i = 0; i < 12; i++) {
-    scenery.push({ x:rng(300,1200), y:rng(300,1100), emoji:'🌿', size:16+rng(0,10), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(200,1300), y:rng(250,1000), emoji:'🌿', size:16+rng(0,10), layer:'sway', wobble:phase() });
   }
   for (let i = 0; i < 6; i++) {
-    scenery.push({ x:rng(300,1200), y:rng(400,1000), emoji:'🪵', size:20+rng(0,8), layer:'forest' });
+    scenery.push({ x:rng(200,1300), y:rng(300,950), emoji:'🪵', size:20+rng(0,8), layer:'forest' });
   }
   // Forest critters
-  for (let i = 0; i < 5; i++) {
-    scenery.push({ x:rng(400,1100), y:rng(400,1000), emoji:'🐿️', size:18+rng(0,8), layer:'sway', wobble:phase() });
+  for (let i = 0; i < 7; i++) {
+    scenery.push({ x:rng(250,1300), y:rng(350,950), emoji:'🐿️', size:18+rng(0,8), layer:'sway', wobble:phase() });
   }
   for (let i = 0; i < 4; i++) {
-    scenery.push({ x:rng(400,1100), y:rng(400,1000), emoji:'🦔', size:16+rng(0,6), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(250,1300), y:rng(350,950), emoji:'🦔', size:16+rng(0,6), layer:'sway', wobble:phase() });
+  }
+  // Additional forest animals
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(200,1300), y:rng(300,900), emoji:'🦉', size:20+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(250,1200), y:rng(400,950), emoji:'🦌', size:28+rng(0,10), layer:'sway', wobble:phase() });
   }
 
   // === GARDEN (700, 2000) — Lush flower garden ===
@@ -529,6 +544,24 @@ function generateCountryside() {
     const r = rng(180, 280);
     scenery.push({ x:2000+Math.cos(angle)*r, y:1000+Math.sin(angle)*r, emoji:'🌾', size:22+rng(0,10), layer:'sway', wobble:phase() });
   }
+  // Trees around the pond
+  for (let i = 0; i < 10; i++) {
+    const angle = rng(0, Math.PI*2);
+    const r = rng(250, 400);
+    scenery.push({ x:2000+Math.cos(angle)*r, y:1000+Math.sin(angle)*r, emoji:'🌳', size:38+rng(0,14), layer:'pond_tree' });
+  }
+  // Pond reeds/bulrushes
+  for (let i = 0; i < 3; i++) {
+    const angle = rng(0, Math.PI*2);
+    const r = rng(200, 320);
+    scenery.push({ x:2000+Math.cos(angle)*r, y:1000+Math.sin(angle)*r, emoji:'🪾', size:24+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  // Seedlings/sprouts around pond
+  for (let i = 0; i < 5; i++) {
+    const angle = rng(0, Math.PI*2);
+    const r = rng(220, 360);
+    scenery.push({ x:2000+Math.cos(angle)*r, y:1000+Math.sin(angle)*r, emoji:'🌱', size:16+rng(0,8), layer:'sway', wobble:phase() });
+  }
 
   // === ORCHARD (3800, 600) — Expanded orchard with fruit ===
   for (let row = 0; row < 5; row++) {
@@ -580,6 +613,28 @@ function generateCountryside() {
   // Hay bales
   for (let i = 0; i < 5; i++) {
     scenery.push({ x:rng(4150,4650), y:rng(950,1250), emoji:'🌾', size:36+rng(0,8), layer:'farm' });
+  }
+  // Additional farm animals
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🦚', size:24+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🪿', size:22+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🐖', size:24+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(4150,4650), y:rng(950,1300), emoji:'🐄', size:28+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  // Tree line surrounding the farm
+  for (let x2 = 4050; x2 <= 4700; x2 += 55) {
+    scenery.push({ x:x2+rng(-8,8), y:860+rng(-8,8), emoji:'🌳', size:36+rng(0,10), layer:'farm' }); // top
+    scenery.push({ x:x2+rng(-8,8), y:1360+rng(-8,8), emoji:'🌳', size:36+rng(0,10), layer:'farm' }); // bottom
+  }
+  for (let y2 = 900; y2 <= 1320; y2 += 55) {
+    scenery.push({ x:4040+rng(-8,8), y:y2+rng(-8,8), emoji:'🌳', size:36+rng(0,10), layer:'farm' }); // left
+    scenery.push({ x:4710+rng(-8,8), y:y2+rng(-8,8), emoji:'🌳', size:36+rng(0,10), layer:'farm' }); // right
   }
 
   // === AIRPORT (5200, 1600) — Airport surroundings ===
@@ -757,7 +812,6 @@ function drawMountains(c) {
     { x:2400, y:350, size:240, emoji:'🏔️' },
     { x:2850, y:330, size:260, emoji:'🏔️' },
     { x:3300, y:370, size:225, emoji:'🌋'  },
-    { x:3700, y:345, size:250, emoji:'🏔️' },
     { x:4150, y:365, size:235, emoji:'🏔️' },
     { x:4600, y:340, size:255, emoji:'🏔️' },
     { x:5050, y:375, size:225, emoji:'🏔️' },
@@ -777,8 +831,6 @@ function drawMountains(c) {
     { x:2100, y:470, size:215, emoji:'🏔️' },
     { x:2600, y:445, size:235, emoji:'🏔️' },
     { x:3100, y:465, size:220, emoji:'🏔️' },
-    { x:3550, y:455, size:225, emoji:'🏔️' },
-    { x:4000, y:480, size:200, emoji:'🏔️' },
     { x:4500, y:450, size:230, emoji:'🏔️' },
     { x:4950, y:470, size:215, emoji:'🏔️' },
     { x:5400, y:460, size:220, emoji:'🏔️' },
@@ -792,7 +844,7 @@ function drawMountains(c) {
     {x:950,y:605,s:80},{x:1200,y:590,s:100},{x:1500,y:600,s:88},
     {x:1800,y:595,s:92},{x:2100,y:605,s:82},{x:2400,y:590,s:98},
     {x:2700,y:600,s:86},{x:3000,y:595,s:94},{x:3300,y:605,s:80},
-    {x:3600,y:590,s:100},{x:3900,y:600,s:88},{x:4200,y:595,s:92},
+    {x:4200,y:595,s:92},
     {x:4500,y:605,s:82},{x:4800,y:590,s:96},{x:5100,y:600,s:85},
     {x:5400,y:595,s:90},{x:5700,y:605,s:80},
   ];
@@ -1151,6 +1203,13 @@ function drawAirport(c) {
   drawSprite(c, '🚌', 4820, 1460, 36);
   drawSprite(c, '🚐', 5100, 1460, 32);
   drawSprite(c, '🎐', 5500, 1440, 30);
+  // Parked small planes
+  drawSprite(c, '🛩️', 5100, 1380, 40);
+  drawSprite(c, '🛩️', 5200, 1380, 40);
+  drawSprite(c, '🛩️', 5300, 1380, 40);
+  // Parked large planes
+  drawSprite(c, '✈️', 4850, 1400, 52);
+  drawSprite(c, '✈️', 4980, 1400, 52);
   // Fence
   c.strokeStyle = '#888'; c.lineWidth = 2;
   c.strokeRect(4660, 1200, 1080, 420);
@@ -1199,7 +1258,7 @@ function drawOceanAnimations(c) {
 function drawAirportAnimations(c) {
   airportAnims.takeoffTimer++;
   for (const p of airportAnims.planes) drawSprite(c, '✈️', p.x, p.y, p.size);
-  if (!airportAnims.activeAnim && airportAnims.takeoffTimer > 480) {
+  if (!airportAnims.activeAnim && airportAnims.takeoffTimer > 900) {
     airportAnims.takeoffTimer = 0;
     airportAnims.activeAnim = { x:4720, y:1540, phase:'takeoff', speed:1, size:50 };
   }
@@ -1268,34 +1327,41 @@ function drawDestinationMarkers(c) {
     if (collected[id]) {
       // Collected: dim static marker, no aura
       c.save(); c.globalAlpha = 0.3;
-      drawSprite(c, dest.emoji, n.x, n.y - 24, 36);
+      drawSprite(c, dest.emoji, n.x, n.y - 20, 48);
       c.restore();
       continue;
     }
     // Pulsing aura glow
     const pulse = 0.5 + 0.5 * Math.sin(t * 2 + i * 0.8);
     const auraR = 50 + pulse * 20;
-    const grad = c.createRadialGradient(n.x, n.y - 20, 8, n.x, n.y - 20, auraR);
+    const grad = c.createRadialGradient(n.x, n.y - 16, 8, n.x, n.y - 16, auraR);
     grad.addColorStop(0, `rgba(255,220,60,${0.3 + pulse * 0.15})`);
     grad.addColorStop(0.5, `rgba(255,180,0,${0.15 + pulse * 0.08})`);
     grad.addColorStop(1, 'rgba(255,180,0,0)');
     c.fillStyle = grad;
-    c.beginPath(); c.arc(n.x, n.y - 20, auraR, 0, Math.PI * 2); c.fill();
+    c.beginPath(); c.arc(n.x, n.y - 16, auraR, 0, Math.PI * 2); c.fill();
     // Orbiting sparkles
     for (let j = 0; j < 3; j++) {
       const angle = t * 1.5 + j * (Math.PI * 2 / 3) + i;
-      const orbitR = 35 + Math.sin(t + j) * 5;
+      const orbitR = 40 + Math.sin(t + j) * 5;
       const sx = n.x + Math.cos(angle) * orbitR;
-      const sy = n.y - 20 + Math.sin(angle) * orbitR * 0.6;
+      const sy = n.y - 16 + Math.sin(angle) * orbitR * 0.6;
       const sAlpha = 0.5 + 0.5 * Math.sin(t * 3 + j * 2);
       c.save(); c.globalAlpha = sAlpha;
       drawSprite(c, '✨', sx, sy, 14 + sAlpha * 4);
       c.restore();
     }
-    // Main emoji with bounce and gentle scale pulse
-    const bounce = Math.sin(t * 1.8 + i) * 5;
-    const scale = 1 + Math.sin(t * 2.5 + i * 0.5) * 0.08;
-    drawSprite(c, dest.emoji, n.x, n.y - 24 + bounce, 44 * scale);
+    // Character with gentle bounce
+    const bounce = Math.sin(t * 1.8 + i) * 4;
+    const scale = 1 + Math.sin(t * 2.5 + i * 0.5) * 0.06;
+    drawSprite(c, dest.emoji, n.x, n.y - 20 + bounce, 48 * scale);
+    // Label below character
+    c.font = 'bold 15px sans-serif';
+    c.textAlign = 'center'; c.textBaseline = 'top';
+    c.fillStyle = 'rgba(0,0,0,0.5)';
+    c.fillText(dest.label, n.x + 1, n.y + 17);
+    c.fillStyle = '#FFFFFF';
+    c.fillText(dest.label, n.x, n.y + 16);
   }
 }
 
