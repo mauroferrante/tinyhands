@@ -125,8 +125,8 @@ const nodeMap = {
 };
 
 const edges = [
-  // City horizontal
-  { a:'c00',b:'c10',type:'city' }, { a:'c10',b:'c20',type:'city' }, { a:'c20',b:'c30',type:'city' },
+  // City horizontal (c00→c10 routed through elb_bak, see bakery section)
+  { a:'c10',b:'c20',type:'city' }, { a:'c20',b:'c30',type:'city' },
   { a:'c01',b:'c11',type:'city' }, { a:'c11',b:'c21',type:'city' }, { a:'c21',b:'c31',type:'city' },
   { a:'c02',b:'c12',type:'city' }, { a:'c12',b:'c22',type:'city' }, { a:'c22',b:'c32',type:'city' },
   // City vertical
@@ -142,9 +142,11 @@ const edges = [
   { a:'c30',b:'s_e1',type:'suburban' },
   // City to south (vertical)
   { a:'c02',b:'s_s1',type:'suburban' }, { a:'c22',b:'s_s2',type:'suburban' },
-  // North suburb ring (horizontal)
-  { a:'s_nw',b:'s_n1',type:'suburban' }, { a:'s_n1',b:'s_n2',type:'suburban' },
-  { a:'s_n2',b:'s_n3',type:'suburban' }, { a:'s_n3',b:'s_ne',type:'suburban' },
+  // North suburb ring (horizontal, routed through countryside elbows)
+  { a:'s_nw',b:'elb_cn1',type:'suburban' }, { a:'elb_cn1',b:'s_n1',type:'suburban' },
+  { a:'s_n1',b:'s_n2',type:'suburban' },
+  { a:'s_n2',b:'s_n3',type:'suburban' }, { a:'s_n3',b:'elb_cn3',type:'suburban' },
+  { a:'elb_cn3',b:'s_ne',type:'suburban' },
   // West suburbs (vertical)
   { a:'s_nw',b:'s_w1',type:'suburban' }, { a:'s_w1',b:'s_w2',type:'suburban' },
   { a:'s_w2',b:'s_sw',type:'suburban' },
@@ -152,43 +154,47 @@ const edges = [
   { a:'s_ne',b:'elb_ne1',type:'suburban' }, { a:'elb_ne1',b:'s_e1',type:'suburban' },
   { a:'s_e1',b:'s_e2',type:'suburban' },
   { a:'s_e2',b:'elb_se',type:'suburban' }, { a:'elb_se',b:'s_se',type:'suburban' },
-  // South suburb ring (horizontal)
-  { a:'s_sw',b:'s_s1',type:'suburban' }, { a:'s_s1',b:'s_s2',type:'suburban' },
-  { a:'s_s2',b:'s_se',type:'suburban' },
+  // South suburb ring (horizontal, routed through beach elbows)
+  { a:'s_sw',b:'s_s1',type:'suburban' },
+  { a:'elb_btc',b:'s_s2',type:'suburban' },
+  { a:'elb_bte',b:'s_se',type:'suburban' },
   // Suburb destination spurs
   { a:'s_w1',b:'garden',type:'suburban' },
-  { a:'s_w2',b:'pets',type:'suburban' }, { a:'s_sw',b:'pets',type:'suburban' },
-  // Suburb to countryside via elbows
+  { a:'s_sw',b:'pets',type:'suburban' },
+  // Suburb to countryside via elbows (elbows now shared with suburb ring)
   { a:'s_nw',b:'elb_cnw',type:'dirt' }, { a:'elb_cnw',b:'cnt_nw',type:'dirt' },
-  { a:'s_n1',b:'elb_cn1',type:'dirt' }, { a:'elb_cn1',b:'cnt_n1',type:'dirt' },
-  { a:'s_n2',b:'cnt_n2',type:'dirt' },
-  { a:'s_n3',b:'elb_cn3',type:'dirt' }, { a:'elb_cn3',b:'cnt_n3',type:'dirt' },
+  { a:'elb_nw1',b:'elb_cn1',type:'dirt' },
+  { a:'elb_cn3',b:'cnt_n3',type:'dirt' },
   { a:'elb_ne1',b:'elb_ne2',type:'suburban' },
   { a:'elb_ne2',b:'cnt_ne',type:'dirt' },
-  { a:'s_w1',b:'elb_cw',type:'dirt' }, { a:'elb_cw',b:'cnt_w',type:'dirt' },
-  // Countryside connections via elbows
+  { a:'garden',b:'elb_cw',type:'dirt' }, { a:'elb_cw',b:'cnt_w',type:'dirt' },
+  // Countryside connections (chained through destination elbows to avoid direction collisions)
   { a:'cnt_nw',b:'elb_nw1',type:'dirt' }, { a:'elb_nw1',b:'cnt_n1',type:'dirt' },
-  { a:'cnt_n1',b:'elb_n12',type:'dirt' }, { a:'elb_n12',b:'cnt_n2',type:'dirt' },
+  { a:'cnt_n1',b:'elb_pond',type:'dirt' }, { a:'elb_pond',b:'elb_n12',type:'dirt' },
+  { a:'elb_n12',b:'cnt_n2',type:'dirt' }, { a:'elb_n12',b:'s_n2',type:'dirt' },
   { a:'cnt_n2',b:'elb_n23',type:'dirt' }, { a:'elb_n23',b:'cnt_n3',type:'dirt' },
-  { a:'cnt_n3',b:'elb_n3e',type:'dirt' }, { a:'elb_n3e',b:'cnt_ne',type:'dirt' },
-  { a:'cnt_nw',b:'elb_nww',type:'dirt' }, { a:'elb_nww',b:'cnt_w',type:'dirt' },
-  // Countryside destinations via elbows
-  { a:'cnt_nw',b:'elb_for',type:'dirt' }, { a:'elb_for',b:'forest',type:'dirt' },
-  { a:'cnt_n1',b:'elb_pond',type:'dirt' }, { a:'elb_pond',b:'pond',type:'dirt' },
-  { a:'cnt_n3',b:'elb_orch',type:'dirt' }, { a:'elb_orch',b:'orchard',type:'dirt' },
+  { a:'cnt_n3',b:'elb_orch',type:'dirt' }, { a:'elb_orch',b:'elb_n3e',type:'dirt' },
+  { a:'elb_n3e',b:'cnt_ne',type:'dirt' },
+  { a:'cnt_nw',b:'elb_for',type:'dirt' }, { a:'elb_for',b:'elb_nww',type:'dirt' },
+  { a:'elb_nww',b:'cnt_w',type:'dirt' },
+  // Countryside destinations
+  { a:'elb_for',b:'forest',type:'dirt' },
+  { a:'elb_pond',b:'pond',type:'dirt' },
+  { a:'elb_orch',b:'orchard',type:'dirt' },
   { a:'cnt_ne',b:'elb_farm',type:'dirt' }, { a:'elb_farm',b:'farm',type:'dirt' },
   // Airport via elbow chain
-  { a:'elb_ne2',b:'ap_entry',type:'airport' }, { a:'cnt_ne',b:'ap_entry',type:'airport' },
+  { a:'elb_ne2',b:'ap_entry',type:'airport' },
   { a:'ap_entry',b:'airport',type:'airport' },
   // South suburb to beach town via elbows
-  { a:'s_sw',b:'bt_w',type:'suburban' },
+  { a:'pets',b:'bt_w',type:'suburban' },
   { a:'s_s1',b:'elb_btc',type:'suburban' }, { a:'elb_btc',b:'bt_c',type:'suburban' },
   { a:'s_s2',b:'elb_bte',type:'suburban' }, { a:'elb_bte',b:'bt_e',type:'suburban' },
   // Beach town
   { a:'bt_w',b:'bt_c',type:'boardwalk' }, { a:'bt_c',b:'bt_e',type:'boardwalk' },
   { a:'bt_c',b:'beach',type:'boardwalk' },
-  // City destination via elbow
-  { a:'c00',b:'elb_bak',type:'city' }, { a:'elb_bak',b:'bakery',type:'city' },
+  // City destination via elbow (also chains c00→c10 through elb_bak)
+  { a:'c00',b:'elb_bak',type:'city' }, { a:'elb_bak',b:'c10',type:'city' },
+  { a:'elb_bak',b:'bakery',type:'city' },
 ];
 
 // Build adjacency
@@ -1015,14 +1021,16 @@ function drawDestinationMarkers(c) {
 function bestNodeInDir(nodeId, kdx, kdy) {
   const adj = adjacency[nodeId] || [];
   const px = nodeMap[nodeId].x, py = nodeMap[nodeId].y;
-  let best = null, bestDot = 0.3;
+  let best = null, bestDot = 0.3, bestDist = Infinity;
   for (const nb of adj) {
     const n = nodeMap[nb.node];
     const ex = n.x - px, ey = n.y - py;
     const d = Math.sqrt(ex*ex + ey*ey);
     if (d < 1) continue;
     const dot = (ex/d)*kdx + (ey/d)*kdy;
-    if (dot > bestDot) { bestDot = dot; best = nb.node; }
+    if (dot > bestDot + 0.01 || (dot > bestDot - 0.01 && d < bestDist)) {
+      bestDot = dot; best = nb.node; bestDist = d;
+    }
   }
   return best;
 }
@@ -1116,10 +1124,13 @@ function updatePlayer() {
         player.moving = false;
         player.keyDriven = false;
       }
-    } else {
+    } else if (!player.keyDriven || hasKeys) {
       player.x += (tdx/dist) * PLAYER_SPEED;
       player.y += (tdy/dist) * PLAYER_SPEED;
       player.dir = Math.atan2(tdy, tdx);
+    } else {
+      // Key released mid-edge: freeze in place
+      player.moving = false;
     }
     player.bobT += 0.15;
     stepTimer++;
