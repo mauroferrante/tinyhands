@@ -11,6 +11,7 @@ import { memoryMatch } from './games/memory-match.js';
 import { balloonFloat } from './games/balloon-float.js';
 import { rocketRide } from './games/rocket-ride.js';
 import { ballBonanza } from './games/ball-bonanza.js';
+import { tinyTown } from './games/tiny-town.js';
 import { shareOrCopy } from './share.js';
 
 // ---- Element references ----
@@ -42,7 +43,8 @@ const GAMES = {
   'memory-match': memoryMatch,
   'balloon-float': balloonFloat,
   'rocket-ride': rocketRide,
-  'ball-bonanza': ballBonanza
+  'ball-bonanza': ballBonanza,
+  'tiny-town': tinyTown
 };
 
 // ===== Entry Animation & Fullscreen =====
