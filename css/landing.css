@@ -524,7 +524,7 @@ body.game-active .bg-emoji {
 .play-btn.accent-teal   { background: #F4845F; }
 .play-btn.accent-sky    { background: #F4845F; }
 .play-btn.accent-indigo { background: #F4845F; }
-.play-btn.accent-green  { background: #6BAF6B; }
+.play-btn.accent-green  { background: #F4845F; }
 
 .play-btn:hover {
   transform: scale(1.08) translateY(-2px);

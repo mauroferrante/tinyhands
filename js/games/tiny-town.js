@@ -255,6 +255,7 @@ let canvas, gameEl, W, H;
 let cx = 0, cy = 0;
 let running = false, animFrame = null;
 let selectingChar = false;
+let charSelectIdx = 0;
 let player = { x:2600, y:2400, node:'c11', sourceNode:null, targetNode:null, path:[], moving:false, keyDriven:false, dir:0, bobT:0, emoji:'🧒' };
 let keysDown = {};
 let collected = {};
@@ -1586,7 +1587,26 @@ function triggerCompletion() {
 function handleKey(e) {
   if (e.type === 'keydown') {
     keysDown[e.key] = true;
-    if (e.key === 'Escape' && selectingChar) selectingChar = false;
+    if (selectingChar) {
+      if (e.key === 'ArrowLeft') {
+        charSelectIdx = (charSelectIdx - 1 + CHAR_OPTIONS.length) % CHAR_OPTIONS.length;
+        e.preventDefault();
+      } else if (e.key === 'ArrowRight') {
+        charSelectIdx = (charSelectIdx + 1) % CHAR_OPTIONS.length;
+        e.preventDefault();
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        player.emoji = CHAR_OPTIONS[charSelectIdx];
+        selectingChar = false;
+        showIntro = true;
+        introTimer = 0;
+        canvas.style.cursor = 'none';
+        playChime();
+        e.preventDefault();
+      } else if (e.key === 'Escape') {
+        selectingChar = false;
+      }
+      return;
+    }
   } else {
     keysDown[e.key] = false;
   }
@@ -1698,18 +1718,30 @@ function drawCharSelect(c) {
   for (let i = 0; i < tiles.length; i++) {
     const t = tiles[i];
     const bob = Math.sin(frameCount * 0.06 + i * 1.2) * 3;
+    const selected = (i === charSelectIdx);
+    // Highlight glow behind selected tile
+    if (selected) {
+      const pulse = 0.6 + 0.4 * Math.sin(frameCount * 0.08);
+      c.save();
+      c.shadowColor = 'rgba(255,200,0,0.7)';
+      c.shadowBlur = 18 + pulse * 8;
+      c.fillStyle = 'rgba(255,230,80,0.35)';
+      c.beginPath(); c.roundRect(t.x - 4, t.y - 4, t.w + 8, t.h + 8, 16); c.fill();
+      c.restore();
+    }
     // Tile background
-    c.fillStyle = 'rgba(255,220,50,0.15)';
+    c.fillStyle = selected ? 'rgba(255,240,100,0.35)' : 'rgba(255,220,50,0.15)';
     c.beginPath(); c.roundRect(t.x, t.y, t.w, t.h, 14); c.fill();
-    c.strokeStyle = 'rgba(200,170,60,0.3)';
-    c.lineWidth = 2;
+    // Border
+    c.strokeStyle = selected ? '#FFB300' : 'rgba(200,170,60,0.3)';
+    c.lineWidth = selected ? 3.5 : 2;
     c.beginPath(); c.roundRect(t.x, t.y, t.w, t.h, 14); c.stroke();
-    drawSprite(c, t.emoji, t.x + t.w/2, t.y + t.h/2 + bob, 52);
+    drawSprite(c, t.emoji, t.x + t.w/2, t.y + t.h/2 + bob, selected ? 56 : 52);
   }
   // Subtitle
   c.font = '16px sans-serif';
   c.fillStyle = '#7A6030';
-  c.fillText('Tap to pick!', W/2, gridB - 30);
+  c.fillText('Tap or use ← → to pick!', W/2, gridB - 30);
 }
 
 function handleCharSelect(mx, my) {
@@ -1717,6 +1749,7 @@ function handleCharSelect(mx, my) {
   for (let i = 0; i < tiles.length; i++) {
     const t = tiles[i];
     if (mx >= t.x && mx <= t.x + t.w && my >= t.y && my <= t.y + t.h) {
+      charSelectIdx = i;
       player.emoji = CHAR_OPTIONS[i];
       selectingChar = false;
       showIntro = true;
