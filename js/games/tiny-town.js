@@ -297,7 +297,7 @@ function drawSpriteFlipped(c, emoji, x, y, size) {
 }
 
 // === WORLD GENERATION ===
-const BLDG_EMOJIS = ['🏢','🏬','🏪','🏨','🏦','🏥','🏫','🏛️','⛪','🏗️','🎭','🏟️','🗼','🏰'];
+const BLDG_EMOJIS = ['🏢','🏬','🏪','🏨','🏦','🏥','🏫','🏛️','⛪','🏣','🏤','🏰'];
 const HOUSE_EMOJIS = ['🏠','🏡','🏘️'];
 
 function generateBuildings() {
@@ -409,10 +409,10 @@ function generateHouses() {
       const bx = na.x + (nb.x-na.x)*t2;
       const by = na.y + (nb.y-na.y)*t2;
       const side = Math.random() < 0.5 ? 1 : -1;
-      const off = 38 + rng(0,20);
-      const hx = bx + perpX*side*off + rng(-10,10);
-      const hy = by + perpY*side*off + rng(-10,10);
-      if (hx > 1750 && hx < 4250 && hy > 1750 && hy < 2850) continue;
+      const off = 55 + rng(0,20);
+      const hx = bx + perpX*side*off + rng(-5,5);
+      const hy = by + perpY*side*off + rng(-5,5);
+      if (hx > 1900 && hx < 3900 && hy > 1900 && hy < 2900) continue;
       if (hy > 3800) continue;
       const emoji = HOUSE_EMOJIS[Math.floor(rng(0,3))];
       const size = 50 + Math.floor(rng(0,22));
@@ -617,22 +617,23 @@ function generateCountryside() {
   }
 
   // === BAKERY (2300, 2100) — Bakery surroundings ===
+  // Place items between roads (city roads at x=2000,2600 and y=2000,2400)
   const bakeryEmojis = ['🧁','🍞','🥐','🍪','🎂','🍰'];
   for (let i = 0; i < 15; i++) {
-    const x = rng(2100, 2500), y = rng(1950, 2250);
+    const x = rng(2100, 2500), y = rng(2060, 2340);
     scenery.push({ x, y, emoji:bakeryEmojis[Math.floor(rng(0,6))], size:16+rng(0,10), layer:'sway', wobble:phase() });
   }
   // Cafe tables and chairs
   for (let i = 0; i < 4; i++) {
-    scenery.push({ x:rng(2150,2450), y:rng(2000,2200), emoji:'☕', size:18+rng(0,8), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(2150,2450), y:rng(2080,2320), emoji:'☕', size:18+rng(0,8), layer:'sway', wobble:phase() });
   }
   // Potted plants outside bakery
   for (let i = 0; i < 5; i++) {
-    scenery.push({ x:rng(2150,2450), y:rng(2000,2200), emoji:'🪴', size:20+rng(0,8), layer:'sway', wobble:phase() });
+    scenery.push({ x:rng(2150,2450), y:rng(2080,2320), emoji:'🪴', size:20+rng(0,8), layer:'sway', wobble:phase() });
   }
   // Bakery aroma swirls (floating)
   for (let i = 0; i < 4; i++) {
-    scenery.push({ x:rng(2200,2400), y:rng(2000,2150), emoji:'💨', size:12+rng(0,6), layer:'butterfly', wobble:phase() });
+    scenery.push({ x:rng(2200,2400), y:rng(2080,2300), emoji:'💨', size:12+rng(0,6), layer:'butterfly', wobble:phase() });
   }
 
   // === GENERAL COUNTRYSIDE ===
@@ -820,11 +821,13 @@ function drawTerrain(c) {
   // South suburbs
   c.fillStyle = C.grass; c.fillRect(0, 2800, MAP_W, 400);
   // City paved
-  c.fillStyle = '#B8B0A0'; c.fillRect(1800, 1800, 2400, 1000);
+  c.fillStyle = '#B8B0A0'; c.fillRect(1940, 1940, 1920, 920);
   // West/East suburbs
   c.fillStyle = C.grass;
   c.fillRect(0, 1800, 1800, 1000);
   c.fillRect(4200, 1800, 1800, 1000);
+  // Industrial zone (east of city)
+  c.fillStyle = '#A09888'; c.fillRect(4300, 1900, 600, 700);
   // North suburbs
   c.fillStyle = C.grass; c.fillRect(0, 1400, MAP_W, 400);
   // Countryside meadow base (extends to top of map behind mountains)
@@ -884,8 +887,8 @@ function drawBeach(c) {
 function drawRoads(c) {
   const vRoads = [2000, 2600, 3200, 3800];
   const hRoads = [2000, 2400, 2800];
-  const cityY1 = 1800, cityY2 = 2800;
-  const cityX1 = 1800, cityX2 = 4200;
+  const cityY1 = 2000, cityY2 = 2800;
+  const cityX1 = 2000, cityX2 = 3800;
   const rw = 55, sw = 8;
   // City vertical roads
   for (const rx of vRoads) {
@@ -1106,26 +1109,51 @@ function drawBeachTown(c) {
   for (const ch of chairs) drawSprite(c, '🪑', ch.x, ch.y, 22);
 }
 
+function drawIndustrialArea(c) {
+  // Factory buildings east of city
+  const factories = [
+    { x:4380, y:2000, emoji:'🏭', size:72 },
+    { x:4520, y:2020, emoji:'🏭', size:80 },
+    { x:4680, y:1990, emoji:'🏭', size:68 },
+    { x:4450, y:2180, emoji:'🏭', size:74 },
+    { x:4600, y:2200, emoji:'🏭', size:82 },
+    { x:4750, y:2170, emoji:'🏭', size:70 },
+    { x:4400, y:2380, emoji:'🏭', size:66 },
+    { x:4560, y:2400, emoji:'🏭', size:76 },
+    { x:4720, y:2370, emoji:'🏭', size:72 },
+  ];
+  for (const f of factories) drawSprite(c, f.emoji, f.x, f.y, f.size);
+  // Smokestacks/chimneys (smaller accent buildings)
+  drawSprite(c, '🏢', 4830, 2050, 54);
+  drawSprite(c, '🏢', 4830, 2250, 50);
+  // Trucks and containers
+  drawSprite(c, '🚛', 4350, 2500, 32);
+  drawSprite(c, '🚛', 4550, 2520, 30);
+  drawSprite(c, '📦', 4700, 2510, 28);
+  drawSprite(c, '📦', 4750, 2500, 24);
+}
+
 function drawAirport(c) {
-  // Terminal
-  c.fillStyle = C.terminal; c.fillRect(4700, 1220, 600, 220);
-  c.fillStyle = '#A0A0B0'; c.fillRect(4700, 1210, 600, 20);
-  c.fillStyle = '#8BBCCC';
-  for (let wx = 4730; wx < 5280; wx += 40) c.fillRect(wx, 1240, 24, 40);
   // Runway
   c.fillStyle = C.runway; c.fillRect(4700, 1500, 1000, 80);
   c.fillStyle = '#F0F0F0';
   for (let x2 = 4730; x2 < 5680; x2 += 60) c.fillRect(x2, 1535, 30, 10);
   c.fillRect(4700, 1536, 30, 8); c.fillRect(5670, 1536, 30, 8);
+  // Terminal buildings (large emojis)
+  drawSprite(c, '🏢', 4780, 1300, 80);
+  drawSprite(c, '🏣', 4920, 1280, 90);
+  drawSprite(c, '🏢', 5060, 1300, 80);
+  drawSprite(c, '🏣', 5200, 1280, 90);
+  drawSprite(c, '🏢', 5340, 1300, 70);
   // Control tower
-  c.fillStyle = '#C8C8D8'; c.fillRect(5340, 1220, 40, 180);
-  c.fillStyle = '#6A8BA8'; c.fillRect(5325, 1215, 70, 30);
-  drawSprite(c, '🗼', 5360, 1250, 48);
-  // Windsock, vehicle, fence
-  drawSprite(c, '🎐', 5450, 1440, 30);
-  drawSprite(c, '🚌', 4820, 1480, 36);
+  drawSprite(c, '🗼', 5450, 1320, 60);
+  // Ground vehicles and details
+  drawSprite(c, '🚌', 4820, 1460, 36);
+  drawSprite(c, '🚐', 5100, 1460, 32);
+  drawSprite(c, '🎐', 5500, 1440, 30);
+  // Fence
   c.strokeStyle = '#888'; c.lineWidth = 2;
-  c.strokeRect(4620, 1180, 1160, 850);
+  c.strokeRect(4660, 1200, 1080, 420);
 }
 
 function drawOceanAnimations(c) {
@@ -1705,7 +1733,7 @@ function updateDestAnimations(c) {
     const a = destAnimations[i]; a.t++;
     if (a.t > a.maxT) { destAnimations.splice(i, 1); continue; }
     const prog = a.t / a.maxT;
-    const sx = a.x - cx, sy = a.y - cy;
+    const sx = a.x, sy = a.y;
     if (a.type === 'burst') {
       // Burst particles fly outward with gravity, fade and shrink
       const px = sx + a.vx * a.t;
@@ -1887,8 +1915,8 @@ function render() {
 
   // World layers (back to front)
   drawSky(c);
-  drawMountains(c);
   drawTerrain(c);
+  drawMountains(c);
   drawOcean(c);
   drawBeach(c);
   drawRoads(c);
@@ -1896,6 +1924,7 @@ function render() {
   drawStreetDetails(c);
   drawBuildings(c);
   drawBeachTown(c);
+  drawIndustrialArea(c);
   drawAirport(c);
   drawDestinationMarkers(c);
   drawApproachGlow(c);
@@ -1948,8 +1977,8 @@ function charSelectLoop() {
   c.save();
   c.translate(-cx, -cy);
   drawSky(c);
-  drawMountains(c);
   drawTerrain(c);
+  drawMountains(c);
   drawRoads(c);
   drawBuildings(c);
   c.restore();
