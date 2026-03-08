@@ -118,7 +118,7 @@ function startGame(game) {
 
   initAudio();
 
-  // Show ESC hint on desktop only (touch devices have the ✕ button)
+  // Show ESC hint briefly on desktop (touch devices have the ✕ button)
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   if (!isTouchDevice) {
     escHint.textContent = 'Press ESC to exit';
@@ -126,7 +126,21 @@ function startGame(game) {
     setTimeout(() => { escHint.style.opacity = '0'; }, 3000);
   }
 
+  // Show our exit button only on touch devices when NOT in fullscreen
+  // (in fullscreen, the browser provides its own native exit button)
+  updateExitBtn();
+
   game.start();
+}
+
+function updateExitBtn() {
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if (currentGame && isTouchDevice && !fsEl) {
+    exitBtn.style.display = 'block';
+  } else {
+    exitBtn.style.display = 'none';
+  }
 }
 
 function stopGame() {
@@ -138,6 +152,16 @@ function stopGame() {
   playground.style.display = 'none';
   landing.style.display = 'flex';
   document.body.classList.remove('game-active');
+
+  // Force header visible — CSS animation with 'forwards' won't replay after
+  // display:none toggle in Safari, leaving the header stuck at opacity:0.
+  // Re-trigger the animation by removing and re-adding it.
+  const header = landing.querySelector('header');
+  if (header) {
+    header.style.animation = 'none';
+    void header.offsetWidth;              // force reflow
+    header.style.animation = '';          // restore CSS animation
+  }
 
   playground.querySelectorAll('.particle').forEach(p => p.remove());
 
@@ -160,6 +184,8 @@ function onFullscreenChange() {
   } else if (!fsEl && currentGame) {
     stopGame();
   }
+  // Update exit button visibility whenever fullscreen state changes
+  if (currentGame) updateExitBtn();
 }
 document.addEventListener('fullscreenchange', onFullscreenChange);
 document.addEventListener('webkitfullscreenchange', onFullscreenChange);

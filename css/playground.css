@@ -23,12 +23,12 @@
   text-align: center;
 }
 
-/* Exit button (touch devices only) */
+/* Exit button — shown via JS only when needed (no native fullscreen exit) */
 #exitGame {
   display: none;
   position: fixed;
   top: 12px;
-  left: 12px;
+  right: 12px;
   width: 36px;
   height: 36px;
   border: none;
@@ -41,9 +41,6 @@
   z-index: 500;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.2s ease, opacity 0.2s ease;
-}
-@media (pointer: coarse) {
-  #exitGame { display: block; }
 }
 #exitGame:active {
   background: rgba(0, 0, 0, 0.35);
@@ -62,6 +59,7 @@
   padding: 6px 14px;
   border-radius: 20px;
   z-index: 200;
+  opacity: 0;
   transition: opacity 1s ease;
   pointer-events: none;
 }

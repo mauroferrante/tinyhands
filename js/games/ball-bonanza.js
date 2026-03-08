@@ -54,6 +54,8 @@ function computeSizes() {
   const areaRatio = (screenW * screenH) / (375 * 667); // iPhone SE area
   INITIAL_CHARS = Math.min(Math.round(BASE_CHARS + (areaRatio - 1) * 2), 10);
   INITIAL_CHARS = Math.max(BASE_CHARS, INITIAL_CHARS);
+  // Reduce starting characters by 25%
+  INITIAL_CHARS = Math.max(3, Math.round(INITIAL_CHARS * 0.75));
   MAX_CHARS = areaRatio > 2 ? MAX_CHARS_LARGE : MAX_CHARS_SMALL;
 }
 const CHAR_POOL = [
@@ -66,8 +68,8 @@ const REACTIONS = ['squash','spin','bounce','flip','shock'];
 const COLLECTIBLE_R = 22;
 const COLLECTIBLE_TYPES = [
   { id: 'star',   emoji: '⭐', weight: 5 },   // bonus ball for 20s
-  { id: 'clock',  emoji: '⏰', weight: 3 },   // speed boost for 10s
-  { id: 'circus', emoji: '🎪', weight: 2 },   // +50% characters
+  { id: 'clock',  emoji: '⏰', weight: 3 },   // speed boost for 20s
+  { id: 'circus', emoji: '🎪', weight: 2 },   // +50% characters for 20s
 ];
 
 // ---- State ----
@@ -383,7 +385,7 @@ function removeBonusBall(b) {
   }
 }
 
-// -- Star effect: spawn a bonus ball for 30s --
+// -- Star effect: spawn a bonus ball for 20s --
 function effectStar(x, y) {
   sndCollectStar();
   showEventText('⭐ BONUS BALL!', x, y);
@@ -393,10 +395,10 @@ function effectStar(x, y) {
   b.vx = Math.cos(angle) * LAUNCH_SPEED;
   b.vy = Math.sin(angle) * LAUNCH_SPEED;
   bonusBalls.push(b);
-  setTimeout(() => removeBonusBall(b), 30000);
+  setTimeout(() => removeBonusBall(b), 20000);
 }
 
-// -- Clock effect: speed everything up for 10s --
+// -- Clock effect: speed everything up for 20s --
 function effectClock(x, y) {
   sndCollectClock();
   showEventText('⏰ SPEED UP!', x, y);
@@ -412,10 +414,10 @@ function effectClock(x, y) {
   effectClock._timeout = setTimeout(() => {
     speedMultiplier = 1;
     if (speedTintEl) { speedTintEl.remove(); speedTintEl = null; }
-  }, 10000);
+  }, 20000);
 }
 
-// -- Circus effect: +50% characters for 30s --
+// -- Circus effect: +50% characters for 20s --
 function effectCircus(x, y) {
   sndCollectCircus();
   gameEl.classList.add('bb-shaking');
@@ -434,7 +436,7 @@ function effectCircus(x, y) {
       }
     }, i * 250);
   }
-  // After 30s, walk extras off-screen and remove
+  // After 20s, walk extras off-screen and remove
   setTimeout(() => {
     extraChars.forEach(c => {
       if (!characters.includes(c)) return; // already gone
@@ -455,7 +457,7 @@ function effectCircus(x, y) {
         }
       });
     }, 3000);
-  }, 30000);
+  }, 20000);
 }
 
 function collectBallHitsCollectible(b) {

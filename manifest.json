@@ -1,0 +1,26 @@
+{
+  "name": "Tiny Hands Play",
+  "short_name": "Tiny Hands",
+  "description": "Free fun and educational browser games for toddlers and kids.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFAF7",
+  "theme_color": "#FFFAF7",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
