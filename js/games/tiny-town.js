@@ -539,14 +539,7 @@ function updateCamera() {
 
 // === RENDERING ===
 function drawSky(c) {
-  if (cy > 700) return; // Sky not visible
-  const grad = c.createLinearGradient(0, -100, 0, 650);
-  grad.addColorStop(0, '#3A7BD5');
-  grad.addColorStop(0.3, '#5AAEE8');
-  grad.addColorStop(0.7, '#87CEEB');
-  grad.addColorStop(1, '#C8E8FF');
-  c.fillStyle = grad;
-  c.fillRect(-cx, -cy, MAP_W + cx, 700);
+  // Sky removed — mountains sit directly on meadow background
 }
 
 function drawMountains(c) {
@@ -653,8 +646,8 @@ function drawTerrain(c) {
   c.fillRect(4200, 1800, 1800, 1000);
   // North suburbs
   c.fillStyle = C.grass; c.fillRect(0, 1400, MAP_W, 400);
-  // Countryside meadow base
-  c.fillStyle = C.meadow; c.fillRect(0, 600, MAP_W, 800);
+  // Countryside meadow base (extends to top of map behind mountains)
+  c.fillStyle = C.meadow; c.fillRect(0, 0, MAP_W, 1400);
   // Forest dark zone
   c.fillStyle = C.forestDark; c.fillRect(100, 620, 1300, 780);
   // Farm soil
