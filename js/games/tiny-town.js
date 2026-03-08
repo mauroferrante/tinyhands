@@ -1199,7 +1199,7 @@ function drawOceanAnimations(c) {
 function drawAirportAnimations(c) {
   airportAnims.takeoffTimer++;
   for (const p of airportAnims.planes) drawSprite(c, '✈️', p.x, p.y, p.size);
-  if (!airportAnims.activeAnim && airportAnims.takeoffTimer > 1800) {
+  if (!airportAnims.activeAnim && airportAnims.takeoffTimer > 480) {
     airportAnims.takeoffTimer = 0;
     airportAnims.activeAnim = { x:4720, y:1540, phase:'takeoff', speed:1, size:50 };
   }
@@ -1207,8 +1207,10 @@ function drawAirportAnimations(c) {
     const a = airportAnims.activeAnim;
     if (a.phase === 'takeoff') {
       a.x += a.speed; a.speed += 0.04;
-      a.size = Math.max(10, 50 - (a.x - 4720)*0.04);
-      a.y -= 0.12;
+      // Plane grows as it climbs toward the viewer
+      const dist = a.x - 4720;
+      a.size = 50 + dist * 0.06;
+      a.y -= 0.3 + dist * 0.001;
       drawSprite(c, '✈️', a.x, a.y, a.size);
       if (a.x > 6100) airportAnims.activeAnim = null;
     }
