@@ -7,6 +7,7 @@ const EMOJI_CURSOR = `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000
 const AREA_RADIUS = 80, NODE_STOP = 6;
 const CAM_LERP = 0.08, CAM_AHEAD = 60;
 const DEST_ORDER = ['garden','pets','forest','pond','orchard','farm','airport','beach','bakery'];
+const DELIVERY_ORDER = ['hilltop','castle','ranger','icecream','cottage','restaurant','camp','lighthouse','townhall'];
 
 const C = {
   grass: '#8FBF6F', grass2: '#7DB362',
@@ -122,11 +123,24 @@ const nodeMap = {
   elb_orch:{ x:3800, y:900  },
   elb_farm:{ x:4400, y:1000 },
   elb_bak: { x:2300, y:2000 },
+  // Delivery destination nodes
+  hilltop:    { x:400,  y:2400 },
+  castle:     { x:3050, y:2200 },
+  ranger:     { x:5000, y:2400 },
+  icecream:   { x:1800, y:3400 },
+  cottage:    { x:1500, y:1700 },
+  restaurant: { x:3600, y:2600 },
+  camp:       { x:500,  y:3200 },
+  lighthouse: { x:4200, y:3600 },
+  townhall:   { x:2900, y:2000 },
+  // Delivery elbow nodes
+  elb_ranger: { x:5000, y:2600 },
+  elb_camp:   { x:500,  y:3000 },
 };
 
 const edges = [
   // City horizontal (c00→c10 routed through elb_bak, see bakery section)
-  { a:'c10',b:'c20',type:'city' }, { a:'c20',b:'c30',type:'city' },
+  { a:'c10',b:'townhall',type:'city' }, { a:'townhall',b:'c20',type:'city' }, { a:'c20',b:'c30',type:'city' },
   { a:'c01',b:'c11',type:'city' }, { a:'c11',b:'c21',type:'city' }, { a:'c21',b:'c31',type:'city' },
   { a:'c02',b:'c12',type:'city' }, { a:'c12',b:'c22',type:'city' }, { a:'c22',b:'c32',type:'city' },
   // City vertical
@@ -190,11 +204,19 @@ const edges = [
   { a:'s_s1',b:'elb_btc',type:'suburban' }, { a:'elb_btc',b:'bt_c',type:'suburban' },
   { a:'s_s2',b:'elb_bte',type:'suburban' }, { a:'elb_bte',b:'bt_e',type:'suburban' },
   // Beach town
-  { a:'bt_w',b:'bt_c',type:'boardwalk' }, { a:'bt_c',b:'bt_e',type:'boardwalk' },
+  { a:'bt_w',b:'icecream',type:'boardwalk' }, { a:'icecream',b:'bt_c',type:'boardwalk' }, { a:'bt_c',b:'bt_e',type:'boardwalk' },
   { a:'bt_c',b:'beach',type:'boardwalk' },
   // City destination via elbow (also chains c00→c10 through elb_bak)
   { a:'c00',b:'elb_bak',type:'city' }, { a:'elb_bak',b:'c10',type:'city' },
   { a:'elb_bak',b:'bakery',type:'city' },
+  // Delivery destination spurs
+  { a:'elb_cw',b:'hilltop',type:'dirt' },
+  { a:'c20',b:'castle',type:'city' },
+  { a:'s_e2',b:'elb_ranger',type:'suburban' }, { a:'elb_ranger',b:'ranger',type:'suburban' },
+  { a:'elb_cn1',b:'cottage',type:'suburban' },
+  { a:'c31',b:'restaurant',type:'city' },
+  { a:'s_sw',b:'elb_camp',type:'suburban' }, { a:'elb_camp',b:'camp',type:'dirt' },
+  { a:'bt_e',b:'lighthouse',type:'boardwalk' },
 ];
 
 // Build adjacency
@@ -250,6 +272,66 @@ const DESTINATIONS = {
   bakery:  { emoji:'🧑‍🍳', label:'Bakery',  reward:'🎂', sound:'sparkle' },
 };
 
+// Delivery recipients — each paired with a sender destination
+const DELIVERY_DESTINATIONS = {
+  hilltop:    { emoji:'🧝‍♀️', label:"Elf's Clearing",   sourceId:'forest',  reward:'🍄', sound:'sparkle' },
+  castle:     { emoji:'👸',    label:'Castle Park',      sourceId:'garden',  reward:'🌹', sound:'sparkle' },
+  ranger:     { emoji:'🧔',    label:'Ranger Station',   sourceId:'pets',    reward:'🐕', sound:'sparkle' },
+  icecream:   { emoji:'🐧',    label:'Ice Cream Shop',   sourceId:'pond',    reward:'🐟', sound:'sparkle' },
+  cottage:    { emoji:'👵',    label:"Grandma's Cottage", sourceId:'orchard', reward:'🍎', sound:'sparkle' },
+  restaurant: { emoji:'👨‍🍳', label:'Restaurant',       sourceId:'farm',    reward:'🥚', sound:'sparkle' },
+  camp:       { emoji:'🧭',    label:"Explorer's Camp",  sourceId:'airport', reward:'🎫', sound:'sparkle' },
+  lighthouse: { emoji:'🧜‍♀️', label:'Lighthouse',       sourceId:'beach',   reward:'🐚', sound:'sparkle' },
+  townhall:   { emoji:'👑',    label:'Town Hall',        sourceId:'bakery',  reward:'🎂', sound:'sparkle' },
+};
+
+// Sender → delivery recipient mapping
+const DELIVERY_MAP = {
+  forest:'hilltop', garden:'castle', pets:'ranger', pond:'icecream',
+  orchard:'cottage', farm:'restaurant', airport:'camp', beach:'lighthouse', bakery:'townhall',
+};
+
+// Sender dialogs (shown after collecting an item)
+const SENDER_DIALOGS = {
+  forest:  "I found a magic mushroom! Please bring it to the Elf in the western woods — she needs it for the Festival potion!",
+  garden:  "This rose is for the Princess at Castle Park in the city. She's decorating for the Festival!",
+  pets:    "My puppy wants to meet the Ranger at the station out east! Can you take him there?",
+  pond:    "This fish is a gift for the Penguin at the ice cream shop on the boardwalk!",
+  orchard: "Take this apple to Grandma at her cottage up north. She's baking a Festival pie!",
+  farm:    "A fresh egg for the Chef at the restaurant in the city! He's cooking a Festival feast!",
+  airport: "A ticket for the Explorer camped out southwest — he's been waiting to fly to the Festival!",
+  beach:   "This shell is for the Mermaid at the lighthouse. She'll use it to call the Festival music!",
+  bakery:  "A special cake for the Queen at Town Hall! When she tastes it, she'll open the Festival!",
+};
+
+// Recipient dialogs (shown when item is delivered)
+const RECIPIENT_DIALOGS = {
+  hilltop:    "A magic mushroom! Now I can brew the Potion of Kindness. The Festival grows closer...",
+  castle:     "A beautiful rose! The castle garden will bloom for the Festival! Thank you, little hero!",
+  ranger:     "A new friend! This pup will help me guard the forest for the Festival. Woof!",
+  icecream:   "A fish?! Yum! Now I have energy to make Festival ice cream for everyone!",
+  cottage:    "An apple from the orchard! My Festival pie will be the best one yet!",
+  restaurant: "A farm-fresh egg! My Festival feast will be magnificent! Merci!",
+  camp:       "A plane ticket! I can finally join the Festival! Adventure awaits!",
+  lighthouse: "A sea shell! Listen... can you hear the Festival song beginning?",
+  townhall:   "A splendid cake! By royal decree... let the Festival of Kindness BEGIN!",
+};
+
+// Hint dialogs (shown when visiting a recipient WITHOUT the item)
+const HINT_DIALOGS = {
+  hilltop:    "I need a magic mushroom for my potion! Please visit the Wizard in the forest.",
+  castle:     "I'm looking for a rose for the Festival! The Gardener might have one.",
+  ranger:     "I could use a furry companion! There's a girl with pets in the south.",
+  icecream:   "I'm so hungry! The Frog at the pond might have a fish for me.",
+  cottage:    "I need an apple for my pie! Try the Elder at the orchard.",
+  restaurant: "I need a fresh egg for the feast! Visit the Farmer up north.",
+  camp:       "I need a plane ticket to join the Festival! Ask the Pilot at the airport.",
+  lighthouse: "I need a sea shell for the Festival music! The Yoga Lady at the beach has one.",
+  townhall:   "The Festival awaits a special cake! Speak to the Baker in the city.",
+};
+
+const FINAL_DELIVERY_LINE = "That's the last gift! The Festival of Kindness can finally BEGIN! Thank you, little hero!";
+
 // === STATE ===
 let canvas, gameEl, W, H;
 let cx = 0, cy = 0;
@@ -259,6 +341,10 @@ let charSelectIdx = 0;
 let player = { x:2600, y:2400, node:'c11', sourceNode:null, targetNode:null, path:[], moving:false, keyDriven:false, dir:0, bobT:0, emoji:'🧒' };
 let keysDown = {};
 let collected = {};
+let delivered = {};
+let allDelivered = false;
+let activeDialog = null;
+let finaleChars = [];
 let destAnimations = [];
 let collectAnimations = [];
 let buildings = [], houses = [], scenery = [];
@@ -721,6 +807,88 @@ function generateCountryside() {
   // Bakery aroma swirls (floating)
   for (let i = 0; i < 4; i++) {
     scenery.push({ x:rng(2200,2400), y:rng(2080,2300), emoji:'💨', size:12+rng(0,6), layer:'butterfly', wobble:phase() });
+  }
+
+  // === DELIVERY DESTINATIONS SCENERY ===
+
+  // Elf's Clearing (hilltop: 400, 2400) — mystical forest clearing with magic vibes
+  for (let i = 0; i < 8; i++) {
+    scenery.push({ x:rng(250,550), y:rng(2250,2550), emoji:'🌲', size:38+rng(0,14), layer:'forest' });
+  }
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(280,520), y:rng(2300,2500), emoji:'🍄', size:16+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(300,500), y:rng(2320,2480), emoji:'✨', size:12+rng(0,8), layer:'butterfly', wobble:phase() });
+  }
+
+  // Castle Park (castle: 3050, 2200) — small castle garden area
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(2900,3200), y:rng(2100,2300), emoji:'🌹', size:18+rng(0,10), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(2920,3180), y:rng(2120,2280), emoji:'⛲', size:28+rng(0,8), layer:'castle' });
+  }
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(2900,3200), y:rng(2100,2300), emoji:'🌳', size:34+rng(0,10), layer:'castle' });
+  }
+
+  // Ranger Station (ranger: 5000, 2400) — woodland ranger outpost
+  for (let i = 0; i < 6; i++) {
+    scenery.push({ x:rng(4850,5150), y:rng(2300,2500), emoji:'🌲', size:36+rng(0,12), layer:'forest' });
+  }
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(4880,5120), y:rng(2320,2480), emoji:'🦌', size:22+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  scenery.push({ x:5050, y:2360, emoji:'🏕️', size:36, layer:'ranger' });
+
+  // Ice Cream Shop (icecream: 1800, 3400) — on the boardwalk
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(1680,1920), y:rng(3340,3460), emoji:'🍦', size:16+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 2; i++) {
+    scenery.push({ x:rng(1720,1880), y:rng(3350,3450), emoji:'🎈', size:18+rng(0,6), layer:'butterfly', wobble:phase() });
+  }
+
+  // Grandma's Cottage (cottage: 1500, 1700) — cozy cottage with garden
+  for (let i = 0; i < 4; i++) {
+    scenery.push({ x:rng(1350,1650), y:rng(1600,1800), emoji:'🌷', size:16+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(1380,1620), y:rng(1620,1780), emoji:'🌳', size:34+rng(0,10), layer:'cottage' });
+  }
+  scenery.push({ x:1460, y:1660, emoji:'🏡', size:38, layer:'cottage' });
+
+  // Restaurant (restaurant: 3600, 2600) — city restaurant area
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(3480,3720), y:rng(2520,2680), emoji:'🪴', size:20+rng(0,8), layer:'sway', wobble:phase() });
+  }
+  for (let i = 0; i < 2; i++) {
+    scenery.push({ x:rng(3500,3700), y:rng(2540,2660), emoji:'☕', size:16+rng(0,6), layer:'sway', wobble:phase() });
+  }
+
+  // Explorer's Camp (camp: 500, 3200) — adventurer's tent camp
+  for (let i = 0; i < 5; i++) {
+    scenery.push({ x:rng(350,650), y:rng(3100,3300), emoji:'🌲', size:34+rng(0,12), layer:'forest' });
+  }
+  scenery.push({ x:550, y:3160, emoji:'⛺', size:32, layer:'camp' });
+  scenery.push({ x:440, y:3240, emoji:'🔥', size:18, layer:'sway', wobble:phase() });
+  scenery.push({ x:560, y:3260, emoji:'🎒', size:16, layer:'camp' });
+
+  // Lighthouse (lighthouse: 4200, 3600) — coastal lighthouse
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(4080,4320), y:rng(3520,3680), emoji:'🪨', size:24+rng(0,10), layer:'rock' });
+  }
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(4100,4300), y:rng(3540,3660), emoji:'🐚', size:14+rng(0,6), layer:'sway', wobble:phase() });
+  }
+
+  // Town Hall (townhall: 2900, 2000) — on city road, civic area
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(2820,2980), y:rng(1940,2060), emoji:'🏛️', size:34+rng(0,8), layer:'townhall' });
+  }
+  for (let i = 0; i < 2; i++) {
+    scenery.push({ x:rng(2830,2970), y:rng(1950,2050), emoji:'🚩', size:18+rng(0,6), layer:'sway', wobble:phase() });
   }
 
   // === GENERAL COUNTRYSIDE ===
@@ -1399,6 +1567,110 @@ function drawDestinationMarkers(c) {
   }
 }
 
+function drawDeliveryMarkers(c) {
+  const t = frameCount * 0.04;
+  const delivKeys = Object.keys(DELIVERY_DESTINATIONS);
+  for (let i = 0; i < delivKeys.length; i++) {
+    const id = delivKeys[i];
+    const dd = DELIVERY_DESTINATIONS[id];
+    const n = nodeMap[id]; if (!n) continue;
+    if (delivered[id]) {
+      // Delivered: dim static marker
+      c.save(); c.globalAlpha = 0.3;
+      drawSprite(c, dd.emoji, n.x, n.y - 20, 48);
+      c.restore();
+      continue;
+    }
+    const itemCollected = collected[dd.sourceId];
+    if (!itemCollected) {
+      // Item not yet collected: show dim marker with question mark
+      c.save(); c.globalAlpha = 0.25;
+      drawSprite(c, dd.emoji, n.x, n.y - 20, 40);
+      c.restore();
+      // Dim label
+      c.save(); c.globalAlpha = 0.3;
+      c.font = 'bold 13px sans-serif';
+      c.textAlign = 'center'; c.textBaseline = 'top';
+      c.fillStyle = '#FFFFFF';
+      c.fillText(dd.label, n.x, n.y + 12);
+      c.restore();
+      continue;
+    }
+    // Item collected but not delivered: active marker with blue/purple aura
+    const pulse = 0.5 + 0.5 * Math.sin(t * 2.2 + i * 0.9);
+    const auraR = 50 + pulse * 20;
+    const grad = c.createRadialGradient(n.x, n.y - 16, 8, n.x, n.y - 16, auraR);
+    grad.addColorStop(0, `rgba(120,160,255,${0.3 + pulse * 0.15})`);
+    grad.addColorStop(0.5, `rgba(80,120,220,${0.15 + pulse * 0.08})`);
+    grad.addColorStop(1, 'rgba(80,120,220,0)');
+    c.fillStyle = grad;
+    c.beginPath(); c.arc(n.x, n.y - 16, auraR, 0, Math.PI * 2); c.fill();
+    // Orbiting sparkles (blue-tinted)
+    for (let j = 0; j < 3; j++) {
+      const angle = t * 1.5 + j * (Math.PI * 2 / 3) + i;
+      const orbitR = 40 + Math.sin(t + j) * 5;
+      const sx = n.x + Math.cos(angle) * orbitR;
+      const sy = n.y - 16 + Math.sin(angle) * orbitR * 0.6;
+      const sAlpha = 0.5 + 0.5 * Math.sin(t * 3 + j * 2);
+      c.save(); c.globalAlpha = sAlpha;
+      drawSprite(c, '💫', sx, sy, 14 + sAlpha * 4);
+      c.restore();
+    }
+    // Character with gentle bounce
+    const bounce = Math.sin(t * 1.8 + i) * 4;
+    const scale = 1 + Math.sin(t * 2.5 + i * 0.5) * 0.06;
+    drawSprite(c, dd.emoji, n.x, n.y - 20 + bounce, 48 * scale);
+    // Label below character
+    c.font = 'bold 15px sans-serif';
+    c.textAlign = 'center'; c.textBaseline = 'top';
+    c.fillStyle = 'rgba(0,0,0,0.5)';
+    c.fillText(dd.label, n.x + 1, n.y + 17);
+    c.fillStyle = '#E3F2FD';
+    c.fillText(dd.label, n.x, n.y + 16);
+  }
+}
+
+function drawDeliveryApproachGlow(c) {
+  for (const [id, dd] of Object.entries(DELIVERY_DESTINATIONS)) {
+    if (delivered[id]) continue;
+    if (!collected[dd.sourceId]) continue;
+    const n = nodeMap[id]; if (!n) continue;
+    const dx = player.x - n.x, dy = player.y - n.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < AREA_RADIUS * 1.5) {
+      const pulse = 0.5 + 0.5 * Math.sin(frameCount * 0.08);
+      const r = AREA_RADIUS + pulse * 20;
+      const grad = c.createRadialGradient(n.x, n.y, 0, n.x, n.y, r);
+      grad.addColorStop(0, `rgba(100,140,255,${0.22 + pulse * 0.1})`);
+      grad.addColorStop(0.5, `rgba(80,120,220,${0.1 + pulse * 0.06})`);
+      grad.addColorStop(1, 'rgba(80,120,220,0)');
+      c.fillStyle = grad;
+      c.beginPath(); c.arc(n.x, n.y, r, 0, Math.PI * 2); c.fill();
+      c.font = 'bold 22px sans-serif';
+      c.textAlign = 'center'; c.textBaseline = 'bottom';
+      c.fillStyle = 'rgba(0,0,0,0.55)';
+      c.fillText(dd.label, n.x + 1, n.y - 38 + 1);
+      c.fillStyle = '#E3F2FD';
+      c.fillText(dd.label, n.x, n.y - 38);
+    }
+  }
+}
+
+function drawFinaleChars(c) {
+  if (finaleChars.length === 0) return;
+  for (const fc of finaleChars) {
+    if (fc.delay > 0) { fc.delay--; continue; }
+    fc.t = Math.min(fc.t + 0.015, 1);
+    const ease = 1 - Math.pow(1 - fc.t, 3);
+    const fx = fc.sx + (fc.tx - fc.sx) * ease;
+    const fy = fc.sy + (fc.ty - fc.sy) * ease;
+    fc.bobT += 0.08;
+    const bob = Math.sin(fc.bobT) * 6;
+    const scale = 0.5 + ease * 0.5;
+    drawSprite(c, fc.emoji, fx, fy + bob, 40 * scale);
+  }
+}
+
 // === PLAYER MOVEMENT ===
 function bestNodeInDir(nodeId, kdx, kdy) {
   const adj = adjacency[nodeId] || [];
@@ -1525,17 +1797,48 @@ function updatePlayer() {
 
 // === AREA TRIGGER ===
 function checkAreaTrigger(nodeId) {
-  if (!DESTINATIONS[nodeId]) return;
-  if (collected[nodeId]) return;
-  triggerDestination(nodeId);
+  // Case 1: Sender destination (collect item)
+  if (DESTINATIONS[nodeId] && !collected[nodeId]) {
+    triggerDestination(nodeId);
+    return;
+  }
+  // Case 2 & 3: Delivery destination
+  if (DELIVERY_DESTINATIONS[nodeId] && !delivered[nodeId]) {
+    const dd = DELIVERY_DESTINATIONS[nodeId];
+    if (collected[dd.sourceId]) {
+      // Case 2: Has item → deliver
+      triggerDelivery(nodeId);
+    } else {
+      // Case 3: No item → show hint
+      showDialog(dd.emoji, HINT_DIALOGS[nodeId]);
+    }
+  }
 }
 
 function getSlotPos(nodeId) {
   const idx = DEST_ORDER.indexOf(nodeId);
-  const slotW = 42, gap = 5, pad = 10;
-  const barW = DEST_ORDER.length * slotW + (DEST_ORDER.length - 1) * gap + pad * 2;
+  const slotW = 34, gap = 3, pad = 8;
+  const cols = DEST_ORDER.length;
+  const barW = cols * slotW + (cols - 1) * gap + pad * 2;
+  const rowH = slotW, rowGap = 3;
+  const barH = rowH * 2 + rowGap + pad * 2;
   const bx = (W - barW) / 2;
-  return { x: bx + pad + idx * (slotW + gap) + slotW / 2, y: H - 30 };
+  const by = H - barH - 4;
+  const row1y = by + pad;
+  return { x: bx + pad + idx * (slotW + gap) + slotW / 2, y: row1y + slotW / 2 };
+}
+
+function getDeliverySlotPos(nodeId) {
+  const idx = DELIVERY_ORDER.indexOf(nodeId);
+  const slotW = 34, gap = 3, pad = 8;
+  const cols = DELIVERY_ORDER.length;
+  const barW = cols * slotW + (cols - 1) * gap + pad * 2;
+  const rowH = slotW, rowGap = 3;
+  const barH = rowH * 2 + rowGap + pad * 2;
+  const bx = (W - barW) / 2;
+  const by = H - barH - 4;
+  const row2y = by + pad + slotW + rowGap;
+  return { x: bx + pad + idx * (slotW + gap) + slotW / 2, y: row2y + slotW / 2 };
 }
 
 function triggerDestination(nodeId) {
@@ -1582,42 +1885,182 @@ function triggerDestination(nodeId) {
       x: n.x - cx, y: n.y - cy - 50, emoji: reward, t: 0, maxT: 45,
       tx: slot.x, ty: slot.y, startSize: 50,
     });
-    // Check completion after collect animation finishes
-    const tid2 = setTimeout(() => {
-      if (!running) return;
-      if (count === DEST_ORDER.length) triggerCompletion();
-    }, 800);
-    pendingTimeouts.push(tid2);
   }, 800);
   pendingTimeouts.push(tid);
+  // Show sender dialog after animations settle
+  const tid2 = setTimeout(() => {
+    if (!running) return;
+    showDialog(dest.emoji, SENDER_DIALOGS[nodeId]);
+  }, 1800);
+  pendingTimeouts.push(tid2);
   const soundFn = SOUND_MAP[dest.sound];
   if (soundFn) soundFn();
 }
 
-let completionPlayed = false;
-function triggerCompletion() {
-  if (completionPlayed) return;
-  completionPlayed = true;
-  // Play celebratory chord
-  playChord();
-  setTimeout(() => { if (running) playChime(); }, 300);
-  // Burst confetti from center of screen (world coords)
-  const wx = player.x, wy = player.y;
-  const confetti = ['🎉','🎊','⭐','🌟','✨','🏆','💫','🥳'];
-  for (let i = 0; i < 20; i++) {
-    const angle = (i / 20) * Math.PI * 2 + Math.random() * 0.3;
-    const speed = 2 + Math.random() * 3;
+function triggerDelivery(nodeId) {
+  const dd = DELIVERY_DESTINATIONS[nodeId]; if (!dd) return;
+  delivered[nodeId] = true;
+  const n = nodeMap[nodeId];
+  const delivCount = DELIVERY_ORDER.filter(id => delivered[id]).length;
+  const isLast = (delivCount === DELIVERY_ORDER.length);
+  // Burst particles (blue/purple themed)
+  const burstEmojis = ['✨','💜','⭐','🌟','💫','🎁'];
+  for (let i = 0; i < 10; i++) {
+    const angle = (i / 10) * Math.PI * 2 + Math.random() * 0.4;
+    const speed = 1.5 + Math.random() * 2;
     destAnimations.push({
-      x: wx, y: wy, emoji: confetti[i % confetti.length], t: 0, maxT: 120, type: 'burst',
-      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2,
-      startSize: 50 + Math.random() * 30, spin: (Math.random() - 0.5) * 0.15,
+      x: n.x, y: n.y, emoji: burstEmojis[i % burstEmojis.length], t: 0, maxT: 90, type: 'burst',
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 1,
+      startSize: 40 + Math.random() * 30, spin: (Math.random() - 0.5) * 0.1,
     });
   }
-  // "All collected!" banner animation
+  // Main delivery reward — show the delivered item
   destAnimations.push({
-    x: wx, y: wy - 40, emoji: '🏆', t: 0, maxT: 180, type: 'reward',
-    startSize: 100, label: 'All Collected!',
+    x: n.x, y: n.y, emoji: dd.reward, t: 0, maxT: 140, type: 'reward',
+    startSize: 80, label: dd.reward + ' Delivered!  ' + delivCount + '/' + DELIVERY_ORDER.length,
   });
+  // Flash glow
+  destAnimations.push({
+    x: n.x, y: n.y, emoji: '', t: 0, maxT: 40, type: 'flash',
+  });
+  // Collect animation flies to delivery slot
+  const slot = getDeliverySlotPos(nodeId);
+  const tid = setTimeout(() => {
+    if (!running) return;
+    collectAnimations.push({
+      x: n.x - cx, y: n.y - cy - 50, emoji: dd.emoji, t: 0, maxT: 45,
+      tx: slot.x, ty: slot.y, startSize: 50,
+    });
+  }, 800);
+  pendingTimeouts.push(tid);
+  // Show dialog
+  const dialogText = isLast ? FINAL_DELIVERY_LINE : RECIPIENT_DIALOGS[nodeId];
+  const tid2 = setTimeout(() => {
+    if (!running) return;
+    showDialog(dd.emoji, dialogText);
+  }, 1800);
+  pendingTimeouts.push(tid2);
+  playSparkle();
+  // Check grand finale
+  if (isLast) {
+    const tid3 = setTimeout(() => {
+      if (!running) return;
+      triggerGrandFinale();
+    }, 4000);
+    pendingTimeouts.push(tid3);
+  }
+}
+
+// === DIALOG SYSTEM ===
+function showDialog(emoji, text) {
+  activeDialog = { emoji, text, t: 0, maxT: 320 };
+}
+
+function drawDialog(c) {
+  if (!activeDialog) return;
+  activeDialog.t++;
+  if (activeDialog.t > activeDialog.maxT) { activeDialog = null; return; }
+  const prog = activeDialog.t / activeDialog.maxT;
+  let alpha = 1;
+  if (prog < 0.06) alpha = prog / 0.06;
+  else if (prog > 0.85) alpha = (1 - prog) / 0.15;
+  c.save();
+  c.globalAlpha = alpha;
+  const bw = Math.min(360, W - 30);
+  const bh = 72;
+  const bx = (W - bw) / 2;
+  const by = 60;
+  // Shadow
+  c.fillStyle = 'rgba(0,0,0,0.3)';
+  c.beginPath(); c.roundRect(bx + 3, by + 3, bw, bh, 16); c.fill();
+  // Background
+  c.fillStyle = 'rgba(30,20,50,0.88)';
+  c.beginPath(); c.roundRect(bx, by, bw, bh, 16); c.fill();
+  // Border
+  c.strokeStyle = 'rgba(255,220,80,0.5)';
+  c.lineWidth = 2;
+  c.beginPath(); c.roundRect(bx, by, bw, bh, 16); c.stroke();
+  // Character emoji
+  drawSprite(c, activeDialog.emoji, bx + 34, by + bh / 2, 36);
+  // Text (word-wrapped)
+  c.font = '13px sans-serif';
+  c.fillStyle = '#FFFDE7';
+  c.textAlign = 'left'; c.textBaseline = 'top';
+  const textX = bx + 62, textY = by + 12;
+  const maxW = bw - 74;
+  const words = activeDialog.text.split(' ');
+  let line = '', lineY = textY;
+  for (const word of words) {
+    const test = line + (line ? ' ' : '') + word;
+    if (c.measureText(test).width > maxW && line) {
+      c.fillText(line, textX, lineY);
+      line = word; lineY += 18;
+    } else {
+      line = test;
+    }
+  }
+  if (line) c.fillText(line, textX, lineY);
+  c.restore();
+}
+
+// === GRAND FINALE ===
+let completionPlayed = false;
+function triggerGrandFinale() {
+  if (completionPlayed) return;
+  completionPlayed = true;
+  allDelivered = true;
+  playChord();
+  setTimeout(() => { if (running) playSparkle(); }, 300);
+  setTimeout(() => { if (running) playChime(); }, 600);
+  setTimeout(() => { if (running) playChord(); }, 900);
+  // Massive confetti burst
+  const wx = player.x, wy = player.y;
+  const confetti = ['🎉','🎊','⭐','🌟','✨','🏆','💫','🥳','🎆','🎇','👑','🌈'];
+  for (let i = 0; i < 30; i++) {
+    const angle = (i / 30) * Math.PI * 2 + Math.random() * 0.3;
+    const speed = 2.5 + Math.random() * 3.5;
+    destAnimations.push({
+      x: wx, y: wy, emoji: confetti[i % confetti.length], t: 0, maxT: 150, type: 'burst',
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2.5,
+      startSize: 55 + Math.random() * 35, spin: (Math.random() - 0.5) * 0.15,
+    });
+  }
+  // Second wave delayed
+  setTimeout(() => {
+    if (!running) return;
+    for (let i = 0; i < 20; i++) {
+      const angle = (i / 20) * Math.PI * 2 + Math.random() * 0.4;
+      const speed = 2 + Math.random() * 3;
+      destAnimations.push({
+        x: wx, y: wy, emoji: confetti[(i + 5) % confetti.length], t: 0, maxT: 130, type: 'burst',
+        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2,
+        startSize: 45 + Math.random() * 25, spin: (Math.random() - 0.5) * 0.12,
+      });
+    }
+  }, 600);
+  // Grand banner
+  destAnimations.push({
+    x: wx, y: wy - 40, emoji: '👑', t: 0, maxT: 300, type: 'reward',
+    startSize: 120, label: 'Festival of Kindness!',
+  });
+  // Characters enter from screen edges and bounce toward player
+  const allChars = [];
+  for (const d of Object.values(DESTINATIONS)) allChars.push(d.emoji);
+  for (const d of Object.values(DELIVERY_DESTINATIONS)) allChars.push(d.emoji);
+  finaleChars = [];
+  for (let i = 0; i < allChars.length; i++) {
+    const angle = (i / allChars.length) * Math.PI * 2;
+    const startR = 500;
+    const targetR = 80 + Math.random() * 60;
+    finaleChars.push({
+      emoji: allChars[i],
+      sx: wx + Math.cos(angle) * startR,
+      sy: wy + Math.sin(angle) * startR,
+      tx: wx + Math.cos(angle) * targetR,
+      ty: wy + Math.sin(angle) * targetR,
+      t: 0, delay: i * 5, bobT: Math.random() * Math.PI * 2,
+    });
+  }
 }
 
 // === INPUT HANDLERS ===
@@ -1809,6 +2252,23 @@ function drawMinimap(c) {
   c.fillStyle='#B0A898'; c.fillRect(mmx+mw*0.3,mmy+mh*0.4,mw*0.4,mh*0.22);
   c.fillStyle='#888'; c.fillRect(mmx+mw*0.76,mmy+mh*0.27,mw*0.2,mh*0.17);
   c.fillStyle=C.forestDark; c.fillRect(mmx,mmy,mw*0.22,mh*0.27);
+  // Collection destination dots (gold)
+  for (const id of DEST_ORDER) {
+    const n = nodeMap[id]; if (!n) continue;
+    const dx = (n.x/MAP_W)*mw, dy = (n.y/MAP_H)*mh;
+    c.fillStyle = collected[id] ? 'rgba(255,220,80,0.4)' : '#FFD54F';
+    c.beginPath(); c.arc(mmx+dx,mmy+dy,2.5,0,Math.PI*2); c.fill();
+  }
+  // Delivery destination dots (blue)
+  for (const id of DELIVERY_ORDER) {
+    const n = nodeMap[id]; if (!n) continue;
+    const dd = DELIVERY_DESTINATIONS[id];
+    if (!collected[dd.sourceId]) continue; // only show if item collected
+    const dx = (n.x/MAP_W)*mw, dy = (n.y/MAP_H)*mh;
+    c.fillStyle = delivered[id] ? 'rgba(100,160,255,0.4)' : '#64B5F6';
+    c.beginPath(); c.arc(mmx+dx,mmy+dy,2.5,0,Math.PI*2); c.fill();
+  }
+  // Player dot
   const pdx=(player.x/MAP_W)*mw, pdy=(player.y/MAP_H)*mh;
   c.fillStyle='#FF3030';
   c.beginPath(); c.arc(mmx+pdx,mmy+pdy,4,0,Math.PI*2); c.fill();
@@ -1819,45 +2279,84 @@ function drawMinimap(c) {
 
 // === INVENTORY BAR ===
 function drawCollectibleBar(c) {
-  const slotW = 42, gap = 5, pad = 10;
-  const barW = DEST_ORDER.length * slotW + (DEST_ORDER.length - 1) * gap + pad * 2;
-  const bx = (W - barW) / 2, by = H - 56;
+  const slotW = 34, gap = 3, pad = 8;
+  const cols = DEST_ORDER.length;
+  const barW = cols * slotW + (cols - 1) * gap + pad * 2;
+  const rowH = slotW;
+  const rowGap = 3;
+  const barH = rowH * 2 + rowGap + pad * 2;
+  const bx = (W - barW) / 2, by = H - barH - 4;
   c.save();
   // Bar background
-  c.fillStyle = 'rgba(0,0,0,0.45)';
-  c.beginPath(); c.roundRect(bx, by, barW, slotW + 14, 14); c.fill();
-  // Slots
-  for (let i = 0; i < DEST_ORDER.length; i++) {
+  c.fillStyle = 'rgba(0,0,0,0.5)';
+  c.beginPath(); c.roundRect(bx, by, barW, barH, 12); c.fill();
+  // Row 1: Collection status
+  const row1y = by + pad;
+  for (let i = 0; i < cols; i++) {
     const id = DEST_ORDER[i];
     const dest = DESTINATIONS[id];
     const sx = bx + pad + i * (slotW + gap);
-    const sy = by + 7;
     const cxSlot = sx + slotW / 2;
-    const cySlot = sy + slotW / 2;
+    const cySlot = row1y + slotW / 2;
     if (collected[id]) {
-      // Collected: bright slot with glow
       c.fillStyle = 'rgba(255,255,255,0.15)';
-      c.beginPath(); c.roundRect(sx, sy, slotW, slotW, 8); c.fill();
+      c.beginPath(); c.roundRect(sx, row1y, slotW, slotW, 6); c.fill();
       const glow = 0.12 + Math.sin(frameCount * 0.04 + i) * 0.06;
       c.fillStyle = `rgba(255,220,80,${glow})`;
-      c.beginPath(); c.roundRect(sx, sy, slotW, slotW, 8); c.fill();
-      drawSprite(c, dest.reward, cxSlot, cySlot, 26);
+      c.beginPath(); c.roundRect(sx, row1y, slotW, slotW, 6); c.fill();
+      drawSprite(c, dest.reward, cxSlot, cySlot, 22);
     } else {
-      // Uncollected: dim slot with question mark
       c.fillStyle = 'rgba(255,255,255,0.06)';
-      c.beginPath(); c.roundRect(sx, sy, slotW, slotW, 8); c.fill();
+      c.beginPath(); c.roundRect(sx, row1y, slotW, slotW, 6); c.fill();
+      c.font = 'bold 15px sans-serif';
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillStyle = 'rgba(255,255,255,0.25)';
+      c.fillText('?', cxSlot, cySlot);
+    }
+  }
+  // Row 2: Delivery status
+  const row2y = row1y + slotW + rowGap;
+  for (let i = 0; i < cols; i++) {
+    const srcId = DEST_ORDER[i];
+    const delivId = DELIVERY_MAP[srcId];
+    const dd = DELIVERY_DESTINATIONS[delivId];
+    const sx = bx + pad + i * (slotW + gap);
+    const cxSlot = sx + slotW / 2;
+    const cySlot = row2y + slotW / 2;
+    if (delivered[delivId]) {
+      // Delivered: show recipient emoji with blue glow
+      c.fillStyle = 'rgba(255,255,255,0.15)';
+      c.beginPath(); c.roundRect(sx, row2y, slotW, slotW, 6); c.fill();
+      const glow = 0.12 + Math.sin(frameCount * 0.04 + i + 1) * 0.06;
+      c.fillStyle = `rgba(100,160,255,${glow})`;
+      c.beginPath(); c.roundRect(sx, row2y, slotW, slotW, 6); c.fill();
+      drawSprite(c, dd.emoji, cxSlot, cySlot, 22);
+    } else if (collected[srcId]) {
+      // Item collected but not delivered: pulsing arrow
+      c.fillStyle = 'rgba(100,140,255,0.12)';
+      c.beginPath(); c.roundRect(sx, row2y, slotW, slotW, 6); c.fill();
+      const pulse = 0.5 + 0.5 * Math.sin(frameCount * 0.08 + i);
       c.font = 'bold 18px sans-serif';
       c.textAlign = 'center'; c.textBaseline = 'middle';
-      c.fillStyle = 'rgba(255,255,255,0.3)';
+      c.fillStyle = `rgba(100,180,255,${0.5 + pulse * 0.5})`;
+      c.fillText('↓', cxSlot, cySlot);
+    } else {
+      // Item not collected: dim question mark
+      c.fillStyle = 'rgba(255,255,255,0.04)';
+      c.beginPath(); c.roundRect(sx, row2y, slotW, slotW, 6); c.fill();
+      c.font = 'bold 15px sans-serif';
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillStyle = 'rgba(255,255,255,0.15)';
       c.fillText('?', cxSlot, cySlot);
     }
   }
   // Progress counter
-  const count = DEST_ORDER.filter(id => collected[id]).length;
-  c.font = 'bold 12px sans-serif';
+  const collectCount = DEST_ORDER.filter(id => collected[id]).length;
+  const delivCount = DELIVERY_ORDER.filter(id => delivered[id]).length;
+  c.font = 'bold 11px sans-serif';
   c.textAlign = 'center'; c.textBaseline = 'top';
   c.fillStyle = 'rgba(255,255,255,0.5)';
-  c.fillText(count + '/' + DEST_ORDER.length, W / 2, by - 16);
+  c.fillText(collectCount + '/9 collected · ' + delivCount + '/9 delivered', W / 2, by - 14);
   c.restore();
 }
 
@@ -1943,7 +2442,7 @@ function updateCollectAnimations(c) {
 function drawIntroMessage(c) {
   if (!showIntro) return;
   introTimer++;
-  const dur = 240; // ~4 seconds
+  const dur = 360; // ~6 seconds
   if (introTimer > dur) { showIntro = false; return; }
   const prog = introTimer / dur;
   let alpha = 1;
@@ -1951,23 +2450,40 @@ function drawIntroMessage(c) {
   else if (prog > 0.8) alpha = (1 - prog) / 0.2;
   c.save(); c.globalAlpha = alpha;
   // Banner
-  const bw = Math.min(400, W - 40), bh = 80;
-  const bx = (W - bw) / 2, by = H * 0.25;
-  c.fillStyle = 'rgba(0,0,0,0.6)';
+  const bw = Math.min(420, W - 30), bh = 110;
+  const bx = (W - bw) / 2, by = H * 0.22;
+  c.fillStyle = 'rgba(0,0,0,0.65)';
   c.beginPath(); c.roundRect(bx, by, bw, bh, 16); c.fill();
-  c.font = 'bold 18px sans-serif';
+  c.strokeStyle = 'rgba(255,220,80,0.4)';
+  c.lineWidth = 2;
+  c.beginPath(); c.roundRect(bx, by, bw, bh, 16); c.stroke();
+  c.font = 'bold 20px sans-serif';
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillStyle = '#FFD54F';
-  c.fillText('Explore the town!', W/2, by + bh/2 - 14);
-  c.font = '15px sans-serif';
-  c.fillStyle = 'white';
-  c.fillText('Find all ' + DEST_ORDER.length + ' hidden treasures', W/2, by + bh/2 + 14);
+  c.fillText('🎉 Festival of Kindness! 🎉', W/2, by + 24);
+  c.font = '14px sans-serif';
+  c.fillStyle = '#FFFDE7';
+  c.fillText('Visit your friends, collect their gifts,', W/2, by + 52);
+  c.fillText('and deliver them across town!', W/2, by + 70);
+  c.font = '12px sans-serif';
+  c.fillStyle = 'rgba(255,255,255,0.6)';
+  c.fillText('The Festival is counting on you!', W/2, by + 92);
   c.restore();
 }
 
 // === ZONE LABEL ===
 function drawZoneLabel(c) {
+  // Check specific delivery zones first (smaller, higher priority)
   const zones = [
+    {x1:250, y1:2250,x2:550, y2:2550,label:"🧝‍♀️ Elf's Clearing"},
+    {x1:2900,y1:2100,x2:3200,y2:2300,label:'👸 Castle Park'},
+    {x1:4850,y1:2300,x2:5150,y2:2500,label:'🧔 Ranger Station'},
+    {x1:1680,y1:3340,x2:1920,y2:3460,label:'🐧 Ice Cream Shop'},
+    {x1:1350,y1:1600,x2:1650,y2:1800,label:"👵 Grandma's Cottage"},
+    {x1:3480,y1:2520,x2:3720,y2:2680,label:'👨‍🍳 Restaurant'},
+    {x1:350, y1:3100,x2:650, y2:3300,label:"🧭 Explorer's Camp"},
+    {x1:4080,y1:3520,x2:4320,y2:3680,label:'🧜‍♀️ Lighthouse'},
+    {x1:2800,y1:1940,x2:3000,y2:2060,label:'👑 Town Hall'},
     {x1:100, y1:600, x2:1400,y2:1400,label:'🌲 Forest'},
     {x1:1400,y1:600, x2:3500,y2:1400,label:'🌸 Countryside'},
     {x1:3500,y1:400, x2:4500,y2:1200,label:'🌳 Orchard'},
@@ -2021,6 +2537,10 @@ function resetState() {
   player = { x: 2600, y: 2400, node: 'c11', sourceNode: null, targetNode: null, path: [], moving: false, keyDriven: false, dir: 0, bobT: 0, emoji: '🧒' };
   keysDown = {};
   collected = {};
+  delivered = {};
+  allDelivered = false;
+  activeDialog = null;
+  finaleChars = [];
   completionPlayed = false;
   destAnimations = [];
   collectAnimations = [];
@@ -2061,11 +2581,14 @@ function render() {
   drawIndustrialArea(c);
   drawAirport(c);
   drawDestinationMarkers(c);
+  drawDeliveryMarkers(c);
   drawApproachGlow(c);
+  drawDeliveryApproachGlow(c);
   drawNPCs(c);
   drawOceanAnimations(c);
   drawAirportAnimations(c);
   drawPlayer(c);
+  drawFinaleChars(c);
   updateDestAnimations(c);
 
   c.restore();
@@ -2075,6 +2598,7 @@ function render() {
   drawCollectibleBar(c);
   drawMinimap(c);
   drawZoneLabel(c);
+  drawDialog(c);
   drawIntroMessage(c);
 }
 
