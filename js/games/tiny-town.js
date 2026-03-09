@@ -911,9 +911,7 @@ function generateCountryside() {
   }
 
   // Town Hall (townhall: 2900, 2000) — on city road, civic area
-  for (let i = 0; i < 3; i++) {
-    scenery.push({ x:rng(2820,2980), y:rng(1940,2060), emoji:'🏛️', size:34+rng(0,8), layer:'townhall' });
-  }
+  scenery.push({ x:2900, y:1950, emoji:'🏛️', size:64, layer:'townhall' });
   for (let i = 0; i < 2; i++) {
     scenery.push({ x:rng(2830,2970), y:rng(1950,2050), emoji:'🚩', size:18+rng(0,6), layer:'sway', wobble:phase() });
   }
