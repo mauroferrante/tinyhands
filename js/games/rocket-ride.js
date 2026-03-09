@@ -164,7 +164,7 @@ function initCanvas() {
   canvas.style.height = H + 'px';
   ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
-  gameScale = Math.max(1, W / 500);
+  gameScale = Math.max(1, Math.min(2, W / 800));
 }
 
 function onResize() {
