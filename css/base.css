@@ -44,7 +44,7 @@ body {
   background-size: 400% 400%;
   animation: gradientDrift 20s ease infinite;
   color: var(--color-text);
-  cursor: url("assets/emoji/cursors/hand-open-32.png") 16 16, auto;
+  cursor: url("../assets/emoji/cursors/hand-open-32.png") 16 16, auto;
 }
 
 @keyframes gradientDrift {

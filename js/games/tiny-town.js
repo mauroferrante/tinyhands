@@ -5,7 +5,7 @@ import { EMOJI_REGISTRY } from '../emoji-registry.js';
 // === CONSTANTS ===
 const MAP_W = 6000, MAP_H = 4500;
 const PLAYER_SIZE = 68, PLAYER_SPEED = 5;
-const EMOJI_CURSOR = `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>👆</text></svg>") 16 4, pointer`;
+const EMOJI_CURSOR = `url("assets/emoji/cursors/hand-point-32.png") 16 4, pointer`;
 const AREA_RADIUS = 80, NODE_STOP = 6;
 const CAM_LERP = 0.08, CAM_AHEAD = 60;
 const DEST_ORDER = ['garden','pets','forest','pond','orchard','farm','airport','beach','bakery'];
@@ -2344,6 +2344,7 @@ function onMouseHandler(e) {
 
 function restartGame() {
   showEndScreen = false;
+  initCanvas();          // recalc canvas size in case screen changed
   resetState();
   selectingChar = true;
   canvas.style.cursor = EMOJI_CURSOR;
@@ -2906,6 +2907,8 @@ export const tinyTown = {
     canvas = gameEl.querySelector('canvas');
     gameEl.style.display = 'block';
     initCanvas();
+    // Re-init after fullscreen settles (browser may not have final dimensions yet)
+    requestAnimationFrame(() => { setTimeout(() => { if (running) initCanvas(); }, 100); });
     preloadEmojis(EMOJI_REGISTRY['tiny-town']).then(() => {
       resetState();
       running = true;
