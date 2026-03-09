@@ -82,6 +82,7 @@ const celebrateEl = document.getElementById('rocketCelebrate');
 let ctx = null;
 let W = 0;
 let H = 0;
+let gameScale = 1; // responsive: 1.0 on mobile, scales up on larger screens
 
 // ---- Game state ----
 let rocketX, rocketY;
@@ -163,6 +164,7 @@ function initCanvas() {
   canvas.style.height = H + 'px';
   ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
+  gameScale = Math.max(1, W / 500);
 }
 
 function onResize() {
@@ -431,19 +433,19 @@ function updateRocket(dt) {
   const isLeft     = keysDown.has('left');
   const isRight    = keysDown.has('right');
 
-  // Vertical physics
-  rocketVY += GRAVITY * dt;
+  // Vertical physics (scaled to screen size)
+  rocketVY += GRAVITY * gameScale * dt;
   rocketVY += scrollSpeed * SCROLL_GRAVITY_FACTOR * dt;
-  if (isBoosting) rocketVY += BOOST_FORCE * dt;
-  if (isBraking)  rocketVY += BRAKE_FORCE * dt;
+  if (isBoosting) rocketVY += BOOST_FORCE * gameScale * dt;
+  if (isBraking)  rocketVY += BRAKE_FORCE * gameScale * dt;
   rocketVY *= Math.pow(VERTICAL_DAMPING, dtNorm);
-  rocketVY = Math.max(-MAX_VERTICAL_VEL, Math.min(MAX_VERTICAL_VEL, rocketVY));
+  rocketVY = Math.max(-MAX_VERTICAL_VEL * gameScale, Math.min(MAX_VERTICAL_VEL * gameScale, rocketVY));
 
-  // Horizontal physics
-  if (isLeft)  rocketVX -= HORIZONTAL_FORCE * dt;
-  if (isRight) rocketVX += HORIZONTAL_FORCE * dt;
+  // Horizontal physics (scaled to screen size)
+  if (isLeft)  rocketVX -= HORIZONTAL_FORCE * gameScale * dt;
+  if (isRight) rocketVX += HORIZONTAL_FORCE * gameScale * dt;
   rocketVX *= Math.pow(isBraking ? BRAKE_DAMPING : HORIZONTAL_DAMPING, dtNorm);
-  rocketVX = Math.max(-MAX_HORIZONTAL_VEL, Math.min(MAX_HORIZONTAL_VEL, rocketVX));
+  rocketVX = Math.max(-MAX_HORIZONTAL_VEL * gameScale, Math.min(MAX_HORIZONTAL_VEL * gameScale, rocketVX));
 
   // Apply velocity
   rocketX += rocketVX * dtNorm;
@@ -495,7 +497,7 @@ function spawnEdgeSpark(x, y) {
 
 function updateScroll(dt) {
   const dtNorm = dt * 60;
-  scrollSpeed = Math.min(BASE_SCROLL_SPEED + gameTime * SCROLL_ACCELERATION * 60, MAX_SCROLL_SPEED);
+  scrollSpeed = Math.min((BASE_SCROLL_SPEED + gameTime * SCROLL_ACCELERATION * 60) * gameScale, MAX_SCROLL_SPEED * gameScale);
   cameraY += scrollSpeed * dtNorm;
   altitude = Math.floor(cameraY / PIXELS_PER_METER);
 }
@@ -503,7 +505,8 @@ function updateScroll(dt) {
 // ===== Obstacles =====
 
 function getSpawnInterval() {
-  return Math.max(OBS_SPAWN_MIN, OBS_SPAWN_START - gameTime * 0.01);
+  const base = Math.max(OBS_SPAWN_MIN, OBS_SPAWN_START - gameTime * 0.01);
+  return base / gameScale; // Spawn faster on larger screens
 }
 
 function spawnObstacle() {
@@ -541,7 +544,7 @@ function spawnObstacle() {
   for (let attempt = 0; attempt < 5; attempt++) {
     let tooClose = false;
     for (const obs of obstacles) {
-      if (obs.y < H * 0.4 && Math.abs(obs.x - x) < MIN_GAP_Y) {
+      if (obs.y < H * 0.4 && Math.abs(obs.x - x) < MIN_GAP_Y * gameScale) {
         tooClose = true; break;
       }
     }
@@ -1494,7 +1497,7 @@ function resetAndStart() {
   rocketVY = 0;
   rocketTilt = 0;
   cameraY = 0;
-  scrollSpeed = BASE_SCROLL_SPEED;
+  scrollSpeed = BASE_SCROLL_SPEED * gameScale;
   altitude = 0;
   gameTime = 0;
   score = 0;
