@@ -96,6 +96,28 @@
 
 <!-- ===== Landing Screen ===== -->
 <main id="landing">
+  <!-- PWA Install Banner (iOS/Android, hidden by default) -->
+  <div class="pwa-banner" id="pwaBanner" style="display:none">
+    <div class="pwa-banner-row" id="pwaBannerCollapsed">
+      <span class="pwa-banner-text">
+        <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f31f_3d.png" class="emoji-img inline-emoji" alt="🌟">
+        Play like a real app on your <strong id="pwaDeviceName">device</strong>
+      </span>
+      <button class="pwa-banner-expand" id="pwaBannerExpand">Learn how</button>
+      <button class="pwa-banner-close" id="pwaBannerClose" aria-label="Dismiss">✕</button>
+    </div>
+    <div class="pwa-banner-steps" id="pwaBannerSteps">
+      <div class="pwa-step">
+        <span class="pwa-step-num">1</span>
+        <span>Tap <strong>Share</strong> <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4e4_3d.png" class="emoji-img inline-emoji" alt="📤"> in the toolbar</span>
+      </div>
+      <div class="pwa-step">
+        <span class="pwa-step-num">2</span>
+        <span>Tap <strong>Add to Home Screen</strong> <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/2795_3d.png" class="emoji-img inline-emoji" alt="➕"></span>
+      </div>
+    </div>
+  </div>
+
   <header>
     <h1>Tiny Hands Play <img src="assets/emoji/cursors/victory.png" class="emoji-img" alt="✌️" style="width:1em;height:1em;vertical-align:-0.1em"></h1>
     <p class="subtitle">Free educational games for kids of all ages</p>
@@ -268,6 +290,28 @@
   </footer>
 </main>
 
+<!-- ===== PWA Install Modal (iOS/Android, shown after first game) ===== -->
+<div class="pwa-backdrop" id="pwaBackdrop" style="display:none">
+  <div class="pwa-modal">
+    <button class="pwa-modal-close" id="pwaModalClose" aria-label="Close">✕</button>
+    <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f31f_3d.png" class="pwa-hero-emoji" alt="🌟">
+    <div class="pwa-title">Play anytime, like a real app!</div>
+    <p class="pwa-desc">Add Tiny Hands Play to your home screen for the best experience, no browser bar, loads instantly.</p>
+    <div class="pwa-modal-steps">
+      <div class="pwa-step">
+        <span class="pwa-step-num">1</span>
+        <span>Tap <strong>Share</strong> <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4e4_3d.png" class="emoji-img inline-emoji" alt="📤"> in the toolbar</span>
+      </div>
+      <div class="pwa-step">
+        <span class="pwa-step-num">2</span>
+        <span>Tap <strong>Add to Home Screen</strong> <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/2795_3d.png" class="emoji-img inline-emoji" alt="➕"></span>
+      </div>
+    </div>
+    <div class="pwa-pointer pwa-pointer-iphone" id="pwaPointer">&#9660;</div>
+    <button class="pwa-dismiss" id="pwaDismiss">Maybe later</button>
+  </div>
+</div>
+
 <!-- Noscript fallback for search engine crawlers -->
 <noscript>
   <div style="padding: 2rem; text-align: center; font-family: sans-serif;">
@@ -409,6 +453,9 @@
 
 <!-- ===== Post-Game Share Banner ===== -->
 <script type="module" src="js/game-manager.js"></script>
+<script>
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+</script>
 <script>
   // Developer exclusion: skip analytics on localhost, LAN, or if 'hide_me' flag is set
   if (window.location.hostname !== 'localhost' &&

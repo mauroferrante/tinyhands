@@ -36,10 +36,14 @@ createBgEmojis(landing);
 // iPadOS 13+ reports "MacIntel" but has touch — second check catches it
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isIPad = isIOS && !/iPhone|iPod/.test(navigator.userAgent);
+const isStandalone = navigator.standalone === true ||
+                     window.matchMedia('(display-mode: standalone)').matches;
 
 // ---- Shared state ----
 let currentGame     = null;
 let pendingGame     = null;
+let deferredAndroidPrompt = null;
 
 // ---- Game Registry ----
 const GAMES = {
@@ -196,6 +200,17 @@ function stopGame() {
       postgameNudge.style.display = 'flex';
       requestAnimationFrame(() => postgameNudge.classList.add('show'));
     }, 1000);
+  }
+
+  // PWA install modal — show after first game on iOS/Android (not standalone)
+  if (!isStandalone && !sessionStorage.getItem('pwaModalShown')) {
+    const dismissed = localStorage.getItem('pwa_modal_dismissed');
+    if (!dismissed || Date.now() - Number(dismissed) > 3 * 86400000) {
+      if (isIOS || deferredAndroidPrompt) {
+        sessionStorage.setItem('pwaModalShown', 'true');
+        setTimeout(() => showPwaModal(), 2500);
+      }
+    }
   }
 }
 
@@ -399,3 +414,100 @@ if (footerTip) footerTip.addEventListener('click', () => trackIntent('donate'));
     }, 300);
   }
 })();
+
+// ===== PWA Install Prompt (Banner + Modal) =====
+
+const pwaBanner        = document.getElementById('pwaBanner');
+const pwaBannerCollapsed = document.getElementById('pwaBannerCollapsed');
+const pwaBannerSteps   = document.getElementById('pwaBannerSteps');
+const pwaBannerExpand  = document.getElementById('pwaBannerExpand');
+const pwaBannerClose   = document.getElementById('pwaBannerClose');
+const pwaDeviceName    = document.getElementById('pwaDeviceName');
+const pwaBackdrop      = document.getElementById('pwaBackdrop');
+const pwaModalClose    = document.getElementById('pwaModalClose');
+const pwaDismiss       = document.getElementById('pwaDismiss');
+const pwaPointer       = document.getElementById('pwaPointer');
+
+// -- Landing banner --
+
+function initPwaBanner() {
+  if (isStandalone) return;
+  if (sessionStorage.getItem('pwaBannerDismissed')) return;
+
+  if (isIOS) {
+    pwaDeviceName.textContent = isIPad ? 'iPad' : 'iPhone';
+    pwaBanner.style.display = '';
+  } else if (deferredAndroidPrompt) {
+    pwaDeviceName.textContent = 'phone';
+    pwaBanner.style.display = '';
+  }
+}
+
+pwaBannerExpand.addEventListener('click', () => {
+  if (deferredAndroidPrompt) {
+    triggerAndroidInstall();
+    return;
+  }
+  pwaBannerSteps.classList.add('expanded');
+  pwaBannerExpand.style.display = 'none';
+});
+
+pwaBannerClose.addEventListener('click', () => {
+  pwaBanner.style.display = 'none';
+  sessionStorage.setItem('pwaBannerDismissed', 'true');
+});
+
+// -- Post-game modal --
+
+function showPwaModal() {
+  // Set pointer direction based on device
+  if (isIPad) {
+    pwaPointer.className = 'pwa-pointer pwa-pointer-ipad';
+  } else {
+    pwaPointer.className = 'pwa-pointer pwa-pointer-iphone';
+  }
+
+  // On Android, swap the modal to a simple "Install" action
+  if (deferredAndroidPrompt) {
+    triggerAndroidInstall();
+    return;
+  }
+
+  pwaBackdrop.style.display = 'flex';
+  requestAnimationFrame(() => pwaBackdrop.classList.add('show'));
+}
+
+function closePwaModal(saveDismissal) {
+  pwaBackdrop.classList.remove('show');
+  setTimeout(() => { pwaBackdrop.style.display = 'none'; }, 300);
+  if (saveDismissal) localStorage.setItem('pwa_modal_dismissed', String(Date.now()));
+}
+
+pwaModalClose.addEventListener('click', () => closePwaModal(false));
+pwaDismiss.addEventListener('click', () => closePwaModal(true));
+
+// Close modal on backdrop click
+pwaBackdrop.addEventListener('click', (e) => {
+  if (e.target === pwaBackdrop) closePwaModal(false);
+});
+
+// -- Android beforeinstallprompt --
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredAndroidPrompt = e;
+  initPwaBanner();
+});
+
+function triggerAndroidInstall() {
+  if (deferredAndroidPrompt) {
+    deferredAndroidPrompt.prompt();
+    deferredAndroidPrompt.userChoice.then(() => {
+      deferredAndroidPrompt = null;
+      pwaBanner.style.display = 'none';
+    });
+  }
+}
+
+// Init banner on page load (iOS shows immediately, Android waits for beforeinstallprompt)
+if (isIOS) initPwaBanner();
