@@ -104,7 +104,9 @@ let countdownTimer, countdownPhase, launchTextTimer;
 const keysDown = new Set();
 let keyUpHandler = null;
 let touchBoosting = false;
+let touchSteering = 0; // -1 left, 0 center, 1 right
 let touchEndHandler = null;
+let touchMoveHandler = null;
 let lastBoostState = false;
 
 // ---- Obstacles ----
@@ -430,8 +432,8 @@ function updateRocket(dt) {
   const isBoosting = keysDown.has('boost') || touchBoosting || autoBoostTimer > 0;
   if (autoBoostTimer > 0) autoBoostTimer -= dt;
   const isBraking  = keysDown.has('brake');
-  const isLeft     = keysDown.has('left');
-  const isRight    = keysDown.has('right');
+  const isLeft     = keysDown.has('left') || touchSteering < 0;
+  const isRight    = keysDown.has('right') || touchSteering > 0;
 
   // Vertical physics (scaled to screen size)
   rocketVY += GRAVITY * gameScale * dt;
@@ -1321,8 +1323,8 @@ function drawStarLayer(layerIdx) {
 function drawThrustFlames() {
   const isBoosting = keysDown.has('boost') || touchBoosting || autoBoostTimer > 0;
   const isBraking  = keysDown.has('brake');
-  const isLeft     = keysDown.has('left');
-  const isRight    = keysDown.has('right');
+  const isLeft     = keysDown.has('left') || touchSteering < 0;
+  const isRight    = keysDown.has('right') || touchSteering > 0;
 
   ctx.save();
   ctx.translate(rocketX, rocketY);
@@ -1584,6 +1586,11 @@ function cleanup() {
     document.removeEventListener('touchend', touchEndHandler);
     touchEndHandler = null;
   }
+  if (touchMoveHandler) {
+    document.removeEventListener('touchmove', touchMoveHandler);
+    touchMoveHandler = null;
+  }
+  touchSteering = 0;
   if (resizeHandler) {
     window.removeEventListener('resize', resizeHandler);
     resizeHandler = null;
@@ -1614,9 +1621,15 @@ export const rocketRide = {
     };
     document.addEventListener('keyup', keyUpHandler);
 
-    // Touch end handler for boost release
-    touchEndHandler = () => { touchBoosting = false; };
+    // Touch handlers for boost + steering
+    touchEndHandler = () => { touchBoosting = false; touchSteering = 0; };
     document.addEventListener('touchend', touchEndHandler);
+    touchMoveHandler = (e) => {
+      if (!e.touches.length) return;
+      const tx = e.touches[0].clientX;
+      touchSteering = tx < W / 2 ? -1 : 1;
+    };
+    document.addEventListener('touchmove', touchMoveHandler, { passive: true });
 
     resizeHandler = onResize;
     window.addEventListener('resize', resizeHandler);
@@ -1668,6 +1681,11 @@ export const rocketRide = {
     if (gameState === 'gameover') return;
     if (gameState === 'playing' || gameState === 'countdown') {
       touchBoosting = true;
+      // Steer based on which half of screen is touched
+      const touch = e.touches && e.touches[0];
+      if (touch) {
+        touchSteering = touch.clientX < W / 2 ? -1 : 1;
+      }
     }
   },
 };
