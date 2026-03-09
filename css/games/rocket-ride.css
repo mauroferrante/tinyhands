@@ -26,8 +26,8 @@
 
 .rocket-lives {
   position: fixed;
-  top: 14px;
-  left: 20px;
+  top: 48px;
+  right: 20px;
   font-size: clamp(1.2rem, 3vw, 1.6rem);
   z-index: 200;
   pointer-events: none;
