@@ -286,7 +286,7 @@ const DELIVERY_DESTINATIONS = {
   restaurant: { emoji:'👨‍🍳', label:'Restaurant',       sourceId:'farm',    reward:'🥚', sound:'sparkle' },
   camp:       { emoji:'👲🏽',    label:"Explorer's Camp",  sourceId:'airport', reward:'🎫', sound:'sparkle' },
   lighthouse: { emoji:'🧜‍♀️', label:'Lighthouse',       sourceId:'beach',   reward:'🐚', sound:'sparkle' },
-  townhall:   { emoji:'👸🏼',    label:'Town Hall',        sourceId:'bakery',  reward:'🎂', sound:'sparkle' },
+  townhall:   { emoji:'👩🏻',    label:'Town Hall',        sourceId:'bakery',  reward:'🎂', sound:'sparkle' },
 };
 
 // Sender → delivery recipient mapping
@@ -305,7 +305,7 @@ const SENDER_DIALOGS = {
   farm:    "A fresh egg for the Chef at the restaurant in the city! He's cooking a Festival feast!",
   airport: "A ticket for the Explorer camped out southwest, he's been waiting to fly to the Festival!",
   beach:   "This shell is for the Mermaid at the lighthouse. She'll use it to call the Festival music!",
-  bakery:  "A special cake for the Queen at Town Hall! It's needed for the big festival celebration.",
+  bakery:  "A special cake for the Mayor at Town Hall! It's needed for the big festival celebration.",
 };
 
 // Recipient dialogs (shown when item is delivered)
@@ -318,7 +318,7 @@ const RECIPIENT_DIALOGS = {
   restaurant: "A farm-fresh egg! My Festival feast will be magnificent! Merci!",
   camp:       "A plane ticket! I can finally join the Festival! Adventure awaits!",
   lighthouse: "A sea shell! Listen... can you hear the Festival song beginning?",
-  townhall:   "How splendid! This wonderful cake will be shared with everyone when the festival begins!",
+  townhall:   "Wonderful! As Mayor, I'll share this cake with everyone when the festival begins!",
 };
 
 // Hint dialogs (shown when visiting a recipient WITHOUT the item)
@@ -2188,7 +2188,7 @@ function triggerGrandFinale() {
   });
   // === GRAND BANNER ===
   destAnimations.push({
-    x: wx, y: wy - 40, emoji: '👸🏼', t: 0, maxT: 400, type: 'reward',
+    x: wx, y: wy - 40, emoji: '👩🏻', t: 0, maxT: 400, type: 'reward',
     startSize: 120, label: '🎉 Festival of Kindness! 🎉',
   });
   // === CHARACTERS: all 18 senders+recipients + extra celebration emojis ===
@@ -2655,7 +2655,7 @@ function drawZoneLabel(c) {
     {x1:3480,y1:2520,x2:3720,y2:2680,label:'👨‍🍳 Restaurant'},
     {x1:350, y1:3100,x2:650, y2:3300,label:"👲🏽 Explorer's Camp"},
     {x1:4080,y1:3520,x2:4320,y2:3680,label:'🧜‍♀️ Lighthouse'},
-    {x1:2800,y1:1940,x2:3000,y2:2060,label:'👸🏼 Town Hall'},
+    {x1:2800,y1:1940,x2:3000,y2:2060,label:'👩🏻 Town Hall'},
     {x1:100, y1:600, x2:1400,y2:1400,label:'🌲 Forest'},
     {x1:1400,y1:600, x2:3500,y2:1400,label:'🌸 Countryside'},
     {x1:3500,y1:400, x2:4500,y2:1200,label:'🌳 Orchard'},
