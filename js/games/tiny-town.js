@@ -2,7 +2,7 @@ import { initAudio, getAudioCtx, playWinFanfare, playCrowdRoar, playCrowdCheer }
 
 // === CONSTANTS ===
 const MAP_W = 6000, MAP_H = 4500;
-const PLAYER_SIZE = 45, PLAYER_SPEED = 5;
+const PLAYER_SIZE = 68, PLAYER_SPEED = 5;
 const EMOJI_CURSOR = `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>👆</text></svg>") 16 4, pointer`;
 const AREA_RADIUS = 80, NODE_STOP = 6;
 const CAM_LERP = 0.08, CAM_AHEAD = 60;
@@ -908,9 +908,14 @@ function generateCountryside() {
   scenery.push({ x:560, y:3260, emoji:'🎒', size:16, layer:'camp' });
 
   // Lighthouse (lighthouse: 4200, 3600) — coastal lighthouse
-  scenery.push({ x:4200, y:3560, emoji:'🗼', size:52, layer:'lighthouse' });
-  for (let i = 0; i < 13; i++) {
-    scenery.push({ x:rng(4060,4340), y:rng(3500,3700), emoji:'🪨', size:20+rng(0,14), layer:'rock' });
+  scenery.push({ x:4200, y:3520, emoji:'🗼', size:104, layer:'lighthouse' });
+  for (let i = 0; i < 8; i++) {
+    // Keep rocks away from road (y=3400 horizontal, x=4200 vertical)
+    let rx, ry;
+    do {
+      rx = rng(4060,4340); ry = rng(3500,3700);
+    } while ((Math.abs(ry - 3400) < 50 && rx < 4240) || (Math.abs(rx - 4200) < 50 && ry < 3440));
+    scenery.push({ x:rx, y:ry, emoji:'🪨', size:16+rng(0,10), layer:'rock' });
   }
   for (let i = 0; i < 3; i++) {
     scenery.push({ x:rng(4100,4300), y:rng(3540,3660), emoji:'🐚', size:14+rng(0,6), layer:'sway', wobble:phase() });
@@ -1512,7 +1517,7 @@ function drawAirportAnimations(c) {
 function drawNPCs(c) {
   for (const npc of npcs) {
     npc.bobT += npc.speed;
-    drawSprite(c, npc.emoji, npc.x, npc.y + Math.sin(npc.bobT)*3, 36);
+    drawSprite(c, npc.emoji, npc.x, npc.y + Math.sin(npc.bobT)*3, 54);
   }
 }
 
