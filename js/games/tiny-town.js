@@ -639,12 +639,16 @@ function generateCountryside() {
   }
 
   // === PETS (1100, 3200) — Pet park ===
-  const petEmojis = ['🐕','🐈','🐩','🐾','🦴','🎾'];
-  for (let i = 0; i < 25; i++) {
-    const x = rng(800, 1400), y = rng(3000, 3400);
-    const emoji = petEmojis[Math.floor(rng(0, petEmojis.length))];
-    scenery.push({ x, y, emoji, size:18+rng(0,14), layer:'sway', wobble:phase() });
-  }
+  // Dogs
+  for (let i = 0; i < 4; i++) scenery.push({ x:rng(800,1400), y:rng(3000,3400), emoji:'🐶', size:22+rng(0,8), layer:'sway', wobble:phase() });
+  for (let i = 0; i < 4; i++) scenery.push({ x:rng(800,1400), y:rng(3000,3400), emoji:'🦮', size:22+rng(0,8), layer:'sway', wobble:phase() });
+  for (let i = 0; i < 4; i++) scenery.push({ x:rng(800,1400), y:rng(3000,3400), emoji:'🐕‍🦺', size:22+rng(0,8), layer:'sway', wobble:phase() });
+  for (let i = 0; i < 3; i++) scenery.push({ x:rng(800,1400), y:rng(3000,3400), emoji:'🐩', size:20+rng(0,8), layer:'sway', wobble:phase() });
+  for (let i = 0; i < 3; i++) scenery.push({ x:rng(800,1400), y:rng(3000,3400), emoji:'🐕', size:20+rng(0,8), layer:'sway', wobble:phase() });
+  // Cats
+  for (let i = 0; i < 5; i++) scenery.push({ x:rng(800,1400), y:rng(3000,3400), emoji:'🐈', size:20+rng(0,8), layer:'sway', wobble:phase() });
+  // Tennis balls (small, few)
+  for (let i = 0; i < 4; i++) scenery.push({ x:rng(850,1350), y:rng(3050,3350), emoji:'🎾', size:12+rng(0,4), layer:'pets' });
   // Pet park trees and bushes
   for (let i = 0; i < 8; i++) {
     scenery.push({ x:rng(800,1400), y:rng(3050,3350), emoji:'🌳', size:34+rng(0,14), layer:'pets' });
@@ -883,12 +887,16 @@ function generateCountryside() {
   }
   scenery.push({ x:1460, y:1660, emoji:'🏡', size:38, layer:'cottage' });
 
-  // Restaurant (restaurant: 3600, 2600) — city restaurant area
-  for (let i = 0; i < 3; i++) {
-    scenery.push({ x:rng(3480,3720), y:rng(2520,2680), emoji:'🪴', size:20+rng(0,8), layer:'sway', wobble:phase() });
-  }
-  for (let i = 0; i < 2; i++) {
-    scenery.push({ x:rng(3500,3700), y:rng(2540,2660), emoji:'☕', size:16+rng(0,6), layer:'sway', wobble:phase() });
+  // Restaurant (restaurant: 3600, 2600) — house with outdoor dining grid
+  scenery.push({ x:3600, y:2510, emoji:'🏠', size:56, layer:'restaurant' });
+  // 4 columns x 3 rows of paired chair+plate
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 4; col++) {
+      const bx = 3500 + col * 66;
+      const by = 2570 + row * 50;
+      scenery.push({ x:bx, y:by, emoji:'🪑', size:20, layer:'restaurant' });
+      scenery.push({ x:bx, y:by - 18, emoji:'🍽️', size:16, layer:'restaurant' });
+    }
   }
 
   // Explorer's Camp (camp: 500, 3200) — adventurer's tent camp
