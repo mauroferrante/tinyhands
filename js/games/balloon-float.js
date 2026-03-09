@@ -82,11 +82,11 @@ const POWERUP_EMOJIS = {
 
 const POWERUP_DURATIONS = {
   [PU_RAINBOW]: 5.0,
-  [PU_MAGNET]:  10.0,
+  [PU_MAGNET]:  40.0,
   [PU_SLOWMO]:  3.0,
 };
 
-const MAGNET_RADIUS   = 180;
+const MAGNET_RADIUS   = 360;
 const MAGNET_STRENGTH = 4.0;
 
 // ---- Extra life config ----
@@ -158,7 +158,7 @@ let gameScale = 1;   // speed/spawn scale based on screen width
 // ===== Canvas Setup =====
 
 function initCanvas() {
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.max(2, window.devicePixelRatio || 1);
   W = gameEl.clientWidth;
   H = gameEl.clientHeight;
   canvas.width = W * dpr;
@@ -191,7 +191,7 @@ function getSprite(emoji, size) {
 
   const pad = Math.ceil(size * 0.3);
   const dim = size + pad * 2;
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.max(2, window.devicePixelRatio || 1);
 
   const off = document.createElement('canvas');
   off.width = dim * dpr;
@@ -206,7 +206,7 @@ function getSprite(emoji, size) {
   const imgData = oc.getImageData(0, 0, off.width, off.height);
   const d = imgData.data;
   for (let i = 3; i < d.length; i += 4) {
-    if (d[i] > 0) d[i] = 255;
+    if (d[i] > 0) d[i] = Math.min(255, d[i] * 2);
   }
   oc.putImageData(imgData, 0, 0);
 

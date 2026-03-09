@@ -108,6 +108,19 @@ let touchSteering = 0; // -1 left, 0 center, 1 right
 let touchEndHandler = null;
 let touchMoveHandler = null;
 let lastBoostState = false;
+let hasTouchInput = false;
+
+// ---- Touch steering zones (bottom corners) ----
+const STEER_ZONE_W_FRAC = 0.22;
+const STEER_ZONE_H_FRAC = 0.28;
+
+function getTouchZoneSteering(clientX, clientY) {
+  if (clientY > H * (1 - STEER_ZONE_H_FRAC)) {
+    if (clientX < W * STEER_ZONE_W_FRAC) return -1;
+    if (clientX > W * (1 - STEER_ZONE_W_FRAC)) return 1;
+  }
+  return 0;
+}
 
 // ---- Obstacles ----
 let obstacles;
@@ -157,7 +170,7 @@ const spriteCache = {};
 // ===== Canvas Setup =====
 
 function initCanvas() {
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.max(2, window.devicePixelRatio || 1);
   W = gameEl.clientWidth;
   H = gameEl.clientHeight;
   canvas.width = W * dpr;
@@ -184,7 +197,7 @@ function onResize() {
 function getSprite(emoji, size) {
   const key = emoji + '|' + size;
   if (spriteCache[key]) return spriteCache[key];
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.max(2, window.devicePixelRatio || 1);
   const pad = Math.ceil(size * 0.3);
   const dim = size + pad * 2;
   const off = document.createElement('canvas');
@@ -198,7 +211,7 @@ function getSprite(emoji, size) {
   oc.fillText(emoji, dim / 2, dim / 2);
   const imgData = oc.getImageData(0, 0, off.width, off.height);
   const d = imgData.data;
-  for (let i = 3; i < d.length; i += 4) { if (d[i] > 0) d[i] = 255; }
+  for (let i = 3; i < d.length; i += 4) { if (d[i] > 0) d[i] = Math.min(255, d[i] * 2); }
   oc.putImageData(imgData, 0, 0);
   const sprite = { canvas: off, offset: dim / 2, dim };
   spriteCache[key] = sprite;
@@ -1304,6 +1317,48 @@ function render() {
     ctx.restore();
   }
 
+  // Touch steering zone overlays
+  if (hasTouchInput && (gameState === 'playing' || gameState === 'countdown')) {
+    const zw = W * STEER_ZONE_W_FRAC;
+    const zh = H * STEER_ZONE_H_FRAC;
+    const zy = H - zh;
+    const pad = 8;
+    const rad = 14;
+    const arrowSize = Math.min(zw, zh) * 0.28;
+
+    // Left zone
+    const lActive = touchSteering < 0;
+    ctx.fillStyle = lActive ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)';
+    ctx.beginPath();
+    ctx.roundRect(pad, zy + pad, zw - pad * 2, zh - pad * 2, rad);
+    ctx.fill();
+    // Left arrow
+    ctx.fillStyle = lActive ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.18)';
+    const lcx = zw / 2, lcy = zy + zh / 2;
+    ctx.beginPath();
+    ctx.moveTo(lcx - arrowSize * 0.5, lcy);
+    ctx.lineTo(lcx + arrowSize * 0.3, lcy - arrowSize * 0.45);
+    ctx.lineTo(lcx + arrowSize * 0.3, lcy + arrowSize * 0.45);
+    ctx.closePath();
+    ctx.fill();
+
+    // Right zone
+    const rActive = touchSteering > 0;
+    ctx.fillStyle = rActive ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)';
+    ctx.beginPath();
+    ctx.roundRect(W - zw + pad, zy + pad, zw - pad * 2, zh - pad * 2, rad);
+    ctx.fill();
+    // Right arrow
+    ctx.fillStyle = rActive ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.18)';
+    const rcx = W - zw / 2, rcy = zy + zh / 2;
+    ctx.beginPath();
+    ctx.moveTo(rcx + arrowSize * 0.5, rcy);
+    ctx.lineTo(rcx - arrowSize * 0.3, rcy - arrowSize * 0.45);
+    ctx.lineTo(rcx - arrowSize * 0.3, rcy + arrowSize * 0.45);
+    ctx.closePath();
+    ctx.fill();
+  }
+
   // HUD update
   if (gameState === 'playing' || gameState === 'crashing') {
     altitudeEl.textContent = altitude.toLocaleString() + 'm';
@@ -1626,8 +1681,8 @@ export const rocketRide = {
     document.addEventListener('touchend', touchEndHandler);
     touchMoveHandler = (e) => {
       if (!e.touches.length) return;
-      const tx = e.touches[0].clientX;
-      touchSteering = tx < W / 2 ? -1 : 1;
+      const t = e.touches[0];
+      touchSteering = getTouchZoneSteering(t.clientX, t.clientY);
     };
     document.addEventListener('touchmove', touchMoveHandler, { passive: true });
 
@@ -1674,6 +1729,7 @@ export const rocketRide = {
   },
 
   onTouch(e) {
+    hasTouchInput = true;
     if (gameState === 'ready') {
       startCountdown();
       return;
@@ -1681,10 +1737,9 @@ export const rocketRide = {
     if (gameState === 'gameover') return;
     if (gameState === 'playing' || gameState === 'countdown') {
       touchBoosting = true;
-      // Steer based on which half of screen is touched
       const touch = e.touches && e.touches[0];
       if (touch) {
-        touchSteering = touch.clientX < W / 2 ? -1 : 1;
+        touchSteering = getTouchZoneSteering(touch.clientX, touch.clientY);
       }
     }
   },
