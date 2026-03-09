@@ -124,18 +124,17 @@ function getTouchAction(clientX, clientY) {
   return 'boost';
 }
 
-function applyTouchAction(clientX, clientY) {
-  const action = getTouchAction(clientX, clientY);
-  if (action === 'left') {
-    touchSteering = -1;
-    touchBoosting = false;
-  } else if (action === 'right') {
-    touchSteering = 1;
-    touchBoosting = false;
-  } else {
-    touchBoosting = true;
-    touchSteering = 0;
+function applyAllTouches(touches) {
+  let steering = 0;
+  let boosting = false;
+  for (let i = 0; i < touches.length; i++) {
+    const action = getTouchAction(touches[i].clientX, touches[i].clientY);
+    if (action === 'left') steering = -1;
+    else if (action === 'right') steering = 1;
+    else boosting = true;
   }
+  touchSteering = steering;
+  touchBoosting = boosting;
 }
 
 // ---- Obstacles ----
@@ -1765,8 +1764,7 @@ export const rocketRide = {
     document.addEventListener('touchend', touchEndHandler);
     touchMoveHandler = (e) => {
       if (!e.touches.length) return;
-      const t = e.touches[0];
-      applyTouchAction(t.clientX, t.clientY);
+      applyAllTouches(e.touches);
     };
     document.addEventListener('touchmove', touchMoveHandler, { passive: true });
 
@@ -1820,9 +1818,8 @@ export const rocketRide = {
     }
     if (gameState === 'gameover') return;
     if (gameState === 'playing' || gameState === 'countdown') {
-      const touch = e.touches && e.touches[0];
-      if (touch) {
-        applyTouchAction(touch.clientX, touch.clientY);
+      if (e.touches && e.touches.length) {
+        applyAllTouches(e.touches);
       }
     }
   },
