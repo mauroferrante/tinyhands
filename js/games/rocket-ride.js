@@ -116,12 +116,26 @@ let hasTouchInput = false;
 const STEER_ZONE_W_FRAC = 0.22;
 const STEER_ZONE_H_FRAC = 0.28;
 
-function getTouchZoneSteering(clientX, clientY) {
+function getTouchAction(clientX, clientY) {
   if (clientY > H * (1 - STEER_ZONE_H_FRAC)) {
-    if (clientX < W * STEER_ZONE_W_FRAC) return -1;
-    if (clientX > W * (1 - STEER_ZONE_W_FRAC)) return 1;
+    if (clientX < W * STEER_ZONE_W_FRAC) return 'left';
+    if (clientX > W * (1 - STEER_ZONE_W_FRAC)) return 'right';
   }
-  return 0;
+  return 'boost';
+}
+
+function applyTouchAction(clientX, clientY) {
+  const action = getTouchAction(clientX, clientY);
+  if (action === 'left') {
+    touchSteering = -1;
+    touchBoosting = false;
+  } else if (action === 'right') {
+    touchSteering = 1;
+    touchBoosting = false;
+  } else {
+    touchBoosting = true;
+    touchSteering = 0;
+  }
 }
 
 // ---- Obstacles ----
@@ -1376,6 +1390,24 @@ function render() {
     ctx.closePath();
     ctx.fill();
 
+    // Center boost zone
+    const czx = zw;
+    const czw = W - zw * 2;
+    const bActive = touchBoosting;
+    ctx.fillStyle = bActive ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)';
+    ctx.beginPath();
+    ctx.roundRect(czx + pad, zy + pad, czw - pad * 2, zh - pad * 2, rad);
+    ctx.fill();
+    // Up arrow
+    ctx.fillStyle = bActive ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.18)';
+    const ccx = czx + czw / 2, ccy = zy + zh / 2;
+    ctx.beginPath();
+    ctx.moveTo(ccx, ccy - arrowSize * 0.5);
+    ctx.lineTo(ccx + arrowSize * 0.45, ccy + arrowSize * 0.3);
+    ctx.lineTo(ccx - arrowSize * 0.45, ccy + arrowSize * 0.3);
+    ctx.closePath();
+    ctx.fill();
+
     // Right zone
     const rActive = touchSteering > 0;
     ctx.fillStyle = rActive ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)';
@@ -1734,7 +1766,7 @@ export const rocketRide = {
     touchMoveHandler = (e) => {
       if (!e.touches.length) return;
       const t = e.touches[0];
-      touchSteering = getTouchZoneSteering(t.clientX, t.clientY);
+      applyTouchAction(t.clientX, t.clientY);
     };
     document.addEventListener('touchmove', touchMoveHandler, { passive: true });
 
@@ -1788,10 +1820,9 @@ export const rocketRide = {
     }
     if (gameState === 'gameover') return;
     if (gameState === 'playing' || gameState === 'countdown') {
-      touchBoosting = true;
       const touch = e.touches && e.touches[0];
       if (touch) {
-        touchSteering = getTouchZoneSteering(touch.clientX, touch.clientY);
+        applyTouchAction(touch.clientX, touch.clientY);
       }
     }
   },
