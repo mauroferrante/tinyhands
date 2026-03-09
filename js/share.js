@@ -5,11 +5,9 @@
 
 export const SHARE_URL = 'https://tinyhandsplay.com';
 
-const SHARE_DATA = {
-  title: 'Tiny Hands Play',
-  text: 'Free fun and educational games for toddlers and kids — no ads, no installs, just play!',
-  url: SHARE_URL
-};
+function shareUrl(medium) {
+  return SHARE_URL + '?utm_source=share&utm_medium=' + medium;
+}
 
 function isMobileDevice() {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
@@ -41,7 +39,11 @@ export async function shareOrCopy() {
   // Native share sheet on mobile
   if (navigator.share && isMobileDevice()) {
     try {
-      await navigator.share(SHARE_DATA);
+      await navigator.share({
+        title: 'Tiny Hands Play',
+        text: 'Free fun and educational games for toddlers and kids — no ads, no installs, just play!',
+        url: shareUrl('native')
+      });
       return { method: 'share', success: true };
     } catch (err) {
       if (err.name === 'AbortError') {
@@ -52,10 +54,11 @@ export async function shareOrCopy() {
   }
 
   // Clipboard API (desktop or mobile fallback)
+  const copyUrl = shareUrl('copy');
   try {
-    await navigator.clipboard.writeText(SHARE_URL);
+    await navigator.clipboard.writeText(copyUrl);
     return { method: 'copy', success: true };
   } catch (err) {
-    return fallbackCopy(SHARE_URL);
+    return fallbackCopy(copyUrl);
   }
 }

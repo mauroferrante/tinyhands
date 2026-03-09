@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/play/:path*", "destination": "/" },
+    { "source": "/intent/:path*", "destination": "/" },
+    { "source": "/story", "destination": "/" }
+  ]
+}

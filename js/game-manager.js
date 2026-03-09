@@ -122,6 +122,9 @@ function startGame(game) {
   playground.style.display = 'block';
   document.body.classList.add('game-active');
 
+  // Virtual page view for Vercel Analytics
+  history.pushState({ game: game.id }, '', '/play/' + game.id);
+
   initAudio();
 
   // Show ESC hint briefly on desktop (touch devices have the ✕ button)
@@ -170,6 +173,9 @@ function stopGame() {
   }
 
   playground.querySelectorAll('.particle').forEach(p => p.remove());
+
+  // Virtual page view — back to landing
+  history.pushState({}, '', '/');
 
   // Show post-game nudge once per session after first game exit
   if (!sessionStorage.getItem('tipNudgeShown')) {
@@ -254,12 +260,14 @@ whyLink.addEventListener('click', () => {
   storyBackdrop.style.display = 'flex';
   requestAnimationFrame(() => storyBackdrop.classList.add('show'));
   document.body.style.overflow = 'hidden';
+  history.pushState({}, '', '/story');
 });
 
 function closeStory() {
   storyBackdrop.classList.remove('show');
   setTimeout(() => { storyBackdrop.style.display = 'none'; }, 300);
   document.body.style.overflow = '';
+  if (window.location.pathname === '/story') history.pushState({}, '', '/');
 }
 
 storyClose.addEventListener('click', closeStory);
@@ -281,9 +289,11 @@ postgameNudgeClose.addEventListener('click', dismissNudge);
 
 postgameNudgeTip.addEventListener('click', () => {
   sessionStorage.setItem('tipNudgeShown', 'true');
+  trackIntent('donate');
 });
 
 postgameNudgeShare.addEventListener('click', async () => {
+  trackIntent('share');
   const result = await shareOrCopy();
   if (result.method === 'copy' && result.success) {
     postgameNudgeCopied.classList.add('visible');
@@ -333,3 +343,47 @@ document.addEventListener('contextmenu', (e) => {
 document.addEventListener('touchstart', () => { initAudio(); });
 document.addEventListener('touchend', () => { initAudio(); });
 document.addEventListener('click', () => { initAudio(); });
+
+// ===== Analytics: Virtual Page Views =====
+
+// Track intent (donate / share) as a brief virtual page view
+function trackIntent(name) {
+  const prev = window.location.pathname;
+  history.pushState({}, '', '/intent/' + name);
+  setTimeout(() => history.pushState({}, '', prev), 600);
+}
+
+// Browser back button: exit game when user navigates back
+window.addEventListener('popstate', () => {
+  if (currentGame && !window.location.pathname.startsWith('/play/')) {
+    currentGame.stop();
+    currentGame = null;
+    playground.style.display = 'none';
+    landing.style.display = 'flex';
+    document.body.classList.remove('game-active');
+    const header = landing.querySelector('header');
+    if (header) { header.style.animation = 'none'; void header.offsetWidth; header.style.animation = ''; }
+    playground.querySelectorAll('.particle').forEach(p => p.remove());
+  }
+});
+
+// In-game share buttons: track as /intent/share (delegated on playground)
+playground.addEventListener('click', (e) => {
+  if (e.target.closest('[data-share]')) trackIntent('share');
+});
+
+// Footer tip link: track as /intent/donate
+const footerTip = document.getElementById('footerTip');
+if (footerTip) footerTip.addEventListener('click', () => trackIntent('donate'));
+
+// Deep link: auto-launch game if URL is /play/{gameId}
+(function checkDeepLink() {
+  const m = window.location.pathname.match(/^\/play\/([a-z0-9-]+)$/);
+  if (m && GAMES[m[1]]) {
+    // Small delay so DOM & fonts are fully ready
+    setTimeout(() => {
+      initAudio();
+      startGame(GAMES[m[1]]);
+    }, 300);
+  }
+})();
