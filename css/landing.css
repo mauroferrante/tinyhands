@@ -774,6 +774,13 @@ body.game-active .postgame-nudge {
   display: flex;
 }
 
+/* iOS-native inline SVG icons (Share, Add to Home Screen) */
+.ios-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  flex-shrink: 0;
+}
+
 /* ===== Shared PWA Step Style (banner + modal) ===== */
 
 .pwa-step {
