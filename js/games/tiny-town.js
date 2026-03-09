@@ -2737,8 +2737,7 @@ function initCanvas() {
   fontScale = Math.max(1, Math.min(1.6, W / 500));
   canvas.width = W * dpr;
   canvas.height = H * dpr;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
+  // CSS inset:0 + width/height:100% handles display sizing — no style overrides needed
   const c = canvas.getContext('2d');
   c.scale(dpr, dpr);
 }
