@@ -37,6 +37,9 @@ createBgEmojis(landing);
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const isIPad = isIOS && !/iPhone|iPod/.test(navigator.userAgent);
+// Only Safari supports "Add to Home Screen" on iOS — Brave, Chrome, Firefox don't
+const isIOSSafari = isIOS && /Safari/.test(navigator.userAgent) &&
+                    !/CriOS|FxiOS|EdgiOS|OPiOS|Brave/.test(navigator.userAgent);
 const isStandalone = navigator.standalone === true ||
                      window.matchMedia('(display-mode: standalone)').matches;
 
@@ -206,7 +209,7 @@ function stopGame() {
   if (!isStandalone && !sessionStorage.getItem('pwaModalShown')) {
     const dismissed = localStorage.getItem('pwa_modal_dismissed');
     if (!dismissed || Date.now() - Number(dismissed) > 3 * 86400000) {
-      if (isIOS || deferredAndroidPrompt) {
+      if (isIOSSafari || deferredAndroidPrompt) {
         sessionStorage.setItem('pwaModalShown', 'true');
         setTimeout(() => showPwaModal(), 2500);
       }
@@ -434,7 +437,7 @@ function initPwaBanner() {
   if (isStandalone) return;
   if (sessionStorage.getItem('pwaBannerDismissed')) return;
 
-  if (isIOS) {
+  if (isIOSSafari) {
     pwaDeviceName.textContent = isIPad ? 'iPad' : 'iPhone';
     pwaBanner.style.display = '';
   } else if (deferredAndroidPrompt) {
@@ -509,5 +512,5 @@ function triggerAndroidInstall() {
   }
 }
 
-// Init banner on page load (iOS shows immediately, Android waits for beforeinstallprompt)
-if (isIOS) initPwaBanner();
+// Init banner on page load (iOS Safari shows immediately, Android waits for beforeinstallprompt)
+if (isIOSSafari) initPwaBanner();
