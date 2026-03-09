@@ -1,4 +1,6 @@
 import { initAudio, getAudioCtx, playWinFanfare, playCrowdRoar, playCrowdCheer } from '../audio.js';
+import { preloadEmojis, getImage } from '../emoji.js';
+import { EMOJI_REGISTRY } from '../emoji-registry.js';
 
 // === CONSTANTS ===
 const MAP_W = 6000, MAP_H = 4500;
@@ -372,12 +374,19 @@ function getSprite(emoji, size) {
   size = Math.round(size);
   const key = emoji + '|' + size;
   if (spriteCache[key]) return spriteCache[key];
+  const dim = Math.ceil(size * 1.4);
   const c = document.createElement('canvas');
-  c.width = c.height = Math.ceil(size * 1.4);
+  c.width = c.height = dim;
   const x = c.getContext('2d');
-  x.font = size + 'px sans-serif';
-  x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.fillText(emoji, c.width/2, c.height/2);
+  const img = getImage(emoji);
+  if (img) {
+    const pad = (dim - size) / 2;
+    x.drawImage(img, pad, pad, size, size);
+  } else {
+    x.font = size + 'px sans-serif';
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(emoji, dim/2, dim/2);
+  }
   spriteCache[key] = c;
   return c;
 }
@@ -2891,12 +2900,13 @@ export const tinyTown = {
     canvas = gameEl.querySelector('canvas');
     gameEl.style.display = 'block';
     initCanvas();
-    resetState();
-    running = true;
-    selectingChar = true;
-    canvas.style.cursor = EMOJI_CURSOR;
-
-    animFrame = requestAnimationFrame(charSelectLoop);
+    preloadEmojis(EMOJI_REGISTRY['tiny-town']).then(() => {
+      resetState();
+      running = true;
+      selectingChar = true;
+      canvas.style.cursor = EMOJI_CURSOR;
+      animFrame = requestAnimationFrame(charSelectLoop);
+    });
 
     if (navigator.maxTouchPoints === 0) {
       keyUpHandler = (e) => { delete keysDown[e.key]; };

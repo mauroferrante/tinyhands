@@ -9,6 +9,8 @@ import {
   playMilestoneChime, playCountdownBeep, playLaunchRumble, playWinFanfare
 } from '../audio.js';
 import { shareOrCopy } from '../share.js';
+import { preloadEmojis, getImage, createEmojiImg, getEmojiUrl } from '../emoji.js';
+import { EMOJI_REGISTRY } from '../emoji-registry.js';
 
 // ---- Physics constants ----
 const GRAVITY            = 1.2;
@@ -220,14 +222,15 @@ function getSprite(emoji, size) {
   off.height = dim * dpr;
   const oc = off.getContext('2d');
   oc.scale(dpr, dpr);
-  oc.font = size + 'px serif';
-  oc.textAlign = 'center';
-  oc.textBaseline = 'middle';
-  oc.fillText(emoji, dim / 2, dim / 2);
-  const imgData = oc.getImageData(0, 0, off.width, off.height);
-  const d = imgData.data;
-  for (let i = 3; i < d.length; i += 4) { if (d[i] > 0) d[i] = Math.min(255, d[i] * 2); }
-  oc.putImageData(imgData, 0, 0);
+  const img = getImage(emoji);
+  if (img) {
+    oc.drawImage(img, pad, pad, size, size);
+  } else {
+    oc.font = size + 'px serif';
+    oc.textAlign = 'center';
+    oc.textBaseline = 'middle';
+    oc.fillText(emoji, dim / 2, dim / 2);
+  }
   const sprite = { canvas: off, offset: dim / 2, dim };
   spriteCache[key] = sprite;
   return sprite;
@@ -940,8 +943,8 @@ function wireShare(container) {
     btn.addEventListener('click', async () => {
       const result = await shareOrCopy();
       if (result.method === 'copy' && result.success) {
-        btn.textContent = '✅ Copied!';
-        setTimeout(() => { btn.textContent = '📤 Share with a parent'; }, 2500);
+        btn.innerHTML = '<img src="' + getEmojiUrl('✅') + '" class="emoji-img btn-emoji" alt="✅"> Copied!';
+        setTimeout(() => { btn.innerHTML = '<img src="' + getEmojiUrl('📤') + '" class="emoji-img btn-emoji" alt="📤"> Share with a parent'; }, 2500);
       }
     });
   }
@@ -955,7 +958,7 @@ function updateRocketLives() {
   for (let i = 0; i < 3; i++) {
     const heart = document.createElement('span');
     heart.className = 'rocket-heart';
-    heart.textContent = i < lives ? '\u2764\uFE0F' : '\u{1F90D}';
+    heart.appendChild(createEmojiImg(i < lives ? '❤️' : '🤍', 'emoji-img'));
     if (i >= lives) heart.classList.add('lost');
     livesEl.appendChild(heart);
   }
@@ -968,7 +971,8 @@ function animateRocketHeartLost() {
   if (heartToRemove) {
     heartToRemove.classList.add('rocket-heart-breaking');
     setTimeout(() => {
-      heartToRemove.textContent = '\u{1F90D}';
+      heartToRemove.textContent = '';
+      heartToRemove.appendChild(createEmojiImg('🤍', 'emoji-img'));
       heartToRemove.classList.add('lost');
       heartToRemove.classList.remove('rocket-heart-breaking');
     }, 500);
@@ -992,20 +996,20 @@ function showGameOver() {
 
   celebrateEl.innerHTML =
     '<div class="rocket-endcard">' +
-      '<div class="rocket-endcard-emoji">\u{1F4A5}</div>' +
+      '<div class="rocket-endcard-emoji"><img src="' + getEmojiUrl('💥') + '" class="emoji-img" alt="💥" style="width:100%;height:100%"></div>' +
       '<div class="rocket-endcard-title">' + title + '</div>' +
       '<div class="rocket-endcard-stats">' +
-        '<span>\u{1F4CF} ' + altFmt + '</span>' +
-        '<span>\u2B50 \u00D7 ' + starCount + '</span>' +
+        '<span><img src="' + getEmojiUrl('📏') + '" class="emoji-img inline-emoji" alt="📏"> ' + altFmt + '</span>' +
+        '<span><img src="' + getEmojiUrl('⭐') + '" class="emoji-img inline-emoji" alt="⭐"> × ' + starCount + '</span>' +
         '<span>Score: ' + score + '</span>' +
       '</div>' +
-      (isNewBest ? '<div class="rocket-endcard-best">\u{1F3C6} New Best!</div>' :
+      (isNewBest ? '<div class="rocket-endcard-best"><img src="' + getEmojiUrl('🏆') + '" class="emoji-img inline-emoji" alt="🏆"> New Best!</div>' :
        bestScore > 0 ? '<div class="rocket-endcard-best-small">Best: ' + bestScore + '</div>' : '') +
-      (isNewAlt && !isNewBest ? '<div class="rocket-endcard-best">\u{1F3C6} New altitude record!</div>' : '') +
+      (isNewAlt && !isNewBest ? '<div class="rocket-endcard-best"><img src="' + getEmojiUrl('🏆') + '" class="emoji-img inline-emoji" alt="🏆"> New altitude record!</div>' : '') +
       '<div class="rocket-endcard-actions">' +
         '<button class="rocket-endcard-btn rocket-btn-again">Launch Again</button>' +
       '</div>' +
-      '<button class="endcard-share-btn" data-share>\u{1F4E4} Share with a parent</button>' +
+      '<button class="endcard-share-btn" data-share><img src="' + getEmojiUrl('📤') + '" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button>' +
     '</div>';
 
   celebrateEl.classList.add('show');
@@ -1427,7 +1431,15 @@ function render() {
   // HUD update
   if (gameState === 'playing' || gameState === 'crashing') {
     altitudeEl.textContent = altitude.toLocaleString() + 'km';
-    starsEl.textContent = '\u2B50 ' + starCount;
+    if (!starsEl._countSpan) {
+      starsEl.textContent = '';
+      const img = createEmojiImg('⭐', 'emoji-img inline-emoji');
+      starsEl.appendChild(img);
+      const sp = document.createElement('span');
+      starsEl.appendChild(sp);
+      starsEl._countSpan = sp;
+    }
+    starsEl._countSpan.textContent = ' ' + starCount;
   }
 }
 
@@ -1683,12 +1695,13 @@ function resetAndStart() {
 
   hudEl.style.display = 'none';
   altitudeEl.textContent = '0km';
-  starsEl.textContent = '\u2B50 0';
+  starsEl.textContent = '';
+  starsEl._countSpan = null;
 
   if (hintEl) hintEl.remove();
   hintEl = document.createElement('div');
   hintEl.className = 'rocket-hint';
-  hintEl.textContent = 'Press any key to launch! \u{1F680}';
+  hintEl.innerHTML = 'Press any key to launch! <img src="' + getEmojiUrl('🚀') + '" class="emoji-img inline-emoji" alt="🚀">';
   gameEl.appendChild(hintEl);
 
   gameState = 'ready';
@@ -1750,7 +1763,7 @@ export const rocketRide = {
     initCanvas();
     createStarfield();
     createNebulae();
-    resetAndStart();
+    preloadEmojis(EMOJI_REGISTRY['rocket-ride']).then(() => resetAndStart());
 
     // Register keyup handler (game-manager only dispatches keydown)
     keyUpHandler = (e) => {

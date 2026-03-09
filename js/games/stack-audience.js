@@ -3,6 +3,16 @@
  *  Reactive emoji crowd in semicircular stadium bowl layout
  * ========================================================= */
 
+import { createEmojiImg } from '../emoji.js';
+
+function setEmoji(el, emoji) {
+  el.textContent = '';
+  const img = createEmojiImg(emoji, 'emoji-img');
+  img.style.width = '1.4rem';
+  img.style.height = '1.4rem';
+  el.appendChild(img);
+}
+
 const AUDIENCE_EMOJIS = [
   '🐶','🐱','🐻','🐼','🐸','🐵','🦁','🐯','🐷','🐮',
   '🐰','🐹','🐧','🐔','🦊','😀','😃','😄','😊','🥳','🤩'
@@ -52,10 +62,9 @@ function buildAudienceNow(parent) {
     const span = document.createElement('span');
     const emoji = AUDIENCE_EMOJIS[Math.floor(Math.random() * AUDIENCE_EMOJIS.length)];
     span.className = 'audience-emoji reactive-row';
-    span.textContent = emoji;
+    setEmoji(span, emoji);
     span.style.left = x + 'px';
     span.style.bottom = '4px';
-    span.style.fontSize = '1.4rem';
     span.style.opacity = '0.85';
     span.style.setProperty('--audience-delay', (globalIndex * 0.04) + 's');
     span.style.setProperty('--idle-offset', (Math.random() * 3) + 's');
@@ -70,10 +79,9 @@ function buildAudienceNow(parent) {
     const span = document.createElement('span');
     const emoji = AUDIENCE_EMOJIS[Math.floor(Math.random() * AUDIENCE_EMOJIS.length)];
     span.className = 'audience-emoji reactive-row';
-    span.textContent = emoji;
+    setEmoji(span, emoji);
     span.style.left = x + 'px';
     span.style.bottom = '4px';
-    span.style.fontSize = '1.4rem';
     span.style.opacity = '0.85';
     span.style.setProperty('--audience-delay', (globalIndex * 0.04) + 's');
     span.style.setProperty('--idle-offset', (Math.random() * 3) + 's');
@@ -129,7 +137,7 @@ function clearReactionClasses() {
 
 function restoreOriginalEmojis() {
   emojiEls.forEach((el, i) => {
-    el.textContent = originalEmojis[i];
+    setEmoji(el, originalEmojis[i]);
   });
 }
 
@@ -137,7 +145,7 @@ function swapToWorryEmojis() {
   // Only swap reactive-row emojis to worried faces
   emojiEls.forEach((el, i) => {
     if (el.classList.contains('reactive-row') && Math.random() < 0.4) {
-      el.textContent = WORRY_EMOJIS[Math.floor(Math.random() * WORRY_EMOJIS.length)];
+      setEmoji(el, WORRY_EMOJIS[Math.floor(Math.random() * WORRY_EMOJIS.length)]);
     }
   });
 }

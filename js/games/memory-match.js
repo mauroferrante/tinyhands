@@ -6,6 +6,8 @@ import { initAudio, playCardFlip, playMatchChime, playNoMatchBoop,
          playCardSettle, playCardSwoosh, playWinFanfare } from '../audio.js';
 import { spawnParticles } from '../effects.js';
 import { shareOrCopy } from '../share.js';
+import { preloadEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
+import { EMOJI_REGISTRY } from '../emoji-registry.js';
 
 // ---- Difficulty configs ----
 const DIFFICULTIES = {
@@ -166,7 +168,7 @@ function startRound(difficulty) {
     el.innerHTML =
       '<div class="memory-card-inner">' +
         '<div class="memory-card-back"></div>' +
-        '<div class="memory-card-front"><span>' + emoji + '</span></div>' +
+        '<div class="memory-card-front"><img src="' + getEmojiUrl(emoji) + '" class="emoji-img card-emoji" alt="' + emoji + '" draggable="false"></div>' +
       '</div>';
     memoryBoardEl.appendChild(el);
     return { emoji, index: i, matched: false, element: el };
@@ -283,14 +285,14 @@ function triggerWin() {
   setTimeout(() => {
     memoryCelebrateEl.innerHTML =
       '<div class="memory-endcard">' +
-        '<div class="memory-endcard-emoji">\u{1F389}</div>' +
+        '<div class="memory-endcard-emoji"><img src="' + getEmojiUrl('\u{1F389}') + '" class="emoji-img" alt="🎉"></div>' +
         '<div class="memory-endcard-title">You found them all!</div>' +
         '<div class="memory-endcard-stats">' +
-          '<span>\u{23F1} ' + fmt(elapsedSeconds) + '</span>' +
-          '<span>\u{1F504} ' + flipCount + ' flips</span>' +
+          '<span><img src="' + getEmojiUrl('\u{23F1}') + '" class="emoji-img inline-emoji" alt="⏱"> ' + fmt(elapsedSeconds) + '</span>' +
+          '<span><img src="' + getEmojiUrl('\u{1F504}') + '" class="emoji-img inline-emoji" alt="🔄"> ' + flipCount + ' flips</span>' +
         '</div>' +
         (isNewBest
-          ? '<div class="memory-endcard-best">\u{1F3C6} New Best!</div>'
+          ? '<div class="memory-endcard-best"><img src="' + getEmojiUrl('\u{1F3C6}') + '" class="emoji-img inline-emoji" alt="🏆"> New Best!</div>'
           : (best.flips > 0
               ? '<div class="memory-endcard-best-small">Best: ' + best.flips + ' flips, ' + fmt(best.time) + '</div>'
               : '')) +
@@ -298,7 +300,7 @@ function triggerWin() {
           '<button class="memory-endcard-btn memory-btn-again">Play Again</button>' +
           '<button class="memory-endcard-btn memory-btn-diff">Change Difficulty</button>' +
         '</div>' +
-        '<button class="endcard-share-btn" data-share>\u{1F4E4} Share with a parent</button>' +
+        '<button class="endcard-share-btn" data-share><img src="' + getEmojiUrl('\u{1F4E4}') + '" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button>' +
       '</div>';
 
     memoryCelebrateEl.classList.add('show');
@@ -321,8 +323,8 @@ function wireShare(container) {
     e.stopPropagation();
     const result = await shareOrCopy();
     if (result.method === 'copy' && result.success) {
-      btn.textContent = '\u{2705} Link copied!';
-      setTimeout(() => { btn.textContent = '\u{1F4E4} Share with a parent'; }, 2500);
+      btn.innerHTML = '<img src="' + getEmojiUrl('\u{2705}') + '" class="emoji-img btn-emoji" alt="✅"> Link copied!';
+      setTimeout(() => { btn.innerHTML = '<img src="' + getEmojiUrl('\u{1F4E4}') + '" class="emoji-img btn-emoji" alt="📤"> Share with a parent'; }, 2500);
     }
   });
   btn.addEventListener('touchend', (e) => e.stopPropagation());
@@ -333,10 +335,13 @@ function spawnWinConfetti() {
   for (let i = 0; i < 30; i++) {
     const el = document.createElement('span');
     el.className = 'memory-confetti';
-    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const confSize = (1 + Math.random() * 1.5);
+    const confImg = createEmojiImg(emojis[Math.floor(Math.random() * emojis.length)], 'emoji-img');
+    confImg.style.width = confSize + 'rem';
+    confImg.style.height = confSize + 'rem';
+    el.appendChild(confImg);
     el.style.left = (Math.random() * 100) + '%';
     el.style.top = '-40px';
-    el.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
     el.style.setProperty('--fall-dist', (window.innerHeight + 80) + 'px');
     el.style.setProperty('--fall-rot', (Math.random() * 720 - 360) + 'deg');
     el.style.setProperty('--fall-dur', (2 + Math.random() * 2) + 's');
@@ -392,6 +397,7 @@ export const memoryMatch = {
   start() {
     memoryGameEl.style.display = 'block';
     gameActive = true;
+    preloadEmojis(EMOJI_REGISTRY['memory-match']);
 
     memoryDiffEl.addEventListener('click', onDifficultyClick);
     memoryBoardEl.addEventListener('click', handleCardTap);

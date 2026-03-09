@@ -7,6 +7,8 @@ import { playCorrectDing, playWrongBoop, playLifeLost, playSpellWhoosh,
          playWinFanfare, playStreakChime, playStreakFanfare } from '../audio.js';
 import { spawnParticles } from '../effects.js';
 import { shareOrCopy } from '../share.js';
+import { preloadEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
+import { EMOJI_REGISTRY } from '../emoji-registry.js';
 
 function wireEndcardShare(container) {
   const btn = container.querySelector('[data-share]');
@@ -15,8 +17,8 @@ function wireEndcardShare(container) {
     e.stopPropagation();
     const result = await shareOrCopy();
     if (result.method === 'copy' && result.success) {
-      btn.textContent = '✅ Copied!';
-      setTimeout(() => { btn.textContent = '📤 Share with a parent'; }, 2500);
+      btn.innerHTML = '<img src="' + getEmojiUrl('✅') + '" class="emoji-img btn-emoji" alt="✅"> Copied!';
+      setTimeout(() => { btn.innerHTML = '<img src="' + getEmojiUrl('📤') + '" class="emoji-img btn-emoji" alt="📤"> Share with a parent'; }, 2500);
     }
   });
   btn.addEventListener('touchend', (e) => e.stopPropagation());
@@ -180,7 +182,7 @@ function updateLives() {
   for (let i = 0; i < 3; i++) {
     const heart = document.createElement('span');
     heart.className = 'spell-heart';
-    heart.textContent = i < lives ? '❤️' : '🤍';
+    heart.appendChild(createEmojiImg(i < lives ? '❤️' : '🤍', 'emoji-img'));
     if (i >= lives) heart.classList.add('lost');
     spellLivesEl.appendChild(heart);
   }
@@ -218,7 +220,8 @@ function showNextWord() {
   spellFeedbackEl.className = 'spell-feedback';
 
   // Animate emoji
-  spellEmojiEl.textContent = currentWord.emoji;
+  spellEmojiEl.textContent = '';
+  spellEmojiEl.appendChild(createEmojiImg(currentWord.emoji, 'emoji-img spell-emoji-icon'));
   spellEmojiEl.classList.remove('spell-emoji-enter');
   void spellEmojiEl.offsetWidth; // force reflow
   spellEmojiEl.classList.add('spell-emoji-enter');
@@ -318,14 +321,14 @@ function handleCorrect(blankTile, letter) {
   if (streak > 0 && streak % 5 === 0) {
     spawnStreakCelebration(streak);
     if (streak >= 20) {
-      showFeedback(`🚀 ${streak} IN A ROW!!!`, 'streak');
+      showFeedback('🚀', `${streak} IN A ROW!!!`, 'streak');
     } else if (streak >= 10) {
-      showFeedback(`🔥🔥 ${streak} in a row!!`, 'streak');
+      showFeedback('🔥', `${streak} in a row!!`, 'streak');
     } else {
-      showFeedback(`🔥 ${streak} in a row!`, 'streak');
+      showFeedback('🔥', `${streak} in a row!`, 'streak');
     }
   } else {
-    showFeedback('✨ Correct!', 'correct');
+    showFeedback('✨', 'Correct!', 'correct');
   }
 
   checkHighScore();
@@ -347,7 +350,7 @@ function handleWrong(blankTile, letter) {
   playWrongBoop();
 
   // Encouragement
-  showFeedback(randomEncouragement(), 'wrong');
+  showFeedback('💪', randomEncouragement(), 'wrong');
 
   // Disable the wrong key
   disableKey(letter);
@@ -374,8 +377,8 @@ function handleWrong(blankTile, letter) {
   }, 800);
 }
 
-function showFeedback(text, type) {
-  spellFeedbackEl.textContent = text;
+function showFeedback(emoji, text, type) {
+  spellFeedbackEl.innerHTML = '<img src="' + getEmojiUrl(emoji) + '" class="emoji-img inline-emoji" alt="' + emoji + '"> ' + text;
   spellFeedbackEl.className = 'spell-feedback spell-feedback-' + type;
   spellFeedbackEl.classList.add('spell-feedback-show');
 }
@@ -387,7 +390,8 @@ function animateHeartLost() {
   if (heartToRemove) {
     heartToRemove.classList.add('spell-heart-breaking');
     setTimeout(() => {
-      heartToRemove.textContent = '🤍';
+      heartToRemove.textContent = '';
+      heartToRemove.appendChild(createEmojiImg('🤍', 'emoji-img'));
       heartToRemove.classList.add('lost');
       heartToRemove.classList.remove('spell-heart-breaking');
     }, 500);
@@ -404,13 +408,13 @@ function triggerGameOver() {
 
   spellCelebrateEl.innerHTML = `
     <div class="spell-endcard">
-      <div class="spell-endcard-emoji">😅</div>
+      <div class="spell-endcard-emoji"><img src="${getEmojiUrl('😅')}" class="emoji-img" alt="😅"></div>
       <div class="spell-endcard-title">Game Over!</div>
       <div class="spell-endcard-score">Score: ${score}</div>
-      ${isNewBest ? '<div class="spell-endcard-best">🏆 New Best!</div>' :
+      ${isNewBest ? '<div class="spell-endcard-best"><img src="' + getEmojiUrl('🏆') + '" class="emoji-img inline-emoji" alt="🏆"> New Best!</div>' :
         bestScore > 0 ? `<div class="spell-endcard-best-small">Best: ${bestScore}</div>` : ''}
       <div class="spell-endcard-restart">Tap or press Space to play again</div>
-      <button class="endcard-share-btn" data-share>📤 Share with a parent</button>
+      <button class="endcard-share-btn" data-share><img src="${getEmojiUrl('📤')}" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button>
     </div>
   `;
   spellCelebrateEl.classList.add('show');
@@ -426,12 +430,12 @@ function triggerWin() {
 
   spellCelebrateEl.innerHTML = `
     <div class="spell-endcard">
-      <div class="spell-endcard-emoji">🏆</div>
+      <div class="spell-endcard-emoji"><img src="${getEmojiUrl('🏆')}" class="emoji-img" alt="🏆"></div>
       <div class="spell-endcard-title">You spelled them ALL!</div>
       <div class="spell-endcard-score">Score: ${score} / ${WORD_POOL.length}</div>
-      <div class="spell-endcard-best">Amazing! 🎉</div>
+      <div class="spell-endcard-best">Amazing! <img src="${getEmojiUrl('🎉')}" class="emoji-img inline-emoji" alt="🎉"></div>
       <div class="spell-endcard-restart">Tap or press Space to play again</div>
-      <button class="endcard-share-btn" data-share>📤 Share with a parent</button>
+      <button class="endcard-share-btn" data-share><img src="${getEmojiUrl('📤')}" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button>
     </div>
   `;
   spellCelebrateEl.classList.add('show');
@@ -475,11 +479,13 @@ function spawnStreakCelebration(streakCount) {
   for (let i = 0; i < count; i++) {
     const conf = document.createElement('span');
     conf.className = 'spell-confetti';
-    conf.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const cSize = fontSize[0] + Math.random() * (fontSize[1] - fontSize[0]);
+    const cImg = createEmojiImg(emojis[Math.floor(Math.random() * emojis.length)], 'emoji-img');
+    cImg.style.width = cSize + 'rem';
+    cImg.style.height = cSize + 'rem';
+    conf.appendChild(cImg);
     conf.style.left = (Math.random() * 100) + '%';
     conf.style.top = '-40px';
-    const size = fontSize[0] + Math.random() * (fontSize[1] - fontSize[0]);
-    conf.style.fontSize = size + 'rem';
     const fallDur = duration[0] + Math.random() * (duration[1] - duration[0]);
     conf.style.setProperty('--fall-dist', (window.innerHeight + 80) + 'px');
     conf.style.setProperty('--fall-rot', (Math.random() * 720 - 360) + 'deg');
@@ -506,7 +512,11 @@ function spawnStreakCelebration(streakCount) {
     for (let i = 0; i < 12; i++) {
       const ring = document.createElement('span');
       ring.className = 'spell-streak-ring';
-      ring.textContent = STREAK_EMOJIS_BIG[Math.floor(Math.random() * STREAK_EMOJIS_BIG.length)];
+      const rSize = (1.5 + Math.random() * 1);
+      const rImg = createEmojiImg(STREAK_EMOJIS_BIG[Math.floor(Math.random() * STREAK_EMOJIS_BIG.length)], 'emoji-img');
+      rImg.style.width = rSize + 'rem';
+      rImg.style.height = rSize + 'rem';
+      ring.appendChild(rImg);
       const angle = (Math.PI * 2 / 12) * i;
       const dist = 200 + Math.random() * 150;
       ring.style.left = cx + 'px';
@@ -514,7 +524,6 @@ function spawnStreakCelebration(streakCount) {
       ring.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
       ring.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
       ring.style.setProperty('--tr', (Math.random() * 360 - 180) + 'deg');
-      ring.style.fontSize = (1.5 + Math.random() * 1) + 'rem';
       spellGameEl.appendChild(ring);
       ring.addEventListener('animationend', () => ring.remove());
     }
@@ -526,10 +535,13 @@ function spawnWinConfetti() {
   for (let i = 0; i < 30; i++) {
     const conf = document.createElement('span');
     conf.className = 'spell-confetti';
-    conf.textContent = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+    const wcSize = (1 + Math.random() * 1.5);
+    const wcImg = createEmojiImg(confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)], 'emoji-img');
+    wcImg.style.width = wcSize + 'rem';
+    wcImg.style.height = wcSize + 'rem';
+    conf.appendChild(wcImg);
     conf.style.left = (Math.random() * 100) + '%';
     conf.style.top = '-40px';
-    conf.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
     conf.style.setProperty('--fall-dist', (window.innerHeight + 80) + 'px');
     conf.style.setProperty('--fall-rot', (Math.random() * 720 - 360) + 'deg');
     conf.style.setProperty('--fall-dur', (2 + Math.random() * 2) + 's');
@@ -658,7 +670,7 @@ export const spellItOut = {
     spellGameEl.style.display = 'block';
     bestScore = parseInt(localStorage.getItem(LS_KEY) || '0', 10);
     buildMobileKeyboard();
-    resetGame();
+    preloadEmojis(EMOJI_REGISTRY['spell-it-out']).then(() => resetGame());
   },
 
   stop() {

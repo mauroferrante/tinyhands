@@ -1,5 +1,7 @@
 import { initAudio, getAudioCtx } from '../audio.js';
 import { spawnParticles } from '../effects.js';
+import { preloadEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
+import { EMOJI_REGISTRY } from '../emoji-registry.js';
 
 /* =============================================================
  *  Ball Bonanza — Chaotic Emoji Physics Playground
@@ -228,7 +230,7 @@ function makeEl(emoji, cls) {
   el.className = cls;
   const inner = document.createElement('span');
   inner.className = 'bb-inner';
-  inner.textContent = emoji;
+  inner.appendChild(createEmojiImg(emoji, 'emoji-img'));
   el.appendChild(inner);
   return el;
 }
@@ -273,7 +275,7 @@ function impactStars(x, y) {
   for (let i = 0; i < 4; i++) {
     const el = document.createElement('span');
     el.className = 'bb-impact-star';
-    el.textContent = emojis[i % emojis.length];
+    el.appendChild(createEmojiImg(emojis[i % emojis.length], 'emoji-img'));
     const angle = (Math.PI * 2 / 4) * i + rand(-0.3, 0.3);
     const d = rand(25, 50);
     el.style.left = x + 'px';
@@ -291,7 +293,7 @@ function showDizzyStars(char) {
   for (let i = 0; i < 3; i++) {
     const s = document.createElement('span');
     s.className = 'bb-star';
-    s.textContent = '⭐';
+    s.appendChild(createEmojiImg('⭐', 'emoji-img'));
     s.style.setProperty('--ss', (i * 120) + 'deg');
     s.style.animationDelay = (i * 0.15) + 's';
     starsDiv.appendChild(s);
@@ -299,10 +301,10 @@ function showDizzyStars(char) {
   setTimeout(() => { starsDiv.innerHTML = ''; }, 2000);
 }
 
-function showEventText(text, x, y) {
+function showEventText(emoji, text, x, y) {
   const el = document.createElement('div');
   el.className = 'bb-event-text';
-  el.textContent = text;
+  el.innerHTML = '<img src="' + getEmojiUrl(emoji) + '" class="emoji-img inline-emoji" alt="' + emoji + '"> ' + text;
   el.style.left = x + 'px';
   el.style.top = y + 'px';
   gameEl.appendChild(el);
@@ -346,7 +348,7 @@ function removeCollectible(c) {
 function pickupBurst(x, y, emoji) {
   const el = document.createElement('span');
   el.className = 'bb-pickup-burst';
-  el.textContent = emoji;
+  el.appendChild(createEmojiImg(emoji, 'emoji-img'));
   el.style.left = x + 'px';
   el.style.top = y + 'px';
   gameEl.appendChild(el);
@@ -388,7 +390,7 @@ function removeBonusBall(b) {
 // -- Star effect: spawn a bonus ball for 20s --
 function effectStar(x, y) {
   sndCollectStar();
-  showEventText('⭐ BONUS BALL!', x, y);
+  showEventText('⭐', 'BONUS BALL!', x, y);
   spawnParticles(x, y, gameEl);
   const b = makeBall('🏀', x, y);
   const angle = Math.random() * Math.PI * 2;
@@ -401,7 +403,7 @@ function effectStar(x, y) {
 // -- Clock effect: speed everything up for 20s --
 function effectClock(x, y) {
   sndCollectClock();
-  showEventText('⏰ SPEED UP!', x, y);
+  showEventText('⏰', 'SPEED UP!', x, y);
   speedMultiplier = 1.8;
   // Yellow tint overlay
   if (!speedTintEl) {
@@ -423,7 +425,7 @@ function effectCircus(x, y) {
   gameEl.classList.add('bb-shaking');
   setTimeout(() => gameEl.classList.remove('bb-shaking'), 200);
   const toAdd = Math.max(2, Math.ceil(characters.length * 0.5));
-  showEventText('🎪 MORE FRIENDS!', x, y);
+  showEventText('🎪', 'MORE FRIENDS!', x, y);
   spawnParticles(x, y, gameEl);
   const extraChars = [];
   for (let i = 0; i < toAdd; i++) {
@@ -974,12 +976,14 @@ export const ballBonanza = {
 
   start() {
     initAudio();
-    init();
     gameEl.style.display = 'block';
-    running = true;
-    lastTime = performance.now();
-    animFrame = requestAnimationFrame(loop);
-    window.addEventListener('resize', onResize);
+    preloadEmojis(EMOJI_REGISTRY['ball-bonanza']).then(() => {
+      init();
+      running = true;
+      lastTime = performance.now();
+      animFrame = requestAnimationFrame(loop);
+      window.addEventListener('resize', onResize);
+    });
   },
 
   stop() {

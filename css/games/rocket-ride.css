@@ -44,6 +44,11 @@
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
+.rocket-heart .emoji-img {
+  width: clamp(1.2rem, 3vw, 1.6rem);
+  height: clamp(1.2rem, 3vw, 1.6rem);
+}
+
 .rocket-heart.lost {
   opacity: 0.4;
   filter: grayscale(1);

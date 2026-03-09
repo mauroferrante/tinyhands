@@ -11,6 +11,8 @@ import {
   playMysteryBoxOpen, playMysteryBoxReveal, playLifeLost
 } from '../audio.js';
 import { shareOrCopy } from '../share.js';
+import { preloadEmojis, getImage, createEmojiImg, getEmojiUrl } from '../emoji.js';
+import { EMOJI_REGISTRY } from '../emoji-registry.js';
 
 // ---- Physics constants ----
 const GRAVITY         = 0.12;
@@ -201,17 +203,15 @@ function getSprite(emoji, size) {
   off.height = dim * dpr;
   const oc = off.getContext('2d');
   oc.scale(dpr, dpr);
-  oc.font = size + 'px serif';
-  oc.textAlign = 'center';
-  oc.textBaseline = 'middle';
-  oc.fillText(emoji, dim / 2, dim / 2);
-
-  const imgData = oc.getImageData(0, 0, off.width, off.height);
-  const d = imgData.data;
-  for (let i = 3; i < d.length; i += 4) {
-    if (d[i] > 0) d[i] = Math.min(255, d[i] * 2);
+  const img = getImage(emoji);
+  if (img) {
+    oc.drawImage(img, pad, pad, size, size);
+  } else {
+    oc.font = size + 'px serif';
+    oc.textAlign = 'center';
+    oc.textBaseline = 'middle';
+    oc.fillText(emoji, dim / 2, dim / 2);
   }
-  oc.putImageData(imgData, 0, 0);
 
   const sprite = { canvas: off, offset: dim / 2, dim };
   spriteCache[key] = sprite;
@@ -540,7 +540,7 @@ function updateLives() {
   for (let i = 0; i < 3; i++) {
     const heart = document.createElement('span');
     heart.className = 'balloon-heart';
-    heart.textContent = i < lives ? '\u2764\uFE0F' : '\u{1F90D}';
+    heart.appendChild(createEmojiImg(i < lives ? '❤️' : '🤍', 'emoji-img'));
     if (i >= lives) heart.classList.add('lost');
     livesEl.appendChild(heart);
   }
@@ -553,7 +553,8 @@ function animateHeartLost() {
   if (heartToRemove) {
     heartToRemove.classList.add('balloon-heart-breaking');
     setTimeout(() => {
-      heartToRemove.textContent = '\u{1F90D}';
+      heartToRemove.textContent = '';
+      heartToRemove.appendChild(createEmojiImg('🤍', 'emoji-img'));
       heartToRemove.classList.add('lost');
       heartToRemove.classList.remove('balloon-heart-breaking');
     }, 500);
@@ -1038,7 +1039,7 @@ function showGameOver() {
   }
 
   const bestText = isNewBest
-    ? '<div class="balloon-endcard-best">\u{1F3C6} New Best!</div>'
+    ? '<div class="balloon-endcard-best"><img src="' + getEmojiUrl('🏆') + '" class="emoji-img inline-emoji" alt="🏆"> New Best!</div>'
     : (bestScore > 0
         ? '<div class="balloon-endcard-best-small">Best: ' + bestScore + '</div>'
         : '');
@@ -1050,18 +1051,18 @@ function showGameOver() {
 
   celebrateEl.innerHTML =
     '<div class="balloon-endcard">' +
-      '<div class="balloon-endcard-emoji">\u{1F4A5}</div>' +
+      '<div class="balloon-endcard-emoji"><img src="' + getEmojiUrl('💥') + '" class="emoji-img" alt="💥" style="width:100%;height:100%"></div>' +
       '<div class="balloon-endcard-title">POP!</div>' +
       '<div class="balloon-endcard-stats">' +
         '<span>Score: ' + score + '</span>' +
-        '<span>\u{23F1} ' + timeFmt + '</span>' +
-        (starsCollected > 0 ? '<span>\u{2728} ' + starsCollected + '</span>' : '') +
+        '<span><img src="' + getEmojiUrl('⏱') + '" class="emoji-img inline-emoji" alt="⏱"> ' + timeFmt + '</span>' +
+        (starsCollected > 0 ? '<span><img src="' + getEmojiUrl('✨') + '" class="emoji-img inline-emoji" alt="✨"> ' + starsCollected + '</span>' : '') +
       '</div>' +
       bestText +
       '<div class="balloon-endcard-actions">' +
         '<button class="balloon-endcard-btn balloon-btn-again">Play Again</button>' +
       '</div>' +
-      '<button class="endcard-share-btn" data-share>\u{1F4E4} Share with a parent</button>' +
+      '<button class="endcard-share-btn" data-share><img src="' + getEmojiUrl('📤') + '" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button>' +
     '</div>';
 
   celebrateEl.classList.add('show');
@@ -1081,8 +1082,8 @@ function wireShare(container) {
     e.stopPropagation();
     const result = await shareOrCopy();
     if (result.method === 'copy' && result.success) {
-      btn.textContent = '\u{2705} Link copied!';
-      setTimeout(() => { btn.textContent = '\u{1F4E4} Share with a parent'; }, 2500);
+      btn.innerHTML = '<img src="' + getEmojiUrl('✅') + '" class="emoji-img btn-emoji" alt="✅"> Link copied!';
+      setTimeout(() => { btn.innerHTML = '<img src="' + getEmojiUrl('📤') + '" class="emoji-img btn-emoji" alt="📤"> Share with a parent'; }, 2500);
     }
   });
   btn.addEventListener('touchend', (e) => e.stopPropagation());
@@ -1380,7 +1381,11 @@ function render() {
     if (puIndicator) {
       if (activeTimedEffect) {
         puIndicator.classList.add('active');
-        if (puIconEl) puIconEl.textContent = POWERUP_EMOJIS[activeTimedEffect.type];
+        if (puIconEl && puIconEl._lastEmoji !== activeTimedEffect.type) {
+          puIconEl.textContent = '';
+          puIconEl.appendChild(createEmojiImg(POWERUP_EMOJIS[activeTimedEffect.type], 'emoji-img'));
+          puIconEl._lastEmoji = activeTimedEffect.type;
+        }
         if (puBarEl) {
           const pct = (activeTimedEffect.remaining / activeTimedEffect.duration) * 100;
           puBarEl.style.width = Math.max(0, pct) + '%';
@@ -1388,6 +1393,7 @@ function render() {
         }
       } else {
         puIndicator.classList.remove('active');
+        if (puIconEl) puIconEl._lastEmoji = null;
       }
     }
     if (shieldIndEl) {
@@ -1610,7 +1616,7 @@ function resetAndStart() {
   if (hintEl) hintEl.remove();
   hintEl = document.createElement('div');
   hintEl.className = 'balloon-hint';
-  hintEl.textContent = 'Tap to fly! \u{1F388}';
+  hintEl.innerHTML = 'Tap to fly! <img src="' + getEmojiUrl('🎈') + '" class="emoji-img inline-emoji" alt="🎈">';
   gameEl.appendChild(hintEl);
 
   gameState = 'ready';
@@ -1670,14 +1676,16 @@ export const balloonFloat = {
     Object.keys(spriteCache).forEach(k => delete spriteCache[k]);
     initCanvas();
     createBgClouds();
-    createLandscape();
-    resetAndStart();
-    resizeHandler = onResize;
-    window.addEventListener('resize', resizeHandler);
-    touchEndHandler = () => { touchHolding = false; };
-    document.addEventListener('touchend', touchEndHandler);
-    document.addEventListener('touchcancel', touchEndHandler);
-    animFrame = requestAnimationFrame(gameLoop);
+    preloadEmojis(EMOJI_REGISTRY['balloon-float']).then(() => {
+      createLandscape();
+      resetAndStart();
+      resizeHandler = onResize;
+      window.addEventListener('resize', resizeHandler);
+      touchEndHandler = () => { touchHolding = false; };
+      document.addEventListener('touchend', touchEndHandler);
+      document.addEventListener('touchcancel', touchEndHandler);
+      animFrame = requestAnimationFrame(gameLoop);
+    });
   },
 
   stop() {

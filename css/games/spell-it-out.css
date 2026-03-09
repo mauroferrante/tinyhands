@@ -24,6 +24,11 @@
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
+.spell-heart .emoji-img {
+  width: clamp(1.2rem, 3vw, 1.6rem);
+  height: clamp(1.2rem, 3vw, 1.6rem);
+}
+
 .spell-heart.lost {
   opacity: 0.4;
   filter: grayscale(1);
@@ -69,6 +74,8 @@
 /* ===== Emoji Display ===== */
 .spell-emoji {
   font-size: clamp(100px, 28vw, 220px);
+  width: clamp(100px, 28vw, 220px);
+  height: clamp(100px, 28vw, 220px);
   line-height: 1;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }

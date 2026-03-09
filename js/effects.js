@@ -1,3 +1,6 @@
+import { preloadEmojis, createEmojiImg } from './emoji.js';
+import { EMOJI_REGISTRY } from './emoji-registry.js';
+
 export const EMOJIS = [
   '😀','😺','🐶','🐱','🌳','🌻','🦋','🐠','🌈','🍎',
   '🚀','⭐','🎈','🐸','🦁','🐧','🎉','🌸','🐝','🍕',
@@ -27,23 +30,26 @@ export function spawnParticles(x, y, container) {
 const BG_EMOJIS = ['😀','🍕','🍩','🎈','🐸','🦁','🦄','🐝','🎲','🐱','🚀'];
 
 export function createBgEmojis(landingEl) {
-  // Shuffle and use each emoji once — no duplicates
-  const shuffled = [...BG_EMOJIS].sort(() => Math.random() - 0.5);
+  // Preload BG emojis, then place them
+  preloadEmojis(BG_EMOJIS).then(() => {
+    const shuffled = [...BG_EMOJIS].sort(() => Math.random() - 0.5);
 
-  // Place emojis in left/right margins of the viewport to avoid center content
-  // Left edge: 2-12%, Right edge: 88-98%
-  for (let i = 0; i < shuffled.length; i++) {
-    const el = document.createElement('span');
-    el.className = 'bg-emoji';
-    el.textContent = shuffled[i];
-    const onLeft = i % 2 === 0;
-    el.style.left = onLeft
-      ? (2 + Math.random() * 10) + '%'
-      : (88 + Math.random() * 10) + '%';
-    el.style.top  = (5 + Math.random() * 85) + '%';
-    el.style.animationDuration = (4 + Math.random() * 4) + 's';
-    el.style.animationDelay    = (Math.random() * 4) + 's';
-    el.style.fontSize = (1.8 + Math.random() * 1.5) + 'rem';
-    document.body.appendChild(el);
-  }
+    for (let i = 0; i < shuffled.length; i++) {
+      const el = document.createElement('span');
+      el.className = 'bg-emoji';
+      const emojiSize = (1.8 + Math.random() * 1.5);
+      const img = createEmojiImg(shuffled[i], 'emoji-img');
+      img.style.width = emojiSize + 'rem';
+      img.style.height = emojiSize + 'rem';
+      el.appendChild(img);
+      const onLeft = i % 2 === 0;
+      el.style.left = onLeft
+        ? (2 + Math.random() * 10) + '%'
+        : (88 + Math.random() * 10) + '%';
+      el.style.top  = (5 + Math.random() * 85) + '%';
+      el.style.animationDuration = (4 + Math.random() * 4) + 's';
+      el.style.animationDelay    = (Math.random() * 4) + 's';
+      document.body.appendChild(el);
+    }
+  });
 }

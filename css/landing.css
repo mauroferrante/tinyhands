@@ -463,6 +463,11 @@ body.game-active .bg-emoji {
   pointer-events: none;
 }
 
+.game-card .card-icon .emoji-img {
+  width: 4rem;
+  height: 4rem;
+}
+
 .game-card:nth-child(1) .card-icon { animation-delay: 0s; }
 .game-card:nth-child(2) .card-icon { animation-delay: 1s; }
 .game-card:nth-child(3) .card-icon { animation-delay: 2s; }

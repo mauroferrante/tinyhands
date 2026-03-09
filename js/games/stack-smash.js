@@ -7,6 +7,8 @@ import {
 import { spawnParticles } from '../effects.js';
 import { shareOrCopy } from '../share.js';
 import { createAudience, destroyAudience, audienceReact } from './stack-audience.js';
+import { preloadEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
+import { EMOJI_REGISTRY } from '../emoji-registry.js';
 
 function wireEndcardShare(container) {
   const btn = container.querySelector('[data-share]');
@@ -15,8 +17,8 @@ function wireEndcardShare(container) {
     e.stopPropagation();
     const result = await shareOrCopy();
     if (result.method === 'copy' && result.success) {
-      btn.textContent = '✅ Copied!';
-      setTimeout(() => { btn.textContent = '📤 Share with a parent'; }, 2500);
+      btn.innerHTML = '<img src="' + getEmojiUrl('✅') + '" class="emoji-img btn-emoji" alt="✅"> Copied!';
+      setTimeout(() => { btn.innerHTML = '<img src="' + getEmojiUrl('📤') + '" class="emoji-img btn-emoji" alt="📤"> Share with a parent'; }, 2500);
     }
   });
   btn.addEventListener('touchend', (e) => e.stopPropagation());
@@ -471,8 +473,8 @@ function stTriggerCollapse() {
   stackTowerEl.style.transition = 'transform 1s ease-in';
   stackTowerEl.style.transform = `rotate(${collapseDir * 25}deg)`;
 
-  const bestText = stIsNewBest ? '<br>🏆 New best!' : '';
-  stackCelebrate.innerHTML = `${stBlockCount} blocks! 💥<span class="sub-text">Tap to play again!${bestText}</span><button class="endcard-share-btn" data-share>📤 Share with a parent</button>`;
+  const bestText = stIsNewBest ? `<br><img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"> New best!` : '';
+  stackCelebrate.innerHTML = `${stBlockCount} blocks! <img src="${getEmojiUrl('💥')}" class="emoji-img inline-emoji" alt="💥"><span class="sub-text">Tap to play again!${bestText}</span><button class="endcard-share-btn" data-share><img src="${getEmojiUrl('📤')}" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button>`;
   stackCelebrate.classList.add('show');
   wireEndcardShare(stackCelebrate);
 }
@@ -505,18 +507,21 @@ function stTriggerTowerComplete() {
     e.className = 'stack-confetti';
     e.style.left = Math.random() * 100 + '%';
     e.style.top = -(Math.random() * 30 + 10) + 'px';
-    e.style.fontSize = (24 + Math.random() * 20) + 'px';
+    const emojiSize = (24 + Math.random() * 20);
     e.style.width = 'auto';
     e.style.height = 'auto';
-    e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const confImg = createEmojiImg(emojis[Math.floor(Math.random() * emojis.length)], 'emoji-img');
+    confImg.style.width = emojiSize + 'px';
+    confImg.style.height = emojiSize + 'px';
+    e.appendChild(confImg);
     e.style.setProperty('--fall-dur', (3 + Math.random() * 2) + 's');
     e.style.setProperty('--fall-dist', window.innerHeight + 80 + 'px');
     e.style.setProperty('--fall-rot', (Math.random() * 360 - 180) + 'deg');
     stackGameEl.appendChild(e);
   }
 
-  const bestText = stIsNewBest ? '<br>🏆 New best!' : '';
-  stackCelebrate.innerHTML = `🏆 You Win! 🏆<span class="sub-text">${stBlockCount} blocks stacked!${bestText}<br>Tap to play again</span><button class="endcard-share-btn" data-share>📤 Share with a parent</button>`;
+  const bestText = stIsNewBest ? `<br><img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"> New best!` : '';
+  stackCelebrate.innerHTML = `<img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"> You Win! <img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"><span class="sub-text">${stBlockCount} blocks stacked!${bestText}<br>Tap to play again</span><button class="endcard-share-btn" data-share><img src="${getEmojiUrl('📤')}" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button>`;
   stackCelebrate.classList.add('show');
   wireEndcardShare(stackCelebrate);
 }
@@ -626,6 +631,7 @@ export const stackSmash = {
     stackGameEl.style.display = 'block';
     stackHint.style.opacity = '1';
     stackScoreEl.style.opacity = '1';
+    preloadEmojis([...EMOJI_REGISTRY['stack-smash'], ...EMOJI_REGISTRY['stack-audience']]);
 
     const screenW = window.innerWidth;
     stOriginalWidth = Math.min(screenW * 0.4, 200);

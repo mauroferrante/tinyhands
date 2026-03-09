@@ -1,5 +1,7 @@
 import { playRandomSound } from '../audio.js';
 import { EMOJIS, spawnParticles } from '../effects.js';
+import { preloadEmojis, createEmojiImg } from '../emoji.js';
+import { EMOJI_REGISTRY } from '../emoji-registry.js';
 
 const splatKeysGame = document.getElementById('splatKeysGame');
 const splatHint     = document.getElementById('splatHint');
@@ -40,10 +42,12 @@ function spawnEmoji(x, y, key) {
 
   const el = document.createElement('span');
   el.className = 'emoji';
-  el.textContent = char;
+  const imgEl = createEmojiImg(char, 'emoji-img');
+  imgEl.style.width = EMOJI_SIZE + 'px';
+  imgEl.style.height = EMOJI_SIZE + 'px';
+  el.appendChild(imgEl);
   el.style.left = (x - EMOJI_SIZE / 2) + 'px';
   el.style.top  = (y - EMOJI_SIZE / 2) + 'px';
-  el.style.fontSize = EMOJI_SIZE + 'px';
   el.style.setProperty('--rot', rot + 'deg');
   el.style.setProperty('--float-dur', (3 + Math.random() * 3) + 's');
   el.style.setProperty('--float-delay', (Math.random() * -3) + 's');
@@ -79,6 +83,7 @@ export const splatKeys = {
   start() {
     splatKeysGame.style.display = 'block';
     splatHint.style.opacity = '1';
+    preloadEmojis(EMOJI_REGISTRY['splat-keys']);
   },
   stop() {
     splatKeysGame.style.display = 'none';
