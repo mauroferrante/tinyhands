@@ -1861,9 +1861,17 @@ function updatePlayer() {
 
 // === AREA TRIGGER ===
 function checkAreaTrigger(nodeId) {
-  // Case 1: Sender destination (collect item)
-  if (DESTINATIONS[nodeId] && !collected[nodeId]) {
-    triggerDestination(nodeId);
+  // Case 1: Sender destination
+  if (DESTINATIONS[nodeId]) {
+    if (!collected[nodeId]) {
+      triggerDestination(nodeId);
+      return;
+    }
+    // Already collected — repeat delivery instructions if not yet delivered
+    const delivTarget = DELIVERY_MAP[nodeId];
+    if (delivTarget && !delivered[delivTarget]) {
+      showDialog(DESTINATIONS[nodeId].emoji, SENDER_DIALOGS[nodeId]);
+    }
     return;
   }
   // Case 2 & 3: Delivery destination
