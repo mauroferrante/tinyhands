@@ -383,7 +383,7 @@ function getSprite(emoji, size) {
     const pad = (dim - size) / 2;
     x.drawImage(img, pad, pad, size, size);
   } else {
-    x.font = size + 'px sans-serif';
+    x.font = size + "px 'Nunito', sans-serif";
     x.textAlign = 'center'; x.textBaseline = 'middle';
     x.fillText(emoji, dim/2, dim/2);
   }
@@ -1555,7 +1555,7 @@ function drawApproachGlow(c) {
       grad.addColorStop(1, 'rgba(255,200,0,0)');
       c.fillStyle = grad;
       c.beginPath(); c.arc(n.x,n.y,r,0,Math.PI*2); c.fill();
-      c.font = `bold ${22*fontScale|0}px sans-serif`;
+      c.font = `bold ${22*fontScale|0}px 'Fredoka One', cursive`;
       c.textAlign = 'center'; c.textBaseline = 'bottom';
       c.fillStyle = 'rgba(0,0,0,0.55)';
       c.fillText(dest.label, n.x+1, n.y-38+1);
@@ -1604,7 +1604,7 @@ function drawDestinationMarkers(c) {
     const scale = 1 + Math.sin(t * 2.5 + i * 0.5) * 0.06;
     drawSprite(c, dest.emoji, n.x, n.y - 20 + bounce, 48 * scale);
     // Label below character
-    c.font = `bold ${18*fontScale|0}px sans-serif`;
+    c.font = `bold ${18*fontScale|0}px 'Fredoka One', cursive`;
     c.textAlign = 'center'; c.textBaseline = 'top';
     c.fillStyle = 'rgba(0,0,0,0.5)';
     c.fillText(dest.label, n.x + 1, n.y + 19);
@@ -1635,7 +1635,7 @@ function drawDeliveryMarkers(c) {
       c.restore();
       // Dim label
       c.save(); c.globalAlpha = 0.3;
-      c.font = `bold ${16*fontScale|0}px sans-serif`;
+      c.font = `bold ${16*fontScale|0}px 'Fredoka One', cursive`;
       c.textAlign = 'center'; c.textBaseline = 'top';
       c.fillStyle = '#FFFFFF';
       c.fillText(dd.label, n.x, n.y + 14);
@@ -1667,7 +1667,7 @@ function drawDeliveryMarkers(c) {
     const scale = 1 + Math.sin(t * 2.5 + i * 0.5) * 0.06;
     drawSprite(c, dd.emoji, n.x, n.y - 20 + bounce, 48 * scale);
     // Label below character
-    c.font = `bold ${18*fontScale|0}px sans-serif`;
+    c.font = `bold ${18*fontScale|0}px 'Fredoka One', cursive`;
     c.textAlign = 'center'; c.textBaseline = 'top';
     c.fillStyle = 'rgba(0,0,0,0.5)';
     c.fillText(dd.label, n.x + 1, n.y + 19);
@@ -1692,7 +1692,7 @@ function drawDeliveryApproachGlow(c) {
       grad.addColorStop(1, 'rgba(80,120,220,0)');
       c.fillStyle = grad;
       c.beginPath(); c.arc(n.x, n.y, r, 0, Math.PI * 2); c.fill();
-      c.font = `bold ${22*fontScale|0}px sans-serif`;
+      c.font = `bold ${22*fontScale|0}px 'Fredoka One', cursive`;
       c.textAlign = 'center'; c.textBaseline = 'bottom';
       c.fillStyle = 'rgba(0,0,0,0.55)';
       c.fillText(dd.label, n.x + 1, n.y - 38 + 1);
@@ -1755,15 +1755,15 @@ function drawEndScreen(c) {
   const bounce = Math.sin(frameCount * 0.06) * 6;
   drawSprite(c, '🏆', W/2, cy2 + 50 + bounce, 60);
   // Text
-  c.font = `bold ${28*fontScale|0}px sans-serif`;
+  c.font = `bold ${28*fontScale|0}px 'Fredoka One', cursive`;
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillStyle = '#FFD54F';
   c.fillText('Festival Complete!', W/2, cy2 + 105);
-  c.font = `${18*fontScale|0}px sans-serif`;
+  c.font = `${18*fontScale|0}px 'Nunito', sans-serif`;
   c.fillStyle = '#FFFDE7';
   c.fillText('All gifts delivered — the Festival', W/2, cy2 + 145);
   c.fillText('of Kindness is a success!', W/2, cy2 + 170);
-  c.font = `bold ${16*fontScale|0}px sans-serif`;
+  c.font = `bold ${16*fontScale|0}px 'Fredoka One', cursive`;
   c.fillStyle = 'rgba(255,255,255,0.5)';
   c.fillText('Thank you, little hero!', W/2, cy2 + 210);
   const tyW = c.measureText('Thank you, little hero! ').width;
@@ -1771,7 +1771,7 @@ function drawEndScreen(c) {
   // Tap to restart
   const blink = Math.sin(frameCount * 0.05) * 0.3 + 0.7;
   c.globalAlpha = fadeIn * blink;
-  c.font = `${15*fontScale|0}px sans-serif`;
+  c.font = `${15*fontScale|0}px 'Quicksand', sans-serif`;
   c.fillStyle = '#FFD54F';
   c.fillText('Tap anywhere to play again', W/2, cy2 + ch - 10);
   c.restore();
@@ -2105,7 +2105,7 @@ function drawDialog(c) {
   drawSprite(c, activeDialog.emoji, bx + emojiPad, by + bh / 2, Math.round(48 * fontScale));
   // Text (word-wrapped)
   const dialogFz = Math.round(17 * fontScale);
-  c.font = `${dialogFz}px sans-serif`;
+  c.font = `${dialogFz}px 'Nunito', sans-serif`;
   c.fillStyle = '#FFFDE7';
   c.textAlign = 'left'; c.textBaseline = 'top';
   const textX = bx + Math.round(78 * fontScale), textY = by + Math.round(14 * fontScale);
@@ -2265,24 +2265,13 @@ function handleKey(e) {
   }
 }
 
-function closestRoadNode(wx, wy) {
-  // Find the closest point on any road edge, then return the nearest node on that edge
+function closestRoadNode(wx, wy, excludeNode) {
+  // Find the closest road node to a world point by Euclidean distance
   let bestNode = null, bestDist = Infinity;
-  for (const e of edges) {
-    const na = nodeMap[e.a], nb = nodeMap[e.b];
-    const ex = nb.x-na.x, ey = nb.y-na.y;
-    const len2 = ex*ex+ey*ey;
-    if (len2 < 1) continue;
-    // Project tap point onto edge segment
-    let t = ((wx-na.x)*ex + (wy-na.y)*ey) / len2;
-    t = Math.max(0, Math.min(1, t));
-    const px = na.x + ex*t, py = na.y + ey*t;
-    const d = Math.hypot(wx-px, wy-py);
-    if (d < bestDist) {
-      bestDist = d;
-      // Pick whichever end node is closer to the projected point
-      bestNode = t < 0.5 ? e.a : e.b;
-    }
+  for (const [id, n] of Object.entries(nodeMap)) {
+    if (id === excludeNode) continue;
+    const d = Math.hypot(n.x - wx, n.y - wy);
+    if (d < bestDist) { bestDist = d; bestNode = id; }
   }
   return bestNode;
 }
@@ -2295,35 +2284,22 @@ function handleTapNav(mx, my) {
   const startNode = player.node || player.targetNode;
   if (!startNode) return;
 
-  const dest = closestRoadNode(wx, wy);
+  // Find closest road node to tap point
+  let dest = closestRoadNode(wx, wy);
   if (!dest) return;
 
-  // Tap resolved to a different node — pathfind there (existing behavior)
-  if (dest !== startNode) {
-    const path = bfsPath(startNode, dest);
-    if (path.length > 0) {
-      player.path = path;
-      player.moving = true;
-      player.keyDriven = false;
-    }
-    return;
+  // If tap resolved to current node, check for area trigger or find next best
+  if (dest === startNode) {
+    const dx = wx - player.x, dy = wy - player.y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    if (len < 20) { checkAreaTrigger(startNode); return; }
+    // Find nearest node that isn't the current one
+    dest = closestRoadNode(wx, wy, startNode);
+    if (!dest || dest === startNode) return;
   }
 
-  // Tap resolved to current node — use tap direction to navigate
-  const dx = wx - player.x, dy = wy - player.y;
-  const len = Math.sqrt(dx*dx + dy*dy);
-  if (len < 20) { checkAreaTrigger(startNode); return; } // Very close tap = trigger area
-
-  // Build multi-node path in tap direction (up to 6 nodes)
-  const ndx = dx/len, ndy = dy/len;
-  let current = startNode;
-  const path = [];
-  for (let i = 0; i < 6; i++) {
-    const next = bestNodeInDir(current, ndx, ndy);
-    if (!next) break;
-    path.push(next);
-    current = next;
-  }
+  // Always use BFS shortest path
+  const path = bfsPath(startNode, dest);
   if (path.length > 0) {
     player.path = path;
     player.moving = true;
@@ -2404,7 +2380,7 @@ function drawCharSelect(c) {
   c.fillStyle = '#FFFDE7';
   c.beginPath(); c.roundRect(gridL, gridT, gridR-gridL, gridB-gridT, 18); c.fill();
   // Title
-  c.font = `bold ${24*fontScale|0}px sans-serif`;
+  c.font = `bold ${24*fontScale|0}px 'Fredoka One', cursive`;
   c.textAlign = 'center'; c.textBaseline = 'top';
   c.fillStyle = '#4A3000';
   c.fillText('Choose your character!', W/2, gridT + 14);
@@ -2433,7 +2409,7 @@ function drawCharSelect(c) {
     drawSprite(c, t.emoji, t.x + t.w/2, t.y + t.h/2 + bob, selected ? 56 : 52);
   }
   // Subtitle
-  c.font = `${16*fontScale|0}px sans-serif`;
+  c.font = `${16*fontScale|0}px 'Nunito', sans-serif`;
   c.fillStyle = '#7A6030';
   c.fillText('Tap or use ← → then Enter to pick!', W/2, gridB - 30);
 }
@@ -2522,7 +2498,7 @@ function drawCollectibleBar(c) {
     } else {
       c.fillStyle = 'rgba(255,255,255,0.06)';
       c.beginPath(); c.roundRect(sx, row1y, slotW, slotW, 6); c.fill();
-      c.font = `bold ${15*fontScale|0}px sans-serif`;
+      c.font = `bold ${15*fontScale|0}px 'Fredoka One', cursive`;
       c.textAlign = 'center'; c.textBaseline = 'middle';
       c.fillStyle = 'rgba(255,255,255,0.25)';
       c.fillText('?', cxSlot, cySlot);
@@ -2550,7 +2526,7 @@ function drawCollectibleBar(c) {
       c.fillStyle = 'rgba(100,140,255,0.12)';
       c.beginPath(); c.roundRect(sx, row2y, slotW, slotW, 6); c.fill();
       const pulse = 0.5 + 0.5 * Math.sin(frameCount * 0.08 + i);
-      c.font = `bold ${18*fontScale|0}px sans-serif`;
+      c.font = `bold ${18*fontScale|0}px 'Nunito', sans-serif`;
       c.textAlign = 'center'; c.textBaseline = 'middle';
       c.fillStyle = `rgba(100,180,255,${0.5 + pulse * 0.5})`;
       c.fillText('↓', cxSlot, cySlot);
@@ -2558,7 +2534,7 @@ function drawCollectibleBar(c) {
       // Item not collected: dim question mark
       c.fillStyle = 'rgba(255,255,255,0.04)';
       c.beginPath(); c.roundRect(sx, row2y, slotW, slotW, 6); c.fill();
-      c.font = `bold ${15*fontScale|0}px sans-serif`;
+      c.font = `bold ${15*fontScale|0}px 'Fredoka One', cursive`;
       c.textAlign = 'center'; c.textBaseline = 'middle';
       c.fillStyle = 'rgba(255,255,255,0.15)';
       c.fillText('?', cxSlot, cySlot);
@@ -2567,7 +2543,7 @@ function drawCollectibleBar(c) {
   // Progress counter
   const collectCount = DEST_ORDER.filter(id => collected[id]).length;
   const delivCount = DELIVERY_ORDER.filter(id => delivered[id]).length;
-  c.font = `bold ${13*fontScale|0}px sans-serif`;
+  c.font = `bold ${13*fontScale|0}px 'Nunito', sans-serif`;
   c.textAlign = 'center'; c.textBaseline = 'top';
   c.fillStyle = 'rgba(255,255,255,0.55)';
   c.fillText(collectCount + '/9 collected · ' + delivCount + '/9 delivered', W / 2, by - 16);
@@ -2611,7 +2587,7 @@ function updateDestAnimations(c) {
       // Label under reward
       if (prog < 0.5) {
         const lfs = 24*fontScale|0;
-        c.font = `bold ${lfs}px sans-serif`;
+        c.font = `bold ${lfs}px 'Fredoka One', cursive`;
         c.textAlign = 'center'; c.fillStyle = `rgba(255,255,255,${1 - prog * 2})`;
         c.fillText(a.label, sx, sy - rise + 55);
         if (a.labelEmoji) {
@@ -2679,7 +2655,7 @@ function drawIntroMessage(c) {
   c.strokeStyle = 'rgba(255,220,80,0.4)';
   c.lineWidth = 2.5;
   c.beginPath(); c.roundRect(bx, by, bw, bh, 18); c.stroke();
-  c.font = `bold ${26*fontScale|0}px sans-serif`;
+  c.font = `bold ${26*fontScale|0}px 'Fredoka One', cursive`;
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillStyle = '#FFD54F';
   const fkText = 'Festival of Kindness!';
@@ -2687,11 +2663,11 @@ function drawIntroMessage(c) {
   drawSprite(c, '🎉', 24 * fontScale, W/2 - fkW/2 - 20 * fontScale, by + 30 * fontScale);
   c.fillText(fkText, W/2, by + 30 * fontScale);
   drawSprite(c, '🎉', 24 * fontScale, W/2 + fkW/2 + 20 * fontScale, by + 30 * fontScale);
-  c.font = `${18*fontScale|0}px sans-serif`;
+  c.font = `${18*fontScale|0}px 'Nunito', sans-serif`;
   c.fillStyle = '#FFFDE7';
   c.fillText('Visit your friends, collect their gifts,', W/2, by + 64 * fontScale);
   c.fillText('and deliver them across town!', W/2, by + 86 * fontScale);
-  c.font = `${15*fontScale|0}px sans-serif`;
+  c.font = `${15*fontScale|0}px 'Quicksand', sans-serif`;
   c.fillStyle = 'rgba(255,255,255,0.6)';
   c.fillText('The Festival is counting on you!', W/2, by + 114 * fontScale);
   c.restore();
@@ -2726,7 +2702,7 @@ function drawZoneLabel(c) {
   }
   const fs = 18*fontScale|0;
   c.save();
-  c.font=`bold ${fs}px sans-serif`;
+  c.font=`bold ${fs}px 'Fredoka One', cursive`;
   c.textAlign='left'; c.textBaseline='top';
   // Draw emoji sprite then text
   const emojiSize = fs * 1.2;

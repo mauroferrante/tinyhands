@@ -37,10 +37,34 @@ const BLOCK_COLORS = ['#FF6B8A','#FFB347','#7C5CFC','#4ECDC4','#FF85A1','#FFC75F
 const BLOCK_H = 35;
 const BALL_SIZE = 50;
 const GROUND_H = BALL_SIZE - 5;
-const PENDULUM_MAX_ANGLE = 0.7;
-const CABLE_EXTEND_SPEED = 1.0;
-const CABLE_START_LENGTH = 120;
+const PENDULUM_MAX_ANGLE_BASE = 0.7;
+const CABLE_EXTEND_SPEED_BASE = 1.0;
+const CABLE_START_LENGTH_BASE = 120;
 const CRANE_HOOK_Y = 50;
+
+// Dynamic cable/swing based on screen size and tower height
+function stGetCableStartLength() {
+  const screenH = window.innerHeight;
+  const towerH = stGetTowerTopY();
+  const available = screenH - CRANE_HOOK_Y - towerH - BLOCK_H * 2;
+  // Cable = fraction of available space, shorter as tower grows
+  const base = Math.min(CABLE_START_LENGTH_BASE, screenH * 0.15);
+  return Math.max(40, Math.min(base, available * 0.5));
+}
+
+function stGetMaxAngle() {
+  const screenH = window.innerHeight;
+  // Smaller screens get smaller swing; also reduce as tower grows
+  const screenFactor = Math.min(1, screenH / 800);
+  const heightFactor = Math.max(0.4, 1 - stTowerBlocks.length * 0.03);
+  return PENDULUM_MAX_ANGLE_BASE * screenFactor * heightFactor;
+}
+
+function stGetCableExtendSpeed() {
+  const screenH = window.innerHeight;
+  // Slower extension on small screens
+  return Math.max(0.3, CABLE_EXTEND_SPEED_BASE * Math.min(1, screenH / 800));
+}
 const PERFECT_THRESHOLD = 0.01;
 const INSTABILITY_THRESHOLD = 2.0;
 const DANGER_ZONE = 1.6;
@@ -226,11 +250,13 @@ function stStartSway() {
     stBlockWidth = stOriginalWidth;
   }
 
-  // Randomize cable length so blocks arrive from different heights/timings
-  stCableLength = CABLE_START_LENGTH + Math.random() * 60 - 30;
+  // Dynamic cable length: shorter on small screens and as tower grows
+  const baseLen = stGetCableStartLength();
+  const jitter = Math.min(30, baseLen * 0.2);
+  stCableLength = baseLen + Math.random() * jitter * 2 - jitter;
   // Full random starting position in swing arc — prevents spam-key wins
   stSwingAngle = Math.random() * Math.PI * 2;
-  stPendulumAngle = PENDULUM_MAX_ANGLE * Math.sin(stSwingAngle);
+  stPendulumAngle = stGetMaxAngle() * Math.sin(stSwingAngle);
 
   const craneX = screenW / 2;
   const blockTopY = CRANE_HOOK_Y + stCableLength * Math.cos(stPendulumAngle);
@@ -473,8 +499,8 @@ function stTriggerCollapse() {
   stackTowerEl.style.transition = 'transform 1s ease-in';
   stackTowerEl.style.transform = `rotate(${collapseDir * 25}deg)`;
 
-  const bestText = stIsNewBest ? `<br><img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"> New best!` : '';
-  stackCelebrate.innerHTML = `${stBlockCount} blocks! <img src="${getEmojiUrl('💥')}" class="emoji-img inline-emoji" alt="💥"><span class="sub-text">Tap to play again!${bestText}</span><button class="endcard-share-btn" data-share><img src="${getEmojiUrl('📤')}" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button>`;
+  const bestText = stIsNewBest ? `<div class="stack-endcard-best"><img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"> New best!</div>` : '';
+  stackCelebrate.innerHTML = `<div class="stack-endcard"><div class="stack-endcard-emoji"><img src="${getEmojiUrl('💥')}" class="emoji-img" alt="💥" style="width:1em;height:1em"></div><div class="stack-endcard-title">${stBlockCount} blocks!</div>${bestText}<div class="stack-endcard-hint">Tap to play again</div><button class="endcard-share-btn" data-share><img src="${getEmojiUrl('📤')}" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button></div>`;
   stackCelebrate.classList.add('show');
   wireEndcardShare(stackCelebrate);
 }
@@ -520,8 +546,8 @@ function stTriggerTowerComplete() {
     stackGameEl.appendChild(e);
   }
 
-  const bestText = stIsNewBest ? `<br><img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"> New best!` : '';
-  stackCelebrate.innerHTML = `<img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"> You Win! <img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"><span class="sub-text">${stBlockCount} blocks stacked!${bestText}<br>Tap to play again</span><button class="endcard-share-btn" data-share><img src="${getEmojiUrl('📤')}" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button>`;
+  const bestText = stIsNewBest ? `<div class="stack-endcard-best"><img src="${getEmojiUrl('🏆')}" class="emoji-img inline-emoji" alt="🏆"> New best!</div>` : '';
+  stackCelebrate.innerHTML = `<div class="stack-endcard"><div class="stack-endcard-emoji"><img src="${getEmojiUrl('🏆')}" class="emoji-img" alt="🏆" style="width:1em;height:1em"></div><div class="stack-endcard-title">You Win!</div><div class="stack-endcard-stats">${stBlockCount} blocks stacked!</div>${bestText}<div class="stack-endcard-hint">Tap to play again</div><button class="endcard-share-btn" data-share><img src="${getEmojiUrl('📤')}" class="emoji-img btn-emoji" alt="📤"> Share with a parent</button></div>`;
   stackCelebrate.classList.add('show');
   wireEndcardShare(stackCelebrate);
 }
@@ -572,9 +598,15 @@ function stGameLoop() {
     const craneX = screenW / 2;
 
     stSwingAngle += stSwaySpeed * 0.03;
-    stPendulumAngle = PENDULUM_MAX_ANGLE * Math.sin(stSwingAngle);
+    const maxAngle = stGetMaxAngle();
+    stPendulumAngle = maxAngle * Math.sin(stSwingAngle);
 
-    stCableLength += CABLE_EXTEND_SPEED;
+    stCableLength += stGetCableExtendSpeed();
+
+    // Clamp cable so block doesn't go past tower top
+    const towerTopFromBottom = stGetTowerTopY();
+    const maxCable = screenH - CRANE_HOOK_Y - towerTopFromBottom - BLOCK_H * 1.5;
+    if (stCableLength > maxCable) stCableLength = maxCable;
 
     const blockCenterX = craneX + stCableLength * Math.sin(stPendulumAngle);
     const blockTopY = CRANE_HOOK_Y + stCableLength * Math.cos(stPendulumAngle);
@@ -586,9 +618,22 @@ function stGameLoop() {
 
     stUpdateCable();
 
-    const towerTopFromBottom = stGetTowerTopY();
-    if (bottomVal <= towerTopFromBottom + BLOCK_H + 20) {
-      stDropBlock();
+    // Auto-drop only when block bottom touches tower AND overlaps horizontally
+    if (bottomVal <= towerTopFromBottom + BLOCK_H + 10) {
+      const blockLeft = stSwayX;
+      const blockRight = stSwayX + stBlockWidth;
+      let overlaps = false;
+      if (stTowerBlocks.length === 0) {
+        // First block: check overlap with ball area (center of screen)
+        const ballLeft = screenW / 2 - BALL_SIZE;
+        const ballRight = screenW / 2 + BALL_SIZE;
+        overlaps = blockRight > ballLeft && blockLeft < ballRight;
+      } else {
+        // Check overlap with top tower block
+        const top = stTowerBlocks[stTowerBlocks.length - 1];
+        overlaps = blockRight > top.x && blockLeft < top.x + top.w;
+      }
+      if (overlaps) stDropBlock();
     }
   }
 
