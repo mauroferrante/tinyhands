@@ -170,17 +170,16 @@
 
 #landing footer .footer-signature {
   font-size: 0.8rem;
-  color: var(--color-text-light);
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
 #landing footer .footer-feedback {
   font-size: 0.75rem;
-  color: var(--color-text-light);
+  color: var(--color-text-muted);
   font-weight: 500;
   text-decoration: none;
-  opacity: 0.7;
-  transition: opacity 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 #landing footer .footer-feedback:hover {
