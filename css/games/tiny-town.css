@@ -7,13 +7,16 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #8FBF6F;
+  /* Dark blue matches the character-select overlay so no green flash on load */
+  background: #142850;
   margin: 0;
   padding: 0;
 }
 
 #tinyTownGame canvas {
   display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   margin: 0;

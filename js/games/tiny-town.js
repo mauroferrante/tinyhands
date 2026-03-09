@@ -2730,8 +2730,10 @@ let mouseMoveHandler = null;
 
 function initCanvas() {
   const dpr = window.devicePixelRatio || 1;
-  W = window.innerWidth;
-  H = window.innerHeight;
+  // Use container bounds (more reliable than window.inner* during fullscreen transitions)
+  const rect = gameEl.getBoundingClientRect();
+  W = rect.width  || window.innerWidth;
+  H = rect.height || window.innerHeight;
   fontScale = Math.max(1, Math.min(1.6, W / 500));
   canvas.width = W * dpr;
   canvas.height = H * dpr;
