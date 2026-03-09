@@ -32,6 +32,11 @@ const postgameNudgeCopied = document.getElementById('postgameNudgeCopied');
 // ---- Floating background emojis ----
 createBgEmojis(landing);
 
+// ---- Platform detection ----
+// iPadOS 13+ reports "MacIntel" but has touch — second check catches it
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
 // ---- Shared state ----
 let currentGame     = null;
 let pendingGame     = null;
@@ -97,6 +102,13 @@ function launchGame(gameId, btn) {
   pendingGame = game;
 
   playEntryAnimation(btn, () => {
+    // iOS: skip Fullscreen API to avoid "typing in fullscreen" security warning.
+    // CSS position:fixed + inset:0 on #playground already fills the viewport.
+    if (isIOS) {
+      startGame(pendingGame);
+      pendingGame = null;
+      return;
+    }
     const el = document.documentElement;
     const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
     if (rfs) {
