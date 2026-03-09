@@ -297,15 +297,15 @@ const DELIVERY_MAP = {
 
 // Sender dialogs (shown after collecting an item)
 const SENDER_DIALOGS = {
-  forest:  "I found a magic mushroom! Please bring it to the Elf in the western woods — she needs it for the Festival potion!",
+  forest:  "Here's a magic mushroom! Please bring it to the Elf in the western woods, she needs it for the Festival potion!",
   garden:  "This rose is for the Princess at Castle Park in the city. She's decorating for the Festival!",
   pets:    "My puppy wants to meet the Ranger at the station out east! Can you take him there?",
   pond:    "This fish is a gift for the Penguin at the ice cream shop on the boardwalk!",
   orchard: "Take this apple to Grandma at her cottage up north. She's baking a Festival pie!",
   farm:    "A fresh egg for the Chef at the restaurant in the city! He's cooking a Festival feast!",
-  airport: "A ticket for the Explorer camped out southwest — he's been waiting to fly to the Festival!",
+  airport: "A ticket for the Explorer camped out southwest, he's been waiting to fly to the Festival!",
   beach:   "This shell is for the Mermaid at the lighthouse. She'll use it to call the Festival music!",
-  bakery:  "A special cake for the Queen at Town Hall! When she tastes it, she'll open the Festival!",
+  bakery:  "A special cake for the Queen at Town Hall! It's needed for the big festival celebration.",
 };
 
 // Recipient dialogs (shown when item is delivered)
@@ -318,7 +318,7 @@ const RECIPIENT_DIALOGS = {
   restaurant: "A farm-fresh egg! My Festival feast will be magnificent! Merci!",
   camp:       "A plane ticket! I can finally join the Festival! Adventure awaits!",
   lighthouse: "A sea shell! Listen... can you hear the Festival song beginning?",
-  townhall:   "A splendid cake! By royal decree... let the Festival of Kindness BEGIN!",
+  townhall:   "How splendid! This wonderful cake will be shared with everyone when the festival begins!",
 };
 
 // Hint dialogs (shown when visiting a recipient WITHOUT the item)
@@ -351,6 +351,7 @@ let activeDialog = null;
 let finaleChars = [];
 let finaleTimer = 0;
 let showEndScreen = false;
+let puppyFollow = null; // { x, y } — follows player after collecting from pets
 let destAnimations = [];
 let collectAnimations = [];
 let buildings = [], houses = [], scenery = [];
@@ -1967,11 +1968,17 @@ function triggerDestination(nodeId) {
   pendingTimeouts.push(tid2);
   const soundFn = SOUND_MAP[dest.sound];
   if (soundFn) soundFn();
+  // Puppy follows player after collecting from pets
+  if (nodeId === 'pets') {
+    puppyFollow = { x: n.x, y: n.y, bobT: 0 };
+  }
 }
 
 function triggerDelivery(nodeId) {
   const dd = DELIVERY_DESTINATIONS[nodeId]; if (!dd) return;
   delivered[nodeId] = true;
+  // Puppy delivered to ranger
+  if (nodeId === 'ranger') puppyFollow = null;
   const n = nodeMap[nodeId];
   const delivCount = DELIVERY_ORDER.filter(id => delivered[id]).length;
   const isLast = (delivCount === DELIVERY_ORDER.length);
@@ -2025,7 +2032,7 @@ function triggerDelivery(nodeId) {
 
 // === DIALOG SYSTEM ===
 function showDialog(emoji, text) {
-  activeDialog = { emoji, text, t: 0, maxT: 320 };
+  activeDialog = { emoji, text, t: 0, maxT: 500 };
 }
 
 function drawDialog(c) {
@@ -2676,6 +2683,7 @@ function resetState() {
   finaleChars = [];
   finaleTimer = 0;
   showEndScreen = false;
+  puppyFollow = null;
   completionPlayed = false;
   destAnimations = [];
   collectAnimations = [];
@@ -2723,6 +2731,7 @@ function render() {
   drawOceanAnimations(c);
   drawAirportAnimations(c);
   drawPlayer(c);
+  drawPuppy(c);
   drawFinaleChars(c);
   updateDestAnimations(c);
 
@@ -2739,9 +2748,32 @@ function render() {
 }
 
 // === UPDATE ===
+function updatePuppy() {
+  if (!puppyFollow) return;
+  // Lerp toward player with a trailing offset behind movement direction
+  const offsetDist = 35;
+  const tx = player.x - Math.cos(player.dir) * offsetDist;
+  const ty = player.y - Math.sin(player.dir) * offsetDist;
+  puppyFollow.x += (tx - puppyFollow.x) * 0.08;
+  puppyFollow.y += (ty - puppyFollow.y) * 0.08;
+  puppyFollow.bobT += 0.1;
+}
+
+function drawPuppy(c) {
+  if (!puppyFollow) return;
+  const bob = Math.sin(puppyFollow.bobT) * 3;
+  const wagX = Math.sin(puppyFollow.bobT * 1.5) * 2;
+  if (Math.cos(player.dir) < -0.1) {
+    drawSpriteFlipped(c, '🐕', puppyFollow.x + wagX, puppyFollow.y + bob, 28);
+  } else {
+    drawSprite(c, '🐕', puppyFollow.x + wagX, puppyFollow.y + bob, 28);
+  }
+}
+
 function update() {
   frameCount++;
   updatePlayer();
+  updatePuppy();
   updateCamera();
 }
 
