@@ -153,6 +153,7 @@ let lastExtraLifeCheck;
 // ---- Landscape state ----
 let landscapeLayers;
 let landscapeScale;  // scale factor based on screen height
+let gameScale = 1;   // speed/spawn scale based on screen width
 
 // ===== Canvas Setup =====
 
@@ -166,6 +167,7 @@ function initCanvas() {
   canvas.style.height = H + 'px';
   ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
+  gameScale = Math.max(1, Math.min(2, W / 800));
 }
 
 let resizeHandler = null;
@@ -784,11 +786,11 @@ function updateMysteryReveal(dt) {
 // ===== Obstacle Spawning =====
 
 function getObstacleSpeed() {
-  return OBS_BASE_SPEED + Math.min(gameTime * 0.015, 2.5);
+  return (OBS_BASE_SPEED + Math.min(gameTime * 0.015, 2.5)) * gameScale;
 }
 
 function getSpawnInterval() {
-  return Math.max(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_START - gameTime * 0.012);
+  return Math.max(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_START - gameTime * 0.012) / gameScale;
 }
 
 function pickRandomY(margin) {
