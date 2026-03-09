@@ -144,8 +144,8 @@ const nodeMap = {
 
 const edges = [
   // City horizontal (c00→c10 routed through elb_bak, see bakery section)
-  { a:'c10',b:'townhall',type:'city' }, { a:'townhall',b:'c20',type:'city' }, { a:'c20',b:'c30',type:'city' },
-  { a:'c01',b:'c11',type:'city' }, { a:'c11',b:'c21',type:'city' }, { a:'c21',b:'c31',type:'city' },
+  { a:'c10',b:'townhall',type:'city' }, { a:'townhall',b:'elb_castle',type:'city' }, { a:'elb_castle',b:'c20',type:'city' }, { a:'c20',b:'c30',type:'city' },
+  { a:'c01',b:'c11',type:'city' }, { a:'c11',b:'c21',type:'city' }, { a:'c21',b:'elb_rest',type:'city' }, { a:'elb_rest',b:'c31',type:'city' },
   { a:'c02',b:'c12',type:'city' }, { a:'c12',b:'c22',type:'city' }, { a:'c22',b:'c32',type:'city' },
   // City vertical
   { a:'c00',b:'c01',type:'city' }, { a:'c01',b:'c02',type:'city' },
@@ -161,7 +161,7 @@ const edges = [
   // City to south (vertical)
   { a:'c02',b:'s_s1',type:'suburban' }, { a:'c22',b:'s_s2',type:'suburban' },
   // North suburb ring (horizontal, routed through countryside elbows)
-  { a:'s_nw',b:'elb_cn1',type:'suburban' }, { a:'elb_cn1',b:'s_n1',type:'suburban' },
+  { a:'s_nw',b:'elb_cottage',type:'suburban' }, { a:'elb_cottage',b:'elb_cn1',type:'suburban' }, { a:'elb_cn1',b:'s_n1',type:'suburban' },
   { a:'s_n1',b:'s_n2',type:'suburban' },
   { a:'s_n2',b:'s_n3',type:'suburban' }, { a:'s_n3',b:'elb_cn3',type:'suburban' },
   { a:'elb_cn3',b:'s_ne',type:'suburban' },
@@ -215,10 +215,10 @@ const edges = [
   { a:'elb_bak',b:'bakery',type:'city' },
   // Delivery destination spurs (all 90° L-shaped via elbows)
   { a:'elb_cw',b:'hilltop',type:'dirt' },
-  { a:'c20',b:'elb_castle',type:'city' }, { a:'elb_castle',b:'castle',type:'city' },
+  { a:'elb_castle',b:'castle',type:'city' },
   { a:'s_e2',b:'elb_ranger',type:'suburban' }, { a:'elb_ranger',b:'ranger',type:'suburban' },
-  { a:'elb_cn1',b:'elb_cottage',type:'suburban' }, { a:'elb_cottage',b:'cottage',type:'suburban' },
-  { a:'c31',b:'elb_rest',type:'city' }, { a:'elb_rest',b:'restaurant',type:'city' },
+  { a:'elb_cottage',b:'cottage',type:'suburban' },
+  { a:'elb_rest',b:'restaurant',type:'city' },
   { a:'s_sw',b:'elb_camp',type:'suburban' }, { a:'elb_camp',b:'camp',type:'dirt' },
   { a:'bt_e',b:'elb_lh',type:'boardwalk' }, { a:'elb_lh',b:'lighthouse',type:'boardwalk' },
 ];
@@ -338,6 +338,7 @@ const FINAL_DELIVERY_LINE = "That's the last gift! The Festival of Kindness can 
 
 // === STATE ===
 let canvas, gameEl, W, H;
+let fontScale = 1; // responsive: 1.0 on mobile, up to 1.6 on desktop
 let cx = 0, cy = 0;
 let running = false, animFrame = null;
 let selectingChar = false;
@@ -416,7 +417,22 @@ function generateBuildings() {
           const size = 58 + Math.floor(Math.random() * 34);
           const ex = bx1 + spacing * i + spacing / 2;
           const emoji = BLDG_EMOJIS[Math.floor(Math.random() * BLDG_EMOJIS.length)];
-          buildings.push({ x: ex, y: ry, emoji, size });
+          // Skip buildings that overlap city spur roads
+          const spurClear = 45;
+          const nearSpur = edges.some(e => {
+            if (e.type !== 'city' || (/^c\d\d$/.test(e.a) && /^c\d\d$/.test(e.b))) return false;
+            const na = nodeMap[e.a], nb = nodeMap[e.b];
+            if (na.x === nb.x && Math.abs(ex - na.x) < spurClear) {
+              const minY = Math.min(na.y, nb.y), maxY = Math.max(na.y, nb.y);
+              if (ry >= minY - 20 && ry <= maxY + 20) return true;
+            }
+            if (na.y === nb.y && Math.abs(ry - na.y) < spurClear) {
+              const minX = Math.min(na.x, nb.x), maxX = Math.max(na.x, nb.x);
+              if (ex >= minX - 20 && ex <= maxX + 20) return true;
+            }
+            return false;
+          });
+          if (!nearSpur) buildings.push({ x: ex, y: ry, emoji, size });
         }
       }
     }
@@ -1516,7 +1532,7 @@ function drawApproachGlow(c) {
       grad.addColorStop(1, 'rgba(255,200,0,0)');
       c.fillStyle = grad;
       c.beginPath(); c.arc(n.x,n.y,r,0,Math.PI*2); c.fill();
-      c.font = 'bold 22px sans-serif';
+      c.font = `bold ${22*fontScale|0}px sans-serif`;
       c.textAlign = 'center'; c.textBaseline = 'bottom';
       c.fillStyle = 'rgba(0,0,0,0.55)';
       c.fillText(dest.label, n.x+1, n.y-38+1);
@@ -1565,7 +1581,7 @@ function drawDestinationMarkers(c) {
     const scale = 1 + Math.sin(t * 2.5 + i * 0.5) * 0.06;
     drawSprite(c, dest.emoji, n.x, n.y - 20 + bounce, 48 * scale);
     // Label below character
-    c.font = 'bold 18px sans-serif';
+    c.font = `bold ${18*fontScale|0}px sans-serif`;
     c.textAlign = 'center'; c.textBaseline = 'top';
     c.fillStyle = 'rgba(0,0,0,0.5)';
     c.fillText(dest.label, n.x + 1, n.y + 19);
@@ -1596,7 +1612,7 @@ function drawDeliveryMarkers(c) {
       c.restore();
       // Dim label
       c.save(); c.globalAlpha = 0.3;
-      c.font = 'bold 16px sans-serif';
+      c.font = `bold ${16*fontScale|0}px sans-serif`;
       c.textAlign = 'center'; c.textBaseline = 'top';
       c.fillStyle = '#FFFFFF';
       c.fillText(dd.label, n.x, n.y + 14);
@@ -1628,7 +1644,7 @@ function drawDeliveryMarkers(c) {
     const scale = 1 + Math.sin(t * 2.5 + i * 0.5) * 0.06;
     drawSprite(c, dd.emoji, n.x, n.y - 20 + bounce, 48 * scale);
     // Label below character
-    c.font = 'bold 18px sans-serif';
+    c.font = `bold ${18*fontScale|0}px sans-serif`;
     c.textAlign = 'center'; c.textBaseline = 'top';
     c.fillStyle = 'rgba(0,0,0,0.5)';
     c.fillText(dd.label, n.x + 1, n.y + 19);
@@ -1653,7 +1669,7 @@ function drawDeliveryApproachGlow(c) {
       grad.addColorStop(1, 'rgba(80,120,220,0)');
       c.fillStyle = grad;
       c.beginPath(); c.arc(n.x, n.y, r, 0, Math.PI * 2); c.fill();
-      c.font = 'bold 22px sans-serif';
+      c.font = `bold ${22*fontScale|0}px sans-serif`;
       c.textAlign = 'center'; c.textBaseline = 'bottom';
       c.fillStyle = 'rgba(0,0,0,0.55)';
       c.fillText(dd.label, n.x + 1, n.y - 38 + 1);
@@ -1716,21 +1732,21 @@ function drawEndScreen(c) {
   const bounce = Math.sin(frameCount * 0.06) * 6;
   drawSprite(c, '🏆', W/2, cy2 + 50 + bounce, 60);
   // Text
-  c.font = 'bold 28px sans-serif';
+  c.font = `bold ${28*fontScale|0}px sans-serif`;
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillStyle = '#FFD54F';
   c.fillText('Festival Complete!', W/2, cy2 + 105);
-  c.font = '18px sans-serif';
+  c.font = `${18*fontScale|0}px sans-serif`;
   c.fillStyle = '#FFFDE7';
   c.fillText('All gifts delivered — the Festival', W/2, cy2 + 145);
   c.fillText('of Kindness is a success!', W/2, cy2 + 170);
-  c.font = 'bold 16px sans-serif';
+  c.font = `bold ${16*fontScale|0}px sans-serif`;
   c.fillStyle = 'rgba(255,255,255,0.5)';
   c.fillText('Thank you, little hero! 🌟', W/2, cy2 + 210);
   // Tap to restart
   const blink = Math.sin(frameCount * 0.05) * 0.3 + 0.7;
   c.globalAlpha = fadeIn * blink;
-  c.font = '15px sans-serif';
+  c.font = `${15*fontScale|0}px sans-serif`;
   c.fillStyle = '#FFD54F';
   c.fillText('Tap anywhere to play again', W/2, cy2 + ch - 10);
   c.restore();
@@ -2045,8 +2061,8 @@ function drawDialog(c) {
   else if (prog > 0.85) alpha = (1 - prog) / 0.15;
   c.save();
   c.globalAlpha = alpha;
-  const bw = Math.min(460, W - 20);
-  const bh = 100;
+  const bw = Math.min(460 * fontScale, W - 20);
+  const bh = Math.round(100 * fontScale);
   const bx = (W - bw) / 2;
   const by = 50;
   // Shadow
@@ -2060,20 +2076,23 @@ function drawDialog(c) {
   c.lineWidth = 2.5;
   c.beginPath(); c.roundRect(bx, by, bw, bh, 18); c.stroke();
   // Character emoji
-  drawSprite(c, activeDialog.emoji, bx + 42, by + bh / 2, 48);
+  const emojiPad = Math.round(42 * fontScale);
+  drawSprite(c, activeDialog.emoji, bx + emojiPad, by + bh / 2, Math.round(48 * fontScale));
   // Text (word-wrapped)
-  c.font = '17px sans-serif';
+  const dialogFz = Math.round(17 * fontScale);
+  c.font = `${dialogFz}px sans-serif`;
   c.fillStyle = '#FFFDE7';
   c.textAlign = 'left'; c.textBaseline = 'top';
-  const textX = bx + 78, textY = by + 14;
-  const maxW = bw - 92;
+  const textX = bx + Math.round(78 * fontScale), textY = by + Math.round(14 * fontScale);
+  const maxW = bw - Math.round(92 * fontScale);
   const words = activeDialog.text.split(' ');
   let line = '', lineY = textY;
+  const lineH = Math.round(22 * fontScale);
   for (const word of words) {
     const test = line + (line ? ' ' : '') + word;
     if (c.measureText(test).width > maxW && line) {
       c.fillText(line, textX, lineY);
-      line = word; lineY += 22;
+      line = word; lineY += lineH;
     } else {
       line = test;
     }
@@ -2330,7 +2349,7 @@ function drawCharSelect(c) {
   c.fillStyle = '#FFFDE7';
   c.beginPath(); c.roundRect(gridL, gridT, gridR-gridL, gridB-gridT, 18); c.fill();
   // Title
-  c.font = 'bold 24px sans-serif';
+  c.font = `bold ${24*fontScale|0}px sans-serif`;
   c.textAlign = 'center'; c.textBaseline = 'top';
   c.fillStyle = '#4A3000';
   c.fillText('Choose your character!', W/2, gridT + 14);
@@ -2359,9 +2378,9 @@ function drawCharSelect(c) {
     drawSprite(c, t.emoji, t.x + t.w/2, t.y + t.h/2 + bob, selected ? 56 : 52);
   }
   // Subtitle
-  c.font = '16px sans-serif';
+  c.font = `${16*fontScale|0}px sans-serif`;
   c.fillStyle = '#7A6030';
-  c.fillText('Tap or use ← → to pick!', W/2, gridB - 30);
+  c.fillText('Tap or use ← → then Enter to pick!', W/2, gridB - 30);
 }
 
 function handleCharSelect(mx, my) {
@@ -2448,7 +2467,7 @@ function drawCollectibleBar(c) {
     } else {
       c.fillStyle = 'rgba(255,255,255,0.06)';
       c.beginPath(); c.roundRect(sx, row1y, slotW, slotW, 6); c.fill();
-      c.font = 'bold 15px sans-serif';
+      c.font = `bold ${15*fontScale|0}px sans-serif`;
       c.textAlign = 'center'; c.textBaseline = 'middle';
       c.fillStyle = 'rgba(255,255,255,0.25)';
       c.fillText('?', cxSlot, cySlot);
@@ -2476,7 +2495,7 @@ function drawCollectibleBar(c) {
       c.fillStyle = 'rgba(100,140,255,0.12)';
       c.beginPath(); c.roundRect(sx, row2y, slotW, slotW, 6); c.fill();
       const pulse = 0.5 + 0.5 * Math.sin(frameCount * 0.08 + i);
-      c.font = 'bold 18px sans-serif';
+      c.font = `bold ${18*fontScale|0}px sans-serif`;
       c.textAlign = 'center'; c.textBaseline = 'middle';
       c.fillStyle = `rgba(100,180,255,${0.5 + pulse * 0.5})`;
       c.fillText('↓', cxSlot, cySlot);
@@ -2484,7 +2503,7 @@ function drawCollectibleBar(c) {
       // Item not collected: dim question mark
       c.fillStyle = 'rgba(255,255,255,0.04)';
       c.beginPath(); c.roundRect(sx, row2y, slotW, slotW, 6); c.fill();
-      c.font = 'bold 15px sans-serif';
+      c.font = `bold ${15*fontScale|0}px sans-serif`;
       c.textAlign = 'center'; c.textBaseline = 'middle';
       c.fillStyle = 'rgba(255,255,255,0.15)';
       c.fillText('?', cxSlot, cySlot);
@@ -2493,7 +2512,7 @@ function drawCollectibleBar(c) {
   // Progress counter
   const collectCount = DEST_ORDER.filter(id => collected[id]).length;
   const delivCount = DELIVERY_ORDER.filter(id => delivered[id]).length;
-  c.font = 'bold 13px sans-serif';
+  c.font = `bold ${13*fontScale|0}px sans-serif`;
   c.textAlign = 'center'; c.textBaseline = 'top';
   c.fillStyle = 'rgba(255,255,255,0.55)';
   c.fillText(collectCount + '/9 collected · ' + delivCount + '/9 delivered', W / 2, by - 16);
@@ -2536,7 +2555,7 @@ function updateDestAnimations(c) {
       drawSprite(c, a.emoji, sx, sy - rise, Math.max(size, 10));
       // Label under reward
       if (prog < 0.5) {
-        c.font = 'bold 24px sans-serif';
+        c.font = `bold ${24*fontScale|0}px sans-serif`;
         c.textAlign = 'center'; c.fillStyle = `rgba(255,255,255,${1 - prog * 2})`;
         c.fillText(a.label, sx, sy - rise + 55);
       }
@@ -2590,24 +2609,24 @@ function drawIntroMessage(c) {
   else if (prog > 0.8) alpha = (1 - prog) / 0.2;
   c.save(); c.globalAlpha = alpha;
   // Banner
-  const bw = Math.min(480, W - 20), bh = 140;
+  const bw = Math.min(480 * fontScale, W - 20), bh = Math.round(140 * fontScale);
   const bx = (W - bw) / 2, by = H * 0.20;
   c.fillStyle = 'rgba(0,0,0,0.65)';
   c.beginPath(); c.roundRect(bx, by, bw, bh, 18); c.fill();
   c.strokeStyle = 'rgba(255,220,80,0.4)';
   c.lineWidth = 2.5;
   c.beginPath(); c.roundRect(bx, by, bw, bh, 18); c.stroke();
-  c.font = 'bold 26px sans-serif';
+  c.font = `bold ${26*fontScale|0}px sans-serif`;
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillStyle = '#FFD54F';
-  c.fillText('🎉 Festival of Kindness! 🎉', W/2, by + 30);
-  c.font = '18px sans-serif';
+  c.fillText('🎉 Festival of Kindness! 🎉', W/2, by + 30 * fontScale);
+  c.font = `${18*fontScale|0}px sans-serif`;
   c.fillStyle = '#FFFDE7';
-  c.fillText('Visit your friends, collect their gifts,', W/2, by + 64);
-  c.fillText('and deliver them across town!', W/2, by + 86);
-  c.font = '15px sans-serif';
+  c.fillText('Visit your friends, collect their gifts,', W/2, by + 64 * fontScale);
+  c.fillText('and deliver them across town!', W/2, by + 86 * fontScale);
+  c.font = `${15*fontScale|0}px sans-serif`;
   c.fillStyle = 'rgba(255,255,255,0.6)';
-  c.fillText('The Festival is counting on you!', W/2, by + 114);
+  c.fillText('The Festival is counting on you!', W/2, by + 114 * fontScale);
   c.restore();
 }
 
@@ -2639,7 +2658,7 @@ function drawZoneLabel(c) {
     if (wx>=z.x1&&wx<=z.x2&&wy>=z.y1&&wy<=z.y2) { zone=z.label; break; }
   }
   c.save();
-  c.font='bold 18px sans-serif';
+  c.font=`bold ${18*fontScale|0}px sans-serif`;
   c.textAlign='left'; c.textBaseline='top';
   c.fillStyle='rgba(0,0,0,0.35)'; c.fillText(zone,15,15);
   c.fillStyle='white'; c.fillText(zone,14,14);
@@ -2665,6 +2684,7 @@ function initCanvas() {
   const dpr = window.devicePixelRatio || 1;
   W = window.innerWidth;
   H = window.innerHeight;
+  fontScale = Math.max(1, Math.min(1.6, W / 500));
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   canvas.style.width = W + 'px';
