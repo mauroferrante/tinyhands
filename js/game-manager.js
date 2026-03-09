@@ -289,12 +289,14 @@ postgameNudgeShare.addEventListener('click', async () => {
 
 // ===== Global Event Listeners =====
 
-// Keyboard
-document.addEventListener('keydown', (e) => {
-  if (!currentGame) return;
-  if (e.key !== 'Escape') e.preventDefault();
-  currentGame.onKey(e);
-});
+// Keyboard — disabled on touch devices to avoid Safari fullscreen typing warning
+if (navigator.maxTouchPoints === 0) {
+  document.addEventListener('keydown', (e) => {
+    if (!currentGame) return;
+    if (e.key !== 'Escape') e.preventDefault();
+    currentGame.onKey(e);
+  });
+}
 
 // Mouse
 document.addEventListener('mousedown', (e) => {

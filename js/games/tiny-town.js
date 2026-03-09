@@ -2276,13 +2276,42 @@ function closestRoadNode(wx, wy) {
 }
 
 function handleTapNav(mx, my) {
+  // Dismiss active dialog on any tap
+  if (activeDialog) { activeDialog = null; }
+
   const wx = mx+cx, wy = my+cy;
-  const dest = closestRoadNode(wx, wy);
-  if (!dest) return;
   const startNode = player.node || player.targetNode;
   if (!startNode) return;
-  if (dest === startNode) { checkAreaTrigger(startNode); return; }
-  const path = bfsPath(startNode, dest);
+
+  const dest = closestRoadNode(wx, wy);
+  if (!dest) return;
+
+  // Tap resolved to a different node — pathfind there (existing behavior)
+  if (dest !== startNode) {
+    const path = bfsPath(startNode, dest);
+    if (path.length > 0) {
+      player.path = path;
+      player.moving = true;
+      player.keyDriven = false;
+    }
+    return;
+  }
+
+  // Tap resolved to current node — use tap direction to navigate
+  const dx = wx - player.x, dy = wy - player.y;
+  const len = Math.sqrt(dx*dx + dy*dy);
+  if (len < 20) { checkAreaTrigger(startNode); return; } // Very close tap = trigger area
+
+  // Build multi-node path in tap direction (up to 6 nodes)
+  const ndx = dx/len, ndy = dy/len;
+  let current = startNode;
+  const path = [];
+  for (let i = 0; i < 6; i++) {
+    const next = bestNodeInDir(current, ndx, ndy);
+    if (!next) break;
+    path.push(next);
+    current = next;
+  }
   if (path.length > 0) {
     player.path = path;
     player.moving = true;
@@ -2869,8 +2898,10 @@ export const tinyTown = {
 
     animFrame = requestAnimationFrame(charSelectLoop);
 
-    keyUpHandler = (e) => { delete keysDown[e.key]; };
-    document.addEventListener('keyup', keyUpHandler);
+    if (navigator.maxTouchPoints === 0) {
+      keyUpHandler = (e) => { delete keysDown[e.key]; };
+      document.addEventListener('keyup', keyUpHandler);
+    }
 
     mouseMoveHandler = (e) => {
       if (!selectingChar) return;
