@@ -392,7 +392,7 @@ function drawSpriteFlipped(c, emoji, x, y, size) {
 }
 
 // === WORLD GENERATION ===
-const BLDG_EMOJIS = ['🏢','🏬','🏪','🏨','🏦','🏥','🏫','🏛️','⛪','🏣','🏤','🏰'];
+const BLDG_EMOJIS = ['🏢','🏬','🏪','🏨','🏦','🏥','🏫','🏛️','⛪','🏣','🏤','🏢'];
 const HOUSE_EMOJIS = ['🏠','🏡','🏘️'];
 
 function generateBuildings() {
@@ -848,15 +848,13 @@ function generateCountryside() {
     scenery.push({ x:rng(250,550), y:rng(2280,2520), emoji:'🦋', size:16+rng(0,6), layer:'butterfly', wobble:phase() });
   }
 
-  // Castle Park (castle: 3050, 2200) — small castle garden area
-  for (let i = 0; i < 4; i++) {
-    scenery.push({ x:rng(2900,3200), y:rng(2100,2300), emoji:'🌹', size:18+rng(0,10), layer:'sway', wobble:phase() });
+  // Castle Park (castle: 3050, 2200) — castle garden area
+  scenery.push({ x:3050, y:2160, emoji:'🏰', size:68, layer:'castle' });
+  for (let i = 0; i < 8; i++) {
+    scenery.push({ x:rng(2900,3200), y:rng(2080,2320), emoji:'🌳', size:30+rng(0,14), layer:'castle' });
   }
   for (let i = 0; i < 3; i++) {
-    scenery.push({ x:rng(2920,3180), y:rng(2120,2280), emoji:'⛲', size:28+rng(0,8), layer:'castle' });
-  }
-  for (let i = 0; i < 4; i++) {
-    scenery.push({ x:rng(2900,3200), y:rng(2100,2300), emoji:'🌳', size:34+rng(0,10), layer:'castle' });
+    scenery.push({ x:rng(2920,3180), y:rng(2120,2280), emoji:'🌹', size:16+rng(0,8), layer:'sway', wobble:phase() });
   }
 
   // Ranger Station (ranger: 5000, 2400) — woodland ranger outpost
