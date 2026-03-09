@@ -1764,7 +1764,9 @@ function drawEndScreen(c) {
   c.fillText('of Kindness is a success!', W/2, cy2 + 170);
   c.font = `bold ${16*fontScale|0}px sans-serif`;
   c.fillStyle = 'rgba(255,255,255,0.5)';
-  c.fillText('Thank you, little hero! 🌟', W/2, cy2 + 210);
+  c.fillText('Thank you, little hero!', W/2, cy2 + 210);
+  const tyW = c.measureText('Thank you, little hero! ').width;
+  drawSprite(c, '🌟', 16 * fontScale, W/2 + tyW/2, cy2 + 210);
   // Tap to restart
   const blink = Math.sin(frameCount * 0.05) * 0.3 + 0.7;
   c.globalAlpha = fadeIn * blink;
@@ -2670,7 +2672,11 @@ function drawIntroMessage(c) {
   c.font = `bold ${26*fontScale|0}px sans-serif`;
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillStyle = '#FFD54F';
-  c.fillText('🎉 Festival of Kindness! 🎉', W/2, by + 30 * fontScale);
+  const fkText = 'Festival of Kindness!';
+  const fkW = c.measureText(fkText).width;
+  drawSprite(c, '🎉', 24 * fontScale, W/2 - fkW/2 - 20 * fontScale, by + 30 * fontScale);
+  c.fillText(fkText, W/2, by + 30 * fontScale);
+  drawSprite(c, '🎉', 24 * fontScale, W/2 + fkW/2 + 20 * fontScale, by + 30 * fontScale);
   c.font = `${18*fontScale|0}px sans-serif`;
   c.fillStyle = '#FFFDE7';
   c.fillText('Visit your friends, collect their gifts,', W/2, by + 64 * fontScale);

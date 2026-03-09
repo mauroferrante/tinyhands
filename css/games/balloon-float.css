@@ -184,7 +184,7 @@
   padding: 0.5em 1.5em;
   border: none;
   border-radius: 50px;
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>👆</text></svg>") 16 4, pointer !important;
+  cursor: url("../../assets/emoji/cursors/hand-point-32.png") 16 4, pointer !important;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -222,6 +222,10 @@
 .balloon-pu-icon {
   font-size: 1.2em;
   line-height: 1;
+}
+.balloon-pu-icon .emoji-img {
+  width: 1.2em;
+  height: 1.2em;
 }
 
 .balloon-pu-bar-bg {

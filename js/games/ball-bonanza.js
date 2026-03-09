@@ -237,7 +237,8 @@ function makeEl(emoji, cls) {
 
 function makeBall(emoji, x, y) {
   const el = makeEl(emoji, 'bb-ball');
-  el.style.fontSize = BALL_FONT + 'px';
+  const img = el.querySelector('.emoji-img');
+  if (img) { img.style.width = BALL_FONT + 'px'; img.style.height = BALL_FONT + 'px'; }
   gameEl.appendChild(el);
   return { x, y, vx: 0, vy: 0, r: BALL_R, rotation: 0, el, emoji };
 }
@@ -245,6 +246,8 @@ function makeBall(emoji, x, y) {
 function makeChar(emoji, x, y) {
   const el = makeEl(emoji, 'bb-char');
   el.style.fontSize = CHAR_FONT + 'px';
+  const img = el.querySelector('.emoji-img');
+  if (img) { img.style.width = CHAR_FONT + 'px'; img.style.height = CHAR_FONT + 'px'; }
   const starsDiv = document.createElement('div');
   starsDiv.className = 'bb-stars';
   el.appendChild(starsDiv);

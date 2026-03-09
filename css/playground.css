@@ -105,7 +105,7 @@
   border: none;
   border-radius: 30px;
   padding: 8px 20px;
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='28'>👆</text></svg>") 16 4, pointer !important;
+  cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer !important;
   margin-top: 0.8rem;
   transition: background 0.2s ease, transform 0.15s ease;
   -webkit-tap-highlight-color: transparent;
