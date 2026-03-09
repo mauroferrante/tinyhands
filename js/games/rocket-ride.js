@@ -67,10 +67,10 @@ const LS_ALT_KEY  = 'tinyhandsplay-rocket-altitude';
 
 // ---- Milestones ----
 const MILESTONES = [
-  { alt: 500,  text: 'Nice flying! 🚀' },
-  { alt: 1000, text: 'Space explorer! 🌟' },
-  { alt: 2000, text: 'To infinity! ✨' },
-  { alt: 5000, text: 'Legendary pilot! 👨‍🚀' },
+  { alt: 500,  text: 'Nice flying!', emoji: '🚀' },
+  { alt: 1000, text: 'Space explorer!', emoji: '🌟' },
+  { alt: 2000, text: 'To infinity!', emoji: '✨' },
+  { alt: 5000, text: 'Legendary pilot!', emoji: '👨‍🚀' },
 ];
 
 // ---- DOM refs ----
@@ -160,7 +160,7 @@ let sparkles;
 let floatingTexts;
 let crashFragments;
 let shakeIntensity, shakeDuration;
-let milestoneText, milestoneTimer;
+let milestoneText, milestoneEmoji, milestoneTimer;
 
 // ---- Background ----
 let starLayers;
@@ -929,6 +929,7 @@ function checkMilestones() {
     if (altitude >= m.alt && !milestonesReached.has(m.alt)) {
       milestonesReached.add(m.alt);
       milestoneText = m.text;
+      milestoneEmoji = m.emoji;
       milestoneTimer = 2.0;
       playMilestoneChime();
     }
@@ -991,7 +992,11 @@ function showGameOver() {
   if (isNewAlt) { try { localStorage.setItem(LS_ALT_KEY, String(altitude)); } catch (e) {} bestAltitude = altitude; }
 
   const altFmt = altitude.toLocaleString() + 'km';
-  const titles = ['CRASH! 💥', 'Houston, we have a problem!', 'BOOM! 💫'];
+  const titles = [
+    'CRASH! <img src="' + getEmojiUrl('💥') + '" class="emoji-img inline-emoji" alt="💥">',
+    'Houston, we have a problem!',
+    'BOOM! <img src="' + getEmojiUrl('💫') + '" class="emoji-img inline-emoji" alt="💫">'
+  ];
   const title = titles[Math.floor(Math.random() * titles.length)];
 
   celebrateEl.innerHTML =
@@ -1327,6 +1332,11 @@ function render() {
     ctx.lineWidth = 4;
     ctx.strokeText(milestoneText, W / 2, H * 0.3);
     ctx.fillText(milestoneText, W / 2, H * 0.3);
+    if (milestoneEmoji) {
+      const tw = ctx.measureText(milestoneText).width;
+      const es = Math.round(W * 0.05);
+      drawSprite(milestoneEmoji, es, W / 2 + tw / 2 + es * 0.7, H * 0.3);
+    }
     ctx.restore();
   }
 
@@ -1683,6 +1693,7 @@ function resetAndStart() {
   shakeIntensity = 0;
   shakeDuration = 0;
   milestoneText = '';
+  milestoneEmoji = '';
   milestoneTimer = 0;
 
   countdownTimer = 0;

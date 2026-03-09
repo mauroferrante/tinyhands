@@ -1532,7 +1532,8 @@ function drawNPCs(c) {
 
 function drawPlayer(c) {
   const bob = player.moving ? Math.sin(player.bobT*2)*4 : 0;
-  if (Math.cos(player.dir) < -0.1) {
+  // Fluent 3D emoji face left by default — flip when moving right
+  if (Math.cos(player.dir) > 0.1) {
     drawSpriteFlipped(c, player.emoji, player.x, player.y+bob, PLAYER_SIZE);
   } else {
     drawSprite(c, player.emoji, player.x, player.y+bob, PLAYER_SIZE);
@@ -2200,7 +2201,7 @@ function triggerGrandFinale() {
   // === GRAND BANNER ===
   destAnimations.push({
     x: wx, y: wy - 40, emoji: '👩🏻', t: 0, maxT: 400, type: 'reward',
-    startSize: 120, label: '🎉 Festival of Kindness! 🎉',
+    startSize: 120, label: 'Festival of Kindness!', labelEmoji: '🎉',
   });
   // === CHARACTERS: all 18 senders+recipients + extra celebration emojis ===
   const allChars = [];
@@ -2609,9 +2610,17 @@ function updateDestAnimations(c) {
       drawSprite(c, a.emoji, sx, sy - rise, Math.max(size, 10));
       // Label under reward
       if (prog < 0.5) {
-        c.font = `bold ${24*fontScale|0}px sans-serif`;
+        const lfs = 24*fontScale|0;
+        c.font = `bold ${lfs}px sans-serif`;
         c.textAlign = 'center'; c.fillStyle = `rgba(255,255,255,${1 - prog * 2})`;
         c.fillText(a.label, sx, sy - rise + 55);
+        if (a.labelEmoji) {
+          const tw = c.measureText(a.label).width;
+          const es = lfs * 1.1;
+          c.globalAlpha *= (1 - prog * 2);
+          drawSprite(c, a.labelEmoji, sx - tw/2 - es, sy - rise + 55, es);
+          drawSprite(c, a.labelEmoji, sx + tw/2 + es, sy - rise + 55, es);
+        }
       }
       c.restore();
     } else if (a.type === 'flash') {
@@ -2692,34 +2701,39 @@ function drawIntroMessage(c) {
 function drawZoneLabel(c) {
   // Check specific delivery zones first (smaller, higher priority)
   const zones = [
-    {x1:250, y1:2250,x2:550, y2:2550,label:"🧝‍♀️ Elf's Clearing"},
-    {x1:2900,y1:2100,x2:3200,y2:2300,label:'👩‍🎨 Castle Park'},
-    {x1:4850,y1:2300,x2:5150,y2:2500,label:'🧔 Ranger Station'},
-    {x1:1680,y1:3340,x2:1920,y2:3460,label:'🐧 Ice Cream Shop'},
-    {x1:1350,y1:1600,x2:1650,y2:1800,label:"👵 Grandma's Cottage"},
-    {x1:3480,y1:2520,x2:3720,y2:2680,label:'👨‍🍳 Restaurant'},
-    {x1:350, y1:3100,x2:650, y2:3300,label:"👲🏽 Explorer's Camp"},
-    {x1:4080,y1:3520,x2:4320,y2:3680,label:'🧜‍♀️ Lighthouse'},
-    {x1:2800,y1:1940,x2:3000,y2:2060,label:'👩🏻 Town Hall'},
-    {x1:100, y1:600, x2:1400,y2:1400,label:'🌲 Forest'},
-    {x1:1400,y1:600, x2:3500,y2:1400,label:'🌸 Countryside'},
-    {x1:3500,y1:400, x2:4500,y2:1200,label:'🌳 Orchard'},
-    {x1:4100,y1:800, x2:5800,y2:1500,label:'🐄 Farm'},
-    {x1:4600,y1:1200,x2:5800,y2:2000,label:'✈️ Airport'},
-    {x1:1800,y1:1800,x2:4200,y2:2800,label:'🏙️ City Center'},
-    {x1:0,   y1:3200,x2:5800,y2:3600,label:'🌊 Beach Town'},
-    {x1:0,   y1:3600,x2:5800,y2:4500,label:'🌊 Ocean'},
+    {x1:250, y1:2250,x2:550, y2:2550,emoji:'🧝‍♀️',text:"Elf's Clearing"},
+    {x1:2900,y1:2100,x2:3200,y2:2300,emoji:'👩‍🎨',text:'Castle Park'},
+    {x1:4850,y1:2300,x2:5150,y2:2500,emoji:'🧔',text:'Ranger Station'},
+    {x1:1680,y1:3340,x2:1920,y2:3460,emoji:'🐧',text:'Ice Cream Shop'},
+    {x1:1350,y1:1600,x2:1650,y2:1800,emoji:'👵',text:"Grandma's Cottage"},
+    {x1:3480,y1:2520,x2:3720,y2:2680,emoji:'👨‍🍳',text:'Restaurant'},
+    {x1:350, y1:3100,x2:650, y2:3300,emoji:'👲🏽',text:"Explorer's Camp"},
+    {x1:4080,y1:3520,x2:4320,y2:3680,emoji:'🧜‍♀️',text:'Lighthouse'},
+    {x1:2800,y1:1940,x2:3000,y2:2060,emoji:'👩🏻',text:'Town Hall'},
+    {x1:100, y1:600, x2:1400,y2:1400,emoji:'🌲',text:'Forest'},
+    {x1:1400,y1:600, x2:3500,y2:1400,emoji:'🌸',text:'Countryside'},
+    {x1:3500,y1:400, x2:4500,y2:1200,emoji:'🌳',text:'Orchard'},
+    {x1:4100,y1:800, x2:5800,y2:1500,emoji:'🐄',text:'Farm'},
+    {x1:4600,y1:1200,x2:5800,y2:2000,emoji:'✈️',text:'Airport'},
+    {x1:1800,y1:1800,x2:4200,y2:2800,emoji:'🏙️',text:'City Center'},
+    {x1:0,   y1:3200,x2:5800,y2:3600,emoji:'🌊',text:'Beach Town'},
+    {x1:0,   y1:3600,x2:5800,y2:4500,emoji:'🌊',text:'Ocean'},
   ];
   const wx=player.x, wy=player.y;
-  let zone='🏘️ Suburbs';
+  let zone={emoji:'🏘️',text:'Suburbs'};
   for (const z of zones) {
-    if (wx>=z.x1&&wx<=z.x2&&wy>=z.y1&&wy<=z.y2) { zone=z.label; break; }
+    if (wx>=z.x1&&wx<=z.x2&&wy>=z.y1&&wy<=z.y2) { zone=z; break; }
   }
+  const fs = 18*fontScale|0;
   c.save();
-  c.font=`bold ${18*fontScale|0}px sans-serif`;
+  c.font=`bold ${fs}px sans-serif`;
   c.textAlign='left'; c.textBaseline='top';
-  c.fillStyle='rgba(0,0,0,0.35)'; c.fillText(zone,15,15);
-  c.fillStyle='white'; c.fillText(zone,14,14);
+  // Draw emoji sprite then text
+  const emojiSize = fs * 1.2;
+  const textX = 14 + emojiSize + 4;
+  c.fillStyle='rgba(0,0,0,0.35)'; c.fillText(zone.text, textX+1, 15);
+  c.fillStyle='white'; c.fillText(zone.text, textX, 14);
+  drawSprite(c, zone.emoji, 14 + emojiSize/2, 14 + fs/2, emojiSize);
   c.restore();
 }
 
@@ -2841,7 +2855,8 @@ function drawPuppy(c) {
   if (!puppyFollow) return;
   const bob = Math.sin(puppyFollow.bobT) * 3;
   const wagX = Math.sin(puppyFollow.bobT * 1.5) * 2;
-  if (Math.cos(player.dir) < -0.1) {
+  // Fluent 3D emoji face left by default — flip when moving right
+  if (Math.cos(player.dir) > 0.1) {
     drawSpriteFlipped(c, '🐕', puppyFollow.x + wagX, puppyFollow.y + bob, 28);
   } else {
     drawSprite(c, '🐕', puppyFollow.x + wagX, puppyFollow.y + bob, 28);

@@ -4,6 +4,7 @@
 
 import { initAudio, playFanfare, playBubblePop } from './audio.js';
 import { EMOJIS, createBgEmojis } from './effects.js';
+import { createEmojiImg } from './emoji.js';
 import { splatKeys } from './games/splat-keys.js';
 import { stackSmash } from './games/stack-smash.js';
 import { spellItOut } from './games/spell-it-out.js';
@@ -60,7 +61,10 @@ function playEntryAnimation(originBtn, callback) {
   for (let i = 0; i < 25; i++) {
     const em = document.createElement('span');
     em.className = 'boom-emoji';
-    em.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    const emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    em.appendChild(createEmojiImg(emoji, 'emoji-img'));
+    em.querySelector('.emoji-img').style.width = '1em';
+    em.querySelector('.emoji-img').style.height = '1em';
     const angle = (Math.PI * 2 / 25) * i + Math.random() * 0.3;
     const dist = 300 + Math.random() * 400;
     em.style.left = cx + 'px';
