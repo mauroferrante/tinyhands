@@ -279,14 +279,14 @@ const DESTINATIONS = {
 // Delivery recipients — each paired with a sender destination
 const DELIVERY_DESTINATIONS = {
   hilltop:    { emoji:'🧝‍♀️', label:"Elf's Clearing",   sourceId:'forest',  reward:'🍄', sound:'sparkle' },
-  castle:     { emoji:'👸',    label:'Castle Park',      sourceId:'garden',  reward:'🌹', sound:'sparkle' },
+  castle:     { emoji:'👩‍🎨',    label:'Castle Park',      sourceId:'garden',  reward:'🌹', sound:'sparkle' },
   ranger:     { emoji:'🧔',    label:'Ranger Station',   sourceId:'pets',    reward:'🐕', sound:'sparkle' },
   icecream:   { emoji:'🐧',    label:'Ice Cream Shop',   sourceId:'pond',    reward:'🐟', sound:'sparkle' },
   cottage:    { emoji:'👵',    label:"Grandma's Cottage", sourceId:'orchard', reward:'🍎', sound:'sparkle' },
   restaurant: { emoji:'👨‍🍳', label:'Restaurant',       sourceId:'farm',    reward:'🥚', sound:'sparkle' },
-  camp:       { emoji:'👳🏾‍♂️',    label:"Explorer's Camp",  sourceId:'airport', reward:'🎫', sound:'sparkle' },
+  camp:       { emoji:'👲🏽',    label:"Explorer's Camp",  sourceId:'airport', reward:'🎫', sound:'sparkle' },
   lighthouse: { emoji:'🧜‍♀️', label:'Lighthouse',       sourceId:'beach',   reward:'🐚', sound:'sparkle' },
-  townhall:   { emoji:'👑',    label:'Town Hall',        sourceId:'bakery',  reward:'🎂', sound:'sparkle' },
+  townhall:   { emoji:'👸🏼',    label:'Town Hall',        sourceId:'bakery',  reward:'🎂', sound:'sparkle' },
 };
 
 // Sender → delivery recipient mapping
@@ -298,7 +298,7 @@ const DELIVERY_MAP = {
 // Sender dialogs (shown after collecting an item)
 const SENDER_DIALOGS = {
   forest:  "Here's a magic mushroom! Please bring it to the Elf in the western woods, she needs it for the Festival potion!",
-  garden:  "This rose is for the Princess at Castle Park in the city. She's decorating for the Festival!",
+  garden:  "This rose is for the Artist at Castle Park in the city. She's decorating for the Festival!",
   pets:    "My puppy wants to meet the Ranger at the station out east! Can you take him there?",
   pond:    "This fish is a gift for the Penguin at the ice cream shop on the boardwalk!",
   orchard: "Take this apple to Grandma at her cottage up north. She's baking a Festival pie!",
@@ -835,14 +835,17 @@ function generateCountryside() {
   // === DELIVERY DESTINATIONS SCENERY ===
 
   // Elf's Clearing (hilltop: 400, 2400) — mystical forest clearing with magic vibes
-  for (let i = 0; i < 8; i++) {
-    scenery.push({ x:rng(250,550), y:rng(2250,2550), emoji:'🌲', size:38+rng(0,14), layer:'forest' });
+  for (let i = 0; i < 18; i++) {
+    scenery.push({ x:rng(200,600), y:rng(2200,2600), emoji:'🌲', size:38+rng(0,14), layer:'forest' });
   }
   for (let i = 0; i < 5; i++) {
     scenery.push({ x:rng(280,520), y:rng(2300,2500), emoji:'🍄', size:16+rng(0,10), layer:'sway', wobble:phase() });
   }
   for (let i = 0; i < 3; i++) {
     scenery.push({ x:rng(300,500), y:rng(2320,2480), emoji:'✨', size:12+rng(0,8), layer:'butterfly', wobble:phase() });
+  }
+  for (let i = 0; i < 3; i++) {
+    scenery.push({ x:rng(250,550), y:rng(2280,2520), emoji:'🦋', size:16+rng(0,6), layer:'butterfly', wobble:phase() });
   }
 
   // Castle Park (castle: 3050, 2200) — small castle garden area
@@ -899,8 +902,9 @@ function generateCountryside() {
   scenery.push({ x:560, y:3260, emoji:'🎒', size:16, layer:'camp' });
 
   // Lighthouse (lighthouse: 4200, 3600) — coastal lighthouse
-  for (let i = 0; i < 3; i++) {
-    scenery.push({ x:rng(4080,4320), y:rng(3520,3680), emoji:'🪨', size:24+rng(0,10), layer:'rock' });
+  scenery.push({ x:4200, y:3560, emoji:'🗼', size:52, layer:'lighthouse' });
+  for (let i = 0; i < 13; i++) {
+    scenery.push({ x:rng(4060,4340), y:rng(3500,3700), emoji:'🪨', size:20+rng(0,14), layer:'rock' });
   }
   for (let i = 0; i < 3; i++) {
     scenery.push({ x:rng(4100,4300), y:rng(3540,3660), emoji:'🐚', size:14+rng(0,6), layer:'sway', wobble:phase() });
@@ -2175,7 +2179,7 @@ function triggerGrandFinale() {
   });
   // === GRAND BANNER ===
   destAnimations.push({
-    x: wx, y: wy - 40, emoji: '👑', t: 0, maxT: 400, type: 'reward',
+    x: wx, y: wy - 40, emoji: '👸🏼', t: 0, maxT: 400, type: 'reward',
     startSize: 120, label: '🎉 Festival of Kindness! 🎉',
   });
   // === CHARACTERS: all 18 senders+recipients + extra celebration emojis ===
@@ -2341,8 +2345,8 @@ function drawCharSelect(c) {
   const pad = 30;
   const gridL = tiles[0].x - pad;
   const gridR = tiles[tiles.length-1].x + TILE_W + pad;
-  const gridT = tiles[0].y - 70;
-  const gridB = tiles[0].y + TILE_H + 50;
+  const gridT = tiles[0].y - 90;
+  const gridB = tiles[0].y + TILE_H + 70;
   // Panel background
   c.fillStyle = 'rgba(255,255,255,0.13)';
   c.beginPath(); c.roundRect(gridL-10, gridT-10, gridR-gridL+20, gridB-gridT+20, 24); c.fill();
@@ -2635,14 +2639,14 @@ function drawZoneLabel(c) {
   // Check specific delivery zones first (smaller, higher priority)
   const zones = [
     {x1:250, y1:2250,x2:550, y2:2550,label:"🧝‍♀️ Elf's Clearing"},
-    {x1:2900,y1:2100,x2:3200,y2:2300,label:'👸 Castle Park'},
+    {x1:2900,y1:2100,x2:3200,y2:2300,label:'👩‍🎨 Castle Park'},
     {x1:4850,y1:2300,x2:5150,y2:2500,label:'🧔 Ranger Station'},
     {x1:1680,y1:3340,x2:1920,y2:3460,label:'🐧 Ice Cream Shop'},
     {x1:1350,y1:1600,x2:1650,y2:1800,label:"👵 Grandma's Cottage"},
     {x1:3480,y1:2520,x2:3720,y2:2680,label:'👨‍🍳 Restaurant'},
-    {x1:350, y1:3100,x2:650, y2:3300,label:"🧭 Explorer's Camp"},
+    {x1:350, y1:3100,x2:650, y2:3300,label:"👲🏽 Explorer's Camp"},
     {x1:4080,y1:3520,x2:4320,y2:3680,label:'🧜‍♀️ Lighthouse'},
-    {x1:2800,y1:1940,x2:3000,y2:2060,label:'👑 Town Hall'},
+    {x1:2800,y1:1940,x2:3000,y2:2060,label:'👸🏼 Town Hall'},
     {x1:100, y1:600, x2:1400,y2:1400,label:'🌲 Forest'},
     {x1:1400,y1:600, x2:3500,y2:1400,label:'🌸 Countryside'},
     {x1:3500,y1:400, x2:4500,y2:1200,label:'🌳 Orchard'},
