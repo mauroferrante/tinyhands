@@ -425,6 +425,41 @@ function generateHouses() {
       houses.push({ x: hx, y: hy, emoji, size, yard });
     }
   }
+  // Fill suburb areas with additional houses (not along roads)
+  const suburbZones = [
+    // North-west suburbs
+    { x1:1200, y1:1450, x2:1900, y2:1950, count:8 },
+    // North strip (between suburb ring and city)
+    { x1:2050, y1:1450, x2:3750, y2:1900, count:8 },
+    // North-east suburbs
+    { x1:3900, y1:1450, x2:4500, y2:1900, count:6 },
+    // West suburbs
+    { x1:200, y1:2050, x2:1050, y2:2900, count:8 },
+    // East suburbs (avoid industrial x:4300-4900)
+    { x1:3900, y1:2100, x2:4250, y2:2900, count:5 },
+    // South-west suburbs
+    { x1:200, y1:2900, x2:1050, y2:3150, count:5 },
+    // South suburbs
+    { x1:1200, y1:2850, x2:1950, y2:3150, count:5 },
+    // South-east suburbs
+    { x1:3250, y1:2850, x2:3950, y2:3150, count:5 },
+  ];
+  for (const zone of suburbZones) {
+    for (let i = 0; i < zone.count; i++) {
+      const hx = rng(zone.x1, zone.x2);
+      const hy = rng(zone.y1, zone.y2);
+      // Skip if inside city paved area
+      if (hx > 1900 && hx < 3900 && hy > 1900 && hy < 2900) continue;
+      const emoji = HOUSE_EMOJIS[Math.floor(rng(0,3))];
+      const size = 50 + Math.floor(rng(0,22));
+      const yard = [];
+      if (Math.random() < 0.6) {
+        const yardEmojis = ['🌷','🌻','🚗','🐕','🌳','🧸'];
+        yard.push({ dx: rng(-24,24), dy: rng(-20,20), emoji: yardEmojis[Math.floor(rng(0,6))], size: 18 });
+      }
+      houses.push({ x: hx, y: hy, emoji, size, yard });
+    }
+  }
 }
 
 function generateCountryside() {
@@ -744,9 +779,9 @@ function initOceanAnims() {
 
 function initAirportAnims() {
   airportAnims.planes = [
-    { x:5000, y:1400, size:44, state:'parked' },
-    { x:5200, y:1450, size:40, state:'parked' },
-    { x:4900, y:1540, size:48, state:'runway' },
+    { x:5000, y:1660, size:44, state:'parked' },
+    { x:5200, y:1690, size:40, state:'parked' },
+    { x:4900, y:1760, size:48, state:'runway' },
   ];
   airportAnims.takeoffTimer = 0;
   airportAnims.activeAnim   = null;
@@ -1183,12 +1218,12 @@ function drawIndustrialArea(c) {
 }
 
 function drawAirport(c) {
-  // Runway
-  c.fillStyle = C.runway; c.fillRect(4700, 1500, 1000, 80);
+  // Runway (below the road at y=1600)
+  c.fillStyle = C.runway; c.fillRect(4700, 1720, 1000, 80);
   c.fillStyle = '#F0F0F0';
-  for (let x2 = 4730; x2 < 5680; x2 += 60) c.fillRect(x2, 1535, 30, 10);
-  c.fillRect(4700, 1536, 30, 8); c.fillRect(5670, 1536, 30, 8);
-  // Terminal buildings (large emojis)
+  for (let x2 = 4730; x2 < 5680; x2 += 60) c.fillRect(x2, 1755, 30, 10);
+  c.fillRect(4700, 1756, 30, 8); c.fillRect(5670, 1756, 30, 8);
+  // Terminal buildings (above road)
   drawSprite(c, '🏢', 4780, 1300, 80);
   drawSprite(c, '🏣', 4920, 1280, 90);
   drawSprite(c, '🏢', 5060, 1300, 80);
@@ -1196,20 +1231,22 @@ function drawAirport(c) {
   drawSprite(c, '🏢', 5340, 1300, 70);
   // Control tower
   drawSprite(c, '🗼', 5450, 1320, 60);
-  // Ground vehicles and details
+  // Ground vehicles (above road near terminals)
   drawSprite(c, '🚌', 4820, 1460, 36);
   drawSprite(c, '🚐', 5100, 1460, 32);
   drawSprite(c, '🎐', 5500, 1440, 30);
-  // Parked small planes
-  drawSprite(c, '🛩️', 5100, 1380, 40);
-  drawSprite(c, '🛩️', 5200, 1380, 40);
-  drawSprite(c, '🛩️', 5300, 1380, 40);
-  // Parked large planes
-  drawSprite(c, '✈️', 4800, 1400, 52);
-  drawSprite(c, '✈️', 4960, 1400, 52);
-  // Fence
+  // Parked small planes (near runway, below road)
+  drawSprite(c, '🛩️', 5100, 1680, 40);
+  drawSprite(c, '🛩️', 5200, 1680, 40);
+  drawSprite(c, '🛩️', 5300, 1680, 40);
+  // Parked large planes (near runway, below road)
+  drawSprite(c, '✈️', 4800, 1660, 52);
+  drawSprite(c, '✈️', 4960, 1660, 52);
+  // Fence (top section around terminals)
   c.strokeStyle = '#888'; c.lineWidth = 2;
-  c.strokeRect(4660, 1200, 1080, 420);
+  c.strokeRect(4660, 1200, 1080, 380);
+  // Fence (bottom section around runway)
+  c.strokeRect(4660, 1640, 1080, 200);
 }
 
 function drawOceanAnimations(c) {
@@ -1257,7 +1294,7 @@ function drawAirportAnimations(c) {
   for (const p of airportAnims.planes) drawSprite(c, '✈️', p.x, p.y, p.size);
   if (!airportAnims.activeAnim && airportAnims.takeoffTimer > 900) {
     airportAnims.takeoffTimer = 0;
-    airportAnims.activeAnim = { x:4720, y:1540, phase:'takeoff', speed:1, size:50 };
+    airportAnims.activeAnim = { x:4720, y:1760, phase:'takeoff', speed:1, size:50 };
   }
   if (airportAnims.activeAnim) {
     const a = airportAnims.activeAnim;
