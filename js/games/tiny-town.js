@@ -1,4 +1,4 @@
-import { initAudio, getAudioCtx } from '../audio.js';
+import { initAudio, getAudioCtx, playWinFanfare, playCrowdRoar, playCrowdCheer } from '../audio.js';
 
 // === CONSTANTS ===
 const MAP_W = 6000, MAP_H = 4500;
@@ -136,6 +136,10 @@ const nodeMap = {
   // Delivery elbow nodes
   elb_ranger: { x:5000, y:2600 },
   elb_camp:   { x:500,  y:3000 },
+  elb_castle: { x:3050, y:2000 },
+  elb_cottage:{ x:1500, y:1400 },
+  elb_rest:   { x:3600, y:2400 },
+  elb_lh:     { x:4200, y:3400 },
 };
 
 const edges = [
@@ -209,14 +213,14 @@ const edges = [
   // City destination via elbow (also chains c00→c10 through elb_bak)
   { a:'c00',b:'elb_bak',type:'city' }, { a:'elb_bak',b:'c10',type:'city' },
   { a:'elb_bak',b:'bakery',type:'city' },
-  // Delivery destination spurs
+  // Delivery destination spurs (all 90° L-shaped via elbows)
   { a:'elb_cw',b:'hilltop',type:'dirt' },
-  { a:'c20',b:'castle',type:'city' },
+  { a:'c20',b:'elb_castle',type:'city' }, { a:'elb_castle',b:'castle',type:'city' },
   { a:'s_e2',b:'elb_ranger',type:'suburban' }, { a:'elb_ranger',b:'ranger',type:'suburban' },
-  { a:'elb_cn1',b:'cottage',type:'suburban' },
-  { a:'c31',b:'restaurant',type:'city' },
+  { a:'elb_cn1',b:'elb_cottage',type:'suburban' }, { a:'elb_cottage',b:'cottage',type:'suburban' },
+  { a:'c31',b:'elb_rest',type:'city' }, { a:'elb_rest',b:'restaurant',type:'city' },
   { a:'s_sw',b:'elb_camp',type:'suburban' }, { a:'elb_camp',b:'camp',type:'dirt' },
-  { a:'bt_e',b:'lighthouse',type:'boardwalk' },
+  { a:'bt_e',b:'elb_lh',type:'boardwalk' }, { a:'elb_lh',b:'lighthouse',type:'boardwalk' },
 ];
 
 // Build adjacency
@@ -280,7 +284,7 @@ const DELIVERY_DESTINATIONS = {
   icecream:   { emoji:'🐧',    label:'Ice Cream Shop',   sourceId:'pond',    reward:'🐟', sound:'sparkle' },
   cottage:    { emoji:'👵',    label:"Grandma's Cottage", sourceId:'orchard', reward:'🍎', sound:'sparkle' },
   restaurant: { emoji:'👨‍🍳', label:'Restaurant',       sourceId:'farm',    reward:'🥚', sound:'sparkle' },
-  camp:       { emoji:'🧭',    label:"Explorer's Camp",  sourceId:'airport', reward:'🎫', sound:'sparkle' },
+  camp:       { emoji:'👳🏾‍♂️',    label:"Explorer's Camp",  sourceId:'airport', reward:'🎫', sound:'sparkle' },
   lighthouse: { emoji:'🧜‍♀️', label:'Lighthouse',       sourceId:'beach',   reward:'🐚', sound:'sparkle' },
   townhall:   { emoji:'👑',    label:'Town Hall',        sourceId:'bakery',  reward:'🎂', sound:'sparkle' },
 };
@@ -345,6 +349,8 @@ let delivered = {};
 let allDelivered = false;
 let activeDialog = null;
 let finaleChars = [];
+let finaleTimer = 0;
+let showEndScreen = false;
 let destAnimations = [];
 let collectAnimations = [];
 let buildings = [], houses = [], scenery = [];
@@ -1558,12 +1564,12 @@ function drawDestinationMarkers(c) {
     const scale = 1 + Math.sin(t * 2.5 + i * 0.5) * 0.06;
     drawSprite(c, dest.emoji, n.x, n.y - 20 + bounce, 48 * scale);
     // Label below character
-    c.font = 'bold 15px sans-serif';
+    c.font = 'bold 18px sans-serif';
     c.textAlign = 'center'; c.textBaseline = 'top';
     c.fillStyle = 'rgba(0,0,0,0.5)';
-    c.fillText(dest.label, n.x + 1, n.y + 17);
+    c.fillText(dest.label, n.x + 1, n.y + 19);
     c.fillStyle = '#FFFFFF';
-    c.fillText(dest.label, n.x, n.y + 16);
+    c.fillText(dest.label, n.x, n.y + 18);
   }
 }
 
@@ -1589,10 +1595,10 @@ function drawDeliveryMarkers(c) {
       c.restore();
       // Dim label
       c.save(); c.globalAlpha = 0.3;
-      c.font = 'bold 13px sans-serif';
+      c.font = 'bold 16px sans-serif';
       c.textAlign = 'center'; c.textBaseline = 'top';
       c.fillStyle = '#FFFFFF';
-      c.fillText(dd.label, n.x, n.y + 12);
+      c.fillText(dd.label, n.x, n.y + 14);
       c.restore();
       continue;
     }
@@ -1621,12 +1627,12 @@ function drawDeliveryMarkers(c) {
     const scale = 1 + Math.sin(t * 2.5 + i * 0.5) * 0.06;
     drawSprite(c, dd.emoji, n.x, n.y - 20 + bounce, 48 * scale);
     // Label below character
-    c.font = 'bold 15px sans-serif';
+    c.font = 'bold 18px sans-serif';
     c.textAlign = 'center'; c.textBaseline = 'top';
     c.fillStyle = 'rgba(0,0,0,0.5)';
-    c.fillText(dd.label, n.x + 1, n.y + 17);
+    c.fillText(dd.label, n.x + 1, n.y + 19);
     c.fillStyle = '#E3F2FD';
-    c.fillText(dd.label, n.x, n.y + 16);
+    c.fillText(dd.label, n.x, n.y + 18);
   }
 }
 
@@ -1660,15 +1666,73 @@ function drawFinaleChars(c) {
   if (finaleChars.length === 0) return;
   for (const fc of finaleChars) {
     if (fc.delay > 0) { fc.delay--; continue; }
-    fc.t = Math.min(fc.t + 0.015, 1);
-    const ease = 1 - Math.pow(1 - fc.t, 3);
-    const fx = fc.sx + (fc.tx - fc.sx) * ease;
-    const fy = fc.sy + (fc.ty - fc.sy) * ease;
-    fc.bobT += 0.08;
-    const bob = Math.sin(fc.bobT) * 6;
-    const scale = 0.5 + ease * 0.5;
-    drawSprite(c, fc.emoji, fx, fy + bob, 40 * scale);
+    fc.t = Math.min(fc.t + 0.012, 1);
+    // Elastic ease out (bouncy arrival)
+    const p = fc.t;
+    const ease = p < 1 ? 1 - Math.pow(2, -10 * p) * Math.cos((p * 10 - 0.75) * (2 * Math.PI / 3)) : 1;
+    const fx = fc.sx + (fc.tx - fc.sx) * Math.min(ease, 1);
+    const fy = fc.sy + (fc.ty - fc.sy) * Math.min(ease, 1);
+    // Continuous bouncy bob once arrived
+    fc.bobT += fc.bounceSpeed;
+    const bob = Math.sin(fc.bobT) * fc.bounceAmp;
+    // Squash/stretch on bounce
+    const squash = 1 + Math.sin(fc.bobT * 2) * 0.12;
+    const stretch = 1 - Math.sin(fc.bobT * 2) * 0.08;
+    const scale = 0.4 + Math.min(ease, 1) * 0.6;
+    c.save();
+    c.translate(fx, fy + bob);
+    c.scale(squash, stretch);
+    drawSprite(c, fc.emoji, 0, 0, fc.size * scale);
+    c.restore();
   }
+}
+
+function drawEndScreen(c) {
+  if (!showEndScreen) return;
+  finaleTimer++;
+  const fadeIn = Math.min(finaleTimer / 60, 1);
+  c.save();
+  c.globalAlpha = fadeIn * 0.75;
+  c.fillStyle = 'rgba(10,5,30,1)';
+  c.fillRect(0, 0, W, H);
+  c.globalAlpha = fadeIn;
+  // Success card
+  const cw = Math.min(440, W - 30), ch = 260;
+  const cx2 = (W - cw) / 2, cy2 = (H - ch) / 2 - 20;
+  // Glow behind card
+  const glow = c.createRadialGradient(W/2, H/2, 0, W/2, H/2, 300);
+  glow.addColorStop(0, 'rgba(255,220,80,0.15)');
+  glow.addColorStop(1, 'rgba(255,220,80,0)');
+  c.fillStyle = glow;
+  c.fillRect(0, 0, W, H);
+  // Card
+  c.fillStyle = 'rgba(30,20,50,0.95)';
+  c.beginPath(); c.roundRect(cx2, cy2, cw, ch, 24); c.fill();
+  c.strokeStyle = 'rgba(255,220,80,0.6)';
+  c.lineWidth = 3;
+  c.beginPath(); c.roundRect(cx2, cy2, cw, ch, 24); c.stroke();
+  // Trophy
+  const bounce = Math.sin(frameCount * 0.06) * 6;
+  drawSprite(c, '🏆', W/2, cy2 + 50 + bounce, 60);
+  // Text
+  c.font = 'bold 28px sans-serif';
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillStyle = '#FFD54F';
+  c.fillText('Festival Complete!', W/2, cy2 + 105);
+  c.font = '18px sans-serif';
+  c.fillStyle = '#FFFDE7';
+  c.fillText('All gifts delivered — the Festival', W/2, cy2 + 145);
+  c.fillText('of Kindness is a success!', W/2, cy2 + 170);
+  c.font = 'bold 16px sans-serif';
+  c.fillStyle = 'rgba(255,255,255,0.5)';
+  c.fillText('Thank you, little hero! 🌟', W/2, cy2 + 210);
+  // Tap to restart
+  const blink = Math.sin(frameCount * 0.05) * 0.3 + 0.7;
+  c.globalAlpha = fadeIn * blink;
+  c.font = '15px sans-serif';
+  c.fillStyle = '#FFD54F';
+  c.fillText('Tap anywhere to play again', W/2, cy2 + ch - 10);
+  c.restore();
 }
 
 // === PLAYER MOVEMENT ===
@@ -1966,35 +2030,35 @@ function drawDialog(c) {
   else if (prog > 0.85) alpha = (1 - prog) / 0.15;
   c.save();
   c.globalAlpha = alpha;
-  const bw = Math.min(360, W - 30);
-  const bh = 72;
+  const bw = Math.min(460, W - 20);
+  const bh = 100;
   const bx = (W - bw) / 2;
-  const by = 60;
+  const by = 50;
   // Shadow
-  c.fillStyle = 'rgba(0,0,0,0.3)';
-  c.beginPath(); c.roundRect(bx + 3, by + 3, bw, bh, 16); c.fill();
+  c.fillStyle = 'rgba(0,0,0,0.35)';
+  c.beginPath(); c.roundRect(bx + 4, by + 4, bw, bh, 18); c.fill();
   // Background
-  c.fillStyle = 'rgba(30,20,50,0.88)';
-  c.beginPath(); c.roundRect(bx, by, bw, bh, 16); c.fill();
+  c.fillStyle = 'rgba(30,20,50,0.9)';
+  c.beginPath(); c.roundRect(bx, by, bw, bh, 18); c.fill();
   // Border
   c.strokeStyle = 'rgba(255,220,80,0.5)';
-  c.lineWidth = 2;
-  c.beginPath(); c.roundRect(bx, by, bw, bh, 16); c.stroke();
+  c.lineWidth = 2.5;
+  c.beginPath(); c.roundRect(bx, by, bw, bh, 18); c.stroke();
   // Character emoji
-  drawSprite(c, activeDialog.emoji, bx + 34, by + bh / 2, 36);
+  drawSprite(c, activeDialog.emoji, bx + 42, by + bh / 2, 48);
   // Text (word-wrapped)
-  c.font = '13px sans-serif';
+  c.font = '17px sans-serif';
   c.fillStyle = '#FFFDE7';
   c.textAlign = 'left'; c.textBaseline = 'top';
-  const textX = bx + 62, textY = by + 12;
-  const maxW = bw - 74;
+  const textX = bx + 78, textY = by + 14;
+  const maxW = bw - 92;
   const words = activeDialog.text.split(' ');
   let line = '', lineY = textY;
   for (const word of words) {
     const test = line + (line ? ' ' : '') + word;
     if (c.measureText(test).width > maxW && line) {
       c.fillText(line, textX, lineY);
-      line = word; lineY += 18;
+      line = word; lineY += 22;
     } else {
       line = test;
     }
@@ -2005,62 +2069,112 @@ function drawDialog(c) {
 
 // === GRAND FINALE ===
 let completionPlayed = false;
+const FINALE_DURATION = 900; // 15 seconds at 60fps
+
+function spawnConfettiBurst(wx, wy, count, maxT) {
+  const confetti = ['🎉','🎊','⭐','🌟','✨','🏆','💫','🥳','🎆','🎇','👑','🌈','🎵','🎶','💜','💛','❤️','💚'];
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+    const speed = 2 + Math.random() * 4;
+    destAnimations.push({
+      x: wx, y: wy, emoji: confetti[i % confetti.length], t: 0, maxT: maxT || 150, type: 'burst',
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2.5,
+      startSize: 50 + Math.random() * 40, spin: (Math.random() - 0.5) * 0.15,
+    });
+  }
+}
+
+function playFestivalMusic() {
+  // Repeating melodic celebration using synth — plays for ~15 seconds
+  const melody = [
+    { f:523, d:0.2, t:0 },    { f:659, d:0.2, t:0.25 },  { f:784, d:0.2, t:0.5 },
+    { f:1047,d:0.3, t:0.75 }, { f:784, d:0.2, t:1.1 },   { f:659, d:0.2, t:1.35 },
+    { f:784, d:0.4, t:1.6 },  { f:1047,d:0.4, t:2.1 },
+  ];
+  // Play melody 4 times with rising pitch
+  for (let rep = 0; rep < 4; rep++) {
+    const offset = rep * 2.8;
+    const pitchMult = 1 + rep * 0.05;
+    for (const note of melody) {
+      const tid = setTimeout(() => {
+        if (!running) return;
+        synth('sine', note.f * pitchMult, note.d, note.f * pitchMult * 1.1, 0.06);
+      }, (offset + note.t) * 1000);
+      pendingTimeouts.push(tid);
+    }
+  }
+  // Bass rhythm
+  for (let i = 0; i < 28; i++) {
+    const tid = setTimeout(() => {
+      if (!running) return;
+      synth('triangle', 130 + (i % 4) * 15, 0.15, 100, 0.04);
+    }, i * 500);
+    pendingTimeouts.push(tid);
+  }
+}
+
 function triggerGrandFinale() {
   if (completionPlayed) return;
   completionPlayed = true;
   allDelivered = true;
-  playChord();
-  setTimeout(() => { if (running) playSparkle(); }, 300);
-  setTimeout(() => { if (running) playChime(); }, 600);
-  setTimeout(() => { if (running) playChord(); }, 900);
-  // Massive confetti burst
-  const wx = player.x, wy = player.y;
-  const confetti = ['🎉','🎊','⭐','🌟','✨','🏆','💫','🥳','🎆','🎇','👑','🌈'];
-  for (let i = 0; i < 30; i++) {
-    const angle = (i / 30) * Math.PI * 2 + Math.random() * 0.3;
-    const speed = 2.5 + Math.random() * 3.5;
-    destAnimations.push({
-      x: wx, y: wy, emoji: confetti[i % confetti.length], t: 0, maxT: 150, type: 'burst',
-      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2.5,
-      startSize: 55 + Math.random() * 35, spin: (Math.random() - 0.5) * 0.15,
-    });
+  finaleTimer = 0;
+  // === SOUND: cascading fanfare + crowd ===
+  playWinFanfare();
+  setTimeout(() => { if (running) playCrowdRoar(); }, 400);
+  setTimeout(() => { if (running) playCrowdCheer(); }, 1200);
+  setTimeout(() => { if (running) playFestivalMusic(); }, 2000);
+  // Periodic crowd cheers
+  for (let i = 1; i <= 4; i++) {
+    const tid = setTimeout(() => { if (running) playCrowdCheer(); }, 3000 + i * 2500);
+    pendingTimeouts.push(tid);
   }
-  // Second wave delayed
-  setTimeout(() => {
-    if (!running) return;
-    for (let i = 0; i < 20; i++) {
-      const angle = (i / 20) * Math.PI * 2 + Math.random() * 0.4;
-      const speed = 2 + Math.random() * 3;
-      destAnimations.push({
-        x: wx, y: wy, emoji: confetti[(i + 5) % confetti.length], t: 0, maxT: 130, type: 'burst',
-        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2,
-        startSize: 45 + Math.random() * 25, spin: (Math.random() - 0.5) * 0.12,
-      });
-    }
-  }, 600);
-  // Grand banner
-  destAnimations.push({
-    x: wx, y: wy - 40, emoji: '👑', t: 0, maxT: 300, type: 'reward',
-    startSize: 120, label: 'Festival of Kindness!',
+  // === CONFETTI: multi-wave bursts ===
+  const wx = player.x, wy = player.y;
+  spawnConfettiBurst(wx, wy, 40, 180);
+  // Waves at 0.6s, 2s, 5s, 8s, 12s
+  [600, 2000, 5000, 8000, 12000].forEach((delay, i) => {
+    const tid = setTimeout(() => {
+      if (!running) return;
+      spawnConfettiBurst(player.x, player.y, 25 + i * 5, 160);
+    }, delay);
+    pendingTimeouts.push(tid);
   });
-  // Characters enter from screen edges and bounce toward player
+  // === GRAND BANNER ===
+  destAnimations.push({
+    x: wx, y: wy - 40, emoji: '👑', t: 0, maxT: 400, type: 'reward',
+    startSize: 120, label: '🎉 Festival of Kindness! 🎉',
+  });
+  // === CHARACTERS: all 18 senders+recipients + extra celebration emojis ===
   const allChars = [];
   for (const d of Object.values(DESTINATIONS)) allChars.push(d.emoji);
   for (const d of Object.values(DELIVERY_DESTINATIONS)) allChars.push(d.emoji);
+  // Extra celebration emojis
+  const extras = ['🦄','🐵','🦁','🐸','🧚','🎅','🤴','👼','🧜‍♂️','🧛','🤠','🦸‍♀️','🧝‍♂️','🧞'];
+  for (const e of extras) allChars.push(e);
   finaleChars = [];
   for (let i = 0; i < allChars.length; i++) {
     const angle = (i / allChars.length) * Math.PI * 2;
-    const startR = 500;
-    const targetR = 80 + Math.random() * 60;
+    const startR = 550 + Math.random() * 150;
+    const targetR = 70 + Math.random() * 80;
     finaleChars.push({
       emoji: allChars[i],
       sx: wx + Math.cos(angle) * startR,
       sy: wy + Math.sin(angle) * startR,
       tx: wx + Math.cos(angle) * targetR,
       ty: wy + Math.sin(angle) * targetR,
-      t: 0, delay: i * 5, bobT: Math.random() * Math.PI * 2,
+      t: 0, delay: i * 4 + Math.random() * 10,
+      bobT: Math.random() * Math.PI * 2,
+      bounceAmp: 8 + Math.random() * 8,
+      bounceSpeed: 0.06 + Math.random() * 0.04,
+      size: 36 + Math.random() * 16,
     });
   }
+  // === END SCREEN after 10 seconds ===
+  const tid = setTimeout(() => {
+    if (!running) return;
+    showEndScreen = true;
+  }, 10000);
+  pendingTimeouts.push(tid);
 }
 
 // === INPUT HANDLERS ===
@@ -2135,9 +2249,19 @@ function onMouseHandler(e) {
   const mx = e.clientX - rect.left;
   const my = e.clientY - rect.top;
   if (e.type === 'click' || e.type === 'mousedown') {
+    if (showEndScreen) { restartGame(); return; }
     if (selectingChar) { handleCharSelect(mx, my); return; }
     handleTapNav(mx, my);
   }
+}
+
+function restartGame() {
+  showEndScreen = false;
+  resetState();
+  selectingChar = true;
+  canvas.style.cursor = EMOJI_CURSOR;
+  if (animFrame) cancelAnimationFrame(animFrame);
+  animFrame = requestAnimationFrame(charSelectLoop);
 }
 
 function onTouchHandler(e) {
@@ -2148,6 +2272,7 @@ function onTouchHandler(e) {
   const mx = touch.clientX - rect.left;
   const my = touch.clientY - rect.top;
   if (e.type === 'touchstart') {
+    if (showEndScreen) { restartGame(); return; }
     if (selectingChar) { handleCharSelect(mx, my); return; }
     handleTapNav(mx, my);
   }
@@ -2353,10 +2478,10 @@ function drawCollectibleBar(c) {
   // Progress counter
   const collectCount = DEST_ORDER.filter(id => collected[id]).length;
   const delivCount = DELIVERY_ORDER.filter(id => delivered[id]).length;
-  c.font = 'bold 11px sans-serif';
+  c.font = 'bold 13px sans-serif';
   c.textAlign = 'center'; c.textBaseline = 'top';
-  c.fillStyle = 'rgba(255,255,255,0.5)';
-  c.fillText(collectCount + '/9 collected · ' + delivCount + '/9 delivered', W / 2, by - 14);
+  c.fillStyle = 'rgba(255,255,255,0.55)';
+  c.fillText(collectCount + '/9 collected · ' + delivCount + '/9 delivered', W / 2, by - 16);
   c.restore();
 }
 
@@ -2396,9 +2521,9 @@ function updateDestAnimations(c) {
       drawSprite(c, a.emoji, sx, sy - rise, Math.max(size, 10));
       // Label under reward
       if (prog < 0.5) {
-        c.font = 'bold 20px sans-serif';
+        c.font = 'bold 24px sans-serif';
         c.textAlign = 'center'; c.fillStyle = `rgba(255,255,255,${1 - prog * 2})`;
-        c.fillText(a.label, sx, sy - rise + 50);
+        c.fillText(a.label, sx, sy - rise + 55);
       }
       c.restore();
     } else if (a.type === 'flash') {
@@ -2450,24 +2575,24 @@ function drawIntroMessage(c) {
   else if (prog > 0.8) alpha = (1 - prog) / 0.2;
   c.save(); c.globalAlpha = alpha;
   // Banner
-  const bw = Math.min(420, W - 30), bh = 110;
-  const bx = (W - bw) / 2, by = H * 0.22;
+  const bw = Math.min(480, W - 20), bh = 140;
+  const bx = (W - bw) / 2, by = H * 0.20;
   c.fillStyle = 'rgba(0,0,0,0.65)';
-  c.beginPath(); c.roundRect(bx, by, bw, bh, 16); c.fill();
+  c.beginPath(); c.roundRect(bx, by, bw, bh, 18); c.fill();
   c.strokeStyle = 'rgba(255,220,80,0.4)';
-  c.lineWidth = 2;
-  c.beginPath(); c.roundRect(bx, by, bw, bh, 16); c.stroke();
-  c.font = 'bold 20px sans-serif';
+  c.lineWidth = 2.5;
+  c.beginPath(); c.roundRect(bx, by, bw, bh, 18); c.stroke();
+  c.font = 'bold 26px sans-serif';
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillStyle = '#FFD54F';
-  c.fillText('🎉 Festival of Kindness! 🎉', W/2, by + 24);
-  c.font = '14px sans-serif';
+  c.fillText('🎉 Festival of Kindness! 🎉', W/2, by + 30);
+  c.font = '18px sans-serif';
   c.fillStyle = '#FFFDE7';
-  c.fillText('Visit your friends, collect their gifts,', W/2, by + 52);
-  c.fillText('and deliver them across town!', W/2, by + 70);
-  c.font = '12px sans-serif';
+  c.fillText('Visit your friends, collect their gifts,', W/2, by + 64);
+  c.fillText('and deliver them across town!', W/2, by + 86);
+  c.font = '15px sans-serif';
   c.fillStyle = 'rgba(255,255,255,0.6)';
-  c.fillText('The Festival is counting on you!', W/2, by + 92);
+  c.fillText('The Festival is counting on you!', W/2, by + 114);
   c.restore();
 }
 
@@ -2499,7 +2624,7 @@ function drawZoneLabel(c) {
     if (wx>=z.x1&&wx<=z.x2&&wy>=z.y1&&wy<=z.y2) { zone=z.label; break; }
   }
   c.save();
-  c.font='bold 16px sans-serif';
+  c.font='bold 18px sans-serif';
   c.textAlign='left'; c.textBaseline='top';
   c.fillStyle='rgba(0,0,0,0.35)'; c.fillText(zone,15,15);
   c.fillStyle='white'; c.fillText(zone,14,14);
@@ -2541,6 +2666,8 @@ function resetState() {
   allDelivered = false;
   activeDialog = null;
   finaleChars = [];
+  finaleTimer = 0;
+  showEndScreen = false;
   completionPlayed = false;
   destAnimations = [];
   collectAnimations = [];
@@ -2600,6 +2727,7 @@ function render() {
   drawZoneLabel(c);
   drawDialog(c);
   drawIntroMessage(c);
+  drawEndScreen(c);
 }
 
 // === UPDATE ===
