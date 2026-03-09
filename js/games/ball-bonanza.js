@@ -976,6 +976,7 @@ export const ballBonanza = {
 
   start() {
     initAudio();
+    gameEl = document.getElementById('ballBonanzaGame');
     gameEl.style.display = 'block';
     preloadEmojis(EMOJI_REGISTRY['ball-bonanza']).then(() => {
       init();
