@@ -171,6 +171,9 @@ function initCanvas() {
 }
 
 let resizeHandler = null;
+let touchHolding = false;
+let touchEndHandler = null;
+const HOLD_BOOST_FORCE = -0.15;
 
 function onResize() {
   const oldH = H;
@@ -969,6 +972,7 @@ function updatePhysics(dt) {
   const dtNorm = dt * 60;
 
   vy += (GRAVITY - BUOYANCY) * dtNorm;
+  if (touchHolding && gameState === 'playing') vy += HOLD_BOOST_FORCE * dtNorm;
   vy *= Math.pow(DAMPING, dtNorm);
 
   if (vy > MAX_VY) vy = MAX_VY;
@@ -1644,6 +1648,12 @@ function cleanup() {
     window.removeEventListener('resize', resizeHandler);
     resizeHandler = null;
   }
+  if (touchEndHandler) {
+    document.removeEventListener('touchend', touchEndHandler);
+    document.removeEventListener('touchcancel', touchEndHandler);
+    touchEndHandler = null;
+  }
+  touchHolding = false;
   celebrateEl.classList.remove('show');
   celebrateEl.innerHTML = '';
   hudEl.style.display = 'none';
@@ -1664,6 +1674,9 @@ export const balloonFloat = {
     resetAndStart();
     resizeHandler = onResize;
     window.addEventListener('resize', resizeHandler);
+    touchEndHandler = () => { touchHolding = false; };
+    document.addEventListener('touchend', touchEndHandler);
+    document.addEventListener('touchcancel', touchEndHandler);
     animFrame = requestAnimationFrame(gameLoop);
   },
 
@@ -1693,6 +1706,7 @@ export const balloonFloat = {
   onTouch(e) {
     initAudio();
     if (gameState === 'playing' || gameState === 'ready') {
+      touchHolding = true;
       applyPuff();
     } else if (gameState === 'gameover') {
       if (!e.target.closest('.balloon-endcard-btn') && !e.target.closest('.endcard-share-btn')) resetAndStart();

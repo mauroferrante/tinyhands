@@ -78,6 +78,7 @@ const hudEl       = document.getElementById('rocketHud');
 const altitudeEl  = document.getElementById('rocketAltitude');
 const starsEl     = document.getElementById('rocketStars');
 const celebrateEl = document.getElementById('rocketCelebrate');
+const livesEl     = document.getElementById('rocketLives');
 
 let ctx = null;
 let W = 0;
@@ -93,6 +94,7 @@ let altitude;
 let gameTime, score;
 let starCount;
 let bestScore, bestAltitude;
+let lives;
 let gameState; // 'ready' | 'countdown' | 'playing' | 'crashing' | 'gameover'
 let animFrame, lastFrameTime;
 let nearMissCooldown;
@@ -814,6 +816,8 @@ function updateInvincibility(dt) {
 
 function triggerCrash() {
   if (gameState === 'crashing' || gameState === 'gameover') return;
+  lives--;
+  animateRocketHeartLost();
   gameState = 'crashing';
   countdownTimer = 2.0;
   shakeIntensity = 12;
@@ -930,8 +934,37 @@ function wireShare(container) {
   }
 }
 
+// ===== Lives System =====
+
+function updateRocketLives() {
+  if (!livesEl) return;
+  livesEl.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const heart = document.createElement('span');
+    heart.className = 'rocket-heart';
+    heart.textContent = i < lives ? '\u2764\uFE0F' : '\u{1F90D}';
+    if (i >= lives) heart.classList.add('lost');
+    livesEl.appendChild(heart);
+  }
+}
+
+function animateRocketHeartLost() {
+  if (!livesEl) return;
+  const hearts = livesEl.querySelectorAll('.rocket-heart');
+  const heartToRemove = hearts[lives];
+  if (heartToRemove) {
+    heartToRemove.classList.add('rocket-heart-breaking');
+    setTimeout(() => {
+      heartToRemove.textContent = '\u{1F90D}';
+      heartToRemove.classList.add('lost');
+      heartToRemove.classList.remove('rocket-heart-breaking');
+    }, 500);
+  }
+}
+
 function showGameOver() {
   gameState = 'gameover';
+  if (livesEl) livesEl.classList.remove('active');
 
   bestScore = parseInt(localStorage.getItem(LS_BEST_KEY) || '0', 10);
   bestAltitude = parseInt(localStorage.getItem(LS_ALT_KEY) || '0', 10);
@@ -940,7 +973,7 @@ function showGameOver() {
   if (isNewBest) { try { localStorage.setItem(LS_BEST_KEY, String(score)); } catch (e) {} bestScore = score; }
   if (isNewAlt) { try { localStorage.setItem(LS_ALT_KEY, String(altitude)); } catch (e) {} bestAltitude = altitude; }
 
-  const altFmt = altitude.toLocaleString() + 'm';
+  const altFmt = altitude.toLocaleString() + 'km';
   const titles = ['CRASH! 💥', 'Houston, we have a problem!', 'BOOM! 💫'];
   const title = titles[Math.floor(Math.random() * titles.length)];
 
@@ -1001,6 +1034,7 @@ function updateCountdown(dt) {
     if (launchTextTimer <= 0) {
       gameState = 'playing';
       hudEl.style.display = 'flex';
+      if (livesEl) livesEl.classList.add('active');
       rocketVY = -MAX_VERTICAL_VEL; // Full launch surge
       autoBoostTimer = 2.0; // 2 seconds of free boost
     }
@@ -1361,7 +1395,7 @@ function render() {
 
   // HUD update
   if (gameState === 'playing' || gameState === 'crashing') {
-    altitudeEl.textContent = altitude.toLocaleString() + 'm';
+    altitudeEl.textContent = altitude.toLocaleString() + 'km';
     starsEl.textContent = '\u2B50 ' + starCount;
   }
 }
@@ -1536,7 +1570,22 @@ function gameLoop(timestamp) {
     updateFloatingTexts(dt);
     rocketY += 1.5 * dt * 60; // falling
     if (shakeDuration > 0) shakeDuration -= dt;
-    if (countdownTimer <= 0) showGameOver();
+    if (countdownTimer <= 0) {
+      if (lives <= 0) {
+        showGameOver();
+      } else {
+        // Respawn in place
+        rocketX = W * 0.5;
+        rocketY = H * 0.4;
+        rocketVX = 0;
+        rocketVY = 0;
+        rocketTilt = 0;
+        crashFragments = [];
+        invincible = true;
+        invincibleTimer = 3.0;
+        gameState = 'playing';
+      }
+    }
   }
 
   render();
@@ -1549,7 +1598,9 @@ function resetAndStart() {
   celebrateEl.classList.remove('show');
   celebrateEl.innerHTML = '';
 
-  rocketX = W * 0.5 + 95;  // Under the crane hook
+  lives = 3;
+  updateRocketLives();
+  rocketX = W * 0.5 + 55;  // Under the crane hook
   rocketVX = 0;
   rocketVY = 0;
   rocketTilt = 0;
@@ -1600,7 +1651,7 @@ function resetAndStart() {
   touchBoosting = false;
 
   hudEl.style.display = 'none';
-  altitudeEl.textContent = '0m';
+  altitudeEl.textContent = '0km';
   starsEl.textContent = '\u2B50 0';
 
   if (hintEl) hintEl.remove();
@@ -1654,6 +1705,7 @@ function cleanup() {
   gameEl.style.display = 'none';
   celebrateEl.classList.remove('show');
   hudEl.style.display = 'none';
+  if (livesEl) livesEl.classList.remove('active');
 }
 
 // ===== Exported Game Object =====
