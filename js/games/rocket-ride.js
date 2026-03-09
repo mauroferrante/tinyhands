@@ -1774,8 +1774,6 @@ export const rocketRide = {
     initCanvas();
     createStarfield();
     createNebulae();
-    preloadEmojis(EMOJI_REGISTRY['rocket-ride']).then(() => resetAndStart());
-
     // Register keyup handler (game-manager only dispatches keydown)
     keyUpHandler = (e) => {
       const action = keyToAction(e.key);
@@ -1794,7 +1792,12 @@ export const rocketRide = {
 
     resizeHandler = onResize;
     window.addEventListener('resize', resizeHandler);
-    animFrame = requestAnimationFrame(gameLoop);
+
+    // Wait for emoji preload before starting game loop (prevents black screen)
+    preloadEmojis(EMOJI_REGISTRY['rocket-ride']).then(() => {
+      resetAndStart();
+      animFrame = requestAnimationFrame(gameLoop);
+    });
   },
 
   stop() {

@@ -676,8 +676,6 @@ export const stackSmash = {
     stackGameEl.style.display = 'block';
     stackHint.style.opacity = '1';
     stackScoreEl.style.opacity = '1';
-    preloadEmojis([...EMOJI_REGISTRY['stack-smash'], ...EMOJI_REGISTRY['stack-audience']]);
-
     const screenW = window.innerWidth;
     stOriginalWidth = Math.min(screenW * 0.4, 200);
     stBlockWidth = stOriginalWidth;
@@ -703,8 +701,10 @@ export const stackSmash = {
     stBestScore = parseInt(localStorage.getItem(LS_KEY) || '0', 10);
     stShowBestScore();
 
-    // Stadium audience
-    createAudience(stackGameEl);
+    // Wait for emoji preload then build audience and start game
+    preloadEmojis([...EMOJI_REGISTRY['stack-smash'], ...EMOJI_REGISTRY['stack-audience']]).then(() => {
+      createAudience(stackGameEl);
+    });
 
     stAnimFrame = requestAnimationFrame(stGameLoop);
     stStartSway();

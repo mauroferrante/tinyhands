@@ -37,14 +37,29 @@ export function getEmojiUrl(emoji) {
  *  Loading & preloading
  * ------------------------------------------------------------------ */
 
-/** Load a single emoji image. Resolves to the Image or null on failure. */
+/** Load a single emoji image. Resolves to the Image or null on failure.
+ *  If the exact ZWJ/skin-tone URL fails, tries the base emoji (first codepoint). */
 export function loadEmoji(emoji) {
   if (imageCache[emoji] !== undefined) return Promise.resolve(imageCache[emoji]);
+  const url = getEmojiUrl(emoji);
   return new Promise(resolve => {
     const img = new Image();
     img.onload  = () => { imageCache[emoji] = img; resolve(img); };
-    img.onerror = () => { imageCache[emoji] = null; resolve(null); };
-    img.src = getEmojiUrl(emoji);
+    img.onerror = () => {
+      // Fallback: try base emoji (first codepoint only, strips ZWJ/gender/skin)
+      const base = emoji.codePointAt(0).toString(16);
+      const baseUrl = CDN_BASE + base + '_3d.png';
+      if (baseUrl !== url) {
+        const fb = new Image();
+        fb.onload  = () => { imageCache[emoji] = fb; resolve(fb); };
+        fb.onerror = () => { imageCache[emoji] = null; resolve(null); };
+        fb.src = baseUrl;
+      } else {
+        imageCache[emoji] = null;
+        resolve(null);
+      }
+    };
+    img.src = url;
   });
 }
 
