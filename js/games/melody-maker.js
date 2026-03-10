@@ -196,6 +196,8 @@ let orientationHandler = null;       // listener ref for cleanup
 let levelSelectEl = null;
 let levelGridEl = null;
 let levelBackEl = null;
+let gridTouchStartY = 0;       // iOS tap-vs-scroll detection
+let gridTouchStartTime = 0;
 
 // ===== Level Progress (localStorage) =====
 
@@ -644,6 +646,41 @@ function onLevelGridClick(e) {
 function onLevelBackClick() {
   hideLevelSelect();
   showModeSelect();
+}
+
+// --- iOS touch fallbacks (click can fail in scroll containers) ---
+
+function onGridTouchStart(e) {
+  const t = e.touches[0];
+  gridTouchStartY = t.clientY;
+  gridTouchStartTime = Date.now();
+}
+
+function onGridTouchEnd(e) {
+  const t = e.changedTouches[0];
+  const dy = Math.abs(t.clientY - gridTouchStartY);
+  const dt = Date.now() - gridTouchStartTime;
+  // Only treat as tap if finger moved < 15 px and held < 400 ms
+  if (dy > 15 || dt > 400) return;
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  if (!el) return;
+  const tile = el.closest('.melody-level-tile');
+  if (!tile || tile.disabled) return;
+  e.preventDefault();  // prevent delayed click double-fire
+  initAudio();
+  const levelNum = parseInt(tile.dataset.level, 10);
+  if (isNaN(levelNum)) return;
+  currentMelodyIndex = levelNum - 1;
+  retryCount = 0;
+  retrySpeedMultiplier = 1.0;
+  hideLevelSelect();
+  keyboardEl.style.display = '';
+  startLessonIntro();
+}
+
+function onBackTouchEnd(e) {
+  e.preventDefault();  // prevent delayed click double-fire
+  onLevelBackClick();
 }
 
 // ===== Lesson Mode =====
@@ -1210,8 +1247,15 @@ function cleanup() {
     keyboardEl.style.display = '';
   }
   if (levelSelectEl) levelSelectEl.classList.remove('active');
-  if (levelGridEl) levelGridEl.removeEventListener('click', onLevelGridClick);
-  if (levelBackEl) levelBackEl.removeEventListener('click', onLevelBackClick);
+  if (levelGridEl) {
+    levelGridEl.removeEventListener('click', onLevelGridClick);
+    levelGridEl.removeEventListener('touchstart', onGridTouchStart);
+    levelGridEl.removeEventListener('touchend', onGridTouchEnd);
+  }
+  if (levelBackEl) {
+    levelBackEl.removeEventListener('click', onLevelBackClick);
+    levelBackEl.removeEventListener('touchend', onBackTouchEnd);
+  }
   if (modeSelectEl) {
     modeSelectEl.classList.remove('active');
     modeSelectEl.removeEventListener('click', onModeClick);
@@ -1264,6 +1308,10 @@ export const melodyMaker = {
       modeSelectEl.addEventListener('click', onModeClick);
       levelGridEl.addEventListener('click', onLevelGridClick);
       levelBackEl.addEventListener('click', onLevelBackClick);
+      // iOS touch fallbacks — click can fail in scroll containers
+      levelGridEl.addEventListener('touchstart', onGridTouchStart, { passive: true });
+      levelGridEl.addEventListener('touchend', onGridTouchEnd);
+      levelBackEl.addEventListener('touchend', onBackTouchEnd);
       document.addEventListener('keyup', handleKeyUp);
       showModeSelect();
     });
