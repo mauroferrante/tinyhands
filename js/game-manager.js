@@ -290,13 +290,18 @@ exitBtn.addEventListener('touchend', (e) => {
 const storyBackdrop = document.getElementById('storyBackdrop');
 const storyClose = document.getElementById('storyClose');
 const whyTopLink = document.getElementById('whyTopLink');
+const footerStoryLink = document.getElementById('footerStoryLink');
 
-whyTopLink.addEventListener('click', () => {
+function openStory(e) {
+  if (e) e.preventDefault();
   storyBackdrop.style.display = 'flex';
   requestAnimationFrame(() => storyBackdrop.classList.add('show'));
   document.body.style.overflow = 'hidden';
   history.pushState({}, '', '/story');
-});
+}
+
+whyTopLink.addEventListener('click', openStory);
+footerStoryLink.addEventListener('click', openStory);
 
 function closeStory() {
   storyBackdrop.classList.remove('show');
