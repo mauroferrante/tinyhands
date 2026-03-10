@@ -554,7 +554,7 @@ function buildLevelGrid() {
   levelGridEl.innerHTML = '';
   const highestUnlocked = loadProgress();
 
-  // --- Compute grid layout (Memory Match approach) ---
+  // --- Compute grid layout ---
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const isPortrait = vh > vw;
@@ -562,17 +562,11 @@ function buildLevelGrid() {
              : (vh <= 500 && !isPortrait) ? 6
              : 5;
 
-  const style = getComputedStyle(levelSelectEl);
-  const padL = parseFloat(style.paddingLeft) || 0;
-  const padR = parseFloat(style.paddingRight) || 0;
-  const availW = levelSelectEl.clientWidth - padL - padR;
-  const gap = Math.min(14, availW * 0.02);
-  const tileSize = Math.floor(Math.min((availW - gap * (cols - 1)) / cols, 130));
-
-  levelGridEl.style.gridTemplateColumns = `repeat(${cols}, ${tileSize}px)`;
-  levelGridEl.style.gridAutoRows = `${tileSize}px`;
+  const gap = Math.min(14, vw * 0.015);
+  levelGridEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   levelGridEl.style.gap = `${gap}px`;
 
+  // Build tiles first, then measure width to set square row height
   MELODIES.forEach((melody, i) => {
     const levelNum = i + 1;
     const tile = document.createElement('button');
@@ -628,6 +622,13 @@ function buildLevelGrid() {
 
     levelGridEl.appendChild(tile);
   });
+
+  // Measure actual tile width → set row height to match (square tiles)
+  const sample = levelGridEl.firstElementChild;
+  if (sample) {
+    const tileW = sample.offsetWidth;
+    levelGridEl.style.gridAutoRows = `${tileW}px`;
+  }
 }
 
 function showLevelSelect() {

@@ -53,6 +53,7 @@
   align-items: center;
   gap: 1rem;
   margin-bottom: clamp(12px, 3vw, 20px);
+  padding-left: 40px;   /* clear the fixed exit button */
 }
 
 .melody-level-back {
