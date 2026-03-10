@@ -471,6 +471,21 @@ function initPwaBanner() {
     pwaBanner.style.display = '';
     document.querySelectorAll('.pwa-verb').forEach(el => { el.textContent = 'Click'; });
     document.querySelectorAll('.pwa-step2-label').forEach(el => { el.textContent = 'Add to Dock'; });
+  } else if (isIOS) {
+    // Non-Safari iOS browser (Brave, Chrome, Firefox, etc.)
+    // Prepend a "switch to Safari" step and renumber existing steps
+    pwaDeviceName.textContent = isIPad ? 'iPad' : 'iPhone';
+    const safariStep = document.createElement('div');
+    safariStep.className = 'pwa-step';
+    safariStep.innerHTML =
+      '<span class="pwa-step-num">1</span>' +
+      '<span>Open <strong>tinyhandsplay.com</strong> in <strong>Safari</strong></span>';
+    pwaBannerSteps.insertBefore(safariStep, pwaBannerSteps.firstChild);
+    // Renumber existing steps to 2 and 3
+    const existingNums = pwaBannerSteps.querySelectorAll('.pwa-step-num');
+    existingNums[1].textContent = '2';
+    existingNums[2].textContent = '3';
+    pwaBanner.style.display = '';
   } else if (deferredAndroidPrompt) {
     pwaDeviceName.textContent = 'phone';
     pwaBanner.style.display = '';
@@ -504,5 +519,6 @@ function triggerAndroidInstall() {
   }
 }
 
-// Init banner on page load (Safari shows immediately, Android waits for beforeinstallprompt)
-if (isSafari) initPwaBanner();
+// Init banner on page load
+// Safari + non-Safari iOS show immediately; Android waits for beforeinstallprompt
+if (isSafari || isIOS) initPwaBanner();
