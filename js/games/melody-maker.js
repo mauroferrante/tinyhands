@@ -552,22 +552,26 @@ function buildLevelGrid() {
   levelGridEl.innerHTML = '';
   const highestUnlocked = loadProgress();
 
-  // --- Compute grid layout from viewport (no DOM measurement) ---
+  // --- Viewport-fitted grid (same pattern as Memory Match board) ---
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const isPortrait = vh > vw;
-  const cols = (vw <= 667 && isPortrait) ? 3
-             : (vh <= 500 && !isPortrait) ? 6
-             : 5;
+  const cols = (vh <= 500 && !isPortrait) ? 6     // phone landscape
+             : (vw <= 667 && isPortrait)  ? 5     // phone portrait
+             : 6;                                  // tablet / desktop
+  const rows = Math.ceil(MELODIES.length / cols);
 
-  const pad = Math.min(24, vw * 0.03) * 2;     // container padding × 2
-  const availW = vw - pad;
-  const gap = Math.min(14, vw * 0.015);
-  const tileSize = Math.floor((availW - gap * (cols - 1)) / cols);
+  const gap = Math.min(12, vw * 0.015);
+  const headerH = 56;                              // space reserved for header
+  const maxTileW = (vw * 0.92 - gap * (cols - 1)) / cols;
+  const maxTileH = ((vh - headerH) * 0.82 - gap * (rows - 1)) / rows;
+  const tileSize = Math.floor(Math.min(maxTileW, maxTileH, 140));
+  const boardW = tileSize * cols + gap * (cols - 1);
 
   levelGridEl.style.gridTemplateColumns = `repeat(${cols}, ${tileSize}px)`;
-  levelGridEl.style.gridAutoRows = `${tileSize}px`;
-  levelGridEl.style.gap = `${gap}px`;
+  levelGridEl.style.gridTemplateRows    = `repeat(${rows}, ${tileSize}px)`;
+  levelGridEl.style.width = boardW + 'px';
+  levelGridEl.style.gap = gap + 'px';
 
   MELODIES.forEach((melody, i) => {
     const levelNum = i + 1;
@@ -622,6 +626,19 @@ function buildLevelGrid() {
       tile.appendChild(name);
     }
 
+    // Direct click handler on each tile (same pattern as Memory Match cards)
+    if (levelNum <= highestUnlocked) {
+      tile.addEventListener('click', () => {
+        initAudio();
+        currentMelodyIndex = i;
+        retryCount = 0;
+        retrySpeedMultiplier = 1.0;
+        hideLevelSelect();
+        keyboardEl.style.display = '';
+        startLessonIntro();
+      });
+    }
+
     levelGridEl.appendChild(tile);
   });
 }
@@ -642,20 +659,6 @@ function showLevelSelect() {
 
 function hideLevelSelect() {
   levelSelectEl.classList.remove('active');
-}
-
-function onLevelGridClick(e) {
-  const tile = e.target.closest('.melody-level-tile');
-  if (!tile || tile.disabled) return;
-  initAudio();  // unlock iOS AudioContext on user gesture
-  const levelNum = parseInt(tile.dataset.level, 10);
-  if (isNaN(levelNum)) return;
-  currentMelodyIndex = levelNum - 1;
-  retryCount = 0;
-  retrySpeedMultiplier = 1.0;
-  hideLevelSelect();
-  keyboardEl.style.display = '';
-  startLessonIntro();
 }
 
 function onLevelBackClick() {
@@ -1227,7 +1230,7 @@ function cleanup() {
     keyboardEl.style.display = '';
   }
   if (levelSelectEl) levelSelectEl.classList.remove('active');
-  if (levelGridEl) levelGridEl.removeEventListener('click', onLevelGridClick);
+  if (levelGridEl) levelGridEl.innerHTML = '';  // destroys tiles + their listeners
   if (levelBackEl) levelBackEl.removeEventListener('click', onLevelBackClick);
   if (modeSelectEl) {
     modeSelectEl.classList.remove('active');
@@ -1279,7 +1282,7 @@ export const melodyMaker = {
     preloadEmojis(EMOJI_REGISTRY['melody-maker'] || []).then(() => {
       buildKeyboard();
       modeSelectEl.addEventListener('click', onModeClick);
-      levelGridEl.addEventListener('click', onLevelGridClick);
+      // Back button — direct handler (tile handlers added in buildLevelGrid)
       levelBackEl.addEventListener('click', onLevelBackClick);
       document.addEventListener('keyup', handleKeyUp);
       showModeSelect();
