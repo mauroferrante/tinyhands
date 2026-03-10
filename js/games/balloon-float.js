@@ -168,7 +168,7 @@ function initCanvas() {
   // CSS inset:0 + width/height:100% handles display sizing — no style overrides needed
   ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
-  gameScale = Math.max(1, Math.min(2, W / 800));
+  gameScale = Math.max(0.5, Math.min(2, W / 800));
 }
 
 let resizeHandler = null;
