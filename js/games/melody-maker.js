@@ -81,6 +81,9 @@ let isTouchDevice = false;
 let heldKeys = new Set();
 let freestyleHintEl = null;
 let freestyleNotePlayed = false;
+let noteTimestamps = [];         // performance.now() per correct note
+let tempoRatings = [];           // 'green' | 'yellow' | 'red' per note
+let replayBtnEl = null;
 
 // ===== Audio — Piano Note Synthesis =====
 
@@ -201,7 +204,10 @@ function updateProgressDots() {
     dot.classList.remove('filled', 'current');
     if (i < currentStepIndex) {
       dot.classList.add('filled');
-      dot.style.background = NOTES[melody.notes[i]].color;
+      const rating = tempoRatings[i] || 'green';
+      dot.style.background = rating === 'green'  ? '#2ECC71'
+                            : rating === 'yellow' ? '#F1C40F'
+                            :                       '#E74C3C';
     } else if (i === currentStepIndex) {
       dot.classList.add('current');
       dot.style.background = '';
@@ -271,7 +277,7 @@ function flashAllKeysGreen() {
 
 // ===== Teacher =====
 
-function showTeacher(state, speech) {
+function showTeacher(state, speech, speechEmoji) {
   teacherEl.className = 'melody-teacher ' + (state || '');
   teacherEl.innerHTML = '';
   const img = document.createElement('img');
@@ -279,7 +285,23 @@ function showTeacher(state, speech) {
   img.className = 'emoji-img';
   img.alt = TEACHER_EMOJI;
   teacherEl.appendChild(img);
-  teacherSpeechEl.textContent = speech || '';
+
+  // Build speech with optional inline Fluent 3D emoji
+  teacherSpeechEl.innerHTML = '';
+  if (speechEmoji) {
+    const eImg = document.createElement('img');
+    eImg.src = getEmojiUrl(speechEmoji);
+    eImg.className = 'emoji-img';
+    eImg.alt = speechEmoji;
+    eImg.style.width = '1.3em';
+    eImg.style.height = '1.3em';
+    eImg.style.verticalAlign = 'middle';
+    eImg.style.marginRight = '4px';
+    teacherSpeechEl.appendChild(eImg);
+  }
+  if (speech) {
+    teacherSpeechEl.appendChild(document.createTextNode(speech));
+  }
 }
 
 // ===== Mode Selection =====
@@ -290,6 +312,7 @@ function showModeSelect() {
   teacherAreaEl.classList.remove('active');
   keyboardEl.style.display = 'none';
   celebrateEl.classList.remove('show');
+  showReplayBtn(false);
   if (freestyleHintEl) { freestyleHintEl.remove(); freestyleHintEl = null; }
 }
 
@@ -344,14 +367,75 @@ function startLessonIntro() {
   const melody = MELODIES[currentMelodyIndex];
 
   teacherAreaEl.classList.add('active');
-  showTeacher('', 'Get ready!');
+  showTeacher('', 'Get ready!', '🎵');
   melodyNameEl.textContent = `${currentMelodyIndex + 1}. ${melody.emoji} ${melody.name}`;
   buildProgressDots(melody);
   setKeysDisabled(true);
+  showReplayBtn(false);  // hidden until student turn
 
   // Brief intro pause, then teacher plays
   const t = setTimeout(() => startTeacherDemo(), 1500);
   teacherTimers.push(t);
+}
+
+// ===== Replay Button =====
+
+function showReplayBtn(visible) {
+  if (!replayBtnEl) {
+    replayBtnEl = document.createElement('button');
+    replayBtnEl.className = 'melody-replay-btn';
+    const img = document.createElement('img');
+    img.src = getEmojiUrl('🔄');
+    img.className = 'emoji-img';
+    img.alt = '🔄';
+    replayBtnEl.appendChild(img);
+    replayBtnEl.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      if (gameState === 'student-turn') {
+        // Replay the teacher demo from student turn
+        currentStepIndex = 0;
+        noteTimestamps = [];
+        tempoRatings = [];
+        updateProgressDots();
+        startTeacherDemo();
+      }
+    });
+    melodyGameEl.appendChild(replayBtnEl);
+  }
+  replayBtnEl.style.display = visible ? 'flex' : 'none';
+}
+
+// ===== Bouncy Ball =====
+
+function showBouncyBall() {
+  let ball = melodyGameEl.querySelector('.melody-bouncy-ball');
+  if (!ball) {
+    ball = document.createElement('div');
+    ball.className = 'melody-bouncy-ball';
+    melodyGameEl.appendChild(ball);
+  }
+  ball.style.display = 'block';
+  ball.style.opacity = '1';
+  return ball;
+}
+
+function hideBouncyBall() {
+  const ball = melodyGameEl.querySelector('.melody-bouncy-ball');
+  if (ball) {
+    ball.style.opacity = '0';
+    setTimeout(() => { ball.style.display = 'none'; }, 300);
+  }
+}
+
+function bounceToKey(ball, noteIndex) {
+  const key = getKeyEl(noteIndex);
+  if (!key || !ball) return;
+  const keyRect = key.getBoundingClientRect();
+  const gameRect = melodyGameEl.getBoundingClientRect();
+  const x = keyRect.left - gameRect.left + keyRect.width / 2;
+  const y = keyRect.top - gameRect.top - 20;  // sit above the key
+  ball.style.left = x + 'px';
+  ball.style.top = y + 'px';
 }
 
 function startTeacherDemo() {
@@ -359,16 +443,22 @@ function startTeacherDemo() {
   const melody = MELODIES[currentMelodyIndex];
   const tempo = melody.tempo * speedMultiplier;
 
-  showTeacher('playing', 'Listen...');
+  showTeacher('playing', 'Listen...', '👂');
   setKeysDisabled(true);
+  noteTimestamps = [];
+  tempoRatings = [];
 
   // Clear any previous timers
   clearTeacherTimers();
+
+  // Show bouncy ball during teacher demo
+  const ball = showBouncyBall();
 
   melody.notes.forEach((noteIdx, i) => {
     const t = setTimeout(() => {
       playPianoNote(noteIdx);
       highlightKey(noteIdx, 'teacher');
+      bounceToKey(ball, noteIdx);
     }, i * tempo);
     teacherTimers.push(t);
   });
@@ -376,11 +466,13 @@ function startTeacherDemo() {
   // After last note → student turn
   const endDelay = melody.notes.length * tempo + 500;
   const t = setTimeout(() => {
-    showTeacher('waiting', 'Your turn!');
+    hideBouncyBall();
+    showTeacher('waiting', 'Your turn!', '👆');
     gameState = 'student-turn';
     currentStepIndex = 0;
     updateProgressDots();
     setKeysDisabled(false);
+    showReplayBtn(true);
   }, endDelay);
   teacherTimers.push(t);
 }
@@ -395,6 +487,20 @@ function handleStudentInput(noteIndex) {
   animateKeyPress(noteIndex);
 
   if (noteIndex === expected) {
+    // Track timing for rhythm feedback
+    const now = performance.now();
+    noteTimestamps.push(now);
+    if (currentStepIndex === 0) {
+      tempoRatings.push('green');  // first note has no prior reference
+    } else {
+      const delta = now - noteTimestamps[noteTimestamps.length - 2];
+      const expectedTempo = melody.tempo * speedMultiplier;
+      const ratio = delta / expectedTempo;
+      if (ratio >= 0.5 && ratio <= 1.5) tempoRatings.push('green');
+      else if (ratio >= 0.3 && ratio <= 2.5) tempoRatings.push('yellow');
+      else tempoRatings.push('red');
+    }
+
     highlightKey(noteIndex, 'correct');
     currentStepIndex++;
     updateProgressDots();
@@ -414,8 +520,21 @@ function onMelodyComplete() {
   setKeysDisabled(true);
   retryCount = 0;
   speedMultiplier = 1.0;
+  showReplayBtn(false);
 
-  showTeacher('happy', CELEBRATE_EMOJIS[Math.floor(Math.random() * CELEBRATE_EMOJIS.length)]);
+  // Rhythm feedback based on tempo accuracy
+  const greens = tempoRatings.filter(r => r === 'green').length;
+  const total  = tempoRatings.length;
+  const greenRatio = total > 0 ? greens / total : 1;
+
+  if (greenRatio >= 0.8) {
+    showTeacher('happy', 'Perfect rhythm!', '🎵');
+  } else if (greenRatio >= 0.5) {
+    showTeacher('happy', 'Great! Try a steady beat', '🥁');
+  } else {
+    showTeacher('happy', 'Nice! Listen to the rhythm', '👂');
+  }
+
   flashAllKeysGreen();
   playSuccessChime();
 
@@ -446,11 +565,14 @@ function onMelodyComplete() {
 function onMelodyMistake() {
   gameState = 'retry-pause';
   setKeysDisabled(true);
-  showTeacher('waiting', '🤔 Let\'s try again!');
+  showReplayBtn(false);
+  showTeacher('waiting', 'Let\'s try again!', '🤔');
 
   retryCount++;
   // Slow down: +20% per retry, cap at 1.8x (80% slower)
   speedMultiplier = Math.min(1.8, 1.0 + retryCount * 0.2);
+  noteTimestamps = [];
+  tempoRatings = [];
 
   const t = setTimeout(() => {
     currentStepIndex = 0;
@@ -562,6 +684,17 @@ function cleanup() {
   speedMultiplier = 1.0;
   heldKeys.clear();
   freestyleNotePlayed = false;
+  noteTimestamps = [];
+  tempoRatings = [];
+
+  // Remove replay button
+  if (replayBtnEl) { replayBtnEl.remove(); replayBtnEl = null; }
+
+  // Remove bouncy ball
+  if (melodyGameEl) {
+    const ball = melodyGameEl.querySelector('.melody-bouncy-ball');
+    if (ball) ball.remove();
+  }
 
   if (keyboardEl) {
     keyboardEl.removeEventListener('pointerdown', onKeyboardPointer);
