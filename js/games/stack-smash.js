@@ -105,12 +105,16 @@ let stPendulumAngle = 0;
 let stIsNewBest = false;
 
 function stGetSwaySpeed() {
-  if (stBlockCount < 5)  return SWAY_SPEEDS[0];
-  if (stBlockCount < 10) return SWAY_SPEEDS[1];
-  if (stBlockCount < 15) return SWAY_SPEEDS[2];
-  if (stBlockCount < 20) return SWAY_SPEEDS[3];
-  if (stBlockCount < 25) return SWAY_SPEEDS[4];
-  return SWAY_SPEEDS[5];
+  let base;
+  if (stBlockCount < 5)  base = SWAY_SPEEDS[0];
+  else if (stBlockCount < 10) base = SWAY_SPEEDS[1];
+  else if (stBlockCount < 15) base = SWAY_SPEEDS[2];
+  else if (stBlockCount < 20) base = SWAY_SPEEDS[3];
+  else if (stBlockCount < 25) base = SWAY_SPEEDS[4];
+  else base = SWAY_SPEEDS[5];
+  // Slow down on narrow screens — pendulum covers more relative width
+  const widthScale = Math.max(0.6, Math.min(1, window.innerWidth / 1200));
+  return base * widthScale;
 }
 
 function stGetTowerTopY() {

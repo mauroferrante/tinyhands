@@ -289,9 +289,9 @@ exitBtn.addEventListener('touchend', (e) => {
 // ===== Story Modal =====
 const storyBackdrop = document.getElementById('storyBackdrop');
 const storyClose = document.getElementById('storyClose');
-const whyLink = document.getElementById('whyLink');
+const whyTopLink = document.getElementById('whyTopLink');
 
-whyLink.addEventListener('click', () => {
+whyTopLink.addEventListener('click', () => {
   storyBackdrop.style.display = 'flex';
   requestAnimationFrame(() => storyBackdrop.classList.add('show'));
   document.body.style.overflow = 'hidden';
@@ -484,6 +484,7 @@ function initPwaBanner() {
     pwaBanner.style.display = '';
   } else if (deferredAndroidPrompt) {
     pwaBanner.style.display = '';
+    pwaBannerExpand.textContent = 'Install';
   }
 }
 

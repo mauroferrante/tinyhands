@@ -140,19 +140,16 @@
   margin-bottom: 1.2em;
 }
 
-#landing .why-link {
-  margin-top: 1em;
-  font-size: 0.9rem;
+.why-top-link {
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  transition: color 0.2s, transform 0.2s;
-  z-index: 10;
-  position: relative;
+  opacity: 1 !important;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
-#landing .why-link:hover {
+.why-top-link:hover {
   color: var(--color-primary-dark);
-  transform: translateX(3px);
 }
 
 #landing footer {

@@ -621,13 +621,28 @@ function spawnExtraLife() {
 }
 
 function updateExtraLives(dt) {
+  const magnetActive = activeTimedEffect && activeTimedEffect.type === PU_MAGNET;
   const dtNorm = dt * 60;
   for (let i = extraLifeItems.length - 1; i >= 0; i--) {
     const el = extraLifeItems[i];
     el.x -= el.speed * dtNorm;
     el.bobPhase += dt * 2;
     el.glowPhase += dt * 4;
-    el.y = el.baseY + Math.sin(el.bobPhase) * 6;
+
+    if (magnetActive) {
+      const dx = balloonX - el.x;
+      const dy = balloonY - el.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < MAGNET_RADIUS && dist > 5) {
+        const force = MAGNET_STRENGTH * (1 - dist / MAGNET_RADIUS);
+        el.x += (dx / dist) * force * dtNorm;
+        el.y += (dy / dist) * force * dtNorm;
+        el.baseY = el.y;
+      }
+    } else {
+      el.y = el.baseY + Math.sin(el.bobPhase) * 6;
+    }
+
     if (el.x < -40) extraLifeItems.splice(i, 1);
   }
 
@@ -678,13 +693,28 @@ function spawnPowerup() {
 }
 
 function updatePowerups(dt) {
+  const magnetActive = activeTimedEffect && activeTimedEffect.type === PU_MAGNET;
   const dtNorm = dt * 60;
   for (let i = powerups.length - 1; i >= 0; i--) {
     const pu = powerups[i];
     pu.x -= pu.speed * dtNorm;
     pu.bobPhase += dt * 2.5;
     pu.glowPhase += dt * 4;
-    pu.y = pu.baseY + Math.sin(pu.bobPhase) * 5;
+
+    if (magnetActive) {
+      const dx = balloonX - pu.x;
+      const dy = balloonY - pu.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < MAGNET_RADIUS && dist > 5) {
+        const force = MAGNET_STRENGTH * (1 - dist / MAGNET_RADIUS);
+        pu.x += (dx / dist) * force * dtNorm;
+        pu.y += (dy / dist) * force * dtNorm;
+        pu.baseY = pu.y;
+      }
+    } else {
+      pu.y = pu.baseY + Math.sin(pu.bobPhase) * 5;
+    }
+
     if (pu.x < -60) powerups.splice(i, 1);
   }
 
@@ -1159,10 +1189,11 @@ function render() {
     ctx.fillStyle = glowGrad;
     ctx.fillRect(balloonX - 90, balloonY - 90, 180, 180);
 
-    // Attraction lines to nearby stars
-    for (const star of stars) {
-      const dx = balloonX - star.x;
-      const dy = balloonY - star.y;
+    // Attraction lines to nearby collectibles
+    const magnetTargets = [...stars, ...extraLifeItems, ...powerups];
+    for (const item of magnetTargets) {
+      const dx = balloonX - item.x;
+      const dy = balloonY - item.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < MAGNET_RADIUS) {
         const strength = 1 - dist / MAGNET_RADIUS;
@@ -1171,7 +1202,7 @@ function render() {
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(balloonX, balloonY);
-        ctx.lineTo(star.x, star.y);
+        ctx.lineTo(item.x, item.y);
         ctx.stroke();
       }
     }
@@ -1410,8 +1441,8 @@ function render() {
     ctx.lineWidth = 3;
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
-    ctx.strokeText('2x PTS', W - 22, 48);
-    ctx.fillText('2x PTS', W - 22, 48);
+    ctx.strokeText('2x PTS', W - 22, 80);
+    ctx.fillText('2x PTS', W - 22, 80);
     ctx.restore();
     ctx.globalAlpha = 1;
   }
