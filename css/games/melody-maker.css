@@ -1071,6 +1071,17 @@
 .parade-tempo-btn:active { transform: scale(0.9); }
 .parade-tempo-btn:disabled { opacity: 0.35; }
 
+.parade-auto-btn {
+  font-size: clamp(14px, 3vw, 18px);
+  margin-left: clamp(4px, 1vw, 8px);
+  color: rgba(0, 0, 0, 0.5);
+}
+.parade-auto-btn.active {
+  background: rgba(76, 175, 80, 0.3);
+  color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+}
+
 .parade-speed-label {
   font-family: 'Fredoka One', cursive;
   font-size: clamp(0.65rem, 2vw, 0.85rem);

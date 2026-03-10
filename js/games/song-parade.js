@@ -300,10 +300,26 @@ export class SongParadeEngine {
       if (tempoIdx < TEMPO_STEPS.length - 1) { tempoIdx++; updateTempo(); }
     });
 
+    // Auto-play toggle — plays notes automatically for testing
+    this.autoPlay = false;
+    const autoBtn = document.createElement('button');
+    autoBtn.className = 'parade-tempo-btn parade-auto-btn';
+    autoBtn.type = 'button';
+    autoBtn.textContent = '▶';
+    autoBtn.title = 'Auto-play (for testing)';
+    autoBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.autoPlay = !this.autoPlay;
+      autoBtn.classList.toggle('active', this.autoPlay);
+      autoBtn.textContent = this.autoPlay ? '⏸' : '▶';
+    });
+
     this.tempoWrap.appendChild(speedLabel);
     this.tempoWrap.appendChild(slowerBtn);
     this.tempoWrap.appendChild(this.tempoLabelEl);
     this.tempoWrap.appendChild(fasterBtn);
+    this.tempoWrap.appendChild(autoBtn);
 
     updateTempo();  // apply default 0.5×
 
@@ -488,7 +504,21 @@ export class SongParadeEngine {
       this.nextNoteIdx++;
     }
 
-    // 2. Update positions & detect misses (waterfall: top → bottom)
+    // 2. Auto-play: trigger notes automatically when enabled
+    if (this.autoPlay) {
+      for (const an of this.activeNotes) {
+        if (an.state !== 'active') continue;
+        if (an.autoPlayed) continue;
+        const dist = this.currentBeat - an.beatOffset;
+        if (dist >= -0.05 && dist <= 0.15) {
+          an.autoPlayed = true;
+          this.playNote(an.pitchIdx);
+          this.handleInput(an.pitchIdx);
+        }
+      }
+    }
+
+    // 3. Update positions & detect misses (waterfall: top → bottom)
     for (let i = this.activeNotes.length - 1; i >= 0; i--) {
       const an = this.activeNotes[i];
       if (an.state === 'dead') continue;
@@ -512,13 +542,13 @@ export class SongParadeEngine {
       }
     }
 
-    // 3. Clean up dead notes
+    // 4. Clean up dead notes
     this.activeNotes = this.activeNotes.filter(n => n.state !== 'dead');
 
-    // 4. Key glow hints
+    // 5. Key glow hints
     this.updateKeyGlowHints();
 
-    // 5. Check song complete
+    // 6. Check song complete
     if (this.nextNoteIdx >= this.scheduledNotes.length && this.activeNotes.length === 0) {
       this.onSongEnd();
       return;
