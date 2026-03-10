@@ -792,38 +792,38 @@
     transform: translateX(-50%);
     bottom: auto;
     width: auto;
-    max-width: 70%;
-    padding: 4px 12px;
-    gap: 8px;
+    max-width: 75%;
+    padding: 6px 14px;
+    gap: 10px;
     align-items: center;
     z-index: 250;
   }
 
   .melody-teacher {
-    width: clamp(32px, 8vh, 48px);
-    height: clamp(32px, 8vh, 48px);
+    width: clamp(36px, 8vw, 48px);
+    height: clamp(36px, 8vw, 48px);
     flex-shrink: 0;
   }
 
   .melody-teacher-speech {
-    font-size: clamp(0.65rem, 1.8vw, 0.85rem);
-    padding: 3px 8px;
+    font-size: clamp(0.75rem, 2.2vw, 1rem);
+    padding: 4px 10px;
     min-height: auto;
   }
 
   .melody-melody-name {
-    font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+    font-size: clamp(0.85rem, 2.5vw, 1.1rem);
   }
 
   .melody-progress {
-    gap: 4px;
+    gap: 5px;
     margin-top: 0;
-    max-width: 120px;
+    max-width: 140px;
   }
 
   .melody-dot {
-    width: clamp(8px, 1.8vw, 12px);
-    height: clamp(8px, 1.8vw, 12px);
+    width: clamp(10px, 2.5vw, 14px);
+    height: clamp(10px, 2.5vw, 14px);
   }
 
   .melody-keyboard {
