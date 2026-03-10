@@ -104,7 +104,6 @@
   transition: transform 0.15s, box-shadow 0.15s;
   position: relative;
   overflow: hidden;
-  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 

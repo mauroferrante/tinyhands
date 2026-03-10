@@ -196,8 +196,6 @@ let orientationHandler = null;       // listener ref for cleanup
 let levelSelectEl = null;
 let levelGridEl = null;
 let levelBackEl = null;
-let gridTouchStartY = 0;       // iOS tap-vs-scroll detection
-let gridTouchStartTime = 0;
 
 // ===== Level Progress (localStorage) =====
 
@@ -554,7 +552,7 @@ function buildLevelGrid() {
   levelGridEl.innerHTML = '';
   const highestUnlocked = loadProgress();
 
-  // --- Compute grid layout ---
+  // --- Compute grid layout from viewport (no DOM measurement) ---
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const isPortrait = vh > vw;
@@ -562,11 +560,15 @@ function buildLevelGrid() {
              : (vh <= 500 && !isPortrait) ? 6
              : 5;
 
+  const pad = Math.min(24, vw * 0.03) * 2;     // container padding × 2
+  const availW = vw - pad;
   const gap = Math.min(14, vw * 0.015);
-  levelGridEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  const tileSize = Math.floor((availW - gap * (cols - 1)) / cols);
+
+  levelGridEl.style.gridTemplateColumns = `repeat(${cols}, ${tileSize}px)`;
+  levelGridEl.style.gridAutoRows = `${tileSize}px`;
   levelGridEl.style.gap = `${gap}px`;
 
-  // Build tiles first, then measure width to set square row height
   MELODIES.forEach((melody, i) => {
     const levelNum = i + 1;
     const tile = document.createElement('button');
@@ -622,13 +624,6 @@ function buildLevelGrid() {
 
     levelGridEl.appendChild(tile);
   });
-
-  // Measure actual tile width → set row height to match (square tiles)
-  const sample = levelGridEl.firstElementChild;
-  if (sample) {
-    const tileW = sample.offsetWidth;
-    levelGridEl.style.gridAutoRows = `${tileW}px`;
-  }
 }
 
 function showLevelSelect() {
@@ -666,41 +661,6 @@ function onLevelGridClick(e) {
 function onLevelBackClick() {
   hideLevelSelect();
   showModeSelect();
-}
-
-// --- iOS touch fallbacks (click can fail in scroll containers) ---
-
-function onGridTouchStart(e) {
-  const t = e.touches[0];
-  gridTouchStartY = t.clientY;
-  gridTouchStartTime = Date.now();
-}
-
-function onGridTouchEnd(e) {
-  const t = e.changedTouches[0];
-  const dy = Math.abs(t.clientY - gridTouchStartY);
-  const dt = Date.now() - gridTouchStartTime;
-  // Only treat as tap if finger moved < 15 px and held < 400 ms
-  if (dy > 15 || dt > 400) return;
-  const el = document.elementFromPoint(t.clientX, t.clientY);
-  if (!el) return;
-  const tile = el.closest('.melody-level-tile');
-  if (!tile || tile.disabled) return;
-  e.preventDefault();  // prevent delayed click double-fire
-  initAudio();
-  const levelNum = parseInt(tile.dataset.level, 10);
-  if (isNaN(levelNum)) return;
-  currentMelodyIndex = levelNum - 1;
-  retryCount = 0;
-  retrySpeedMultiplier = 1.0;
-  hideLevelSelect();
-  keyboardEl.style.display = '';
-  startLessonIntro();
-}
-
-function onBackTouchEnd(e) {
-  e.preventDefault();  // prevent delayed click double-fire
-  onLevelBackClick();
 }
 
 // ===== Lesson Mode =====
@@ -1267,15 +1227,8 @@ function cleanup() {
     keyboardEl.style.display = '';
   }
   if (levelSelectEl) levelSelectEl.classList.remove('active');
-  if (levelGridEl) {
-    levelGridEl.removeEventListener('click', onLevelGridClick);
-    levelGridEl.removeEventListener('touchstart', onGridTouchStart);
-    levelGridEl.removeEventListener('touchend', onGridTouchEnd);
-  }
-  if (levelBackEl) {
-    levelBackEl.removeEventListener('click', onLevelBackClick);
-    levelBackEl.removeEventListener('touchend', onBackTouchEnd);
-  }
+  if (levelGridEl) levelGridEl.removeEventListener('click', onLevelGridClick);
+  if (levelBackEl) levelBackEl.removeEventListener('click', onLevelBackClick);
   if (modeSelectEl) {
     modeSelectEl.classList.remove('active');
     modeSelectEl.removeEventListener('click', onModeClick);
@@ -1328,10 +1281,6 @@ export const melodyMaker = {
       modeSelectEl.addEventListener('click', onModeClick);
       levelGridEl.addEventListener('click', onLevelGridClick);
       levelBackEl.addEventListener('click', onLevelBackClick);
-      // iOS touch fallbacks — click can fail in scroll containers
-      levelGridEl.addEventListener('touchstart', onGridTouchStart, { passive: true });
-      levelGridEl.addEventListener('touchend', onGridTouchEnd);
-      levelBackEl.addEventListener('touchend', onBackTouchEnd);
       document.addEventListener('keyup', handleKeyUp);
       showModeSelect();
     });
