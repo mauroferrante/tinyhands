@@ -706,20 +706,32 @@ body.game-active .postgame-nudge {
   }
 }
 
-/* ===== PWA Install Banner (Landing Page) ===== */
+/* ===== PWA Install Banner (Fixed Bottom Bar) ===== */
 
 .pwa-banner {
-  background: var(--color-primary-light);
-  border-radius: 14px;
-  padding: 10px 16px;
-  margin-bottom: 0.8em;
+  position: fixed;
+  bottom: 0;
+  left: 0;
   width: 100%;
-  max-width: 520px;
-  z-index: 10;
-  position: relative;
-  animation: headerFadeIn 0.8s ease forwards;
-  animation-delay: 0.3s;
+  z-index: 1000;
+  background: var(--color-primary-light);
+  padding: 10px 16px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.08);
   opacity: 0;
+  animation: bannerSlideUp 0.5s ease forwards;
+  animation-delay: 1s;
+}
+
+@keyframes bannerSlideUp {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Hide banner during active game */
+body.game-active .pwa-banner {
+  display: none !important;
 }
 
 .pwa-banner-row {
@@ -727,6 +739,8 @@ body.game-active .postgame-nudge {
   align-items: center;
   gap: 0.6em;
   flex-wrap: wrap;
+  max-width: 520px;
+  margin: 0 auto;
 }
 
 .pwa-banner-text {
@@ -768,6 +782,9 @@ body.game-active .postgame-nudge {
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid rgba(124, 107, 191, 0.15);
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .pwa-banner-steps.expanded {

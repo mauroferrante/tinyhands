@@ -195,11 +195,8 @@ function stopGame() {
     void header.offsetWidth;              // force reflow
     header.style.animation = '';          // restore CSS animation
   }
-  // Same fix for the PWA banner (also uses headerFadeIn animation).
-  // Set opacity directly — the fade-in only matters on first load.
-  // Also reset to collapsed state every time (unless dismissed).
+  // Reset PWA banner to collapsed state (no opacity fix needed — banner is fixed-position now)
   if (pwaBanner && pwaBanner.style.display !== 'none') {
-    pwaBanner.style.opacity = '1';
     pwaBannerSteps.classList.remove('expanded');
     pwaBannerExpand.style.display = '';
   }
@@ -406,9 +403,8 @@ window.addEventListener('popstate', () => {
     document.body.classList.remove('game-active');
     const header = landing.querySelector('header');
     if (header) { header.style.animation = 'none'; void header.offsetWidth; header.style.animation = ''; }
-    // PWA banner: fix opacity + reset to collapsed
+    // Reset PWA banner to collapsed state
     if (pwaBanner && pwaBanner.style.display !== 'none') {
-      pwaBanner.style.opacity = '1';
       pwaBannerSteps.classList.remove('expanded');
       pwaBannerExpand.style.display = '';
     }
@@ -470,13 +466,6 @@ function initPwaBanner() {
     pwaBanner.style.display = '';
   }
 
-  // Lock in opacity after fade-in animation completes so that
-  // Safari's display:none toggle doesn't reset it to 0.
-  if (pwaBanner.style.display !== 'none') {
-    pwaBanner.addEventListener('animationend', () => {
-      pwaBanner.style.opacity = '1';
-    }, { once: true });
-  }
 }
 
 pwaBannerExpand.addEventListener('click', () => {
