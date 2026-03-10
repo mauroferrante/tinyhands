@@ -12,62 +12,74 @@ const PARADE_SONGS = [
     name: 'Old MacDonald',
     emoji: '🐄',
     notes: [
-      // "Old Mac-Don-ald had a farm"
+      // "Old Mac-Don-ald had a farm, E-I-E-I-O"
       {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Do',b:1,g:0.1},
       {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Do',b:2,g:0.4},
-      // "E-I-E-I-O!"
-      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1},
-      {p:'Fa',b:2,g:0.5}
+      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:2,g:0.4},
+      // "And on his farm he had a…" + animal sounds
+      {p:'Do',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1},
+      {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:1,g:0.1},
+      {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:1,g:0.1}
     ]
   },
   {
     name: 'Twinkle Twinkle',
     emoji: '⭐',
     notes: [
-      // "Twinkle twinkle little star"
+      // "Twinkle twinkle little star, how I wonder what you are"
       {p:'Do',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1},
-      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:2,g:0.5},
-      // "How I wonder what you are"
+      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:2,g:0.4},
       {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Mi',b:1,g:0.1},
-      {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Do',b:2,g:0.5}
+      {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Do',b:2,g:0.4},
+      // "Up above the world so high, like a diamond in the sky"
+      {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1},
+      {p:'Mi',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Re',b:2,g:0.4}
+    ]
+  },
+  {
+    name: 'Ode to Joy',
+    emoji: '🎵',
+    notes: [
+      // Phrase A: "Mi Mi Fa Sol | Sol Fa Mi Re | Do Do Re Mi | Mi. Re Do"
+      {p:'Mi',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.1},
+      {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Re',b:1,g:0.1},
+      {p:'Do',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Mi',b:1,g:0.1},
+      {p:'Mi',b:1.5,g:0.1}, {p:'Re',b:0.5,g:0.1}, {p:'Do',b:2,g:0.5},
+      // Phrase B: "Re Re Mi Do | Re Mi(8th)Fa(8th) Mi Do"
+      {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Do',b:1,g:0.1},
+      {p:'Re',b:1,g:0.1}, {p:'Mi',b:0.5,g:0.1}, {p:'Fa',b:0.5,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Do',b:1,g:0.1}
     ]
   },
   {
     name: 'Wheels on the Bus',
     emoji: '🚌',
     notes: [
-      // "The wheels on the bus go"
+      // "The wheels on the bus go round and round"
       {p:'Do',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:1,g:0.1},
-      // "Round and round"
       {p:'La',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Fa',b:1,g:0.5},
-      // "Round and round"
-      {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:2,g:0.5}
-    ]
-  },
-  {
-    name: "If You're Happy",
-    emoji: '😊',
-    notes: [
-      // "If you're hap-py"
-      {p:'Do',b:0.5,g:0.1}, {p:'Do',b:0.5,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1},
-      // "and you know it"
-      {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:0.5,g:0.1},
-      // "Clap your hands!"
-      {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'La',b:2,g:0.5}
+      // "Round and round, round and round"
+      {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:2,g:0.5},
+      {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:2,g:0.5},
+      // "The wheels on the bus go round and round, all through the town"
+      {p:'Do',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1},
+      {p:'La',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Fa',b:2,g:0.5}
     ]
   },
   {
     name: 'London Bridge',
     emoji: '🏰',
     notes: [
-      // "Lon-don bridge is"
+      // "Lon-don bridge is fall-ing down"
       {p:'Sol',b:1.5,g:0.1}, {p:'La',b:0.5,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1},
-      // "Fall-ing down"
-      {p:'Mi',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:2,g:0.5},
-      // "Fall-ing down"
-      {p:'Re',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Fa',b:2,g:0.5},
-      // "Fall-ing down"
-      {p:'Mi',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:2,g:0.5}
+      {p:'Mi',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:2,g:0.4},
+      // "Fall-ing down, fall-ing down"
+      {p:'Re',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Fa',b:2,g:0.4},
+      {p:'Mi',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:2,g:0.4},
+      // "Lon-don bridge is fall-ing down"
+      {p:'Sol',b:1.5,g:0.1}, {p:'La',b:0.5,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1},
+      {p:'Mi',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:2,g:0.4},
+      // "My fair la-dy!"
+      {p:'Re',b:2,g:0.1}, {p:'Sol',b:2,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Do',b:2,g:0.5}
     ]
   }
 ];
