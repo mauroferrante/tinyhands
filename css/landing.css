@@ -194,6 +194,47 @@
   transform: translateX(2px);
 }
 
+/* ===== Feedback Overlay ===== */
+.feedback-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.feedback-backdrop.show {
+  display: block;
+  opacity: 1;
+}
+.feedback-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.feedback-close {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 10001;
+  font-size: 1.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.2s;
+}
+.feedback-close:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
 /* ===== Story Modal ===== */
 .story-backdrop {
   position: fixed;

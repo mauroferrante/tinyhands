@@ -118,17 +118,7 @@
   padding: 1rem;
 }
 
-.memory-easy {
-  width: min(92vw, 680px);
-}
-
-.memory-medium {
-  width: min(94vw, 820px);
-}
-
-.memory-hard {
-  width: min(94vw, 80vh, 720px);
-}
+/* Board width is set inline by JS based on viewport */
 
 /* ===== Individual Cards ===== */
 
@@ -202,7 +192,7 @@
 /* Center star decoration */
 .memory-card-back::after {
   content: '\2726';
-  font-size: clamp(1.2rem, 4vw, 2rem);
+  font-size: clamp(1rem, 4vw, 2.4rem);
   color: rgba(255, 255, 255, 0.22);
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 }
@@ -238,14 +228,6 @@
 
 .memory-card.matched {
   pointer-events: none;
-}
-
-/* Difficulty-based back-star sizing */
-.memory-easy .memory-card-back::after {
-  font-size: clamp(1.6rem, 5vw, 2.8rem);
-}
-.memory-hard .memory-card-back::after {
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
 }
 
 /* ===== Win Pulse ===== */

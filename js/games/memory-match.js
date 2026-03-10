@@ -11,10 +11,26 @@ import { EMOJI_REGISTRY } from '../emoji-registry.js';
 
 // ---- Difficulty configs ----
 const DIFFICULTIES = {
-  easy:   { cols: 4, rows: 3, pairs: 6 },
-  medium: { cols: 6, rows: 4, pairs: 12 },
-  hard:   { cols: 6, rows: 6, pairs: 18 }
+  easy:   { pairs: 6 },
+  medium: { pairs: 12 },
+  hard:   { pairs: 18 }
 };
+
+// Pick the best grid cols×rows for a card count given the viewport aspect ratio
+function bestGrid(total) {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const aspect = vw / vh;
+  let bestCols = 4, bestScore = Infinity;
+  for (let c = 2; c <= total; c++) {
+    if (total % c !== 0) continue;
+    const r = total / c;
+    if (r < 2 || c < 2) continue;
+    const score = Math.abs((c / r) - aspect);
+    if (score < bestScore) { bestScore = score; bestCols = c; }
+  }
+  return { cols: bestCols, rows: total / bestCols };
+}
 
 // ---- 36 distinct emojis ----
 const EMOJI_POOL = [
@@ -149,10 +165,20 @@ function startRound(difficulty) {
   memoryPairsEl.textContent = `0 / ${totalPairs}`;
   memoryTimeEl.textContent = '0:00';
 
-  // Grid config
-  memoryBoardEl.style.setProperty('--cols', cfg.cols);
-  memoryBoardEl.style.setProperty('--rows', cfg.rows);
-  memoryBoardEl.className = `memory-board memory-${difficulty}`;
+  // Grid config — responsive layout based on viewport
+  const totalCards = cfg.pairs * 2;
+  const { cols, rows } = bestGrid(totalCards);
+  memoryBoardEl.style.setProperty('--cols', cols);
+  memoryBoardEl.style.setProperty('--rows', rows);
+  memoryBoardEl.className = 'memory-board';
+
+  // Compute board width so cards stay square and fill available space
+  const gap = Math.min(12, window.innerWidth * 0.015);
+  const maxCardW = (window.innerWidth * 0.94 - gap * (cols + 1)) / cols;
+  const maxCardH = (window.innerHeight * 0.82 - gap * (rows + 1)) / rows;
+  const cardSize = Math.min(maxCardW, maxCardH, 140);
+  const boardW = cardSize * cols + gap * (cols - 1) + 32;
+  memoryBoardEl.style.width = boardW + 'px';
 
   // Pick & shuffle emojis
   const picked = shuffle(EMOJI_POOL).slice(0, totalPairs);

@@ -2372,16 +2372,24 @@ const TILE_W = 90, TILE_H = 90, TILE_GAP = 12;
 
 function getCharTiles() {
   const count = CHAR_OPTIONS.length;
-  const cols = count;
-  const totalW = cols * TILE_W + (cols - 1) * TILE_GAP;
+  // Responsive: smaller tiles and adaptive columns on small screens
+  const tileSize = W < 500 ? 70 : TILE_W;
+  const gap = W < 500 ? 10 : TILE_GAP;
+  const maxCols = Math.min(count, Math.floor((W - 60) / (tileSize + gap)));
+  const cols = Math.max(2, maxCols);
+  const rows = Math.ceil(count / cols);
+  const totalW = cols * tileSize + (cols - 1) * gap;
+  const totalH = rows * tileSize + (rows - 1) * gap;
   const startX = (W - totalW) / 2;
-  const startY = (H - TILE_H) / 2 + 10;
+  const startY = (H - totalH) / 2;
   const tiles = [];
   for (let i = 0; i < count; i++) {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
     tiles.push({
-      x: startX + i * (TILE_W + TILE_GAP),
-      y: startY,
-      w: TILE_W, h: TILE_H,
+      x: startX + col * (tileSize + gap),
+      y: startY + row * (tileSize + gap),
+      w: tileSize, h: tileSize,
       emoji: CHAR_OPTIONS[i],
     });
   }
@@ -2393,10 +2401,20 @@ function drawCharSelect(c) {
   c.fillRect(0, 0, W, H);
   const tiles = getCharTiles();
   const pad = 30;
-  const gridL = tiles[0].x - pad;
-  const gridR = tiles[tiles.length-1].x + TILE_W + pad;
-  const gridT = tiles[0].y - 90;
-  const gridB = tiles[0].y + TILE_H + 70;
+  const tileW = tiles[0].w;
+  const tileH = tiles[0].h;
+  // Find bounding box of all tiles
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const t of tiles) {
+    if (t.x < minX) minX = t.x;
+    if (t.x + tileW > maxX) maxX = t.x + tileW;
+    if (t.y < minY) minY = t.y;
+    if (t.y + tileH > maxY) maxY = t.y + tileH;
+  }
+  const gridL = minX - pad;
+  const gridR = maxX + pad;
+  const gridT = minY - 70;
+  const gridB = maxY + 60;
   // Panel background
   c.fillStyle = 'rgba(255,255,255,0.13)';
   c.beginPath(); c.roundRect(gridL-10, gridT-10, gridR-gridL+20, gridB-gridT+20, 24); c.fill();
@@ -2408,6 +2426,8 @@ function drawCharSelect(c) {
   c.fillStyle = '#4A3000';
   c.fillText('Choose your character!', W/2, gridT + 14);
   // Tiles
+  const spriteSelected = Math.min(56, tileW * 0.62);
+  const spriteNormal = Math.min(52, tileW * 0.58);
   for (let i = 0; i < tiles.length; i++) {
     const t = tiles[i];
     const bob = Math.sin(frameCount * 0.06 + i * 1.2) * 3;
@@ -2429,12 +2449,12 @@ function drawCharSelect(c) {
     c.strokeStyle = selected ? '#FFB300' : 'rgba(200,170,60,0.3)';
     c.lineWidth = selected ? 3.5 : 2;
     c.beginPath(); c.roundRect(t.x, t.y, t.w, t.h, 14); c.stroke();
-    drawSprite(c, t.emoji, t.x + t.w/2, t.y + t.h/2 + bob, selected ? 56 : 52);
+    drawSprite(c, t.emoji, t.x + t.w/2, t.y + t.h/2 + bob, selected ? spriteSelected : spriteNormal);
   }
   // Subtitle
   c.font = `${16*fontScale|0}px 'Nunito', sans-serif`;
   c.fillStyle = '#7A6030';
-  c.fillText('Tap or use ← → then Enter to pick!', W/2, gridB - 30);
+  c.fillText('Tap or use ← → then Enter to pick!', W/2, gridB - 24);
 }
 
 function handleCharSelect(mx, my) {
@@ -2726,13 +2746,14 @@ function drawZoneLabel(c) {
   const fs = 18*fontScale|0;
   c.save();
   c.font=`bold ${fs}px 'Fredoka One', cursive`;
-  c.textAlign='left'; c.textBaseline='top';
-  // Draw emoji sprite then text
+  c.textAlign='right'; c.textBaseline='top';
+  // Draw emoji sprite then text — top-right to avoid exit button
   const emojiSize = fs * 1.2;
-  const textX = 14 + emojiSize + 4;
+  const textX = W - 14;
   c.fillStyle='rgba(0,0,0,0.35)'; c.fillText(zone.text, textX+1, 15);
   c.fillStyle='white'; c.fillText(zone.text, textX, 14);
-  drawSprite(c, zone.emoji, 14 + emojiSize/2, 14 + fs/2, emojiSize);
+  const tw = c.measureText(zone.text).width;
+  drawSprite(c, zone.emoji, textX - tw - emojiSize/2 - 4, 14 + fs/2, emojiSize);
   c.restore();
 }
 

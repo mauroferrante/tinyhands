@@ -267,7 +267,7 @@
       <a href="https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02" target="_blank" rel="noopener noreferrer" class="footer-tip-btn" id="footerTip">Leave a tip</a>
     </div>
     <p class="footer-signature">Built with <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/2764_3d.png" class="emoji-img inline-emoji" alt="❤️"> by a dad</p>
-    <a href="/feedback" target="_blank" rel="noopener noreferrer" class="footer-feedback">Got feedback? I'd love to hear it →</a>
+    <a href="#" class="footer-feedback" id="feedbackLink">Got feedback? I'd love to hear it →</a>
   </footer>
 </main>
 
@@ -345,17 +345,17 @@
       <div class="memory-diff-title">Pick a size!</div>
       <div class="memory-diff-options">
         <button class="memory-diff-btn" data-diff="easy">
-          <span class="memory-diff-grid">3 x 4</span>
+          <span class="memory-diff-grid">12</span>
           <span class="memory-diff-label">Easy</span>
           <span class="memory-diff-best" id="memoryBestEasy"></span>
         </button>
         <button class="memory-diff-btn" data-diff="medium">
-          <span class="memory-diff-grid">4 x 6</span>
+          <span class="memory-diff-grid">24</span>
           <span class="memory-diff-label">Medium</span>
           <span class="memory-diff-best" id="memoryBestMedium"></span>
         </button>
         <button class="memory-diff-btn" data-diff="hard">
-          <span class="memory-diff-grid">6 x 6</span>
+          <span class="memory-diff-grid">36</span>
           <span class="memory-diff-label">Hard</span>
           <span class="memory-diff-best" id="memoryBestHard"></span>
         </button>
@@ -447,6 +447,11 @@
       <span><span class="pwa-verb">Tap</span> <strong class="pwa-step2-label">Add to Home Screen</strong> <svg class="ios-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span>
     </div>
   </div>
+</div>
+<!-- Feedback overlay (Typeform iframe) -->
+<div class="feedback-backdrop" id="feedbackBackdrop">
+  <button class="feedback-close" id="feedbackClose" aria-label="Close">✕</button>
+  <iframe id="feedbackFrame" class="feedback-frame" title="Feedback form"></iframe>
 </div>
 </body>
 </html>

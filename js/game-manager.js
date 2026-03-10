@@ -215,16 +215,6 @@ function stopGame() {
     }, 1000);
   }
 
-  // PWA install modal — show after first game on iOS/Android (not standalone)
-  if (!isStandalone && !sessionStorage.getItem('pwaModalShown')) {
-    const dismissed = localStorage.getItem('pwa_modal_dismissed');
-    if (!dismissed || Date.now() - Number(dismissed) > 3 * 86400000) {
-      if (isSafari || deferredAndroidPrompt) {
-        sessionStorage.setItem('pwaModalShown', 'true');
-        setTimeout(() => showPwaModal(), 2500);
-      }
-    }
-  }
 }
 
 // ===== Fullscreen change listener =====
@@ -316,6 +306,31 @@ storyBackdrop.addEventListener('click', (e) => {
 });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && storyBackdrop.classList.contains('show')) closeStory();
+  if (e.key === 'Escape' && fbBackdrop.classList.contains('show')) closeFeedback();
+});
+
+// ===== Feedback Overlay =====
+const fbBackdrop = document.getElementById('feedbackBackdrop');
+const fbFrame = document.getElementById('feedbackFrame');
+const fbClose = document.getElementById('feedbackClose');
+const TYPEFORM_URL = 'https://mauroferrante85.typeform.com/to/pptDHXKN';
+
+document.getElementById('feedbackLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  fbFrame.src = TYPEFORM_URL;
+  fbBackdrop.style.display = 'block';
+  requestAnimationFrame(() => fbBackdrop.classList.add('show'));
+  document.body.style.overflow = 'hidden';
+});
+
+function closeFeedback() {
+  fbBackdrop.classList.remove('show');
+  setTimeout(() => { fbBackdrop.style.display = 'none'; fbFrame.src = ''; }, 300);
+  document.body.style.overflow = '';
+}
+fbClose.addEventListener('click', closeFeedback);
+fbBackdrop.addEventListener('click', (e) => {
+  if (e.target === fbBackdrop) closeFeedback();
 });
 
 // ===== Post-Game Nudge =====
@@ -441,11 +456,6 @@ const pwaBannerSteps   = document.getElementById('pwaBannerSteps');
 const pwaBannerExpand  = document.getElementById('pwaBannerExpand');
 const pwaBannerClose   = document.getElementById('pwaBannerClose');
 const pwaDeviceName    = document.getElementById('pwaDeviceName');
-const pwaBackdrop      = document.getElementById('pwaBackdrop');
-const pwaModalClose    = document.getElementById('pwaModalClose');
-const pwaDismiss       = document.getElementById('pwaDismiss');
-const pwaPointer       = document.getElementById('pwaPointer');
-
 // -- Landing banner --
 
 function initPwaBanner() {
@@ -480,42 +490,6 @@ pwaBannerExpand.addEventListener('click', () => {
 pwaBannerClose.addEventListener('click', () => {
   pwaBanner.style.display = 'none';
   sessionStorage.setItem('pwaBannerDismissed', 'true');
-});
-
-// -- Post-game modal --
-
-function showPwaModal() {
-  // Set pointer direction based on device (hidden on desktop)
-  if (isMacSafari) {
-    pwaPointer.style.display = 'none';
-  } else if (isIPad) {
-    pwaPointer.className = 'pwa-pointer pwa-pointer-ipad';
-  } else {
-    pwaPointer.className = 'pwa-pointer pwa-pointer-iphone';
-  }
-
-  // On Android, swap the modal to a simple "Install" action
-  if (deferredAndroidPrompt) {
-    triggerAndroidInstall();
-    return;
-  }
-
-  pwaBackdrop.style.display = 'flex';
-  requestAnimationFrame(() => pwaBackdrop.classList.add('show'));
-}
-
-function closePwaModal(saveDismissal) {
-  pwaBackdrop.classList.remove('show');
-  setTimeout(() => { pwaBackdrop.style.display = 'none'; }, 300);
-  if (saveDismissal) localStorage.setItem('pwa_modal_dismissed', String(Date.now()));
-}
-
-pwaModalClose.addEventListener('click', () => closePwaModal(false));
-pwaDismiss.addEventListener('click', () => closePwaModal(true));
-
-// Close modal on backdrop click
-pwaBackdrop.addEventListener('click', (e) => {
-  if (e.target === pwaBackdrop) closePwaModal(false);
 });
 
 // -- Android beforeinstallprompt --
