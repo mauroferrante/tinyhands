@@ -37,23 +37,22 @@
 
 .melody-level-select {
   display: none;
-  flex-direction: column;
   position: absolute;
   inset: 0;
   z-index: 200;
   background: linear-gradient(135deg, #FFF8E7 0%, #FDE8F0 50%, #E8F0FE 100%);
-  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: clamp(12px, 3vw, 24px);
 }
 
-.melody-level-select.active { display: flex; }
+.melody-level-select.active { display: block; }
 
 .melody-level-header {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: clamp(12px, 3vw, 20px);
-  flex-shrink: 0;
 }
 
 .melody-level-back {
@@ -86,11 +85,6 @@
   /* columns & row height set inline by JS (Memory Match approach) */
   gap: clamp(8px, 1.5vw, 14px);
   padding-bottom: clamp(12px, 3vw, 24px);
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  align-content: start;
   justify-content: center;
 }
 
