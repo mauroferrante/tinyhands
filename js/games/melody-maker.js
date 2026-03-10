@@ -508,6 +508,7 @@ function showModeSelect() {
 function onModeClick(e) {
   const btn = e.target.closest('.melody-mode-btn');
   if (!btn) return;
+  initAudio();  // unlock iOS AudioContext on user gesture
   const mode = btn.dataset.mode;
   modeSelectEl.classList.remove('active');
   keyboardEl.style.display = '';
@@ -587,10 +588,11 @@ function buildLevelGrid() {
     } else {
       // CURRENT (unlocked, not yet completed)
       tile.classList.add('current');
-      const emojiEl = document.createElement('span');
-      emojiEl.className = 'melody-level-emoji';
-      emojiEl.textContent = melody.emoji;
-      tile.appendChild(emojiEl);
+      const emojiImg = document.createElement('img');
+      emojiImg.src = getEmojiUrl(melody.emoji);
+      emojiImg.className = 'emoji-img melody-level-emoji';
+      emojiImg.alt = melody.emoji;
+      tile.appendChild(emojiImg);
       const num = document.createElement('span');
       num.className = 'melody-level-num';
       num.textContent = levelNum;
@@ -626,6 +628,8 @@ function hideLevelSelect() {
 function onLevelGridClick(e) {
   const tile = e.target.closest('.melody-level-tile');
   if (!tile || tile.disabled) return;
+  e.preventDefault();
+  initAudio();  // unlock iOS AudioContext on user gesture
   const levelNum = parseInt(tile.dataset.level, 10);
   if (isNaN(levelNum)) return;
   currentMelodyIndex = levelNum - 1;
@@ -750,11 +754,17 @@ function bounceToKey(ball, noteIndex, travelMs) {
   const y = keyRect.top - gameRect.top - 20;  // sit above the key
 
   if (travelMs != null && travelMs > 0) {
-    ball.style.transition = `left ${travelMs}ms cubic-bezier(0.34, 1.56, 0.64, 1), `
-      + `top ${travelMs}ms cubic-bezier(0.34, 1.56, 0.64, 1), `
+    ball.style.transition = `left ${travelMs}ms ease-out, `
+      + `top ${travelMs}ms ease-out, `
       + `opacity 0.3s ease`;
+    // Arc hop animation — ball bounces up during travel
+    ball.style.setProperty('--hop-ms', travelMs + 'ms');
+    ball.classList.remove('ball-hop', 'ball-land');
+    void ball.offsetWidth;
+    ball.classList.add('ball-hop');
   } else {
     ball.style.transition = 'none';
+    ball.classList.remove('ball-hop');
   }
 
   ball.style.left = x + 'px';
@@ -762,8 +772,8 @@ function bounceToKey(ball, noteIndex, travelMs) {
 }
 
 function triggerBallLand(ball) {
-  // Squash-stretch landing animation
-  ball.classList.remove('ball-land');
+  // Stop hop arc, start squash-stretch landing
+  ball.classList.remove('ball-hop', 'ball-land');
   void ball.offsetWidth;  // force reflow to restart animation
   ball.classList.add('ball-land');
 
@@ -944,10 +954,11 @@ function onMelodyComplete() {
   const t = setTimeout(() => {
     const completedLevel = currentMelodyIndex + 1;
     saveProgress(completedLevel);
-    if (completedLevel >= MELODIES.length) {
+    currentMelodyIndex++;
+    if (currentMelodyIndex >= MELODIES.length) {
       onAllComplete();
     } else {
-      showLevelSelect();
+      startLessonIntro();
     }
   }, pauseMs);
   teacherTimers.push(t);
@@ -1118,8 +1129,8 @@ function cleanup() {
     keyboardEl.style.display = '';
   }
   if (levelSelectEl) levelSelectEl.classList.remove('active');
-  if (levelGridEl) levelGridEl.removeEventListener('click', onLevelGridClick);
-  if (levelBackEl) levelBackEl.removeEventListener('click', onLevelBackClick);
+  if (levelGridEl) levelGridEl.removeEventListener('pointerdown', onLevelGridClick);
+  if (levelBackEl) levelBackEl.removeEventListener('pointerdown', onLevelBackClick);
   if (modeSelectEl) {
     modeSelectEl.classList.remove('active');
     modeSelectEl.removeEventListener('click', onModeClick);
@@ -1170,8 +1181,8 @@ export const melodyMaker = {
     preloadEmojis(EMOJI_REGISTRY['melody-maker'] || []).then(() => {
       buildKeyboard();
       modeSelectEl.addEventListener('click', onModeClick);
-      levelGridEl.addEventListener('click', onLevelGridClick);
-      levelBackEl.addEventListener('click', onLevelBackClick);
+      levelGridEl.addEventListener('pointerdown', onLevelGridClick);
+      levelBackEl.addEventListener('pointerdown', onLevelBackClick);
       document.addEventListener('keyup', handleKeyUp);
       showModeSelect();
     });
