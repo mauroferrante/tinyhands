@@ -1375,11 +1375,11 @@ function render() {
     ctx.restore();
   }
 
-  // Touch steering zone overlays
+  // Touch steering zone overlays (visual only — bottom 40% hint)
   if (hasTouchInput && (gameState === 'playing' || gameState === 'countdown')) {
     const zw = W * STEER_ZONE_W_FRAC;
-    const zh = H;
-    const zy = 0;
+    const zh = H * 0.38;
+    const zy = H - zh;
     const pad = 8;
     const rad = 14;
     const arrowSize = Math.min(zw, zh) * 0.28;
@@ -1779,7 +1779,15 @@ export const rocketRide = {
     document.addEventListener('keyup', keyUpHandler);
 
     // Touch handlers for boost + steering
-    touchEndHandler = () => { touchBoosting = false; touchSteering = 0; };
+    // Re-evaluate remaining touches so lifting one finger doesn't kill the other
+    touchEndHandler = (e) => {
+      if (e.touches && e.touches.length) {
+        applyAllTouches(e.touches);
+      } else {
+        touchBoosting = false;
+        touchSteering = 0;
+      }
+    };
     document.addEventListener('touchend', touchEndHandler);
     touchMoveHandler = (e) => {
       if (!e.touches.length) return;

@@ -454,13 +454,11 @@ const pwaBanner        = document.getElementById('pwaBanner');
 const pwaBannerCollapsed = document.getElementById('pwaBannerCollapsed');
 const pwaBannerSteps   = document.getElementById('pwaBannerSteps');
 const pwaBannerExpand  = document.getElementById('pwaBannerExpand');
-const pwaBannerClose   = document.getElementById('pwaBannerClose');
 const pwaDeviceName    = document.getElementById('pwaDeviceName');
-// -- Landing banner --
+// -- Landing banner (persistent — expand/collapse only) --
 
 function initPwaBanner() {
   if (isStandalone) return;
-  if (sessionStorage.getItem('pwaBannerDismissed')) return;
 
   if (isIOSSafari) {
     pwaDeviceName.textContent = isIPad ? 'iPad' : 'iPhone';
@@ -468,14 +466,12 @@ function initPwaBanner() {
   } else if (isMacSafari) {
     pwaDeviceName.textContent = 'Mac';
     pwaBanner.style.display = '';
-    // Adapt text for desktop: "Click" instead of "Tap", "Add to Dock" instead of "Add to Home Screen"
     document.querySelectorAll('.pwa-verb').forEach(el => { el.textContent = 'Click'; });
     document.querySelectorAll('.pwa-step2-label').forEach(el => { el.textContent = 'Add to Dock'; });
   } else if (deferredAndroidPrompt) {
     pwaDeviceName.textContent = 'phone';
     pwaBanner.style.display = '';
   }
-
 }
 
 pwaBannerExpand.addEventListener('click', () => {
@@ -483,13 +479,8 @@ pwaBannerExpand.addEventListener('click', () => {
     triggerAndroidInstall();
     return;
   }
-  pwaBannerSteps.classList.add('expanded');
-  pwaBannerExpand.style.display = 'none';
-});
-
-pwaBannerClose.addEventListener('click', () => {
-  pwaBanner.style.display = 'none';
-  sessionStorage.setItem('pwaBannerDismissed', 'true');
+  const isExpanded = pwaBannerSteps.classList.toggle('expanded');
+  pwaBannerExpand.textContent = isExpanded ? 'Hide ▴' : 'Learn how ▾';
 });
 
 // -- Android beforeinstallprompt --

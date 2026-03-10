@@ -809,19 +809,6 @@ body.game-active .pwa-banner {
   cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer;
 }
 
-.pwa-banner-close {
-  font-size: 1rem;
-  background: none;
-  border: none;
-  color: var(--color-text-light);
-  padding: 2px 6px;
-  transition: color 0.2s;
-  cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer;
-}
-.pwa-banner-close:hover {
-  color: var(--color-text);
-}
-
 .pwa-banner-steps {
   display: none;
   flex-direction: column;
