@@ -554,6 +554,25 @@ function buildLevelGrid() {
   levelGridEl.innerHTML = '';
   const highestUnlocked = loadProgress();
 
+  // --- Compute grid layout (Memory Match approach) ---
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const isPortrait = vh > vw;
+  const cols = (vw <= 667 && isPortrait) ? 3
+             : (vh <= 500 && !isPortrait) ? 6
+             : 5;
+
+  const style = getComputedStyle(levelSelectEl);
+  const padL = parseFloat(style.paddingLeft) || 0;
+  const padR = parseFloat(style.paddingRight) || 0;
+  const availW = levelSelectEl.clientWidth - padL - padR;
+  const gap = Math.min(14, availW * 0.02);
+  const tileSize = Math.floor(Math.min((availW - gap * (cols - 1)) / cols, 130));
+
+  levelGridEl.style.gridTemplateColumns = `repeat(${cols}, ${tileSize}px)`;
+  levelGridEl.style.gridAutoRows = `${tileSize}px`;
+  levelGridEl.style.gap = `${gap}px`;
+
   MELODIES.forEach((melody, i) => {
     const levelNum = i + 1;
     const tile = document.createElement('button');
