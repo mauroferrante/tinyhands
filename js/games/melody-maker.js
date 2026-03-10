@@ -549,7 +549,7 @@ function hideFreestyleHint() {
 // ===== Level Select =====
 
 function buildLevelGrid() {
-  // --- Identical to Memory Match: board sizing, <div> tiles, event delegation ---
+  // <div> tiles + event delegation (Memory Match pattern), normal-flow grid (scrollable)
   levelGridEl.innerHTML = '';
   const highestUnlocked = loadProgress();
 
@@ -559,20 +559,15 @@ function buildLevelGrid() {
   const cols = (vh <= 500 && !isPortrait) ? 6     // phone landscape
              : (vw <= 667 && isPortrait)  ? 5     // phone portrait
              : 6;                                  // tablet / desktop
-  const rows = Math.ceil(MELODIES.length / cols);
 
-  // Same math as Memory Match: cardSize = min(maxW, maxH, cap)
   const gap = Math.min(12, vw * 0.015);
-  const headerH = 56;
   const maxTileW = (vw * 0.92 - gap * (cols - 1)) / cols;
-  const maxTileH = ((vh - headerH) * 0.82 - gap * (rows - 1)) / rows;
-  const tileSize = Math.floor(Math.min(maxTileW, maxTileH, 140));
-  const boardW = tileSize * cols + gap * (cols - 1) + 32;
+  const tileSize = Math.floor(Math.min(maxTileW, 140));
+  const boardW = tileSize * cols + gap * (cols - 1);
 
-  // Set grid display + size via JS (exactly like memoryBoardEl)
+  // Normal-flow grid, centered via CSS margin: 0 auto
   levelGridEl.style.display = 'grid';
-  levelGridEl.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
-  levelGridEl.style.gridTemplateRows = 'repeat(' + rows + ', 1fr)';
+  levelGridEl.style.gridTemplateColumns = 'repeat(' + cols + ', ' + tileSize + 'px)';
   levelGridEl.style.width = boardW + 'px';
   levelGridEl.style.gap = gap + 'px';
 
@@ -641,7 +636,6 @@ function handleLevelTap(e) {
 function showLevelSelect() {
   gameState = 'level-select';
   melodyGameEl.classList.remove('melody-playing');
-  levelSelectEl.style.display = 'block';
   levelSelectEl.classList.add('active');
   modeSelectEl.classList.remove('active');
   teacherAreaEl.classList.remove('active');
@@ -650,13 +644,12 @@ function showLevelSelect() {
   showReplayBtn(false);
   showSpeedToggle(false);
   stopLionNod();
+  levelSelectEl.scrollTop = 0;
   buildLevelGrid();
 }
 
 function hideLevelSelect() {
   levelSelectEl.classList.remove('active');
-  levelSelectEl.style.display = 'none';
-  levelGridEl.style.display = 'none';
 }
 
 function onLevelBackClick() {

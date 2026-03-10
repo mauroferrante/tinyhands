@@ -41,21 +41,24 @@
   inset: 0;
   z-index: 200;
   background: linear-gradient(135deg, #FFF8E7 0%, #FDE8F0 50%, #E8F0FE 100%);
-  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .melody-level-select.active { display: block; }
 
 .melody-level-header {
-  position: absolute;
-  top: clamp(8px, 2vw, 16px);
-  left: clamp(12px, 3vw, 24px);
-  right: clamp(12px, 3vw, 24px);
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding-left: 40px;   /* clear the fixed exit button */
+  padding: clamp(8px, 2vw, 16px) clamp(12px, 3vw, 24px);
+  padding-left: calc(clamp(12px, 3vw, 24px) + 40px);   /* clear the fixed exit button */
   z-index: 210;
+  background: linear-gradient(135deg, #FFF8E7 0%, #FDE8F0 50%, #E8F0FE 100%);
 }
 
 .melody-level-back {
@@ -83,16 +86,12 @@
   color: #333;
 }
 
-/* Board centered in viewport — identical to .memory-board */
+/* Grid — normal flow, centered with margin, scrollable parent */
 .melody-level-grid {
   display: none;
-  position: absolute;
-  top: 52%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  /* display:grid + width + cols + rows + gap set inline by JS */
-  padding: 1rem;
-  z-index: 110;
+  /* display:grid + width + cols + gap set inline by JS */
+  margin: 0 auto;
+  padding: 0 1rem 1rem;
 }
 
 .melody-level-tile {
