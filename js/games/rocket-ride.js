@@ -1378,8 +1378,8 @@ function render() {
   // Touch steering zone overlays
   if (hasTouchInput && (gameState === 'playing' || gameState === 'countdown')) {
     const zw = W * STEER_ZONE_W_FRAC;
-    const zh = H * STEER_ZONE_H_FRAC;
-    const zy = H - zh;
+    const zh = H;
+    const zy = 0;
     const pad = 8;
     const rad = 14;
     const arrowSize = Math.min(zw, zh) * 0.28;
