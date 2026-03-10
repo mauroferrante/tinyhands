@@ -7,6 +7,7 @@ import { getAudioCtx, initAudio, playWinFanfare } from '../audio.js';
 import { spawnParticles } from '../effects.js';
 import { preloadEmojis, getEmojiUrl } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
+import { SongParadeEngine } from './song-parade.js';
 
 // ===== Constants =====
 
@@ -174,7 +175,7 @@ let melodyNameEl, progressEl, keyboardEl, celebrateEl;
 
 // ===== Game State =====
 
-let gameState = 'idle';         // idle | mode-select | level-select | freestyle | lesson-intro | teacher-playing | student-turn | correct-pause | retry-pause | lesson-complete
+let gameState = 'idle';         // idle | mode-select | level-select | freestyle | lesson-intro | teacher-playing | student-turn | correct-pause | retry-pause | lesson-complete | song-select | parade-playing | parade-complete
 let currentMelodyIndex = 0;
 let currentStepIndex = 0;
 let teacherTimers = [];
@@ -196,6 +197,7 @@ let orientationHandler = null;       // listener ref for cleanup
 let levelSelectEl = null;
 let levelGridEl = null;
 let levelBackEl = null;
+let paradeEngine = null;
 
 // ===== Level Progress (localStorage) =====
 
@@ -237,11 +239,12 @@ function getEffectiveMultiplier() {
 
 // ===== Audio — Piano Note Synthesis =====
 
-function playPianoNote(noteIndex) {
+function playPianoNote(noteIndex, volumeScale) {
   initAudio();
   const ctx = getAudioCtx();
   if (!ctx) return;
 
+  const vol = volumeScale == null ? 1.0 : volumeScale;
   const freq = NOTES[noteIndex].freq;
   const now = ctx.currentTime;
 
@@ -251,8 +254,8 @@ function playPianoNote(noteIndex) {
   osc1.type = 'triangle';
   osc1.frequency.setValueAtTime(freq, now);
   gain1.gain.setValueAtTime(0.001, now);
-  gain1.gain.linearRampToValueAtTime(0.18, now + 0.02);
-  gain1.gain.setValueAtTime(0.15, now + 0.08);
+  gain1.gain.linearRampToValueAtTime(0.18 * vol, now + 0.02);
+  gain1.gain.setValueAtTime(0.15 * vol, now + 0.08);
   gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
   osc1.connect(gain1).connect(ctx.destination);
   osc1.start(now);
@@ -264,7 +267,7 @@ function playPianoNote(noteIndex) {
   osc2.type = 'sine';
   osc2.frequency.setValueAtTime(freq * 2, now);
   gain2.gain.setValueAtTime(0.001, now);
-  gain2.gain.linearRampToValueAtTime(0.06, now + 0.01);
+  gain2.gain.linearRampToValueAtTime(0.06 * vol, now + 0.01);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
   osc2.connect(gain2).connect(ctx.destination);
   osc2.start(now);
@@ -517,6 +520,8 @@ function onModeClick(e) {
 
   if (mode === 'freestyle') {
     startFreestyle();
+  } else if (mode === 'parade') {
+    startSongParade();
   } else {
     startLessons();
   }
@@ -661,6 +666,45 @@ function onLevelBackClick() {
 
 function startLessons() {
   showLevelSelect();
+}
+
+// ===== Song Parade Mode =====
+
+function startSongParade() {
+  gameState = 'song-select';
+  melodyGameEl.classList.add('melody-playing');
+  teacherAreaEl.classList.remove('active');
+  keyboardEl.style.display = '';
+  setKeysDisabled(false);
+
+  paradeEngine = new SongParadeEngine({
+    containerEl: melodyGameEl,
+    keyboardEl: keyboardEl,
+    notesArray: NOTES,
+    pitchMap: PITCH_MAP,
+    baseTempo: TEMPO,
+    playNote: playPianoNote,
+    spawnParticles: spawnParticles,
+    getEmojiUrl: getEmojiUrl,
+    onPlaying: function() {
+      gameState = 'parade-playing';
+    },
+    onComplete: function() {
+      gameState = 'parade-complete';
+    },
+    onBack: function() {
+      stopSongParade();
+      showModeSelect();
+    }
+  });
+  paradeEngine.init();
+}
+
+function stopSongParade() {
+  if (paradeEngine) {
+    paradeEngine.destroy();
+    paradeEngine = null;
+  }
 }
 
 /** True when device is a phone in portrait (rotate prompt visible). */
@@ -1146,6 +1190,10 @@ function onKeyboardPointer(e) {
     animateKeyPress(idx);
   } else if (gameState === 'student-turn') {
     handleStudentInput(idx);
+  } else if (gameState === 'parade-playing') {
+    playPianoNote(idx);
+    animateKeyPress(idx);
+    if (paradeEngine) paradeEngine.handleInput(idx);
   }
 }
 
@@ -1167,6 +1215,10 @@ function handleKeyDown(e) {
     animateKeyPress(idx);
   } else if (gameState === 'student-turn') {
     handleStudentInput(idx);
+  } else if (gameState === 'parade-playing') {
+    playPianoNote(idx);
+    animateKeyPress(idx);
+    if (paradeEngine) paradeEngine.handleInput(idx);
   }
 }
 
@@ -1184,6 +1236,7 @@ function clearTeacherTimers() {
 function cleanup() {
   clearTeacherTimers();
   stopLionNod();
+  stopSongParade();
   gameState = 'idle';
   currentMelodyIndex = 0;
   currentStepIndex = 0;
@@ -1298,6 +1351,9 @@ export const melodyMaker = {
         celebrateEl.classList.remove('show');
         keyboardEl.style.display = '';
         showModeSelect();
+      } else if (gameState === 'parade-complete') {
+        celebrateEl.classList.remove('show');
+        if (paradeEngine) paradeEngine.showSongSelect();
       }
     }
   },
