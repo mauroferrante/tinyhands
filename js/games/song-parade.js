@@ -300,26 +300,30 @@ export class SongParadeEngine {
       if (tempoIdx < TEMPO_STEPS.length - 1) { tempoIdx++; updateTempo(); }
     });
 
-    // Auto-play toggle — plays notes automatically for testing
+    // Preview toggle — auto-plays notes for testing song data
     this.autoPlay = false;
-    const autoBtn = document.createElement('button');
-    autoBtn.className = 'parade-tempo-btn parade-auto-btn';
-    autoBtn.type = 'button';
-    autoBtn.textContent = '▶';
-    autoBtn.title = 'Auto-play (for testing)';
-    autoBtn.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.autoPlay = !this.autoPlay;
-      autoBtn.classList.toggle('active', this.autoPlay);
-      autoBtn.textContent = this.autoPlay ? '⏸' : '▶';
+    const previewToggle = document.createElement('label');
+    previewToggle.className = 'parade-preview-toggle';
+    const previewCheckbox = document.createElement('input');
+    previewCheckbox.type = 'checkbox';
+    previewCheckbox.className = 'parade-preview-checkbox';
+    const previewSlider = document.createElement('span');
+    previewSlider.className = 'parade-preview-slider';
+    const previewLabel = document.createElement('span');
+    previewLabel.className = 'parade-preview-label';
+    previewLabel.textContent = 'Preview';
+    previewToggle.appendChild(previewCheckbox);
+    previewToggle.appendChild(previewSlider);
+    previewToggle.appendChild(previewLabel);
+    previewCheckbox.addEventListener('change', () => {
+      this.autoPlay = previewCheckbox.checked;
     });
 
     this.tempoWrap.appendChild(speedLabel);
     this.tempoWrap.appendChild(slowerBtn);
     this.tempoWrap.appendChild(this.tempoLabelEl);
     this.tempoWrap.appendChild(fasterBtn);
-    this.tempoWrap.appendChild(autoBtn);
+    this.tempoWrap.appendChild(previewToggle);
 
     updateTempo();  // apply default 0.5×
 

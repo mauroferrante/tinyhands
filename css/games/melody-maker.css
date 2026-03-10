@@ -1071,15 +1071,52 @@
 .parade-tempo-btn:active { transform: scale(0.9); }
 .parade-tempo-btn:disabled { opacity: 0.35; }
 
-.parade-auto-btn {
-  font-size: clamp(14px, 3vw, 18px);
-  margin-left: clamp(4px, 1vw, 8px);
-  color: rgba(0, 0, 0, 0.5);
+.parade-preview-toggle {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1vw, 6px);
+  margin-left: clamp(6px, 1.5vw, 12px);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.parade-auto-btn.active {
-  background: rgba(76, 175, 80, 0.3);
-  color: rgba(0, 0, 0, 0.7);
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+.parade-preview-checkbox {
+  display: none;
+}
+.parade-preview-slider {
+  position: relative;
+  width: clamp(32px, 7vw, 40px);
+  height: clamp(18px, 4vw, 22px);
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  transition: background 0.25s;
+  flex-shrink: 0;
+}
+.parade-preview-slider::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(14px, 3vw, 18px);
+  height: clamp(14px, 3vw, 18px);
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: left 0.25s;
+}
+.parade-preview-checkbox:checked + .parade-preview-slider {
+  background: rgba(76, 175, 80, 0.6);
+}
+.parade-preview-checkbox:checked + .parade-preview-slider::after {
+  left: calc(100% - clamp(14px, 3vw, 18px) - 2px);
+}
+.parade-preview-label {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(0.6rem, 1.8vw, 0.8rem);
+  color: rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .parade-speed-label {
