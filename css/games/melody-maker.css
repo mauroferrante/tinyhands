@@ -122,6 +122,18 @@
   animation: teacherCelebrate 0.6s ease-out;
 }
 
+/* Rhythmic nod during student turn — duration set dynamically via JS */
+.melody-teacher.nodding {
+  animation: teacherNod ease-in-out infinite;
+}
+
+@keyframes teacherNod {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25%      { transform: rotate(-4deg) scale(1.03); }
+  50%      { transform: rotate(0deg) scale(1.06); }
+  75%      { transform: rotate(4deg) scale(1.03); }
+}
+
 @keyframes teacherBob {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-8px); }
@@ -400,6 +412,17 @@
   100% { transform: scale(1) rotate(0); opacity: 1; }
 }
 
+/* Grand Finale celebration (level 30) */
+.melody-grand-finale {
+  animation: grandFinaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes grandFinaleIn {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  50%  { transform: scale(1.3) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
 /* ===== Replay Button ===== */
 
 .melody-replay-btn {
@@ -428,6 +451,38 @@
 
 .melody-replay-btn:hover,
 .melody-replay-btn:active {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+/* ===== Speed Toggle ===== */
+
+.melody-speed-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: clamp(10px, 3vw, 24px);
+  left: clamp(10px, 3vw, 24px);
+  width: clamp(48px, 10vw, 64px);
+  height: clamp(48px, 10vw, 64px);
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  z-index: 250;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.melody-speed-toggle .emoji-img {
+  width: 60%;
+  height: 60%;
+}
+
+.melody-speed-toggle:hover,
+.melody-speed-toggle:active {
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
 }
@@ -500,5 +555,6 @@
   .melody-key,
   .melody-teacher,
   .melody-dot,
-  .melody-celebrate-emoji { animation: none !important; transition: none !important; }
+  .melody-celebrate-emoji,
+  .melody-grand-finale { animation: none !important; transition: none !important; }
 }

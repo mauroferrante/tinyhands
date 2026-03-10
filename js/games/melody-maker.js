@@ -27,41 +27,144 @@ const NOTES = [
 const KEY_MAP = {};
 NOTES.forEach((n, i) => { KEY_MAP[n.key] = i; });
 
+const PITCH_MAP = { Do: 0, Re: 1, Mi: 2, Fa: 3, Sol: 4, La: 5, Ti: 6, Do2: 7 };
+const TEMPO = 500;  // ms per beat — base rhythm unit
+
+/** Ms from one note's start to the next note's start */
+function noteDelay(note) {
+  return (note.b + note.g) * TEMPO;
+}
+
+/** Resolve a note object's pitch name to a NOTES index */
+function pitchIndex(note) {
+  return PITCH_MAP[note.p];
+}
+
 // ===== Melodies =====
-// Indices: Do=0 Re=1 Mi=2 Fa=3 Sol=4 La=5 Ti=6 Do(high)=7
+// Each note: { p: pitch name, b: beat duration, g: gap (rest) after note }
 
 const MELODIES = [
-  { name: 'The Heartbeat',   emoji: '💓',  notes: [0, 0, 0],               tempo: 600 },
-  { name: 'Going Up',        emoji: '⬆️',  notes: [0, 1, 2],               tempo: 550 },
-  { name: 'Coming Home',     emoji: '🏠',  notes: [2, 1, 0],               tempo: 550 },
-  { name: 'The Mountain',    emoji: '⛰️',  notes: [0, 2, 4],               tempo: 600 },
-  { name: 'Starry Sky',      emoji: '🌟',  notes: [0, 0, 4, 4],           tempo: 550 },
-  { name: 'The Slide',       emoji: '🛝',  notes: [4, 3, 2, 1, 0],        tempo: 450 },
-  { name: 'Brother John',    emoji: '🔔',  notes: [0, 1, 2, 0],           tempo: 500 },
-  { name: 'The Wave',        emoji: '🌊',  notes: [0, 2, 0, 2],           tempo: 500 },
-  { name: 'Little Lamb',     emoji: '🐑',  notes: [2, 1, 0, 1, 2, 2, 2], tempo: 400 },
-  { name: 'The Grand Scale', emoji: '🏆',  notes: [0, 1, 2, 3, 4, 5, 6, 7], tempo: 400 },
-  // ---- Extended Curriculum (11–30) ----
-  { name: 'Morning Bells',   emoji: '🌅',  notes: [4, 2, 4, 2],                               tempo: 550 },
-  { name: 'Raindrops',       emoji: '🌧️',  notes: [4, 4, 2, 4, 4, 2],                         tempo: 500 },
-  { name: 'Marching Band',   emoji: '🥁',  notes: [0, 1, 2, 3, 4, 4, 4],                     tempo: 450 },
-  { name: 'Bee Hive',        emoji: '🐝',  notes: [4, 3, 4, 3, 2],                             tempo: 450 },
-  { name: 'The Bridge',      emoji: '🌉',  notes: [0, 2, 4, 2, 0],                             tempo: 500 },
-  { name: 'Hot Cross Buns',  emoji: '🍞',  notes: [2, 1, 0, 2, 1, 0],                         tempo: 500 },
-  { name: 'Mary\'s End',     emoji: '🎀',  notes: [2, 1, 0, 1, 2, 2, 2, 1, 1, 2, 1, 0],     tempo: 380 },
-  { name: 'Old Mac Intro',   emoji: '🐄',  notes: [4, 4, 4, 1, 2, 2, 1],                     tempo: 420 },
-  { name: 'Row Your Boat',   emoji: '🚣',  notes: [0, 0, 0, 1, 2],                             tempo: 500 },
-  { name: 'London Bridge',   emoji: '🏰',  notes: [4, 5, 4, 3, 2, 3, 4],                     tempo: 420 },
-  { name: 'The Giant Step',  emoji: '👣',  notes: [0, 4, 0, 4],                                 tempo: 550 },
-  { name: 'High & Low',      emoji: '🎢',  notes: [0, 4, 2, 6],                                 tempo: 550 },
-  { name: 'Jingle Bells',    emoji: '🎄',  notes: [2, 2, 2, 2, 2, 2, 2, 4, 0, 1, 2],         tempo: 350 },
-  { name: 'Playground Song', emoji: '😜',  notes: [4, 4, 2, 5, 4, 2],                         tempo: 450 },
-  { name: 'Bingo Start',     emoji: '🐕',  notes: [4, 0, 0, 4, 4, 5, 5, 4],                   tempo: 400 },
-  { name: 'Zig-Zag',         emoji: '⚡',  notes: [0, 1, 0, 2, 1, 3, 2, 4],                   tempo: 400 },
-  { name: 'Twinkle Twinkle', emoji: '⭐',  notes: [0, 0, 4, 4, 5, 5, 4],                     tempo: 420 },
-  { name: 'Happy Birthday',  emoji: '🎂',  notes: [4, 4, 5, 4, 7, 6],                         tempo: 450 },
-  { name: 'Ode to Joy',      emoji: '🎵',  notes: [2, 2, 3, 4, 4, 3, 2, 1, 0, 0, 1, 2],     tempo: 380 },
-  { name: 'Grand Finale',    emoji: '👑',  notes: [0, 2, 4, 7, 6, 5, 4, 3, 2, 1, 0],         tempo: 350 },
+  // ---- Levels 1-5: Equal beats, 3-4 notes ----
+  { name: 'The Heartbeat',   emoji: '💓',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Do',b:1,g:0}
+  ]},
+  { name: 'Going Up',        emoji: '⬆️',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:1,g:0}
+  ]},
+  { name: 'Coming Home',     emoji: '🏠',  notes: [
+    {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:1,g:0}
+  ]},
+  { name: 'The Mountain',    emoji: '⛰️',  notes: [
+    {p:'Do',b:1,g:0.3}, {p:'Mi',b:1,g:0.3}, {p:'Sol',b:1,g:0}
+  ]},
+  { name: 'Starry Sky',      emoji: '🌟',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Sol',b:1,g:0}
+  ]},
+
+  // ---- Levels 6-10: Introduce held notes (b:2) and longer rests ----
+  { name: 'The Slide',       emoji: '🛝',  notes: [
+    {p:'Sol',b:1,g:0.2}, {p:'Fa',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:2,g:0}
+  ]},
+  { name: 'Brother John',    emoji: '🔔',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Do',b:2,g:0}
+  ]},
+  { name: 'The Wave',        emoji: '🌊',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Mi',b:2,g:0.5}, {p:'Do',b:1,g:0.2}, {p:'Mi',b:2,g:0}
+  ]},
+  { name: 'Little Lamb',     emoji: '🐑',  notes: [
+    {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2},
+    {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Mi',b:2,g:0}
+  ]},
+  { name: 'The Grand Scale', emoji: '🏆',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Fa',b:1,g:0.2},
+    {p:'Sol',b:1,g:0.2}, {p:'La',b:1,g:0.2}, {p:'Ti',b:1,g:0.2}, {p:'Do2',b:2,g:0}
+  ]},
+
+  // ---- Levels 11-15: Mix of b:1 and b:2, varied gaps ----
+  { name: 'Morning Bells',   emoji: '🌅',  notes: [
+    {p:'Sol',b:2,g:0.5}, {p:'Mi',b:1,g:0.2}, {p:'Sol',b:2,g:0.5}, {p:'Mi',b:2,g:0}
+  ]},
+  { name: 'Raindrops',       emoji: '🌧️',  notes: [
+    {p:'Sol',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Mi',b:2,g:0.8},
+    {p:'Sol',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Mi',b:2,g:0}
+  ]},
+  { name: 'Marching Band',   emoji: '🥁',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Fa',b:1,g:0.2},
+    {p:'Sol',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Sol',b:2,g:0}
+  ]},
+  { name: 'Bee Hive',        emoji: '🐝',  notes: [
+    {p:'Sol',b:1,g:0.2}, {p:'Fa',b:0.5,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Fa',b:0.5,g:0.2}, {p:'Mi',b:2,g:0}
+  ]},
+  { name: 'The Bridge',      emoji: '🌉',  notes: [
+    {p:'Do',b:1,g:0.3}, {p:'Mi',b:1,g:0.3}, {p:'Sol',b:2,g:0.5}, {p:'Mi',b:1,g:0.3}, {p:'Do',b:2,g:0}
+  ]},
+
+  // ---- Levels 16-20: Real songs, authentic rhythm, introduce b:0.5 ----
+  { name: 'Hot Cross Buns',  emoji: '🍞',  notes: [
+    {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:2,g:1.0},
+    {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:2,g:0}
+  ]},
+  { name: 'Mary\'s Lamb',    emoji: '🎀',  notes: [
+    {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2},
+    {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Mi',b:2,g:0.8},
+    {p:'Re',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:2,g:0}
+  ]},
+  { name: 'Old MacDonald',   emoji: '🐄',  notes: [
+    {p:'Sol',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Re',b:1,g:0.2},
+    {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Re',b:2,g:0}
+  ]},
+  { name: 'Row Your Boat',   emoji: '🚣',  notes: [
+    {p:'Do',b:2,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Do',b:0.5,g:0.2}, {p:'Re',b:0.5,g:0.2}, {p:'Mi',b:2,g:0}
+  ]},
+  { name: 'London Bridge',   emoji: '🏰',  notes: [
+    {p:'Sol',b:1,g:0.2}, {p:'La',b:0.5,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Fa',b:1,g:0.2},
+    {p:'Mi',b:1,g:0.2}, {p:'Fa',b:1,g:0.2}, {p:'Sol',b:2,g:0}
+  ]},
+
+  // ---- Levels 21-25: Complex patterns, 8-10 notes, mixed rhythms ----
+  { name: 'The Giant Step',  emoji: '👣',  notes: [
+    {p:'Do',b:2,g:0.5}, {p:'Sol',b:2,g:0.5}, {p:'Do',b:2,g:0.5}, {p:'Sol',b:2,g:0}
+  ]},
+  { name: 'High & Low',      emoji: '🎢',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Sol',b:1,g:0.5}, {p:'Mi',b:1,g:0.2}, {p:'Ti',b:2,g:0}
+  ]},
+  { name: 'Jingle Bells',    emoji: '🎄',  notes: [
+    {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Mi',b:2,g:0.5},
+    {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Mi',b:2,g:0.5},
+    {p:'Mi',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:2,g:0}
+  ]},
+  { name: 'Playground Song', emoji: '😜',  notes: [
+    {p:'Sol',b:0.5,g:0.2}, {p:'Sol',b:0.5,g:0.2}, {p:'Mi',b:2,g:0.5},
+    {p:'La',b:0.5,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Mi',b:2,g:0}
+  ]},
+  { name: 'Bingo Start',     emoji: '🐕',  notes: [
+    {p:'Sol',b:1,g:0.2}, {p:'Do',b:0.5,g:0.2}, {p:'Do',b:0.5,g:0.2}, {p:'Sol',b:1,g:0.2},
+    {p:'Sol',b:1,g:0.2}, {p:'La',b:1,g:0.2}, {p:'La',b:1,g:0.2}, {p:'Sol',b:2,g:0}
+  ]},
+
+  // ---- Levels 26-30: Long sequences, sophisticated rhythm, Grand Finale ----
+  { name: 'Zig-Zag',         emoji: '⚡',  notes: [
+    {p:'Do',b:0.5,g:0.2}, {p:'Re',b:0.5,g:0.2}, {p:'Do',b:0.5,g:0.2}, {p:'Mi',b:1,g:0.3},
+    {p:'Re',b:0.5,g:0.2}, {p:'Fa',b:1,g:0.3}, {p:'Mi',b:0.5,g:0.2}, {p:'Sol',b:2,g:0}
+  ]},
+  { name: 'Twinkle Twinkle', emoji: '⭐',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Sol',b:1,g:0.2},
+    {p:'La',b:1,g:0.2}, {p:'La',b:1,g:0.2}, {p:'Sol',b:2,g:0}
+  ]},
+  { name: 'Happy Birthday',  emoji: '🎂',  notes: [
+    {p:'Sol',b:0.5,g:0.2}, {p:'Sol',b:0.5,g:0.2}, {p:'La',b:1,g:0.2}, {p:'Sol',b:1,g:0.2},
+    {p:'Do2',b:1,g:0.2}, {p:'Ti',b:2,g:0}
+  ]},
+  { name: 'Ode to Joy',      emoji: '🎵',  notes: [
+    {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Fa',b:1,g:0.2}, {p:'Sol',b:1,g:0.2},
+    {p:'Sol',b:1,g:0.2}, {p:'Fa',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2},
+    {p:'Do',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:2,g:0}
+  ]},
+  { name: 'Grand Finale',    emoji: '👑',  notes: [
+    {p:'Do',b:1,g:0.2}, {p:'Mi',b:0.5,g:0.2}, {p:'Sol',b:1,g:0.3}, {p:'Do2',b:2,g:0.8},
+    {p:'Ti',b:1,g:0.2}, {p:'La',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Fa',b:0.5,g:0.2},
+    {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:2,g:0}
+  ]},
 ];
 
 // ===== DOM references (set in start()) =====
@@ -76,7 +179,10 @@ let currentMelodyIndex = 0;
 let currentStepIndex = 0;
 let teacherTimers = [];
 let retryCount = 0;
-let speedMultiplier = 1.0;
+let retrySpeedMultiplier = 1.0;
+let isSlowMode = false;          // turtle/rabbit speed toggle
+let speedToggleEl = null;
+let lionNodTimer = null;
 let isTouchDevice = false;
 let heldKeys = new Set();
 let freestyleHintEl = null;
@@ -84,6 +190,12 @@ let freestyleNotePlayed = false;
 let noteTimestamps = [];         // performance.now() per correct note
 let tempoRatings = [];           // 'green' | 'yellow' | 'red' per note
 let replayBtnEl = null;
+
+/** Combine turtle/rabbit toggle with retry slow-down */
+function getEffectiveMultiplier() {
+  const toggleFactor = isSlowMode ? 1.4 : 1.0;
+  return toggleFactor * retrySpeedMultiplier;
+}
 
 // ===== Audio — Piano Note Synthesis =====
 
@@ -189,7 +301,7 @@ function buildKeyboard() {
 
 function buildProgressDots(melody) {
   progressEl.innerHTML = '';
-  melody.notes.forEach((noteIdx, i) => {
+  melody.notes.forEach((note, i) => {
     const dot = document.createElement('span');
     dot.className = 'melody-dot';
     dot.dataset.step = i;
@@ -242,7 +354,7 @@ function animateKeyPress(noteIndex) {
   setTimeout(() => key.classList.remove('pressed'), 160);
 }
 
-function highlightKey(noteIndex, type) {
+function highlightKey(noteIndex, type, durationOverride) {
   const key = getKeyEl(noteIndex);
   if (!key) return;
 
@@ -254,7 +366,7 @@ function highlightKey(noteIndex, type) {
   void key.offsetWidth;
   key.classList.add(cls);
 
-  const dur = type === 'teacher' ? 400 : type === 'correct' ? 600 : 400;
+  const dur = durationOverride || (type === 'teacher' ? 400 : type === 'correct' ? 600 : 400);
   setTimeout(() => key.classList.remove(cls), dur);
 }
 
@@ -272,6 +384,18 @@ function flashAllKeysGreen() {
       k.classList.add('correct-glow');
       setTimeout(() => k.classList.remove('correct-glow'), 600);
     }, i * 60);
+  });
+}
+
+function keyCascade() {
+  keyboardEl.querySelectorAll('.melody-key').forEach((k, i) => {
+    setTimeout(() => {
+      k.classList.remove('correct-glow');
+      void k.offsetWidth;
+      k.classList.add('correct-glow');
+      playPianoNote(i);
+      setTimeout(() => k.classList.remove('correct-glow'), 600);
+    }, i * 100);
   });
 }
 
@@ -304,6 +428,32 @@ function showTeacher(state, speech, speechEmoji) {
   }
 }
 
+// ===== Lion Rhythmic Nod =====
+
+function startLionNod() {
+  stopLionNod();
+  const melody = MELODIES[currentMelodyIndex];
+  if (!melody || !melody.notes.length) return;
+
+  // Calculate average beat interval for the nod speed
+  const mult = getEffectiveMultiplier();
+  let totalMs = 0;
+  melody.notes.forEach(n => { totalMs += noteDelay(n) * mult; });
+  const avgBeatMs = totalMs / melody.notes.length;
+
+  // Replace waiting/playing animation with rhythmic nod
+  teacherEl.classList.remove('playing', 'waiting', 'happy');
+  teacherEl.style.animationDuration = avgBeatMs + 'ms';
+  teacherEl.classList.add('nodding');
+}
+
+function stopLionNod() {
+  if (teacherEl) {
+    teacherEl.classList.remove('nodding');
+    teacherEl.style.animationDuration = '';
+  }
+}
+
 // ===== Mode Selection =====
 
 function showModeSelect() {
@@ -313,6 +463,8 @@ function showModeSelect() {
   keyboardEl.style.display = 'none';
   celebrateEl.classList.remove('show');
   showReplayBtn(false);
+  showSpeedToggle(false);
+  stopLionNod();
   if (freestyleHintEl) { freestyleHintEl.remove(); freestyleHintEl = null; }
 }
 
@@ -358,7 +510,7 @@ function hideFreestyleHint() {
 function startLessons() {
   currentMelodyIndex = 0;
   retryCount = 0;
-  speedMultiplier = 1.0;
+  retrySpeedMultiplier = 1.0;
   startLessonIntro();
 }
 
@@ -372,6 +524,7 @@ function startLessonIntro() {
   buildProgressDots(melody);
   setKeysDisabled(true);
   showReplayBtn(false);  // hidden until student turn
+  showSpeedToggle(true);
 
   // Brief intro pause, then teacher plays
   const t = setTimeout(() => startTeacherDemo(), 1500);
@@ -403,6 +556,33 @@ function showReplayBtn(visible) {
     melodyGameEl.appendChild(replayBtnEl);
   }
   replayBtnEl.style.display = visible ? 'flex' : 'none';
+}
+
+// ===== Speed Toggle (Turtle / Rabbit) =====
+
+function showSpeedToggle(visible) {
+  if (!speedToggleEl) {
+    speedToggleEl = document.createElement('button');
+    speedToggleEl.className = 'melody-speed-toggle';
+    updateSpeedToggleIcon();
+    speedToggleEl.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      isSlowMode = !isSlowMode;
+      updateSpeedToggleIcon();
+    });
+    melodyGameEl.appendChild(speedToggleEl);
+  }
+  speedToggleEl.style.display = visible ? 'flex' : 'none';
+}
+
+function updateSpeedToggleIcon() {
+  if (!speedToggleEl) return;
+  speedToggleEl.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = getEmojiUrl(isSlowMode ? '🐢' : '🐇');
+  img.className = 'emoji-img';
+  img.alt = isSlowMode ? 'Slow' : 'Fast';
+  speedToggleEl.appendChild(img);
 }
 
 // ===== Bouncy Ball =====
@@ -441,12 +621,13 @@ function bounceToKey(ball, noteIndex) {
 function startTeacherDemo() {
   gameState = 'teacher-playing';
   const melody = MELODIES[currentMelodyIndex];
-  const tempo = melody.tempo * speedMultiplier;
+  const mult = getEffectiveMultiplier();
 
   showTeacher('playing', 'Listen...', '👂');
   setKeysDisabled(true);
   noteTimestamps = [];
   tempoRatings = [];
+  stopLionNod();
 
   // Clear any previous timers
   clearTeacherTimers();
@@ -454,20 +635,26 @@ function startTeacherDemo() {
   // Show bouncy ball during teacher demo
   const ball = showBouncyBall();
 
-  melody.notes.forEach((noteIdx, i) => {
+  // Cumulative delay — each note timed by its own (b + g) * TEMPO
+  let cumDelay = 0;
+  melody.notes.forEach((note, i) => {
+    const idx = pitchIndex(note);
+    const holdMs = note.b * TEMPO * mult;
     const t = setTimeout(() => {
-      playPianoNote(noteIdx);
-      highlightKey(noteIdx, 'teacher');
-      bounceToKey(ball, noteIdx);
-    }, i * tempo);
+      playPianoNote(idx);
+      highlightKey(idx, 'teacher', holdMs);
+      bounceToKey(ball, idx);
+    }, cumDelay);
     teacherTimers.push(t);
+    cumDelay += noteDelay(note) * mult;
   });
 
   // After last note → student turn
-  const endDelay = melody.notes.length * tempo + 500;
+  const endDelay = cumDelay + 500;
   const t = setTimeout(() => {
     hideBouncyBall();
     showTeacher('waiting', 'Your turn!', '👆');
+    startLionNod();
     gameState = 'student-turn';
     currentStepIndex = 0;
     updateProgressDots();
@@ -481,7 +668,8 @@ function handleStudentInput(noteIndex) {
   if (gameState !== 'student-turn') return;
 
   const melody = MELODIES[currentMelodyIndex];
-  const expected = melody.notes[currentStepIndex];
+  const noteObj = melody.notes[currentStepIndex];
+  const expected = pitchIndex(noteObj);
 
   playPianoNote(noteIndex);
   animateKeyPress(noteIndex);
@@ -494,8 +682,9 @@ function handleStudentInput(noteIndex) {
       tempoRatings.push('green');  // first note has no prior reference
     } else {
       const delta = now - noteTimestamps[noteTimestamps.length - 2];
-      const expectedTempo = melody.tempo * speedMultiplier;
-      const ratio = delta / expectedTempo;
+      const prevNote = melody.notes[currentStepIndex - 1];
+      const expectedMs = noteDelay(prevNote) * getEffectiveMultiplier();
+      const ratio = delta / expectedMs;
       if (ratio >= 0.5 && ratio <= 1.5) tempoRatings.push('green');
       else if (ratio >= 0.3 && ratio <= 2.5) tempoRatings.push('yellow');
       else tempoRatings.push('red');
@@ -519,8 +708,10 @@ function onMelodyComplete() {
   gameState = 'correct-pause';
   setKeysDisabled(true);
   retryCount = 0;
-  speedMultiplier = 1.0;
+  retrySpeedMultiplier = 1.0;
   showReplayBtn(false);
+  showSpeedToggle(false);
+  stopLionNod();
 
   // Rhythm feedback based on tempo accuracy
   const greens = tempoRatings.filter(r => r === 'green').length;
@@ -538,19 +729,47 @@ function onMelodyComplete() {
   flashAllKeysGreen();
   playSuccessChime();
 
-  // Confetti burst
+  // Tiered celebrations based on level
+  const level = currentMelodyIndex + 1;  // 1-30
   const rect = teacherEl.getBoundingClientRect();
   const gameRect = melodyGameEl.getBoundingClientRect();
-  for (let i = 0; i < 3; i++) {
+  const cx = rect.left - gameRect.left + rect.width / 2;
+  const cy = rect.top - gameRect.top + rect.height / 2;
+
+  if (level < 20) {
+    // Standard: 3 particle bursts
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => {
+        spawnParticles(cx + (Math.random() - 0.5) * 80, cy, melodyGameEl);
+      }, i * 150);
+    }
+  } else if (level < 26) {
+    // Levels 20-25: 6 bursts + key cascade
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => {
+        spawnParticles(cx + (Math.random() - 0.5) * 120, cy, melodyGameEl);
+      }, i * 120);
+    }
+    keyCascade();
+  } else {
+    // Levels 26-29: 8 bursts + key cascade + particles from each key
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        spawnParticles(cx + (Math.random() - 0.5) * 150, cy - 20 + Math.random() * 40, melodyGameEl);
+      }, i * 100);
+    }
+    keyCascade();
     setTimeout(() => {
-      spawnParticles(
-        rect.left - gameRect.left + rect.width / 2 + (Math.random() - 0.5) * 80,
-        rect.top - gameRect.top + rect.height / 2,
-        melodyGameEl
-      );
-    }, i * 150);
+      keyboardEl.querySelectorAll('.melody-key').forEach((k, i) => {
+        setTimeout(() => {
+          const kr = k.getBoundingClientRect();
+          spawnParticles(kr.left - gameRect.left + kr.width / 2, kr.top - gameRect.top, melodyGameEl);
+        }, i * 80);
+      });
+    }, 400);
   }
 
+  const pauseMs = level >= 20 ? 3000 : 2200;
   const t = setTimeout(() => {
     currentMelodyIndex++;
     if (currentMelodyIndex >= MELODIES.length) {
@@ -558,7 +777,7 @@ function onMelodyComplete() {
     } else {
       startLessonIntro();
     }
-  }, 2200);
+  }, pauseMs);
   teacherTimers.push(t);
 }
 
@@ -566,11 +785,12 @@ function onMelodyMistake() {
   gameState = 'retry-pause';
   setKeysDisabled(true);
   showReplayBtn(false);
+  stopLionNod();
   showTeacher('waiting', 'Let\'s try again!', '🤔');
 
   retryCount++;
   // Slow down: +20% per retry, cap at 1.8x (80% slower)
-  speedMultiplier = Math.min(1.8, 1.0 + retryCount * 0.2);
+  retrySpeedMultiplier = Math.min(1.8, 1.0 + retryCount * 0.2);
   noteTimestamps = [];
   tempoRatings = [];
 
@@ -586,17 +806,18 @@ function onAllComplete() {
   gameState = 'lesson-complete';
   teacherAreaEl.classList.remove('active');
   keyboardEl.style.display = 'none';
+  showSpeedToggle(false);
   playWinFanfare();
 
   celebrateEl.innerHTML = '';
 
   const emoji = document.createElement('div');
-  emoji.className = 'melody-celebrate-emoji';
+  emoji.className = 'melody-celebrate-emoji melody-grand-finale';
   const img = document.createElement('img');
   img.src = getEmojiUrl('🏆');
   img.className = 'emoji-img';
   img.alt = '🏆';
-  img.style.width = 'clamp(3rem, 10vw, 5rem)';
+  img.style.width = 'clamp(4rem, 14vw, 7rem)';
   img.style.height = img.style.width;
   emoji.appendChild(img);
   celebrateEl.appendChild(emoji);
@@ -622,6 +843,20 @@ function onAllComplete() {
   celebrateEl.appendChild(btn);
 
   requestAnimationFrame(() => celebrateEl.classList.add('show'));
+
+  // Grand finale particles — multiple waves
+  const gameRect = melodyGameEl.getBoundingClientRect();
+  for (let wave = 0; wave < 5; wave++) {
+    setTimeout(() => {
+      for (let i = 0; i < 6; i++) {
+        spawnParticles(
+          Math.random() * gameRect.width,
+          Math.random() * gameRect.height * 0.6,
+          melodyGameEl
+        );
+      }
+    }, wave * 400);
+  }
 }
 
 // ===== Input Handling =====
@@ -677,11 +912,13 @@ function clearTeacherTimers() {
 
 function cleanup() {
   clearTeacherTimers();
+  stopLionNod();
   gameState = 'idle';
   currentMelodyIndex = 0;
   currentStepIndex = 0;
   retryCount = 0;
-  speedMultiplier = 1.0;
+  retrySpeedMultiplier = 1.0;
+  isSlowMode = false;
   heldKeys.clear();
   freestyleNotePlayed = false;
   noteTimestamps = [];
@@ -689,6 +926,9 @@ function cleanup() {
 
   // Remove replay button
   if (replayBtnEl) { replayBtnEl.remove(); replayBtnEl = null; }
+
+  // Remove speed toggle
+  if (speedToggleEl) { speedToggleEl.remove(); speedToggleEl = null; }
 
   // Remove bouncy ball
   if (melodyGameEl) {
