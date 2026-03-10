@@ -186,6 +186,11 @@ function stopGame() {
   landing.style.display = 'flex';
   document.body.classList.remove('game-active');
 
+  // Reset scroll position — iOS Safari sometimes retains stale scroll offset
+  // from when the address bar was hidden during gameplay
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+
   // Force header + banner visible — CSS animation with 'forwards' won't replay
   // after display:none toggle in Safari, leaving elements stuck at opacity:0.
   // Re-trigger the animation by removing and re-adding it.
