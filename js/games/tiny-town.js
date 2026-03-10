@@ -2266,12 +2266,26 @@ function handleKey(e) {
 }
 
 function closestRoadNode(wx, wy, excludeNode) {
-  // Find the closest road node to a world point by Euclidean distance
-  let bestNode = null, bestDist = Infinity;
-  for (const [id, n] of Object.entries(nodeMap)) {
-    if (id === excludeNode) continue;
-    const d = Math.hypot(n.x - wx, n.y - wy);
-    if (d < bestDist) { bestDist = d; bestNode = id; }
+  // Project tap onto every road edge and pick the closest edge's nearer endpoint
+  let bestDist = Infinity, bestNode = null;
+  for (const e of edges) {
+    const a = nodeMap[e.a], b = nodeMap[e.b];
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const len2 = dx * dx + dy * dy;
+    if (len2 === 0) continue;
+    let t = ((wx - a.x) * dx + (wy - a.y) * dy) / len2;
+    t = Math.max(0, Math.min(1, t));
+    const px = a.x + t * dx, py = a.y + t * dy;
+    const dist = Math.hypot(wx - px, wy - py);
+    if (dist < bestDist) {
+      bestDist = dist;
+      // Pick endpoint closer to the tap point
+      const dA = Math.hypot(wx - a.x, wy - a.y);
+      const dB = Math.hypot(wx - b.x, wy - b.y);
+      let pick = dA < dB ? e.a : e.b;
+      if (pick === excludeNode) pick = dA < dB ? e.b : e.a;
+      if (pick !== excludeNode) bestNode = pick;
+    }
   }
   return bestNode;
 }
@@ -2303,14 +2317,24 @@ function handleTapNav(mx, my) {
   let dest = closestRoadNode(wx, wy);
   if (!dest) return;
 
-  // If tap resolved to current node, check for area trigger or find next best
+  // If tap resolved to current node, check for area trigger or pick neighbor in tap direction
   if (dest === startNode) {
     const dx = wx - player.x, dy = wy - player.y;
     const len = Math.sqrt(dx * dx + dy * dy);
     if (len < 20) { checkAreaTrigger(startNode); return; }
-    // Find nearest node that isn't the current one
-    dest = closestRoadNode(wx, wy, startNode);
-    if (!dest || dest === startNode) return;
+    // Find the adjacent node most aligned with the tap direction
+    const neighbors = adjacency[startNode];
+    let bestDot = -Infinity, bestNeighbor = null;
+    for (const nb of neighbors) {
+      const n = nodeMap[nb.node];
+      const ndx = n.x - player.x, ndy = n.y - player.y;
+      const nlen = Math.sqrt(ndx * ndx + ndy * ndy);
+      if (nlen === 0) continue;
+      const dot = (dx * ndx + dy * ndy) / (len * nlen);
+      if (dot > bestDot) { bestDot = dot; bestNeighbor = nb.node; }
+    }
+    if (!bestNeighbor) return;
+    dest = bestNeighbor;
   }
 
   // Always use BFS shortest path
