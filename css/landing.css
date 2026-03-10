@@ -305,10 +305,19 @@
   margin-bottom: 1em;
 }
 .story-modal .story-sign {
-  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7em;
   font-style: italic;
   color: var(--color-text-light);
-  margin-top: 0.5em;
+  margin-top: 1em;
+}
+.story-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 /* ===== Game Cards Grid ===== */
