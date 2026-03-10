@@ -702,6 +702,32 @@
   .melody-key { min-height: 160px; }
 }
 
+/* ===== Countdown Overlay ===== */
+
+.melody-countdown {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(4rem, 15vw, 8rem);
+  color: #fff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.melody-countdown-pop {
+  animation: countdownPop 0.6s ease-out;
+}
+
+@keyframes countdownPop {
+  0%   { transform: scale(1.8); opacity: 0.3; }
+  40%  { transform: scale(0.95); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* ===== Rotate Device Prompt (phone portrait) ===== */
 
 .melody-rotate-prompt {
@@ -747,25 +773,27 @@
   #melodyGame.melody-playing .melody-freestyle-hint { display: none !important; }
 }
 
-/* Phone landscape: teacher sidebar, keyboard fills remaining space */
+/* Phone landscape: teacher centered top, controls top-right */
 @media (max-height: 500px) and (orientation: landscape) {
   .melody-teacher-area.active {
-    flex-direction: column;
+    flex-direction: row;
     position: absolute;
-    top: 8px;
-    left: 8px;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: auto;
-    width: clamp(90px, 16vw, 130px);
-    transform: none;
-    padding: 6px;
-    gap: 3px;
+    width: auto;
+    max-width: 70%;
+    padding: 4px 12px;
+    gap: 8px;
     align-items: center;
     z-index: 250;
   }
 
   .melody-teacher {
-    width: clamp(40px, 10vh, 56px);
-    height: clamp(40px, 10vh, 56px);
+    width: clamp(32px, 8vh, 48px);
+    height: clamp(32px, 8vh, 48px);
+    flex-shrink: 0;
   }
 
   .melody-teacher-speech {
@@ -780,37 +808,33 @@
 
   .melody-progress {
     gap: 4px;
-    margin-top: 2px;
+    margin-top: 0;
     max-width: 120px;
   }
 
   .melody-dot {
-    width: clamp(10px, 2vw, 14px);
-    height: clamp(10px, 2vw, 14px);
+    width: clamp(8px, 1.8vw, 12px);
+    height: clamp(8px, 1.8vw, 12px);
   }
 
   .melody-keyboard {
-    left: clamp(100px, 18vw, 140px);
-    right: 0;
-    max-width: none;
+    max-width: 100%;
     margin: 0;
   }
 
   .melody-key {
-    min-height: clamp(70px, 22vh, 120px);
+    min-height: clamp(60px, 18vh, 100px);
   }
 
   .melody-replay-btn {
-    top: auto;
-    bottom: clamp(6px, 2vw, 12px);
+    top: clamp(4px, 1.5vw, 10px);
     right: clamp(8px, 2vw, 16px);
     width: clamp(36px, 8vw, 48px);
     height: clamp(36px, 8vw, 48px);
   }
 
   .melody-speed-toggle {
-    top: auto;
-    bottom: calc(clamp(6px, 2vw, 12px) + clamp(36px, 8vw, 48px) + 6px);
+    top: calc(clamp(4px, 1.5vw, 10px) + clamp(36px, 8vw, 48px) + 4px);
     right: clamp(8px, 2vw, 16px);
     left: auto;
     width: clamp(36px, 8vw, 48px);

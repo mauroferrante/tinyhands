@@ -191,6 +191,8 @@ let noteTimestamps = [];         // performance.now() per correct note
 let tempoRatings = [];           // 'green' | 'yellow' | 'red' per note
 let replayBtnEl = null;
 let rotatePromptEl = null;
+let countdownEl = null;
+let orientationHandler = null;       // listener ref for cleanup
 let levelSelectEl = null;
 let levelGridEl = null;
 let levelBackEl = null;
@@ -651,6 +653,64 @@ function startLessons() {
   showLevelSelect();
 }
 
+/** True when device is a phone in portrait (rotate prompt visible). */
+function isPhonePortrait() {
+  return window.innerWidth <= 667 && window.innerHeight > window.innerWidth;
+}
+
+/** Remove the orientation listener if active. */
+function clearOrientationWait() {
+  if (orientationHandler) {
+    window.removeEventListener('resize', orientationHandler);
+    orientationHandler = null;
+  }
+}
+
+/** Show a 3-2-1 countdown overlay, then call `cb`. */
+function runCountdown(cb) {
+  if (!countdownEl) {
+    countdownEl = document.createElement('div');
+    countdownEl.className = 'melody-countdown';
+    melodyGameEl.appendChild(countdownEl);
+  }
+  countdownEl.style.display = 'flex';
+  let count = 3;
+
+  function tick() {
+    if (count > 0) {
+      countdownEl.textContent = count;
+      countdownEl.classList.remove('melody-countdown-pop');
+      void countdownEl.offsetWidth;
+      countdownEl.classList.add('melody-countdown-pop');
+      playCountdownBeep();
+      count--;
+      const t = setTimeout(tick, 800);
+      teacherTimers.push(t);
+    } else {
+      countdownEl.style.display = 'none';
+      cb();
+    }
+  }
+  tick();
+}
+
+/** Short beep for countdown ticks (reuses piano synthesis). */
+function playCountdownBeep() {
+  initAudio();
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(880, now);
+  gain.gain.setValueAtTime(0.1, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.15);
+}
+
 function startLessonIntro() {
   gameState = 'lesson-intro';
   melodyGameEl.classList.add('melody-playing');
@@ -664,9 +724,21 @@ function startLessonIntro() {
   showReplayBtn(false);  // hidden until student turn
   showSpeedToggle(true);
 
-  // Brief intro pause, then teacher plays
-  const t = setTimeout(() => startTeacherDemo(), 1500);
-  teacherTimers.push(t);
+  // If phone is in portrait → wait for landscape, then countdown → demo
+  if (isTouchDevice && isPhonePortrait()) {
+    clearOrientationWait();
+    orientationHandler = function() {
+      if (!isPhonePortrait()) {
+        clearOrientationWait();
+        runCountdown(() => startTeacherDemo());
+      }
+    };
+    window.addEventListener('resize', orientationHandler);
+  } else {
+    // Desktop or already landscape — brief intro pause, then teacher plays
+    const t = setTimeout(() => startTeacherDemo(), 1500);
+    teacherTimers.push(t);
+  }
 }
 
 // ===== Replay Button =====
@@ -1106,6 +1178,10 @@ function cleanup() {
   freestyleNotePlayed = false;
   noteTimestamps = [];
   tempoRatings = [];
+
+  // Remove countdown + orientation listener
+  clearOrientationWait();
+  if (countdownEl) { countdownEl.remove(); countdownEl = null; }
 
   // Remove replay button
   if (replayBtnEl) { replayBtnEl.remove(); replayBtnEl = null; }
