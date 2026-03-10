@@ -457,24 +457,20 @@ const pwaBanner        = document.getElementById('pwaBanner');
 const pwaBannerCollapsed = document.getElementById('pwaBannerCollapsed');
 const pwaBannerSteps   = document.getElementById('pwaBannerSteps');
 const pwaBannerExpand  = document.getElementById('pwaBannerExpand');
-const pwaDeviceName    = document.getElementById('pwaDeviceName');
 // -- Landing banner (persistent — expand/collapse only) --
 
 function initPwaBanner() {
   if (isStandalone) return;
 
   if (isIOSSafari) {
-    pwaDeviceName.textContent = isIPad ? 'iPad' : 'iPhone';
     pwaBanner.style.display = '';
   } else if (isMacSafari) {
-    pwaDeviceName.textContent = 'Mac';
     pwaBanner.style.display = '';
     document.querySelectorAll('.pwa-verb').forEach(el => { el.textContent = 'Click'; });
     document.querySelectorAll('.pwa-step2-label').forEach(el => { el.textContent = 'Add to Dock'; });
   } else if (isIOS) {
     // Non-Safari iOS browser (Brave, Chrome, Firefox, etc.)
     // Prepend a "switch to Safari" step and renumber existing steps
-    pwaDeviceName.textContent = isIPad ? 'iPad' : 'iPhone';
     const safariStep = document.createElement('div');
     safariStep.className = 'pwa-step';
     safariStep.innerHTML =
@@ -487,7 +483,6 @@ function initPwaBanner() {
     existingNums[2].textContent = '3';
     pwaBanner.style.display = '';
   } else if (deferredAndroidPrompt) {
-    pwaDeviceName.textContent = 'phone';
     pwaBanner.style.display = '';
   }
 }
