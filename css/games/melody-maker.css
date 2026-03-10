@@ -83,24 +83,25 @@
   color: #333;
 }
 
-/* Board centered in viewport — same pattern as Memory Match */
+/* Board centered in viewport — identical to .memory-board */
 .melody-level-grid {
+  display: none;
   position: absolute;
-  top: 55%;
+  top: 52%;
   left: 50%;
   transform: translate(-50%, -50%);
-  display: grid;
-  /* width, cols, rows, gap set inline by JS */
-  padding: 0.5rem;
+  /* display:grid + width + cols + rows + gap set inline by JS */
+  padding: 1rem;
+  z-index: 110;
 }
 
 .melody-level-tile {
+  aspect-ratio: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  /* no aspect-ratio — width & height driven by grid-auto-rows set in JS */
   border-radius: clamp(10px, 2vw, 16px);
   border: 2px solid rgba(0,0,0,0.06);
   background: rgba(255,255,255,0.85);

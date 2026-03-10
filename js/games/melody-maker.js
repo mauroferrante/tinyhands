@@ -549,10 +549,10 @@ function hideFreestyleHint() {
 // ===== Level Select =====
 
 function buildLevelGrid() {
+  // --- Identical to Memory Match: board sizing, <div> tiles, event delegation ---
   levelGridEl.innerHTML = '';
   const highestUnlocked = loadProgress();
 
-  // --- Viewport-fitted grid (same pattern as Memory Match board) ---
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const isPortrait = vh > vw;
@@ -561,91 +561,87 @@ function buildLevelGrid() {
              : 6;                                  // tablet / desktop
   const rows = Math.ceil(MELODIES.length / cols);
 
+  // Same math as Memory Match: cardSize = min(maxW, maxH, cap)
   const gap = Math.min(12, vw * 0.015);
-  const headerH = 56;                              // space reserved for header
+  const headerH = 56;
   const maxTileW = (vw * 0.92 - gap * (cols - 1)) / cols;
   const maxTileH = ((vh - headerH) * 0.82 - gap * (rows - 1)) / rows;
   const tileSize = Math.floor(Math.min(maxTileW, maxTileH, 140));
-  const boardW = tileSize * cols + gap * (cols - 1);
+  const boardW = tileSize * cols + gap * (cols - 1) + 32;
 
-  levelGridEl.style.gridTemplateColumns = `repeat(${cols}, ${tileSize}px)`;
-  levelGridEl.style.gridTemplateRows    = `repeat(${rows}, ${tileSize}px)`;
+  // Set grid display + size via JS (exactly like memoryBoardEl)
+  levelGridEl.style.display = 'grid';
+  levelGridEl.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+  levelGridEl.style.gridTemplateRows = 'repeat(' + rows + ', 1fr)';
   levelGridEl.style.width = boardW + 'px';
   levelGridEl.style.gap = gap + 'px';
 
-  MELODIES.forEach((melody, i) => {
-    const levelNum = i + 1;
-    const tile = document.createElement('button');
+  MELODIES.forEach(function(melody, i) {
+    var levelNum = i + 1;
+    // <div> not <button> — same as Memory Match cards
+    var tile = document.createElement('div');
     tile.className = 'melody-level-tile';
     tile.dataset.level = levelNum;
+    tile.dataset.index = i;
 
     if (levelNum > highestUnlocked) {
-      // LOCKED
       tile.classList.add('locked');
-      tile.disabled = true;
-      const lockImg = document.createElement('img');
+      var lockImg = document.createElement('img');
       lockImg.src = getEmojiUrl('🔒');
       lockImg.className = 'emoji-img melody-level-lock';
       lockImg.alt = '🔒';
       tile.appendChild(lockImg);
-      const num = document.createElement('span');
-      num.className = 'melody-level-num';
-      num.textContent = levelNum;
-      tile.appendChild(num);
     } else if (levelNum < highestUnlocked) {
-      // COMPLETED
       tile.classList.add('completed');
-      const starImg = document.createElement('img');
+      var starImg = document.createElement('img');
       starImg.src = getEmojiUrl('⭐');
       starImg.className = 'emoji-img melody-level-star';
       starImg.alt = '⭐';
       tile.appendChild(starImg);
-      const num = document.createElement('span');
-      num.className = 'melody-level-num';
-      num.textContent = levelNum;
-      tile.appendChild(num);
-      const name = document.createElement('span');
-      name.className = 'melody-level-name';
-      name.textContent = melody.name;
-      tile.appendChild(name);
     } else {
-      // CURRENT (unlocked, not yet completed)
       tile.classList.add('current');
-      const emojiImg = document.createElement('img');
+      var emojiImg = document.createElement('img');
       emojiImg.src = getEmojiUrl(melody.emoji);
       emojiImg.className = 'emoji-img melody-level-emoji';
       emojiImg.alt = melody.emoji;
       tile.appendChild(emojiImg);
-      const num = document.createElement('span');
-      num.className = 'melody-level-num';
-      num.textContent = levelNum;
-      tile.appendChild(num);
-      const name = document.createElement('span');
+    }
+
+    var num = document.createElement('span');
+    num.className = 'melody-level-num';
+    num.textContent = levelNum;
+    tile.appendChild(num);
+
+    if (levelNum <= highestUnlocked) {
+      var name = document.createElement('span');
       name.className = 'melody-level-name';
       name.textContent = melody.name;
       tile.appendChild(name);
-    }
-
-    // Direct click handler on each tile (same pattern as Memory Match cards)
-    if (levelNum <= highestUnlocked) {
-      tile.addEventListener('click', () => {
-        initAudio();
-        currentMelodyIndex = i;
-        retryCount = 0;
-        retrySpeedMultiplier = 1.0;
-        hideLevelSelect();
-        keyboardEl.style.display = '';
-        startLessonIntro();
-      });
     }
 
     levelGridEl.appendChild(tile);
   });
 }
 
+// Event delegation on grid — same pattern as Memory Match handleCardTap
+function handleLevelTap(e) {
+  initAudio();
+  var tile = e.target.closest('.melody-level-tile');
+  if (!tile || tile.classList.contains('locked')) return;
+  var idx = parseInt(tile.dataset.index, 10);
+  if (isNaN(idx)) return;
+  currentMelodyIndex = idx;
+  retryCount = 0;
+  retrySpeedMultiplier = 1.0;
+  hideLevelSelect();
+  keyboardEl.style.display = '';
+  startLessonIntro();
+}
+
 function showLevelSelect() {
   gameState = 'level-select';
   melodyGameEl.classList.remove('melody-playing');
+  levelSelectEl.style.display = 'block';
   levelSelectEl.classList.add('active');
   modeSelectEl.classList.remove('active');
   teacherAreaEl.classList.remove('active');
@@ -659,6 +655,8 @@ function showLevelSelect() {
 
 function hideLevelSelect() {
   levelSelectEl.classList.remove('active');
+  levelSelectEl.style.display = 'none';
+  levelGridEl.style.display = 'none';
 }
 
 function onLevelBackClick() {
@@ -1230,7 +1228,10 @@ function cleanup() {
     keyboardEl.style.display = '';
   }
   if (levelSelectEl) levelSelectEl.classList.remove('active');
-  if (levelGridEl) levelGridEl.innerHTML = '';  // destroys tiles + their listeners
+  if (levelGridEl) {
+    levelGridEl.innerHTML = '';
+    levelGridEl.removeEventListener('click', handleLevelTap);
+  }
   if (levelBackEl) levelBackEl.removeEventListener('click', onLevelBackClick);
   if (modeSelectEl) {
     modeSelectEl.classList.remove('active');
@@ -1282,7 +1283,8 @@ export const melodyMaker = {
     preloadEmojis(EMOJI_REGISTRY['melody-maker'] || []).then(() => {
       buildKeyboard();
       modeSelectEl.addEventListener('click', onModeClick);
-      // Back button — direct handler (tile handlers added in buildLevelGrid)
+      // Event delegation on grid (same as Memory Match board)
+      levelGridEl.addEventListener('click', handleLevelTap);
       levelBackEl.addEventListener('click', onLevelBackClick);
       document.addEventListener('keyup', handleKeyUp);
       showModeSelect();
