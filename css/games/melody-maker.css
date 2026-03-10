@@ -90,6 +90,7 @@
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  align-content: start;
 }
 
 .melody-level-tile {
