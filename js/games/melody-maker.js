@@ -41,6 +41,27 @@ const MELODIES = [
   { name: 'The Wave',        emoji: '🌊',  notes: [0, 2, 0, 2],           tempo: 500 },
   { name: 'Little Lamb',     emoji: '🐑',  notes: [2, 1, 0, 1, 2, 2, 2], tempo: 400 },
   { name: 'The Grand Scale', emoji: '🏆',  notes: [0, 1, 2, 3, 4, 5, 6, 7], tempo: 400 },
+  // ---- Extended Curriculum (11–30) ----
+  { name: 'Morning Bells',   emoji: '🌅',  notes: [4, 2, 4, 2],                               tempo: 550 },
+  { name: 'Raindrops',       emoji: '🌧️',  notes: [4, 4, 2, 4, 4, 2],                         tempo: 500 },
+  { name: 'Marching Band',   emoji: '🥁',  notes: [0, 1, 2, 3, 4, 4, 4],                     tempo: 450 },
+  { name: 'Bee Hive',        emoji: '🐝',  notes: [4, 3, 4, 3, 2],                             tempo: 450 },
+  { name: 'The Bridge',      emoji: '🌉',  notes: [0, 2, 4, 2, 0],                             tempo: 500 },
+  { name: 'Hot Cross Buns',  emoji: '🍞',  notes: [2, 1, 0, 2, 1, 0],                         tempo: 500 },
+  { name: 'Mary\'s End',     emoji: '🎀',  notes: [2, 1, 0, 1, 2, 2, 2, 1, 1, 2, 1, 0],     tempo: 380 },
+  { name: 'Old Mac Intro',   emoji: '🐄',  notes: [4, 4, 4, 1, 2, 2, 1],                     tempo: 420 },
+  { name: 'Row Your Boat',   emoji: '🚣',  notes: [0, 0, 0, 1, 2],                             tempo: 500 },
+  { name: 'London Bridge',   emoji: '🏰',  notes: [4, 5, 4, 3, 2, 3, 4],                     tempo: 420 },
+  { name: 'The Giant Step',  emoji: '👣',  notes: [0, 4, 0, 4],                                 tempo: 550 },
+  { name: 'High & Low',      emoji: '🎢',  notes: [0, 4, 2, 6],                                 tempo: 550 },
+  { name: 'Jingle Bells',    emoji: '🎄',  notes: [2, 2, 2, 2, 2, 2, 2, 4, 0, 1, 2],         tempo: 350 },
+  { name: 'Playground Song', emoji: '😜',  notes: [4, 4, 2, 5, 4, 2],                         tempo: 450 },
+  { name: 'Bingo Start',     emoji: '🐕',  notes: [4, 0, 0, 4, 4, 5, 5, 4],                   tempo: 400 },
+  { name: 'Zig-Zag',         emoji: '⚡',  notes: [0, 1, 0, 2, 1, 3, 2, 4],                   tempo: 400 },
+  { name: 'Twinkle Twinkle', emoji: '⭐',  notes: [0, 0, 4, 4, 5, 5, 4],                     tempo: 420 },
+  { name: 'Happy Birthday',  emoji: '🎂',  notes: [4, 4, 5, 4, 7, 6],                         tempo: 450 },
+  { name: 'Ode to Joy',      emoji: '🎵',  notes: [2, 2, 3, 4, 4, 3, 2, 1, 0, 0, 1, 2],     tempo: 380 },
+  { name: 'Grand Finale',    emoji: '👑',  notes: [0, 2, 4, 7, 6, 5, 4, 3, 2, 1, 0],         tempo: 350 },
 ];
 
 // ===== DOM references (set in start()) =====
@@ -465,7 +486,7 @@ function onAllComplete() {
 
   const sub = document.createElement('div');
   sub.className = 'melody-celebrate-sub';
-  sub.textContent = '10 melodies mastered 🎶';
+  sub.textContent = '30 melodies mastered 🎶';
   celebrateEl.appendChild(sub);
 
   const btn = document.createElement('button');
