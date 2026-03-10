@@ -441,15 +441,13 @@ playground.addEventListener('click', (e) => {
 const footerTip = document.getElementById('footerTip');
 if (footerTip) footerTip.addEventListener('click', () => trackIntent('donate'));
 
-// Deep link: auto-launch game if URL is /play/{gameId}
-(function checkDeepLink() {
-  const m = window.location.pathname.match(/^\/play\/([a-z0-9-]+)$/);
-  if (m && GAMES[m[1]]) {
-    // Small delay so DOM & fonts are fully ready
-    setTimeout(() => {
-      initAudio();
-      startGame(GAMES[m[1]]);
-    }, 300);
+// Clean URL on fresh page load — /play/ and /story paths are virtual routes
+// used only for analytics (pushState), not real deep links.
+// If the user refreshes mid-game, silently reset to landing.
+(function cleanUrlOnLoad() {
+  const path = window.location.pathname;
+  if (path.startsWith('/play/') || path === '/story' || path.startsWith('/intent/')) {
+    history.replaceState({}, '', '/');
   }
 })();
 
