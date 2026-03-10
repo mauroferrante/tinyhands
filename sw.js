@@ -3,7 +3,7 @@
  *  Cache-first for app shell, network-first for CDN assets
  * ========================================================= */
 
-const CACHE = 'thp-v26';
+const CACHE = 'thp-v27';
 
 const SHELL = [
   '/',
@@ -21,6 +21,7 @@ const SHELL = [
   '/css/games/rocket-ride.css',
   '/css/games/ball-bonanza.css',
   '/css/games/tiny-town.css',
+  '/css/games/melody-maker.css',
   // JS
   '/js/game-manager.js',
   '/js/audio.js',
@@ -37,6 +38,7 @@ const SHELL = [
   '/js/games/rocket-ride.js',
   '/js/games/ball-bonanza.js',
   '/js/games/tiny-town.js',
+  '/js/games/melody-maker.js',
 ];
 
 // Install: pre-cache the app shell

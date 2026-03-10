@@ -13,6 +13,7 @@ import { balloonFloat } from './games/balloon-float.js';
 import { rocketRide } from './games/rocket-ride.js';
 import { ballBonanza } from './games/ball-bonanza.js';
 import { tinyTown } from './games/tiny-town.js';
+import { melodyMaker } from './games/melody-maker.js';
 import { shareOrCopy } from './share.js';
 
 // ---- Element references ----
@@ -62,7 +63,8 @@ const GAMES = {
   'balloon-float': balloonFloat,
   'rocket-ride': rocketRide,
   'ball-bonanza': ballBonanza,
-  'tiny-town': tinyTown
+  'tiny-town': tinyTown,
+  'melody-maker': melodyMaker
 };
 
 // ===== Entry Animation & Fullscreen =====
@@ -388,7 +390,7 @@ document.addEventListener('mousedown', (e) => {
 document.addEventListener('touchstart', (e) => {
   if (!currentGame) return;
   // Don't preventDefault on elements that need click events to fire
-  if (!e.target.closest('#spellKeyboard') && !e.target.closest('#memoryGame') && !e.target.closest('.endcard-share-btn') && !e.target.closest('[class*="endcard-btn"]') && !e.target.closest('[class*="btn-again"]') && !e.target.closest('[class*="btn-diff"]') && !e.target.closest('#postgameNudge')) {
+  if (!e.target.closest('#spellKeyboard') && !e.target.closest('#memoryGame') && !e.target.closest('#melodyKeyboard') && !e.target.closest('#melodyModeSelect') && !e.target.closest('.melody-celebrate') && !e.target.closest('.endcard-share-btn') && !e.target.closest('[class*="endcard-btn"]') && !e.target.closest('[class*="btn-again"]') && !e.target.closest('[class*="btn-diff"]') && !e.target.closest('#postgameNudge')) {
     e.preventDefault();
   }
   currentGame.onTouch(e);

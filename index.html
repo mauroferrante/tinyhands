@@ -51,6 +51,7 @@
 <link rel="stylesheet" href="css/games/rocket-ride.css">
 <link rel="stylesheet" href="css/games/ball-bonanza.css">
 <link rel="stylesheet" href="css/games/tiny-town.css">
+<link rel="stylesheet" href="css/games/melody-maker.css">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -257,6 +258,25 @@
       </div>
       <button class="card-info-btn" aria-label="Game info">ⓘ</button>
     </article>
+
+    <!-- Melody Maker Card -->
+    <article class="game-card">
+      <div class="card-flipper">
+        <div class="card-front">
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f3b9_3d.png" class="emoji-img" alt="🎹"></span>
+          <h2>Melody Maker</h2>
+          <span class="age-badge">3 – 7 years</span>
+          <p class="card-desc">Play the piano and learn melodies!</p>
+          <button class="play-btn accent-salmon" data-game="melody-maker">Play</button>
+        </div>
+        <div class="card-back">
+          <p class="card-info-desc">Play 8 colorful piano keys freely, or follow a friendly teacher to learn real melodies!</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Musical ear training, pattern recognition, and sequential memory. Kids develop rhythm and build confidence by mastering melodies step by step.</p>
+          <span class="card-back-hint">Tap to flip back</span>
+        </div>
+      </div>
+      <button class="card-info-btn" aria-label="Game info">ⓘ</button>
+    </article>
   </section>
 
   <footer>
@@ -402,6 +422,33 @@
       <span id="rocketStars"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/2b50_3d.png" class="emoji-img inline-emoji" alt="⭐"> 0</span>
     </div>
     <div class="rocket-celebrate" id="rocketCelebrate"></div>
+  </div>
+
+  <!-- Melody Maker game layer -->
+  <div id="melodyGame">
+    <div class="melody-mode-select" id="melodyModeSelect">
+      <div class="melody-mode-title">How do you want to play?</div>
+      <div class="melody-mode-options">
+        <button class="melody-mode-btn" data-mode="freestyle">
+          <span class="melody-mode-icon"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f3b6_3d.png" class="emoji-img" alt="🎶"></span>
+          <span class="melody-mode-label">Free Play</span>
+          <span class="melody-mode-sub">Play anything you like!</span>
+        </button>
+        <button class="melody-mode-btn" data-mode="lessons">
+          <span class="melody-mode-icon"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f981_3d.png" class="emoji-img" alt="🦁"></span>
+          <span class="melody-mode-label">Learn Melodies</span>
+          <span class="melody-mode-sub">Follow along and play!</span>
+        </button>
+      </div>
+    </div>
+    <div class="melody-teacher-area" id="melodyTeacherArea">
+      <div class="melody-teacher" id="melodyTeacher"></div>
+      <div class="melody-teacher-speech" id="melodyTeacherSpeech"></div>
+      <div class="melody-melody-name" id="melodyMelodyName"></div>
+      <div class="melody-progress" id="melodyProgress"></div>
+    </div>
+    <div class="melody-keyboard" id="melodyKeyboard"></div>
+    <div class="melody-celebrate" id="melodyCelebrate"></div>
   </div>
 
   <button id="exitGame" aria-label="Exit game">✕</button>
