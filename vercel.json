@@ -3,5 +3,12 @@
     { "source": "/play/:path*", "destination": "/" },
     { "source": "/intent/:path*", "destination": "/" },
     { "source": "/story", "destination": "/" }
+  ],
+  "redirects": [
+    {
+      "source": "/feedback",
+      "destination": "https://mauroferrante85.typeform.com/to/pptDHXKN",
+      "permanent": false
+    }
   ]
 }
