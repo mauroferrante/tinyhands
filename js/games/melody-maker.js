@@ -630,7 +630,6 @@ function hideLevelSelect() {
 function onLevelGridClick(e) {
   const tile = e.target.closest('.melody-level-tile');
   if (!tile || tile.disabled) return;
-  e.preventDefault();
   initAudio();  // unlock iOS AudioContext on user gesture
   const levelNum = parseInt(tile.dataset.level, 10);
   if (isNaN(levelNum)) return;
@@ -721,7 +720,7 @@ function startLessonIntro() {
   melodyNameEl.textContent = `${currentMelodyIndex + 1}. ${melody.emoji} ${melody.name}`;
   buildProgressDots(melody);
   setKeysDisabled(true);
-  showReplayBtn(false);  // hidden until student turn
+  showReplayBtn('disabled');  // visible but dimmed until student turn
   showSpeedToggle(true);
 
   // If phone is in portrait → wait for landscape, then countdown → demo
@@ -743,7 +742,8 @@ function startLessonIntro() {
 
 // ===== Replay Button =====
 
-function showReplayBtn(visible) {
+/** @param {'active'|'disabled'|false} state */
+function showReplayBtn(state) {
   if (!replayBtnEl) {
     replayBtnEl = document.createElement('button');
     replayBtnEl.className = 'melody-replay-btn';
@@ -765,7 +765,12 @@ function showReplayBtn(visible) {
     });
     melodyGameEl.appendChild(replayBtnEl);
   }
-  replayBtnEl.style.display = visible ? 'flex' : 'none';
+  if (state === false) {
+    replayBtnEl.style.display = 'none';
+  } else {
+    replayBtnEl.style.display = 'flex';
+    replayBtnEl.classList.toggle('disabled', state === 'disabled');
+  }
 }
 
 // ===== Speed Toggle (Turtle / Rabbit) =====
@@ -912,7 +917,7 @@ function startTeacherDemo() {
     currentStepIndex = 0;
     updateProgressDots();
     setKeysDisabled(false);
-    showReplayBtn(true);
+    showReplayBtn('active');
   }, endDelay);
   teacherTimers.push(t);
 }
@@ -1039,7 +1044,7 @@ function onMelodyComplete() {
 function onMelodyMistake() {
   gameState = 'retry-pause';
   setKeysDisabled(true);
-  showReplayBtn(false);
+  showReplayBtn('disabled');
   stopLionNod();
   showTeacher('waiting', 'Let\'s try again!', '🤔');
 
@@ -1205,8 +1210,8 @@ function cleanup() {
     keyboardEl.style.display = '';
   }
   if (levelSelectEl) levelSelectEl.classList.remove('active');
-  if (levelGridEl) levelGridEl.removeEventListener('pointerdown', onLevelGridClick);
-  if (levelBackEl) levelBackEl.removeEventListener('pointerdown', onLevelBackClick);
+  if (levelGridEl) levelGridEl.removeEventListener('click', onLevelGridClick);
+  if (levelBackEl) levelBackEl.removeEventListener('click', onLevelBackClick);
   if (modeSelectEl) {
     modeSelectEl.classList.remove('active');
     modeSelectEl.removeEventListener('click', onModeClick);
@@ -1257,8 +1262,8 @@ export const melodyMaker = {
     preloadEmojis(EMOJI_REGISTRY['melody-maker'] || []).then(() => {
       buildKeyboard();
       modeSelectEl.addEventListener('click', onModeClick);
-      levelGridEl.addEventListener('pointerdown', onLevelGridClick);
-      levelBackEl.addEventListener('pointerdown', onLevelBackClick);
+      levelGridEl.addEventListener('click', onLevelGridClick);
+      levelBackEl.addEventListener('click', onLevelBackClick);
       document.addEventListener('keyup', handleKeyUp);
       showModeSelect();
     });

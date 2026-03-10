@@ -596,10 +596,15 @@
   height: 60%;
 }
 
-.melody-replay-btn:hover,
-.melody-replay-btn:active {
+.melody-replay-btn:hover:not(.disabled),
+.melody-replay-btn:active:not(.disabled) {
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.melody-replay-btn.disabled {
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 /* ===== Speed Toggle ===== */
