@@ -52,10 +52,15 @@
   margin-bottom: 0.1em;
 }
 
-/* Waving hand emoji in title */
-#landing h1::after {
-  content: '';
-  display: inline;
+/* Victory hand emoji floating animation in title */
+#landing h1 .emoji-img {
+  display: inline-block;
+  animation: titleHandFloat 3s ease-in-out infinite;
+}
+
+@keyframes titleHandFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
 }
 
 #landing .domain {
@@ -152,6 +157,7 @@
 #landing footer {
   margin-top: auto;
   padding: 2rem 1rem 1.2rem;
+  padding-bottom: calc(1.2rem + 60px); /* extra space for fixed PWA banner */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -798,7 +804,7 @@ body.game-active .pwa-banner {
   flex-shrink: 0;
 }
 
-/* ===== Shared PWA Step Style (banner + modal) ===== */
+/* ===== PWA Step Style (banner) ===== */
 
 .pwa-step {
   display: flex;
@@ -826,136 +832,3 @@ body.game-active .pwa-banner {
   flex-shrink: 0;
 }
 
-/* ===== PWA Install Modal (Post-Game) ===== */
-
-.pwa-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10001;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.pwa-backdrop.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.pwa-modal {
-  background: var(--color-background);
-  border-radius: 24px;
-  max-width: 400px;
-  width: 88%;
-  padding: 2rem 2rem 1.5rem;
-  position: relative;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-  transform: scale(0.95);
-  transition: transform 0.3s ease;
-}
-
-.pwa-backdrop.show .pwa-modal {
-  transform: scale(1);
-}
-
-.pwa-modal-close {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: var(--color-text-light);
-  transition: color 0.2s;
-  cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer;
-}
-.pwa-modal-close:hover {
-  color: var(--color-text);
-}
-
-.pwa-hero-emoji {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 4px;
-}
-
-.pwa-title {
-  font-family: 'Baloo 2', cursive;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: 0.5em;
-}
-
-.pwa-desc {
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
-  line-height: 1.6;
-  margin-bottom: 1.2em;
-}
-
-.pwa-modal-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 1.2em;
-  text-align: left;
-}
-
-.pwa-modal-steps .pwa-step {
-  background: var(--color-primary-light);
-}
-
-/* Pointer arrow — bouncing, device-aware */
-.pwa-pointer {
-  font-size: 1.5rem;
-  color: var(--color-primary);
-  animation: pwa-bounce 1.2s ease-in-out infinite;
-  margin-bottom: 0.8em;
-}
-
-/* iPhone: arrow points DOWN (Share is at bottom toolbar) */
-.pwa-pointer-iphone {
-  display: block;
-}
-
-/* iPad: arrow points UP (Share is at top toolbar) */
-.pwa-pointer-ipad {
-  display: block;
-  transform: rotate(180deg);
-}
-
-@keyframes pwa-bounce {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50% { transform: translateY(8px); opacity: 1; }
-}
-
-/* iPad bounce flips direction */
-.pwa-pointer-ipad {
-  animation: pwa-bounce-up 1.2s ease-in-out infinite;
-}
-
-@keyframes pwa-bounce-up {
-  0%, 100% { transform: rotate(180deg) translateY(0); opacity: 0.7; }
-  50% { transform: rotate(180deg) translateY(8px); opacity: 1; }
-}
-
-.pwa-dismiss {
-  font-size: 0.85rem;
-  color: var(--color-text-light);
-  background: none;
-  border: none;
-  text-decoration: underline;
-  cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer;
-  transition: color 0.2s;
-}
-.pwa-dismiss:hover {
-  color: var(--color-text-muted);
-}
