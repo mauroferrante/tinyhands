@@ -26,6 +26,140 @@
 
 .melody-mode-select.active { display: flex; }
 
+/* ===== Level Select ===== */
+
+.melody-level-select {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  background: linear-gradient(135deg, #FFF8E7 0%, #FDE8F0 50%, #E8F0FE 100%);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: clamp(12px, 3vw, 24px);
+}
+
+.melody-level-select.active { display: flex; }
+
+.melody-level-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: clamp(12px, 3vw, 20px);
+  flex-shrink: 0;
+}
+
+.melody-level-back {
+  background: rgba(255,255,255,0.7);
+  border: 2px solid rgba(0,0,0,0.08);
+  border-radius: 50%;
+  width: clamp(36px, 8vw, 48px);
+  height: clamp(36px, 8vw, 48px);
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.melody-level-back:hover { transform: scale(1.1); background: rgba(255,255,255,0.9); }
+.melody-level-back:active { transform: scale(0.95); }
+
+.melody-level-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.3rem, 4vw, 2rem);
+  color: #333;
+}
+
+.melody-level-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(8px, 1.5vw, 14px);
+  padding-bottom: clamp(12px, 3vw, 24px);
+}
+
+.melody-level-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  aspect-ratio: 1;
+  border-radius: clamp(10px, 2vw, 16px);
+  border: 2px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.85);
+  cursor: pointer;
+  padding: clamp(4px, 1vw, 8px);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.melody-level-tile:hover:not(.locked) {
+  transform: scale(1.06);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.melody-level-tile:active:not(.locked) { transform: scale(0.96); }
+
+/* Locked */
+.melody-level-tile.locked {
+  background: rgba(200,200,200,0.35);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.melody-level-lock {
+  width: clamp(16px, 3vw, 24px);
+  height: clamp(16px, 3vw, 24px);
+}
+
+/* Completed */
+.melody-level-tile.completed {
+  background: linear-gradient(135deg, rgba(46,204,113,0.15), rgba(39,174,96,0.08));
+  border-color: rgba(46,204,113,0.3);
+}
+
+.melody-level-star {
+  width: clamp(16px, 3vw, 22px);
+  height: clamp(16px, 3vw, 22px);
+}
+
+/* Current (unlocked, not yet completed) — pulsing gold glow */
+.melody-level-tile.current {
+  background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
+  border-color: rgba(255,165,0,0.4);
+  box-shadow: 0 0 12px rgba(255,165,0,0.25);
+  animation: levelPulse 2s ease-in-out infinite;
+}
+
+@keyframes levelPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255,165,0,0.25); }
+  50% { box-shadow: 0 0 20px rgba(255,165,0,0.5); }
+}
+
+.melody-level-num {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(0.85rem, 2.5vw, 1.2rem);
+  color: #555;
+}
+
+.melody-level-emoji { font-size: clamp(1rem, 3vw, 1.5rem); }
+
+.melody-level-name {
+  font-size: clamp(0.5rem, 1.3vw, 0.7rem);
+  color: #888;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .melody-mode-title {
   font-family: 'Fredoka One', cursive;
   font-size: clamp(1.6rem, 5vw, 2.6rem);
@@ -499,15 +633,19 @@
   z-index: 300;
   pointer-events: none;
   transform: translate(-50%, -50%);
-  transition: left 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              top 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.3s ease;
-  animation: ballBounce 0.3s ease-out infinite;
+  /* transition is set dynamically by JS for each note hop */
+  transition: opacity 0.3s ease;
 }
 
-@keyframes ballBounce {
-  0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-  50%      { transform: translate(-50%, -50%) translateY(-8px); }
+.melody-bouncy-ball.ball-land {
+  animation: ballLand 0.25s ease-out forwards;
+}
+
+@keyframes ballLand {
+  0%   { transform: translate(-50%, -50%) scale(1, 1); }
+  40%  { transform: translate(-50%, -50%) scale(1.3, 0.7) translateY(4px); }
+  70%  { transform: translate(-50%, -50%) scale(0.9, 1.1) translateY(-3px); }
+  100% { transform: translate(-50%, -50%) scale(1, 1); }
 }
 
 /* ===== Responsive ===== */
@@ -541,6 +679,134 @@
   .melody-key { min-height: 160px; }
 }
 
+/* ===== Rotate Device Prompt (phone portrait) ===== */
+
+.melody-rotate-prompt {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  background: linear-gradient(135deg, #FFF8E7 0%, #FDE8F0 50%, #E8F0FE 100%);
+  gap: 1.2rem;
+}
+
+.melody-rotate-icon {
+  font-size: 4rem;
+  animation: rotateWiggle 2s ease-in-out infinite;
+}
+
+.melody-rotate-text {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  color: #666;
+  text-align: center;
+  padding: 0 2rem;
+}
+
+@keyframes rotateWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25%, 50% { transform: rotate(90deg); }
+  75%      { transform: rotate(0deg); }
+}
+
+/* Phone portrait: prompt rotation (only during gameplay, not mode select) */
+@media (max-width: 667px) and (orientation: portrait) {
+  .melody-level-grid { grid-template-columns: repeat(3, 1fr); }
+
+  #melodyGame.melody-playing .melody-rotate-prompt { display: flex; }
+  #melodyGame.melody-playing .melody-keyboard { display: none !important; }
+  #melodyGame.melody-playing .melody-teacher-area { display: none !important; }
+  #melodyGame.melody-playing .melody-speed-toggle { display: none !important; }
+  #melodyGame.melody-playing .melody-replay-btn { display: none !important; }
+  #melodyGame.melody-playing .melody-freestyle-hint { display: none !important; }
+}
+
+/* Phone landscape: teacher sidebar, keyboard fills remaining space */
+@media (max-height: 500px) and (orientation: landscape) {
+  .melody-teacher-area.active {
+    flex-direction: column;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    bottom: auto;
+    width: clamp(90px, 16vw, 130px);
+    transform: none;
+    padding: 6px;
+    gap: 3px;
+    align-items: center;
+    z-index: 250;
+  }
+
+  .melody-teacher {
+    width: clamp(40px, 10vh, 56px);
+    height: clamp(40px, 10vh, 56px);
+  }
+
+  .melody-teacher-speech {
+    font-size: clamp(0.65rem, 1.8vw, 0.85rem);
+    padding: 3px 8px;
+    min-height: auto;
+  }
+
+  .melody-melody-name {
+    font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+  }
+
+  .melody-progress {
+    gap: 4px;
+    margin-top: 2px;
+    max-width: 120px;
+  }
+
+  .melody-dot {
+    width: clamp(10px, 2vw, 14px);
+    height: clamp(10px, 2vw, 14px);
+  }
+
+  .melody-keyboard {
+    left: clamp(100px, 18vw, 140px);
+    right: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  .melody-key {
+    min-height: clamp(70px, 22vh, 120px);
+  }
+
+  .melody-speed-toggle {
+    top: auto;
+    bottom: clamp(6px, 2vw, 12px);
+    left: clamp(8px, 2vw, 16px);
+    width: clamp(36px, 8vw, 48px);
+    height: clamp(36px, 8vw, 48px);
+  }
+
+  .melody-replay-btn {
+    top: auto;
+    bottom: clamp(6px, 2vw, 12px);
+    right: clamp(8px, 2vw, 16px);
+    width: clamp(36px, 8vw, 48px);
+    height: clamp(36px, 8vw, 48px);
+  }
+
+  .melody-bouncy-ball {
+    width: clamp(16px, 3vw, 24px);
+    height: clamp(16px, 3vw, 24px);
+  }
+
+  /* Level select: compact 6-column grid */
+  .melody-level-grid { grid-template-columns: repeat(6, 1fr); gap: clamp(4px, 1vw, 8px); }
+  .melody-level-tile { border-radius: clamp(6px, 1.5vw, 10px); padding: clamp(2px, 0.5vw, 4px); }
+  .melody-level-header { margin-bottom: 8px; }
+
+  /* Rotate prompt should be hidden in landscape */
+  .melody-rotate-prompt { display: none !important; }
+}
+
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .melody-keyboard {
     padding-bottom: calc(clamp(10px, 2.5vw, 24px) + env(safe-area-inset-bottom));
@@ -556,5 +822,7 @@
   .melody-teacher,
   .melody-dot,
   .melody-celebrate-emoji,
-  .melody-grand-finale { animation: none !important; transition: none !important; }
+  .melody-grand-finale,
+  .melody-bouncy-ball,
+  .melody-level-tile { animation: none !important; transition: none !important; }
 }

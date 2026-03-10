@@ -12,7 +12,9 @@ function ensureAudio() {
   if (!audioCtx) return;
   if (audioCtx.state === 'suspended') {
     iosUnlocked = false;   // allow re-unlock on next user gesture
-    audioCtx.resume();
+    audioCtx.resume().then(() => {
+      if (audioCtx.state === 'running') iosUnlocked = true;
+    }).catch(() => {});
   }
 }
 
@@ -49,6 +51,11 @@ export function initAudio() {
       iosUnlocked = true;
     }
   }
+}
+
+/** True when AudioContext exists and is actively running (unlocked). */
+export function isAudioReady() {
+  return audioCtx !== null && audioCtx.state === 'running';
 }
 
 function playPop(now) {

@@ -174,7 +174,7 @@ let melodyNameEl, progressEl, keyboardEl, celebrateEl;
 
 // ===== Game State =====
 
-let gameState = 'idle';         // idle | mode-select | freestyle | lesson-intro | teacher-playing | student-turn | correct-pause | retry-pause | lesson-complete
+let gameState = 'idle';         // idle | mode-select | level-select | freestyle | lesson-intro | teacher-playing | student-turn | correct-pause | retry-pause | lesson-complete
 let currentMelodyIndex = 0;
 let currentStepIndex = 0;
 let teacherTimers = [];
@@ -190,6 +190,42 @@ let freestyleNotePlayed = false;
 let noteTimestamps = [];         // performance.now() per correct note
 let tempoRatings = [];           // 'green' | 'yellow' | 'red' per note
 let replayBtnEl = null;
+let rotatePromptEl = null;
+let levelSelectEl = null;
+let levelGridEl = null;
+let levelBackEl = null;
+
+// ===== Level Progress (localStorage) =====
+
+const LS_KEY = 'tinyhandsplay-melody-progress';
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      return Math.max(1, Math.min(MELODIES.length, data.highestUnlocked || 1));
+    }
+  } catch (e) { /* ignore */ }
+  return 1;
+}
+
+function saveProgress(levelJustCompleted) {
+  try {
+    const current = loadProgress();
+    const next = Math.min(MELODIES.length, levelJustCompleted + 1);
+    const highest = Math.max(current, next);
+    localStorage.setItem(LS_KEY, JSON.stringify({ highestUnlocked: highest }));
+  } catch (e) { /* ignore */ }
+}
+
+// Dev console: window.__melodyUnlockAll()
+window.__melodyUnlockAll = function() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({ highestUnlocked: MELODIES.length }));
+    console.log('All melody levels unlocked!');
+  } catch(e) { console.error(e); }
+};
 
 /** Combine turtle/rabbit toggle with retry slow-down */
 function getEffectiveMultiplier() {
@@ -458,6 +494,7 @@ function stopLionNod() {
 
 function showModeSelect() {
   gameState = 'mode-select';
+  melodyGameEl.classList.remove('melody-playing');
   modeSelectEl.classList.add('active');
   teacherAreaEl.classList.remove('active');
   keyboardEl.style.display = 'none';
@@ -486,6 +523,7 @@ function onModeClick(e) {
 
 function startFreestyle() {
   gameState = 'freestyle';
+  melodyGameEl.classList.add('melody-playing');
   teacherAreaEl.classList.remove('active');
   setKeysDisabled(false);
   freestyleNotePlayed = false;
@@ -505,17 +543,113 @@ function hideFreestyleHint() {
   }
 }
 
+// ===== Level Select =====
+
+function buildLevelGrid() {
+  levelGridEl.innerHTML = '';
+  const highestUnlocked = loadProgress();
+
+  MELODIES.forEach((melody, i) => {
+    const levelNum = i + 1;
+    const tile = document.createElement('button');
+    tile.className = 'melody-level-tile';
+    tile.dataset.level = levelNum;
+
+    if (levelNum > highestUnlocked) {
+      // LOCKED
+      tile.classList.add('locked');
+      tile.disabled = true;
+      const lockImg = document.createElement('img');
+      lockImg.src = getEmojiUrl('🔒');
+      lockImg.className = 'emoji-img melody-level-lock';
+      lockImg.alt = '🔒';
+      tile.appendChild(lockImg);
+      const num = document.createElement('span');
+      num.className = 'melody-level-num';
+      num.textContent = levelNum;
+      tile.appendChild(num);
+    } else if (levelNum < highestUnlocked) {
+      // COMPLETED
+      tile.classList.add('completed');
+      const starImg = document.createElement('img');
+      starImg.src = getEmojiUrl('⭐');
+      starImg.className = 'emoji-img melody-level-star';
+      starImg.alt = '⭐';
+      tile.appendChild(starImg);
+      const num = document.createElement('span');
+      num.className = 'melody-level-num';
+      num.textContent = levelNum;
+      tile.appendChild(num);
+      const name = document.createElement('span');
+      name.className = 'melody-level-name';
+      name.textContent = melody.name;
+      tile.appendChild(name);
+    } else {
+      // CURRENT (unlocked, not yet completed)
+      tile.classList.add('current');
+      const emojiEl = document.createElement('span');
+      emojiEl.className = 'melody-level-emoji';
+      emojiEl.textContent = melody.emoji;
+      tile.appendChild(emojiEl);
+      const num = document.createElement('span');
+      num.className = 'melody-level-num';
+      num.textContent = levelNum;
+      tile.appendChild(num);
+      const name = document.createElement('span');
+      name.className = 'melody-level-name';
+      name.textContent = melody.name;
+      tile.appendChild(name);
+    }
+
+    levelGridEl.appendChild(tile);
+  });
+}
+
+function showLevelSelect() {
+  gameState = 'level-select';
+  melodyGameEl.classList.remove('melody-playing');
+  levelSelectEl.classList.add('active');
+  modeSelectEl.classList.remove('active');
+  teacherAreaEl.classList.remove('active');
+  keyboardEl.style.display = 'none';
+  celebrateEl.classList.remove('show');
+  showReplayBtn(false);
+  showSpeedToggle(false);
+  stopLionNod();
+  buildLevelGrid();
+}
+
+function hideLevelSelect() {
+  levelSelectEl.classList.remove('active');
+}
+
+function onLevelGridClick(e) {
+  const tile = e.target.closest('.melody-level-tile');
+  if (!tile || tile.disabled) return;
+  const levelNum = parseInt(tile.dataset.level, 10);
+  if (isNaN(levelNum)) return;
+  currentMelodyIndex = levelNum - 1;
+  retryCount = 0;
+  retrySpeedMultiplier = 1.0;
+  hideLevelSelect();
+  keyboardEl.style.display = '';
+  startLessonIntro();
+}
+
+function onLevelBackClick() {
+  hideLevelSelect();
+  showModeSelect();
+}
+
 // ===== Lesson Mode =====
 
 function startLessons() {
-  currentMelodyIndex = 0;
-  retryCount = 0;
-  retrySpeedMultiplier = 1.0;
-  startLessonIntro();
+  showLevelSelect();
 }
 
 function startLessonIntro() {
   gameState = 'lesson-intro';
+  melodyGameEl.classList.add('melody-playing');
   const melody = MELODIES[currentMelodyIndex];
 
   teacherAreaEl.classList.add('active');
@@ -607,15 +741,40 @@ function hideBouncyBall() {
   }
 }
 
-function bounceToKey(ball, noteIndex) {
+function bounceToKey(ball, noteIndex, travelMs) {
   const key = getKeyEl(noteIndex);
   if (!key || !ball) return;
   const keyRect = key.getBoundingClientRect();
   const gameRect = melodyGameEl.getBoundingClientRect();
   const x = keyRect.left - gameRect.left + keyRect.width / 2;
   const y = keyRect.top - gameRect.top - 20;  // sit above the key
+
+  if (travelMs != null && travelMs > 0) {
+    ball.style.transition = `left ${travelMs}ms cubic-bezier(0.34, 1.56, 0.64, 1), `
+      + `top ${travelMs}ms cubic-bezier(0.34, 1.56, 0.64, 1), `
+      + `opacity 0.3s ease`;
+  } else {
+    ball.style.transition = 'none';
+  }
+
   ball.style.left = x + 'px';
   ball.style.top = y + 'px';
+}
+
+function triggerBallLand(ball) {
+  // Squash-stretch landing animation
+  ball.classList.remove('ball-land');
+  void ball.offsetWidth;  // force reflow to restart animation
+  ball.classList.add('ball-land');
+
+  // Spawn particles from ball position (same as kid's play mode)
+  const ballRect = ball.getBoundingClientRect();
+  const gameRect = melodyGameEl.getBoundingClientRect();
+  spawnParticles(
+    ballRect.left - gameRect.left + ballRect.width / 2,
+    ballRect.top - gameRect.top + ballRect.height / 2,
+    melodyGameEl
+  );
 }
 
 function startTeacherDemo() {
@@ -635,6 +794,10 @@ function startTeacherDemo() {
   // Show bouncy ball during teacher demo
   const ball = showBouncyBall();
 
+  // Position ball at first key instantly (no transition)
+  const firstIdx = pitchIndex(melody.notes[0]);
+  bounceToKey(ball, firstIdx, 0);
+
   // Cumulative delay — each note timed by its own (b + g) * TEMPO
   let cumDelay = 0;
   melody.notes.forEach((note, i) => {
@@ -643,7 +806,15 @@ function startTeacherDemo() {
     const t = setTimeout(() => {
       playPianoNote(idx);
       highlightKey(idx, 'teacher', holdMs);
-      bounceToKey(ball, idx);
+      animateKeyPress(idx);       // key squash + particles (kid's play mode effect)
+      triggerBallLand(ball);      // ball squash-stretch + particles
+
+      // Start ball moving toward NEXT key (arrives when next note fires)
+      if (i < melody.notes.length - 1) {
+        const nextIdx = pitchIndex(melody.notes[i + 1]);
+        const travelMs = noteDelay(note) * mult;
+        bounceToKey(ball, nextIdx, travelMs);
+      }
     }, cumDelay);
     teacherTimers.push(t);
     cumDelay += noteDelay(note) * mult;
@@ -771,11 +942,12 @@ function onMelodyComplete() {
 
   const pauseMs = level >= 20 ? 3000 : 2200;
   const t = setTimeout(() => {
-    currentMelodyIndex++;
-    if (currentMelodyIndex >= MELODIES.length) {
+    const completedLevel = currentMelodyIndex + 1;
+    saveProgress(completedLevel);
+    if (completedLevel >= MELODIES.length) {
       onAllComplete();
     } else {
-      startLessonIntro();
+      showLevelSelect();
     }
   }, pauseMs);
   teacherTimers.push(t);
@@ -838,7 +1010,7 @@ function onAllComplete() {
   btn.addEventListener('click', () => {
     celebrateEl.classList.remove('show');
     keyboardEl.style.display = '';
-    showModeSelect();
+    showLevelSelect();
   });
   celebrateEl.appendChild(btn);
 
@@ -934,13 +1106,20 @@ function cleanup() {
   if (melodyGameEl) {
     const ball = melodyGameEl.querySelector('.melody-bouncy-ball');
     if (ball) ball.remove();
+    melodyGameEl.classList.remove('melody-playing');
   }
+
+  // Remove rotate prompt
+  if (rotatePromptEl) { rotatePromptEl.remove(); rotatePromptEl = null; }
 
   if (keyboardEl) {
     keyboardEl.removeEventListener('pointerdown', onKeyboardPointer);
     keyboardEl.innerHTML = '';
     keyboardEl.style.display = '';
   }
+  if (levelSelectEl) levelSelectEl.classList.remove('active');
+  if (levelGridEl) levelGridEl.removeEventListener('click', onLevelGridClick);
+  if (levelBackEl) levelBackEl.removeEventListener('click', onLevelBackClick);
   if (modeSelectEl) {
     modeSelectEl.classList.remove('active');
     modeSelectEl.removeEventListener('click', onModeClick);
@@ -972,13 +1151,27 @@ export const melodyMaker = {
     progressEl     = document.getElementById('melodyProgress');
     keyboardEl     = document.getElementById('melodyKeyboard');
     celebrateEl    = document.getElementById('melodyCelebrate');
+    levelSelectEl  = document.getElementById('melodyLevelSelect');
+    levelGridEl    = document.getElementById('melodyLevelGrid');
+    levelBackEl    = document.getElementById('melodyLevelBack');
 
     melodyGameEl.style.display = 'block';
     isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
+    // Create rotate-device prompt for small screens in portrait
+    if (!rotatePromptEl) {
+      rotatePromptEl = document.createElement('div');
+      rotatePromptEl.className = 'melody-rotate-prompt';
+      rotatePromptEl.innerHTML = '<div class="melody-rotate-icon">📱</div>'
+        + '<div class="melody-rotate-text">Rotate your device to play!</div>';
+      melodyGameEl.appendChild(rotatePromptEl);
+    }
+
     preloadEmojis(EMOJI_REGISTRY['melody-maker'] || []).then(() => {
       buildKeyboard();
       modeSelectEl.addEventListener('click', onModeClick);
+      levelGridEl.addEventListener('click', onLevelGridClick);
+      levelBackEl.addEventListener('click', onLevelBackClick);
       document.addEventListener('keyup', handleKeyUp);
       showModeSelect();
     });
