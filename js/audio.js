@@ -6,16 +6,31 @@ export function getAudioCtx() {
   return audioCtx;
 }
 
+// Lightweight helper: every play*() function calls this to
+// recover from iOS suspending the AudioContext mid-game.
+function ensureAudio() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') {
+    iosUnlocked = false;   // allow re-unlock on next user gesture
+    audioCtx.resume();
+  }
+}
+
 export function initAudio() {
   // Create context on very first call
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // iOS Safari can suspend the context at any time (notifications,
+    // screen lock, app switch). Reset the unlock flag so the next
+    // user-gesture call to initAudio() retries the silent-oscillator trick.
+    audioCtx.addEventListener('statechange', () => {
+      if (audioCtx.state === 'suspended') iosUnlocked = false;
+    });
   }
 
   // Always try to resume if suspended
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
+  ensureAudio();
 
   // iOS Safari requires an audio node to be started synchronously
   // inside a user-gesture handler to unlock audio output.
@@ -95,7 +110,7 @@ function playBubble(now) {
 
 export function playRandomSound() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const type = Math.floor(Math.random() * 4);
   switch (type) {
@@ -108,7 +123,7 @@ export function playRandomSound() {
 
 export function playFanfare() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const notes = [523, 659, 784, 1047];
   notes.forEach((freq, i) => {
@@ -140,7 +155,7 @@ export function playFanfare() {
 
 export function playThud() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -165,7 +180,7 @@ export function playThud() {
 
 export function playCrash() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   for (let i = 0; i < 5; i++) {
     const osc = audioCtx.createOscillator();
@@ -183,7 +198,7 @@ export function playCrash() {
 
 export function playSnap() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -199,7 +214,7 @@ export function playSnap() {
 
 export function playPerfectDing() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -215,7 +230,7 @@ export function playPerfectDing() {
 
 export function playStreakChime() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const notes = [523.25, 659.25, 783.99];
   notes.forEach((freq, i) => {
@@ -234,7 +249,7 @@ export function playStreakChime() {
 
 export function playWinFanfare() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const notes = [523.25, 659.25, 783.99, 1046.5];
   notes.forEach((freq, i) => {
@@ -268,7 +283,7 @@ export function playWinFanfare() {
 
 export function playWhoosh() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -294,7 +309,7 @@ export function playWhoosh() {
 
 export function playCreak() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -313,7 +328,7 @@ export function playCreak() {
 
 export function playPerfectClick() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -329,7 +344,7 @@ export function playPerfectClick() {
 
 export function playHeightPing(height) {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const baseFreq = 300 + height * 40;
   const osc = audioCtx.createOscillator();
@@ -346,7 +361,7 @@ export function playHeightPing(height) {
 
 export function playDangerBuzz() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -362,7 +377,7 @@ export function playDangerBuzz() {
 
 export function playBounce() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -381,7 +396,7 @@ export function playBounce() {
 
 export function playCrowdCheer() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const voices = [
     { type: 'sawtooth', freq: 200, wobble: 15 },
@@ -407,7 +422,7 @@ export function playCrowdCheer() {
 
 export function playCrowdGasp() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const freqs = [400, 500, 600];
   freqs.forEach(f => {
@@ -428,7 +443,7 @@ export function playCrowdGasp() {
 
 export function playCorrectDing() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Bright ascending two-note: satisfying reward
   const osc1 = audioCtx.createOscillator();
@@ -454,7 +469,7 @@ export function playCorrectDing() {
 
 export function playWrongBoop() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Gentle descending two-note: soft "oops"
   const osc1 = audioCtx.createOscillator();
@@ -480,7 +495,7 @@ export function playWrongBoop() {
 
 export function playLifeLost() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Low triangle wave with downward pitch bend: subtle "wah"
   const osc = audioCtx.createOscillator();
@@ -497,7 +512,7 @@ export function playLifeLost() {
 
 export function playSpellWhoosh() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Short filtered noise-like burst: subtle transition
   const osc = audioCtx.createOscillator();
@@ -514,7 +529,7 @@ export function playSpellWhoosh() {
 
 export function playStreakFanfare(level) {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Progressive fanfare: more notes & richer harmonics at higher levels
   // level 1 = 5-streak (3 notes), level 2 = 10-streak (4 notes + chord), level 3 = 20-streak (5 notes + big chord)
@@ -558,7 +573,7 @@ export function playStreakFanfare(level) {
 
 export function playCrowdRoar() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const voices = [
     { type: 'sawtooth', base: 180 },
@@ -587,7 +602,7 @@ export function playCrowdRoar() {
 
 export function playCardFlip() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -603,7 +618,7 @@ export function playCardFlip() {
 
 export function playMatchChime() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc1 = audioCtx.createOscillator();
   const gain1 = audioCtx.createGain();
@@ -628,7 +643,7 @@ export function playMatchChime() {
 
 export function playNoMatchBoop() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -644,7 +659,7 @@ export function playNoMatchBoop() {
 
 export function playCardSettle() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -660,7 +675,7 @@ export function playCardSettle() {
 
 export function playCardSwoosh() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // White noise burst shaped like a card swoosh
   const bufSize = audioCtx.sampleRate * 0.08;
@@ -685,7 +700,7 @@ export function playCardSwoosh() {
 
 export function playBubblePop(pitch = 0) {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -705,7 +720,7 @@ export function playBubblePop(pitch = 0) {
 
 export function playWindPuff() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const bufSize = Math.floor(audioCtx.sampleRate * 0.06);
   const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
@@ -727,7 +742,7 @@ export function playWindPuff() {
 
 export function playStarCollect() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc1 = audioCtx.createOscillator();
   const gain1 = audioCtx.createGain();
@@ -752,7 +767,7 @@ export function playStarCollect() {
 
 export function playUfoCollect() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Sci-fi warble: two detuned oscillators with vibrato
   const notes = [523, 659, 784];
@@ -775,7 +790,7 @@ export function playUfoCollect() {
 
 export function playNearMiss() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const bufSize = Math.floor(audioCtx.sampleRate * 0.08);
   const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
@@ -798,7 +813,7 @@ export function playNearMiss() {
 
 export function playBalloonPop() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Low thump
   const osc = audioCtx.createOscillator();
@@ -832,7 +847,7 @@ export function playBalloonPop() {
 
 export function playBirdChirp() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -849,7 +864,7 @@ export function playBirdChirp() {
 
 export function playPlaneZoom() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -871,7 +886,7 @@ export function playPlaneZoom() {
 
 export function playPowerupCollect() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Rising triangle chime C6→E6
   const notes = [1047, 1319];
@@ -890,7 +905,7 @@ export function playPowerupCollect() {
 
 export function playShieldActivate() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Low sine sweep up + high shimmer
   const osc = audioCtx.createOscillator();
@@ -918,7 +933,7 @@ export function playShieldActivate() {
 
 export function playShieldBreak() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Crystalline shatter: descending sine bursts
   [2000, 1500, 1000, 600].forEach((freq, i) => {
@@ -952,7 +967,7 @@ export function playShieldBreak() {
 
 export function playRainbowActivate() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Ascending arpeggio C-E-G-B-C (octave)
   const notes = [523, 659, 784, 988, 1047];
@@ -972,7 +987,7 @@ export function playRainbowActivate() {
 
 export function playMagnetActivate() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Low electric hum with vibrato
   const osc = audioCtx.createOscillator();
@@ -996,7 +1011,7 @@ export function playMagnetActivate() {
 
 export function playSlowMoActivate() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Descending pitch bend — time slowing
   const osc = audioCtx.createOscillator();
@@ -1013,7 +1028,7 @@ export function playSlowMoActivate() {
 
 export function playColorChange() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // 3 rapid high-frequency sparkle pings
   for (let i = 0; i < 3; i++) {
@@ -1034,7 +1049,7 @@ export function playColorChange() {
 
 export function playMysteryBoxOpen() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Rapid clicking/ticking — slot machine
   for (let i = 0; i < 8; i++) {
@@ -1053,7 +1068,7 @@ export function playMysteryBoxOpen() {
 
 export function playMysteryBoxReveal() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Triumphant two-note reveal G5→C6
   const notes = [784, 1047];
@@ -1075,7 +1090,7 @@ export function playMysteryBoxReveal() {
 
 export function playRocketBoost() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -1091,7 +1106,7 @@ export function playRocketBoost() {
 
 export function playBoostRelease() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const bufferSize = audioCtx.sampleRate * 0.1;
   const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -1112,7 +1127,7 @@ export function playBoostRelease() {
 
 export function playRocketStarCollect() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -1128,7 +1143,7 @@ export function playRocketStarCollect() {
 
 export function playFuelCanCollect() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -1145,7 +1160,7 @@ export function playFuelCanCollect() {
 
 export function playAsteroidNearMiss() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -1165,7 +1180,7 @@ export function playAsteroidNearMiss() {
 
 export function playRocketCrash() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Impact thump
   const imp = audioCtx.createOscillator();
@@ -1192,7 +1207,7 @@ export function playRocketCrash() {
 
 export function playMilestoneChime() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const notes = [523, 659, 784]; // C5 E5 G5
   notes.forEach((freq, i) => {
@@ -1211,7 +1226,7 @@ export function playMilestoneChime() {
 
 export function playCountdownBeep() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -1226,7 +1241,7 @@ export function playCountdownBeep() {
 
 export function playLaunchRumble() {
   if (!audioCtx) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  ensureAudio();
   const now = audioCtx.currentTime;
   // Low rumble
   const osc = audioCtx.createOscillator();

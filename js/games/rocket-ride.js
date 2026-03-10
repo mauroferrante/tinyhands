@@ -115,14 +115,12 @@ let lastBoostState = false;
 let hasTouchInput = false;
 
 // ---- Touch steering zones (bottom corners) ----
-const STEER_ZONE_W_FRAC = 0.22;
-const STEER_ZONE_H_FRAC = 0.28;
+const STEER_ZONE_W_FRAC = 0.28;
 
 function getTouchAction(clientX, clientY) {
-  if (clientY > H * (1 - STEER_ZONE_H_FRAC)) {
-    if (clientX < W * STEER_ZONE_W_FRAC) return 'left';
-    if (clientX > W * (1 - STEER_ZONE_W_FRAC)) return 'right';
-  }
+  // Steer at any height — left/right edges steer, center boosts
+  if (clientX < W * STEER_ZONE_W_FRAC) return 'left';
+  if (clientX > W * (1 - STEER_ZONE_W_FRAC)) return 'right';
   return 'boost';
 }
 

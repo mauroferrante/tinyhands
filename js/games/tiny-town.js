@@ -2280,8 +2280,23 @@ function handleTapNav(mx, my) {
   // Dismiss active dialog on any tap
   if (activeDialog) { activeDialog = null; }
 
-  const wx = mx+cx, wy = my+cy;
-  const startNode = player.node || player.targetNode;
+  const wx = mx + cx, wy = my + cy;
+
+  // Determine start node from player's actual position
+  // When mid-edge, pick whichever endpoint is closer to the player
+  let startNode;
+  if (player.node) {
+    startNode = player.node;
+  } else if (player.targetNode) {
+    const sn = player.sourceNode ? nodeMap[player.sourceNode] : null;
+    const tn = nodeMap[player.targetNode];
+    if (sn && Math.hypot(sn.x - player.x, sn.y - player.y) <
+              Math.hypot(tn.x - player.x, tn.y - player.y)) {
+      startNode = player.sourceNode;
+    } else {
+      startNode = player.targetNode;
+    }
+  }
   if (!startNode) return;
 
   // Find closest road node to tap point
@@ -2291,7 +2306,7 @@ function handleTapNav(mx, my) {
   // If tap resolved to current node, check for area trigger or find next best
   if (dest === startNode) {
     const dx = wx - player.x, dy = wy - player.y;
-    const len = Math.sqrt(dx*dx + dy*dy);
+    const len = Math.sqrt(dx * dx + dy * dy);
     if (len < 20) { checkAreaTrigger(startNode); return; }
     // Find nearest node that isn't the current one
     dest = closestRoadNode(wx, wy, startNode);
@@ -2304,6 +2319,14 @@ function handleTapNav(mx, my) {
     player.path = path;
     player.moving = true;
     player.keyDriven = false;
+    // Snap to startNode if currently mid-edge so path begins cleanly
+    if (!player.node) {
+      player.node = startNode;
+      player.targetNode = null;
+      player.sourceNode = null;
+      player.x = nodeMap[startNode].x;
+      player.y = nodeMap[startNode].y;
+    }
   }
 }
 

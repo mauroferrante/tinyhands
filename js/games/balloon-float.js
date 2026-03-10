@@ -835,7 +835,7 @@ function spawnObstacle() {
     case OBS_BAT:
       obs = { type, x: W + 35, y, w: 45, h: 40, speed: speed * (1.2 + Math.random() * 0.5), emoji: '\u{1F987}', size: 42, wingFrame: 0, wavePhase: Math.random() * Math.PI * 2, baseY: y }; break;
     case OBS_METEOR:
-      obs = { type, x: W + 70, y: margin + Math.random() * (H * 0.5), w: 52, h: 52, speed: speed * 2.5, emoji: '\u2604\uFE0F', size: 50, angle: 0.3 + Math.random() * 0.2, zoomed: false }; break;
+      obs = { type, x: W + 70, y: margin + Math.random() * (H * 0.5), w: 52, h: 52, speed: speed * 2.1, emoji: '\u2604\uFE0F', size: 50, angle: 0.3 + Math.random() * 0.2, zoomed: false }; break;
     case OBS_PLANE:
       obs = { type, x: W + 60, y: pickRandomY(margin), w: 65, h: 45, speed: speed * 2.0, emoji: '\u2708\uFE0F', size: 52, zoomed: false }; break;
   }
