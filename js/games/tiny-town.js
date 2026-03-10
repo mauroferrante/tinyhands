@@ -371,13 +371,15 @@ let introTimer = 0;
 // === SPRITE CACHE ===
 const spriteCache = {};
 function getSprite(emoji, size) {
+  const dpr = window.devicePixelRatio || 1;
   size = Math.round(size);
-  const key = emoji + '|' + size;
+  const key = emoji + '|' + size + '|' + dpr;
   if (spriteCache[key]) return spriteCache[key];
   const dim = Math.ceil(size * 1.4);
   const c = document.createElement('canvas');
-  c.width = c.height = dim;
+  c.width = c.height = Math.round(dim * dpr);
   const x = c.getContext('2d');
+  x.scale(dpr, dpr);
   const img = getImage(emoji);
   if (img) {
     const pad = (dim - size) / 2;
@@ -387,12 +389,14 @@ function getSprite(emoji, size) {
     x.textAlign = 'center'; x.textBaseline = 'middle';
     x.fillText(emoji, dim/2, dim/2);
   }
+  c._css = dim;   // CSS-pixel dimension for drawing
   spriteCache[key] = c;
   return c;
 }
 function drawSprite(c, emoji, x, y, size) {
   const s = getSprite(emoji, size);
-  c.drawImage(s, x - s.width/2, y - s.height/2);
+  const d = s._css || s.width;
+  c.drawImage(s, x - d/2, y - d/2, d, d);
 }
 function drawSpriteFlipped(c, emoji, x, y, size) {
   c.save(); c.scale(-1,1);
@@ -2138,7 +2142,7 @@ function spawnConfettiBurst(wx, wy, count, maxT) {
     destAnimations.push({
       x: wx, y: wy, emoji: confetti[i % confetti.length], t: 0, maxT: maxT || 150, type: 'burst',
       vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2.5,
-      startSize: 50 + Math.random() * 40, spin: (Math.random() - 0.5) * 0.15,
+      startSize: 20 + Math.random() * 16, spin: (Math.random() - 0.5) * 0.15,
     });
   }
 }
@@ -2437,8 +2441,8 @@ function drawCharSelect(c) {
   }
   const gridL = minX - pad;
   const gridR = maxX + pad;
-  const gridT = minY - 70;
-  const gridB = maxY + 60;
+  const gridT = minY - 80;
+  const gridB = maxY + 80;
   // Panel background
   c.fillStyle = 'rgba(255,255,255,0.13)';
   c.beginPath(); c.roundRect(gridL-10, gridT-10, gridR-gridL+20, gridB-gridT+20, 24); c.fill();
@@ -2478,7 +2482,7 @@ function drawCharSelect(c) {
   // Subtitle
   c.font = `${16*fontScale|0}px 'Nunito', sans-serif`;
   c.fillStyle = '#7A6030';
-  c.fillText('Tap or use ← → then Enter to pick!', W/2, gridB - 24);
+  c.fillText('Tap or use ← → then Enter to pick!', W/2, gridB - 34);
 }
 
 function handleCharSelect(mx, my) {
@@ -2727,9 +2731,9 @@ function drawIntroMessage(c) {
   c.fillStyle = '#FFD54F';
   const fkText = 'Festival of Kindness!';
   const fkW = c.measureText(fkText).width;
-  drawSprite(c, '🎉', 24 * fontScale, W/2 - fkW/2 - 20 * fontScale, by + 30 * fontScale);
+  drawSprite(c, '🎉', W/2 - fkW/2 - 20 * fontScale, by + 30 * fontScale, 24 * fontScale);
   c.fillText(fkText, W/2, by + 30 * fontScale);
-  drawSprite(c, '🎉', 24 * fontScale, W/2 + fkW/2 + 20 * fontScale, by + 30 * fontScale);
+  drawSprite(c, '🎉', W/2 + fkW/2 + 20 * fontScale, by + 30 * fontScale, 24 * fontScale);
   c.font = `${18*fontScale|0}px 'Nunito', sans-serif`;
   c.fillStyle = '#FFFDE7';
   c.fillText('Visit your friends, collect their gifts,', W/2, by + 64 * fontScale);
