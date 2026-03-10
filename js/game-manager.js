@@ -40,6 +40,11 @@ const isIPad = isIOS && !/iPhone|iPod/.test(navigator.userAgent);
 // Only Safari supports "Add to Home Screen" on iOS — Brave, Chrome, Firefox don't
 const isIOSSafari = isIOS && /Safari/.test(navigator.userAgent) &&
                     !/CriOS|FxiOS|EdgiOS|OPiOS|Brave/.test(navigator.userAgent);
+// macOS Safari supports "Add to Dock" — exclude iPadOS (caught by isIOS above)
+const isMacSafari = !isIOS && /Macintosh/.test(navigator.userAgent) &&
+                    /Safari/.test(navigator.userAgent) &&
+                    !/Chrome|Chromium|Edg|OPR|Brave|Firefox/.test(navigator.userAgent);
+const isSafari = isIOSSafari || isMacSafari;
 const isStandalone = navigator.standalone === true ||
                      window.matchMedia('(display-mode: standalone)').matches;
 
@@ -217,7 +222,7 @@ function stopGame() {
   if (!isStandalone && !sessionStorage.getItem('pwaModalShown')) {
     const dismissed = localStorage.getItem('pwa_modal_dismissed');
     if (!dismissed || Date.now() - Number(dismissed) > 3 * 86400000) {
-      if (isIOSSafari || deferredAndroidPrompt) {
+      if (isSafari || deferredAndroidPrompt) {
         sessionStorage.setItem('pwaModalShown', 'true');
         setTimeout(() => showPwaModal(), 2500);
       }
@@ -454,6 +459,12 @@ function initPwaBanner() {
   if (isIOSSafari) {
     pwaDeviceName.textContent = isIPad ? 'iPad' : 'iPhone';
     pwaBanner.style.display = '';
+  } else if (isMacSafari) {
+    pwaDeviceName.textContent = 'Mac';
+    pwaBanner.style.display = '';
+    // Adapt text for desktop: "Click" instead of "Tap", "Add to Dock" instead of "Add to Home Screen"
+    document.querySelectorAll('.pwa-verb').forEach(el => { el.textContent = 'Click'; });
+    document.querySelectorAll('.pwa-step2-label').forEach(el => { el.textContent = 'Add to Dock'; });
   } else if (deferredAndroidPrompt) {
     pwaDeviceName.textContent = 'phone';
     pwaBanner.style.display = '';
@@ -485,8 +496,10 @@ pwaBannerClose.addEventListener('click', () => {
 // -- Post-game modal --
 
 function showPwaModal() {
-  // Set pointer direction based on device
-  if (isIPad) {
+  // Set pointer direction based on device (hidden on desktop)
+  if (isMacSafari) {
+    pwaPointer.style.display = 'none';
+  } else if (isIPad) {
     pwaPointer.className = 'pwa-pointer pwa-pointer-ipad';
   } else {
     pwaPointer.className = 'pwa-pointer pwa-pointer-iphone';
@@ -534,5 +547,5 @@ function triggerAndroidInstall() {
   }
 }
 
-// Init banner on page load (iOS Safari shows immediately, Android waits for beforeinstallprompt)
-if (isIOSSafari) initPwaBanner();
+// Init banner on page load (Safari shows immediately, Android waits for beforeinstallprompt)
+if (isSafari) initPwaBanner();
