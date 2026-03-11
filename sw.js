@@ -4,7 +4,7 @@
  *  Stale-while-revalidate for CDN assets
  * ========================================================= */
 
-const CACHE = 'thp-v58';
+const CACHE = 'thp-v60';
 
 const SHELL = [
   '/',

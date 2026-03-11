@@ -104,19 +104,20 @@
   <section class="hero" id="hero">
     <div class="hero-glow"></div>
 
-    <!-- BG layer: lion + pizza + donut — moves WITH mouse -->
-    <div class="hero-layer hero-layer--bg" data-depth="0.04">
-      <img class="hero-icon hero-icon--lion"  src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f981_3d.png" alt="" aria-hidden="true">
-      <img class="hero-icon hero-icon--pizza" src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f355_3d.png" alt="" aria-hidden="true">
-      <img class="hero-icon hero-icon--donut" src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f369_3d.png" alt="" aria-hidden="true">
-    </div>
+    <!-- BG layer: empty (kept for parallax structure) -->
+    <div class="hero-layer hero-layer--bg" data-depth="0.04"></div>
 
-    <!-- MID layer: explosion cluster — moves slightly opposite -->
+    <!-- MID layer: all emojis in cloud cluster — moves slightly opposite -->
     <div class="hero-layer hero-layer--mid" data-depth="-0.02">
-      <img class="hero-icon hero-icon--teddy"   src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f9f8_3d.png" alt="" aria-hidden="true">
-      <img class="hero-icon hero-icon--rocket"  src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f680_3d.png" alt="" aria-hidden="true">
-      <img class="hero-icon hero-icon--balloon" src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f388_3d.png" alt="" aria-hidden="true">
-      <img class="hero-icon hero-icon--whale"   src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f433_3d.png" alt="" aria-hidden="true">
+      <div class="hero-cloud-cluster">
+        <img class="hero-icon hero-icon--rocket"  src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f680_3d.png" alt="" aria-hidden="true">
+        <img class="hero-icon hero-icon--teddy"   src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f9f8_3d.png" alt="" aria-hidden="true">
+        <img class="hero-icon hero-icon--balloon" src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f388_3d.png" alt="" aria-hidden="true">
+        <img class="hero-icon hero-icon--whale"   src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f433_3d.png" alt="" aria-hidden="true">
+        <img class="hero-icon hero-icon--lion"    src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f981_3d.png" alt="" aria-hidden="true">
+        <img class="hero-icon hero-icon--pizza"   src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f355_3d.png" alt="" aria-hidden="true">
+        <img class="hero-icon hero-icon--donut"   src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f369_3d.png" alt="" aria-hidden="true">
+      </div>
     </div>
 
     <!-- Center text (static, no parallax) -->
@@ -131,7 +132,7 @@
     </div>
 
     <!-- FG layer: piano + blocks — moves opposite mouse -->
-    <div class="hero-layer hero-layer--fg" data-depth="-0.06">
+    <div class="hero-layer hero-layer--fg" data-depth="-0.18">
       <img class="hero-prop hero-prop--piano"  src="assets/mini-piano.png" alt="" aria-hidden="true">
       <img class="hero-prop hero-prop--blocks" src="assets/tower-blocks.png" alt="" aria-hidden="true">
     </div>
