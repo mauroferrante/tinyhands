@@ -145,7 +145,7 @@
 }
 .hero-prop:hover {
   transform: scale(1.08) translateY(-15px) !important;
-  filter: brightness(1.1) drop-shadow(0 20px 25px rgba(0,0,0,0.2));
+  filter: brightness(1.1);
 }
 .hero-prop--piano  { left: 18%; transform: rotate(-5deg); animation-delay: 0.5s; animation-name: heroPianoBob; }
 .hero-prop--blocks { right: 10%; width: clamp(150px, 18vw, 300px); animation-delay: 1s; }
@@ -1027,6 +1027,14 @@ body.game-active .pwa-banner {
   cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer;
 }
 .pwa-banner-close:hover { opacity: 1; }
+
+.pwa-copy-url {
+  font-size: 0.75rem;
+  color: var(--color-primary, #7c5cbf);
+  text-decoration: underline;
+  margin-left: 6px;
+  cursor: pointer;
+}
 
 .pwa-banner-steps {
   display: none;

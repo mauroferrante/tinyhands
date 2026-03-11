@@ -522,7 +522,8 @@ function initPwaBanner() {
     safariStep.className = 'pwa-step';
     safariStep.innerHTML =
       '<span class="pwa-step-num">1</span>' +
-      '<span>Open <strong>tinyhandsplay.com</strong> in <strong>Safari</strong></span>';
+      '<span>Open <strong>tinyhandsplay.com</strong> in <strong>Safari</strong> ' +
+      '<a href="#" class="pwa-copy-url" onclick="navigator.clipboard.writeText(\'https://tinyhandsplay.com\');this.textContent=\'Copied!\';return false;">Copy URL</a></span>';
     pwaBannerSteps.insertBefore(safariStep, pwaBannerSteps.firstChild);
     // Renumber existing steps to 2 and 3
     const existingNums = pwaBannerSteps.querySelectorAll('.pwa-step-num');
