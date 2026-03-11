@@ -474,10 +474,40 @@ const pwaBanner        = document.getElementById('pwaBanner');
 const pwaBannerCollapsed = document.getElementById('pwaBannerCollapsed');
 const pwaBannerSteps   = document.getElementById('pwaBannerSteps');
 const pwaBannerExpand  = document.getElementById('pwaBannerExpand');
-// -- Landing banner (persistent — expand/collapse only) --
+// -- Landing banner (dismissible — resurfaces after 5 sessions) --
+const pwaBannerClose = document.getElementById('pwaBannerClose');
+
+function shouldShowBanner() {
+  const dismissed = parseInt(localStorage.getItem('pwa-banner-dismissed') || '0', 10);
+  if (!dismissed) return true;
+  const sessions = parseInt(localStorage.getItem('pwa-banner-sessions') || '0', 10);
+  return sessions >= 5;
+}
+
+function trackSession() {
+  const dismissed = parseInt(localStorage.getItem('pwa-banner-dismissed') || '0', 10);
+  if (dismissed) {
+    const sessions = parseInt(localStorage.getItem('pwa-banner-sessions') || '0', 10) + 1;
+    localStorage.setItem('pwa-banner-sessions', String(sessions));
+    if (sessions >= 5) {
+      localStorage.removeItem('pwa-banner-dismissed');
+      localStorage.removeItem('pwa-banner-sessions');
+    }
+  }
+}
+trackSession();
+
+if (pwaBannerClose) {
+  pwaBannerClose.addEventListener('click', () => {
+    pwaBanner.style.display = 'none';
+    localStorage.setItem('pwa-banner-dismissed', '1');
+    localStorage.setItem('pwa-banner-sessions', '0');
+  });
+}
 
 function initPwaBanner() {
   if (isStandalone) return;
+  if (!shouldShowBanner()) return;
 
   if (isIOSSafari) {
     pwaBanner.style.display = '';

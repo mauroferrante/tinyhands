@@ -516,6 +516,7 @@
   flex-wrap: wrap;
   z-index: 10;
   position: relative;
+  scroll-margin-top: 2rem;
 }
 
 .game-card {
@@ -1003,6 +1004,18 @@ body.game-active .pwa-banner {
   white-space: nowrap;
   cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer;
 }
+
+.pwa-banner-close {
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--color-text);
+  opacity: 0.5;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer;
+}
+.pwa-banner-close:hover { opacity: 1; }
 
 .pwa-banner-steps {
   display: none;
