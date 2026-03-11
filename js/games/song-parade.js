@@ -365,6 +365,18 @@ export class SongParadeEngine {
     this.topBarEl = document.createElement('div');
     this.topBarEl.className = 'parade-top-bar';
 
+    // Back button in gameplay top bar
+    this.gameBackBtn = document.createElement('button');
+    this.gameBackBtn.className = 'parade-game-back-btn';
+    this.gameBackBtn.textContent = '←';
+    this.gameBackBtn.setAttribute('aria-label', 'Back to song list');
+    this.gameBackBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      this.stopPlaying();
+      this.showSongSelect();
+    });
+    this.topBarEl.appendChild(this.gameBackBtn);
+
     this.songNameEl = document.createElement('div');
     this.songNameEl.className = 'parade-song-name';
     this.topBarEl.appendChild(this.songNameEl);

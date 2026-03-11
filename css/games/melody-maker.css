@@ -965,9 +965,29 @@
   justify-content: center;
   gap: clamp(8px, 2vw, 16px);
   padding: 0 clamp(10px, 2vw, 20px);
-  padding-left: calc(clamp(10px, 2vw, 20px) + 40px);
   z-index: 160;
 }
+
+/* Back button in gameplay top bar */
+.parade-game-back-btn {
+  flex-shrink: 0;
+  width: clamp(32px, 8vw, 44px);
+  height: clamp(32px, 8vw, 44px);
+  border: 2px solid rgba(0,0,0,0.08);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  font-weight: 700;
+  color: #888;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s, background 0.15s;
+}
+.parade-game-back-btn:hover { background: rgba(255,255,255,0.9); transform: scale(1.1); }
+.parade-game-back-btn:active { transform: scale(0.9); }
 
 /* Song name left, whale center, tempo right */
 .parade-top-bar .parade-song-name { margin-right: auto; }
@@ -1084,7 +1104,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 .parade-preview-checkbox {
-  display: none;
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 .parade-preview-slider {
   position: relative;
