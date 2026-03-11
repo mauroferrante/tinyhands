@@ -19,20 +19,18 @@
   padding: 0 1.5rem;
   max-width: 960px;
   margin: 0 auto;
-  overflow: hidden;
 }
 
 /* ===== Hero Section ===== */
 .hero {
   position: relative;
   width: 100vw;
-  margin-left: calc(-50vw + 50%);
   min-height: 100vh;
   min-height: 100dvh;
+  margin-bottom: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 
 /* Soft glow behind center */
@@ -40,9 +38,9 @@
   position: absolute;
   width: clamp(300px, 50vw, 550px);
   height: clamp(300px, 50vw, 550px);
-  top: 50%;
+  top: 35%;
   left: 50%;
-  transform: translate(-50%, -55%);
+  transform: translate(-50%, -50%);
   background: radial-gradient(circle,
     rgba(255, 240, 220, 0.5) 0%,
     rgba(221, 208, 255, 0.4) 30%,
@@ -89,36 +87,39 @@
   height: auto;
   animation: heroBob 4s ease-in-out infinite;
 }
-.hero-icon--teddy  { top: 18%; left: 38%; width: clamp(52px, 7vw, 90px); animation-delay: 0s; }
-.hero-icon--car    { top: 22%; left: 22%; width: clamp(44px, 5vw, 68px); animation-delay: 0.6s; }
-.hero-icon--rocket { top: 12%; right: 28%; width: clamp(48px, 6vw, 76px); animation-delay: 1.2s; }
-.hero-icon--star   { top: 28%; right: 36%; width: clamp(36px, 4.5vw, 56px); animation-delay: 0.3s; }
-.hero-icon--bee-l  { top: 30%; left: 14%; width: clamp(32px, 4vw, 52px); animation-delay: 1.8s; }
-.hero-icon--bee-r  { top: 20%; right: 12%; width: clamp(32px, 4vw, 52px); animation-delay: 2.4s; }
-.hero-icon--moon   { top: 22%; left: 12%; width: clamp(36px, 4.5vw, 56px); animation-delay: 0.9s; }
+/* Mid-layer: tight "explosion" cluster ABOVE H1 text */
+.hero-icon--teddy   { top: 18%; left: 38%;  width: clamp(52px, 7vw, 90px); animation-delay: 0s; }
+.hero-icon--rocket  { top: 12%; left: 48%;  width: clamp(48px, 6vw, 76px); animation-delay: 1.2s; }
+.hero-icon--balloon { top: 28%; left: 30%;  width: clamp(44px, 5vw, 68px); animation-delay: 0.6s; }
+.hero-icon--whale   { top: 30%; left: 55%;  width: clamp(36px, 4.5vw, 56px); animation-delay: 0.3s; }
+/* BG layer: distant accents */
+.hero-icon--lion    { top: 25%; left: 10%;  width: clamp(36px, 4.5vw, 56px); animation-delay: 1.8s; }
+.hero-icon--pizza   { top: 18%; right: 12%; width: clamp(32px, 4vw, 52px); animation-delay: 2.4s; }
+.hero-icon--donut   { top: 15%; right: 8%;  width: clamp(32px, 4vw, 52px); animation-delay: 0.9s; }
 
 @keyframes heroBob {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50%      { transform: translateY(-10px) rotate(3deg); }
 }
 
-/* ---- Foreground Props ---- */
+/* ---- Foreground Props (custom PNGs, large + bottom-anchored) ---- */
 .hero-prop {
   position: absolute;
-  bottom: 8%;
+  bottom: 0%;
+  width: clamp(200px, 25vw, 400px);
   height: auto;
   animation: heroPropBob 5s ease-in-out infinite;
 }
-.hero-prop--piano  { left: 8%; width: clamp(120px, 18vw, 220px); animation-delay: 0.5s; animation-name: heroPianoBob; }
-.hero-prop--blocks { right: 8%; width: clamp(100px, 15vw, 200px); animation-delay: 1s; }
+.hero-prop--piano  { left: 18%; transform: rotate(-5deg); animation-delay: 0.5s; animation-name: heroPianoBob; }
+.hero-prop--blocks { right: 10%; width: clamp(150px, 18vw, 300px); animation-delay: 1s; }
 
 @keyframes heroPropBob {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-6px); }
 }
 @keyframes heroPianoBob {
-  0%, 100% { transform: translateY(0) rotate(-25deg); }
-  50%      { transform: translateY(-6px) rotate(-25deg); }
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50%      { transform: translateY(-6px) rotate(-5deg); }
 }
 
 /* ---- Melody Sparkle Particles ---- */
