@@ -1,9 +1,10 @@
 /* =========================================================
  *  Tiny Hands Play — Service Worker
- *  Cache-first for app shell, network-first for CDN assets
+ *  Stale-while-revalidate for app shell (fast + always fresh)
+ *  Stale-while-revalidate for CDN assets
  * ========================================================= */
 
-const CACHE = 'thp-v49';
+const CACHE = 'thp-v51';
 
 const SHELL = [
   '/',
@@ -60,29 +61,36 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
-// Fetch: cache-first for shell, network-first for everything else
+// Stale-while-revalidate helper: serve cached instantly, update cache in background
+function staleWhileRevalidate(e) {
+  e.respondWith(
+    caches.open(CACHE).then((cache) =>
+      cache.match(e.request).then((cached) => {
+        const fetched = fetch(e.request).then((response) => {
+          if (response.ok) cache.put(e.request, response.clone());
+          return response;
+        }).catch(() => cached);
+        return cached || fetched;
+      })
+    )
+  );
+}
+
+// Fetch handler
 self.addEventListener('fetch', (e) => {
   // Skip non-GET requests
   if (e.request.method !== 'GET') return;
 
-  // For CDN assets (emoji images, fonts), use stale-while-revalidate
-  if (e.request.url.includes('cdn.jsdelivr.net') || e.request.url.includes('fonts.g')) {
-    e.respondWith(
-      caches.open(CACHE).then((cache) =>
-        cache.match(e.request).then((cached) => {
-          const fetched = fetch(e.request).then((response) => {
-            if (response.ok) cache.put(e.request, response.clone());
-            return response;
-          }).catch(() => cached);
-          return cached || fetched;
-        })
-      )
-    );
+  // SPA fallback: serve cached index.html for virtual routes (/play/*, /story, /intent/*)
+  const url = new URL(e.request.url);
+  if (e.request.mode === 'navigate' &&
+      (url.pathname.startsWith('/play/') || url.pathname === '/story' || url.pathname.startsWith('/intent/'))) {
+    e.respondWith(caches.match('/index.html').then((r) => r || fetch('/index.html')));
     return;
   }
 
-  // For app shell: cache-first
-  e.respondWith(
-    caches.match(e.request).then((r) => r || fetch(e.request))
-  );
+  // Everything (app shell + CDN): stale-while-revalidate
+  // Serves cached version instantly for speed, fetches fresh copy in background
+  // so the next page load always has the latest files.
+  staleWhileRevalidate(e);
 });

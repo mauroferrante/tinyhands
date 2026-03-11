@@ -921,6 +921,9 @@
 }
 
 .parade-back-btn {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
   padding: 0.5rem 1.5rem;
   font-family: 'Quicksand', sans-serif;
   font-weight: 700;
@@ -932,6 +935,7 @@
   cursor: pointer;
   transition: transform 0.15s, background 0.15s;
   -webkit-tap-highlight-color: transparent;
+  z-index: 210;
 }
 
 .parade-back-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.9); }
