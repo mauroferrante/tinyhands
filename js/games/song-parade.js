@@ -121,6 +121,25 @@ const PARADE_SONGS = [
       {p:'Do',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Mi',b:1,g:0.1},
       {p:'Re',b:1.5,g:0.05}, {p:'Do',b:0.5,g:0.1}, {p:'Do',b:3,g:2.0}
     ]
+  },
+  {
+    name: "If You're Happy",
+    emoji: '👏',
+    notes: [
+      // If you're happy and you know it
+      {p:'Do',b:0.5,g:0.05}, {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Fa',b:1,g:0.2},
+      // Clap your hands
+      {p:'Mi',b:1,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Sol',b:2,g:0.5},
+      // If you're happy and you know it
+      {p:'Do',b:0.5,g:0.05}, {p:'Do',b:0.5,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Sol',b:0.5,g:0.05}, {p:'Sol',b:0.5,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Sol',b:1,g:0.2},
+      // Clap your hands
+      {p:'Fa',b:1,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'La',b:2,g:0.5},
+      // Then your face will surely show it (Adapted to avoid B-flat)
+      {p:'La',b:0.5,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'La',b:1,g:0.05}, {p:'La',b:1,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Fa',b:1,g:0.2},
+      // If you're happy and you know it clap your hands
+      {p:'Mi',b:0.5,g:0.05}, {p:'Mi',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Mi',b:1,g:0.05}, {p:'Re',b:1,g:0.05}, {p:'Do',b:1,g:0.05}, {p:'Do',b:1,g:0.05},
+      {p:'Re',b:1,g:0.05}, {p:'Mi',b:1,g:0.05}, {p:'Fa',b:3,g:1.5}
+    ]
   }
 ];
 

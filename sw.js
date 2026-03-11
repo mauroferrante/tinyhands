@@ -3,7 +3,7 @@
  *  Cache-first for app shell, network-first for CDN assets
  * ========================================================= */
 
-const CACHE = 'thp-v48';
+const CACHE = 'thp-v49';
 
 const SHELL = [
   '/',
