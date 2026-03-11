@@ -100,11 +100,42 @@
 
 <!-- ===== Landing Screen ===== -->
 <main id="landing">
-  <header>
-    <h1>Tiny Hands Play <img src="assets/emoji/cursors/victory.png" class="emoji-img" alt="✌️" style="width:1em;height:1em;vertical-align:-0.1em"></h1>
-    <p class="subtitle">Free educational games for kids of all ages</p>
-    <p class="subtitle" style="font-size:0.85em;opacity:0.75;margin-top:2px;">No paywalls &bull; no ads &bull; no sign-up &bull; just play &bull; <a class="why-top-link" id="whyTopLink">Why?</a></p>
-  </header>
+  <!-- ===== Hero Section (3-layer parallax) ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-glow"></div>
+
+    <!-- BG layer: bees + moon — moves WITH mouse -->
+    <div class="hero-layer hero-layer--bg" data-depth="0.04">
+      <img class="hero-icon hero-icon--bee-l" src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f41d_3d.png" alt="" aria-hidden="true">
+      <img class="hero-icon hero-icon--bee-r" src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f41d_3d.png" alt="" aria-hidden="true">
+      <img class="hero-icon hero-icon--moon"  src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f319_3d.png" alt="" aria-hidden="true">
+    </div>
+
+    <!-- MID layer: cloud toys — moves slightly opposite -->
+    <div class="hero-layer hero-layer--mid" data-depth="-0.02">
+      <img class="hero-icon hero-icon--teddy"  src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f9f8_3d.png" alt="" aria-hidden="true">
+      <img class="hero-icon hero-icon--car"    src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f697_3d.png" alt="" aria-hidden="true">
+      <img class="hero-icon hero-icon--rocket" src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f680_3d.png" alt="" aria-hidden="true">
+      <img class="hero-icon hero-icon--star"   src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/2b50_3d.png"  alt="" aria-hidden="true">
+    </div>
+
+    <!-- Center text (static, no parallax) -->
+    <div class="hero-text">
+      <h1>Tiny Hands Play <img src="assets/emoji/cursors/victory.png" class="emoji-img" alt="✌️" style="width:1em;height:1em;vertical-align:-0.1em"></h1>
+      <p class="subtitle">Free educational games for kids of all ages</p>
+      <p class="subtitle" style="font-size:0.85em;opacity:0.75;margin-top:2px;">No paywalls &bull; no ads &bull; no sign-up &bull; just play</p>
+      <div class="hero-cta">
+        <button class="hero-btn hero-btn--primary" id="heroBrowse">Browse Games</button>
+        <button class="hero-btn hero-btn--secondary" id="heroLearnMore">Learn More</button>
+      </div>
+    </div>
+
+    <!-- FG layer: piano + blocks — moves opposite mouse -->
+    <div class="hero-layer hero-layer--fg" data-depth="-0.06">
+      <img class="hero-prop hero-prop--piano"  src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f3b9_3d.png" alt="" aria-hidden="true">
+      <img class="hero-prop hero-prop--blocks" src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f9f1_3d.png" alt="" aria-hidden="true">
+    </div>
+  </section>
 
   <section class="games-grid" aria-label="Available games">
     <!-- Kaboom Keys Card -->
@@ -469,6 +500,7 @@
 
 <!-- ===== Post-Game Share Banner ===== -->
 <script type="module" src="js/game-manager.js"></script>
+<script type="module" src="js/parallax.js"></script>
 <script>
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>

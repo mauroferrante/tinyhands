@@ -291,7 +291,6 @@ exitBtn.addEventListener('touchend', (e) => {
 // ===== Story Modal =====
 const storyBackdrop = document.getElementById('storyBackdrop');
 const storyClose = document.getElementById('storyClose');
-const whyTopLink = document.getElementById('whyTopLink');
 const footerStoryLink = document.getElementById('footerStoryLink');
 
 function openStory(e) {
@@ -302,8 +301,19 @@ function openStory(e) {
   history.pushState({}, '', '/story');
 }
 
-whyTopLink.addEventListener('click', openStory);
-footerStoryLink.addEventListener('click', openStory);
+if (footerStoryLink) footerStoryLink.addEventListener('click', openStory);
+
+// ===== Hero CTA Buttons =====
+const heroBrowse = document.getElementById('heroBrowse');
+const heroLearnMore = document.getElementById('heroLearnMore');
+if (heroBrowse) {
+  heroBrowse.addEventListener('click', () => {
+    document.querySelector('.games-grid').scrollIntoView({ behavior: 'smooth' });
+  });
+}
+if (heroLearnMore) {
+  heroLearnMore.addEventListener('click', openStory);
+}
 
 function closeStory() {
   storyBackdrop.classList.remove('show');

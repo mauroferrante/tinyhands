@@ -14,18 +14,61 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  min-height: 100dvh;
   position: relative;
   z-index: 10;
-  padding: 2rem 1.5rem 0;
+  padding: 0 1.5rem;
   max-width: 960px;
   margin: 0 auto;
   overflow: hidden;
 }
 
-#landing header {
+/* ===== Hero Section ===== */
+.hero {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Soft glow behind center */
+.hero-glow {
+  position: absolute;
+  width: clamp(300px, 50vw, 550px);
+  height: clamp(300px, 50vw, 550px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  background: radial-gradient(circle,
+    rgba(255, 240, 220, 0.5) 0%,
+    rgba(221, 208, 255, 0.4) 30%,
+    rgba(200, 232, 240, 0.2) 55%,
+    transparent 75%);
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- Parallax Layers ---- */
+.hero-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.hero-layer--bg  { z-index: 1; }
+.hero-layer--mid { z-index: 2; }
+.hero-layer--fg  { z-index: 4; }
+
+/* ---- Hero Text (center, static) ---- */
+.hero-text {
+  position: relative;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,14 +78,113 @@
 }
 
 @keyframes headerFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Hero Icons (absolute within layers) ---- */
+.hero-icon {
+  position: absolute;
+  width: clamp(40px, 5.5vw, 72px);
+  height: auto;
+  animation: heroBob 4s ease-in-out infinite;
+}
+.hero-icon--teddy  { top: 18%; left: 38%; width: clamp(52px, 7vw, 90px); animation-delay: 0s; }
+.hero-icon--car    { top: 22%; left: 22%; width: clamp(44px, 5vw, 68px); animation-delay: 0.6s; }
+.hero-icon--rocket { top: 12%; right: 28%; width: clamp(48px, 6vw, 76px); animation-delay: 1.2s; }
+.hero-icon--star   { top: 28%; right: 36%; width: clamp(36px, 4.5vw, 56px); animation-delay: 0.3s; }
+.hero-icon--bee-l  { top: 30%; left: 14%; width: clamp(32px, 4vw, 52px); animation-delay: 1.8s; }
+.hero-icon--bee-r  { top: 20%; right: 12%; width: clamp(32px, 4vw, 52px); animation-delay: 2.4s; }
+.hero-icon--moon   { top: 22%; left: 12%; width: clamp(36px, 4.5vw, 56px); animation-delay: 0.9s; }
+
+@keyframes heroBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-10px) rotate(3deg); }
+}
+
+/* ---- Foreground Props ---- */
+.hero-prop {
+  position: absolute;
+  bottom: 8%;
+  height: auto;
+  animation: heroPropBob 5s ease-in-out infinite;
+}
+.hero-prop--piano  { left: 8%; width: clamp(120px, 18vw, 220px); animation-delay: 0.5s; animation-name: heroPianoBob; }
+.hero-prop--blocks { right: 8%; width: clamp(100px, 15vw, 200px); animation-delay: 1s; }
+
+@keyframes heroPropBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes heroPianoBob {
+  0%, 100% { transform: translateY(0) rotate(-25deg); }
+  50%      { transform: translateY(-6px) rotate(-25deg); }
+}
+
+/* ---- Melody Sparkle Particles ---- */
+.hero-sparkle {
+  position: absolute;
+  pointer-events: none;
+  font-size: 14px;
+  opacity: 1;
+  animation: sparkleFloat 1.5s ease-out forwards;
+  z-index: 5;
+}
+@keyframes sparkleFloat {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) rotate(45deg) scale(0.5); opacity: 0; }
+}
+
+/* ---- CTA Buttons ---- */
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.hero-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+  font-weight: 700;
+  padding: 0.6em 2em;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.hero-btn--primary {
+  background: var(--color-primary, #7c5cbf);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+  border: 1.5px solid transparent;
+}
+.hero-btn--secondary {
+  background: transparent;
+  color: var(--color-primary, #7c5cbf);
+  border: 1.5px solid var(--color-primary, #7c5cbf);
+}
+.hero-btn:hover {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+.hero-btn:active {
+  transform: scale(0.97);
+}
+
+/* ---- Hero Responsive (Mobile < 768px) ---- */
+@media (max-width: 768px) {
+  .hero-layer--fg, .hero-prop { display: none; }
+  .hero-icon { width: clamp(28px, 9vw, 48px); }
+  .hero-glow { width: 280px; height: 280px; }
+  .hero-cta { flex-direction: column; gap: 0.75rem; }
+  .hero-btn { width: 100%; text-align: center; }
+}
+
+/* ---- Hero Reduced Motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .hero-icon, .hero-prop { animation: none !important; }
+  .hero-sparkle { animation: none !important; display: none; }
+  .hero-text { animation: none; opacity: 1; }
 }
 
 #landing h1 {

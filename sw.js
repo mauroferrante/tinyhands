@@ -4,7 +4,7 @@
  *  Stale-while-revalidate for CDN assets
  * ========================================================= */
 
-const CACHE = 'thp-v52';
+const CACHE = 'thp-v53';
 
 const SHELL = [
   '/',
@@ -41,6 +41,7 @@ const SHELL = [
   '/js/games/tiny-town.js',
   '/js/games/melody-maker.js',
   '/js/games/song-parade.js',
+  '/js/parallax.js',
 ];
 
 // Install: pre-cache the app shell
