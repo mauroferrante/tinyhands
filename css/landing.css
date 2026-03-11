@@ -62,7 +62,7 @@
 }
 .hero-layer--bg  { z-index: 1; }
 .hero-layer--mid { z-index: 2; }
-.hero-layer--fg  { z-index: 4; }
+.hero-layer--fg  { z-index: 4; will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 
 /* ---- Hero Text (center, static) ---- */
 .hero-text {
@@ -140,6 +140,8 @@
   pointer-events: auto;
   animation: heroPropBob 5s ease-in-out infinite;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 .hero-prop:hover {
   transform: scale(1.08) translateY(-15px) !important;
