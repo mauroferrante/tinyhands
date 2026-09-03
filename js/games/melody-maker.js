@@ -3,16 +3,17 @@
  *  Play freely or learn melodies with a friendly teacher!
  * ========================================================= */
 
-import { getAudioCtx, initAudio, playWinFanfare } from '../audio.js';
+import { getAudioCtx, getMasterBus, initAudio, playWinFanfare } from '../audio.js';
 import { spawnParticles } from '../effects.js';
 import { preloadEmojis, getEmojiUrl } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
 import { SongParadeEngine } from './song-parade.js';
+import { createTimerPool } from '../timers.js';
+import { local } from '../storage.js';
 
 // ===== Constants =====
 
 const TEACHER_EMOJI = '🦁';
-const CELEBRATE_EMOJIS = ['🎉', '👏', '⭐', '🥳', '🌟', '✨', '💫'];
 
 const NOTES = [
   { name: 'C4',  freq: 261.63, color: '#E74C3C', label: 'Do', key: 'a' },
@@ -198,37 +199,42 @@ let levelSelectEl = null;
 let levelGridEl = null;
 let levelBackEl = null;
 let paradeEngine = null;
+let sessionId = 0;                   // bumped on start(); the async preload checks it before touching the DOM
+const timers = createTimerPool();    // visual/celebration timeouts — cancelled in cleanup()
+let ballHideTimer = null;            // hideBouncyBall's fade timer, cancelled by showBouncyBall
+let demoMultiplier = 1.0;            // tempo the student was actually shown — grading uses this, not the live toggle
+let waitingForLandscape = false;     // lesson paused behind the rotate prompt
+let gridResizeTimer = null;
+let freestyleBackEl = null;
 
 // ===== Level Progress (localStorage) =====
 
 const LS_KEY = 'tinyhandsplay-melody-progress';
 
+// highestUnlocked ranges 1..MELODIES.length+1 — the extra value means "the
+// last level has been completed too", so level 30 can show its star.
 function loadProgress() {
   try {
-    const raw = localStorage.getItem(LS_KEY);
+    const raw = local.get(LS_KEY);
     if (raw) {
       const data = JSON.parse(raw);
-      return Math.max(1, Math.min(MELODIES.length, data.highestUnlocked || 1));
+      return Math.max(1, Math.min(MELODIES.length + 1, data.highestUnlocked || 1));
     }
   } catch (e) { /* ignore */ }
   return 1;
 }
 
 function saveProgress(levelJustCompleted) {
-  try {
-    const current = loadProgress();
-    const next = Math.min(MELODIES.length, levelJustCompleted + 1);
-    const highest = Math.max(current, next);
-    localStorage.setItem(LS_KEY, JSON.stringify({ highestUnlocked: highest }));
-  } catch (e) { /* ignore */ }
+  const current = loadProgress();
+  const next = Math.min(MELODIES.length + 1, levelJustCompleted + 1);
+  const highest = Math.max(current, next);
+  local.set(LS_KEY, JSON.stringify({ highestUnlocked: highest }));
 }
 
 // Dev console: window.__melodyUnlockAll()
 window.__melodyUnlockAll = function() {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify({ highestUnlocked: MELODIES.length }));
-    console.log('All melody levels unlocked!');
-  } catch(e) { console.error(e); }
+  local.set(LS_KEY, JSON.stringify({ highestUnlocked: MELODIES.length }));
+  console.log('All melody levels unlocked!');
 };
 
 /** Combine turtle/rabbit toggle with retry slow-down */
@@ -257,7 +263,7 @@ function playPianoNote(noteIndex, volumeScale) {
   gain1.gain.linearRampToValueAtTime(0.18 * vol, now + 0.02);
   gain1.gain.setValueAtTime(0.15 * vol, now + 0.08);
   gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-  osc1.connect(gain1).connect(ctx.destination);
+  osc1.connect(gain1).connect(getMasterBus());
   osc1.start(now);
   osc1.stop(now + 0.8);
 
@@ -269,7 +275,7 @@ function playPianoNote(noteIndex, volumeScale) {
   gain2.gain.setValueAtTime(0.001, now);
   gain2.gain.linearRampToValueAtTime(0.06 * vol, now + 0.01);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-  osc2.connect(gain2).connect(ctx.destination);
+  osc2.connect(gain2).connect(getMasterBus());
   osc2.start(now);
   osc2.stop(now + 0.4);
 }
@@ -287,7 +293,7 @@ function playThinkingSound() {
   osc.frequency.exponentialRampToValueAtTime(250, now + 0.25);
   gain.gain.setValueAtTime(0.07, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-  osc.connect(gain).connect(ctx.destination);
+  osc.connect(gain).connect(getMasterBus());
   osc.start(now);
   osc.stop(now + 0.3);
 }
@@ -306,7 +312,7 @@ function playSuccessChime() {
     gain.gain.setValueAtTime(0, now + i * 0.12);
     gain.gain.linearRampToValueAtTime(0.12, now + i * 0.12 + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.35);
-    osc.connect(gain).connect(ctx.destination);
+    osc.connect(gain).connect(getMasterBus());
     osc.start(now + i * 0.12);
     osc.stop(now + i * 0.12 + 0.35);
   });
@@ -336,8 +342,8 @@ function buildKeyboard() {
 
     keyboardEl.appendChild(key);
   });
-
-  keyboardEl.addEventListener('pointerdown', onKeyboardPointer);
+  // pointerdown listener is bound once in start(), not here — rebuilding the
+  // keys must never stack a second listener (double notes per tap)
 }
 
 function buildProgressDots(melody) {
@@ -352,7 +358,6 @@ function buildProgressDots(melody) {
 
 function updateProgressDots() {
   const dots = progressEl.querySelectorAll('.melody-dot');
-  const melody = MELODIES[currentMelodyIndex];
   dots.forEach((dot, i) => {
     dot.classList.remove('filled', 'current');
     if (i < currentStepIndex) {
@@ -392,7 +397,7 @@ function animateKeyPress(noteIndex) {
     melodyGameEl
   );
 
-  setTimeout(() => key.classList.remove('pressed'), 160);
+  timers.later(() => key.classList.remove('pressed'), 160);
 }
 
 function highlightKey(noteIndex, type, durationOverride) {
@@ -408,7 +413,7 @@ function highlightKey(noteIndex, type, durationOverride) {
   key.classList.add(cls);
 
   const dur = durationOverride || (type === 'teacher' ? 400 : type === 'correct' ? 600 : 400);
-  setTimeout(() => key.classList.remove(cls), dur);
+  timers.later(() => key.classList.remove(cls), dur);
 }
 
 function setKeysDisabled(disabled) {
@@ -419,23 +424,25 @@ function setKeysDisabled(disabled) {
 
 function flashAllKeysGreen() {
   keyboardEl.querySelectorAll('.melody-key').forEach((k, i) => {
-    setTimeout(() => {
+    timers.later(() => {
       k.classList.remove('correct-glow');
       void k.offsetWidth;
       k.classList.add('correct-glow');
-      setTimeout(() => k.classList.remove('correct-glow'), 600);
+      timers.later(() => k.classList.remove('correct-glow'), 600);
     }, i * 60);
   });
 }
 
+// Plays a note per key, so it must be cancellable — it used to keep sounding
+// on the landing page after a quick exit
 function keyCascade() {
   keyboardEl.querySelectorAll('.melody-key').forEach((k, i) => {
-    setTimeout(() => {
+    timers.later(() => {
       k.classList.remove('correct-glow');
       void k.offsetWidth;
       k.classList.add('correct-glow');
       playPianoNote(i);
-      setTimeout(() => k.classList.remove('correct-glow'), 600);
+      timers.later(() => k.classList.remove('correct-glow'), 600);
     }, i * 100);
   });
 }
@@ -499,13 +506,18 @@ function stopLionNod() {
 
 function showModeSelect() {
   gameState = 'mode-select';
+  clearTeacherTimers();
+  clearOrientationWait();
+  hideBouncyBall();
   melodyGameEl.classList.remove('melody-playing');
   modeSelectEl.classList.add('active');
+  levelSelectEl.classList.remove('active');
   teacherAreaEl.classList.remove('active');
   keyboardEl.style.display = 'none';
   celebrateEl.classList.remove('show');
   showReplayBtn(false);
   showSpeedToggle(false);
+  hideFreestyleBack();
   stopLionNod();
   if (freestyleHintEl) { freestyleHintEl.remove(); freestyleHintEl = null; }
 }
@@ -513,6 +525,7 @@ function showModeSelect() {
 function onModeClick(e) {
   const btn = e.target.closest('.melody-mode-btn');
   if (!btn) return;
+  if (gameState === 'loading') return;   // keys aren't built until the preload lands
   initAudio();  // unlock iOS AudioContext on user gesture
   const mode = btn.dataset.mode;
   modeSelectEl.classList.remove('active');
@@ -541,13 +554,31 @@ function startFreestyle() {
   freestyleHintEl.className = 'melody-freestyle-hint';
   freestyleHintEl.textContent = isTouchDevice ? 'Tap the keys to play!' : 'Press A – K or tap the keys!';
   melodyGameEl.appendChild(freestyleHintEl);
+
+  // Way back to the mode picker — previously the only exit was the ✕ that
+  // quits the whole game (reuses Song Parade's back-button style)
+  if (!freestyleBackEl) {
+    freestyleBackEl = document.createElement('button');
+    freestyleBackEl.className = 'parade-back-btn';
+    freestyleBackEl.textContent = '← Back';
+    freestyleBackEl.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      showModeSelect();
+    });
+    melodyGameEl.appendChild(freestyleBackEl);
+  }
+  freestyleBackEl.style.display = '';
+}
+
+function hideFreestyleBack() {
+  if (freestyleBackEl) freestyleBackEl.style.display = 'none';
 }
 
 function hideFreestyleHint() {
   if (freestyleHintEl && !freestyleNotePlayed) {
     freestyleNotePlayed = true;
     freestyleHintEl.style.opacity = '0';
-    setTimeout(() => { if (freestyleHintEl) { freestyleHintEl.remove(); freestyleHintEl = null; } }, 500);
+    timers.later(() => { if (freestyleHintEl) { freestyleHintEl.remove(); freestyleHintEl = null; } }, 500);
   }
 }
 
@@ -628,6 +659,7 @@ function handleLevelTap(e) {
   initAudio();
   var tile = e.target.closest('.melody-level-tile');
   if (!tile || tile.classList.contains('locked')) return;
+  if (gameState !== 'level-select') return;
   var idx = parseInt(tile.dataset.index, 10);
   if (isNaN(idx)) return;
   currentMelodyIndex = idx;
@@ -640,6 +672,9 @@ function handleLevelTap(e) {
 
 function showLevelSelect() {
   gameState = 'level-select';
+  clearTeacherTimers();
+  clearOrientationWait();
+  hideBouncyBall();
   melodyGameEl.classList.remove('melody-playing');
   levelSelectEl.classList.add('active');
   modeSelectEl.classList.remove('active');
@@ -648,9 +683,18 @@ function showLevelSelect() {
   celebrateEl.classList.remove('show');
   showReplayBtn(false);
   showSpeedToggle(false);
+  hideFreestyleBack();
   stopLionNod();
   levelSelectEl.scrollTop = 0;
   buildLevelGrid();
+}
+
+// The grid writes pixel sizes computed from the viewport, so rotating the
+// device while it's open left a portrait-sized grid on a landscape screen.
+function onGridResize() {
+  if (gameState !== 'level-select') return;
+  clearTimeout(gridResizeTimer);
+  gridResizeTimer = setTimeout(buildLevelGrid, 150);
 }
 
 function hideLevelSelect() {
@@ -714,6 +758,7 @@ function isPhonePortrait() {
 
 /** Remove the orientation listener if active. */
 function clearOrientationWait() {
+  waitingForLandscape = false;
   if (orientationHandler) {
     window.removeEventListener('resize', orientationHandler);
     orientationHandler = null;
@@ -760,7 +805,7 @@ function playCountdownBeep() {
   osc.frequency.setValueAtTime(880, now);
   gain.gain.setValueAtTime(0.1, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  osc.connect(gain).connect(ctx.destination);
+  osc.connect(gain).connect(getMasterBus());
   osc.start(now);
   osc.stop(now + 0.15);
 }
@@ -778,21 +823,43 @@ function startLessonIntro() {
   showReplayBtn('disabled');  // visible but dimmed until student turn
   showSpeedToggle(true);
 
-  // If phone is in portrait → wait for landscape, then countdown → demo
+  // Phones: the lesson only runs in landscape (CSS hides the keyboard behind a
+  // rotate prompt in portrait). The handler stays armed for the whole lesson —
+  // it used to be one-shot, so rotating back to portrait mid-demo left the
+  // timers running behind an opaque prompt with no way to progress.
+  if (isTouchDevice) armOrientationWatch();
+
   if (isTouchDevice && isPhonePortrait()) {
-    clearOrientationWait();
-    orientationHandler = function() {
-      if (!isPhonePortrait()) {
-        clearOrientationWait();
-        runCountdown(() => startTeacherDemo());
-      }
-    };
-    window.addEventListener('resize', orientationHandler);
+    waitingForLandscape = true;
   } else {
     // Desktop or already landscape — brief intro pause, then teacher plays
     const t = setTimeout(() => startTeacherDemo(), 1500);
     teacherTimers.push(t);
   }
+}
+
+function armOrientationWatch() {
+  if (orientationHandler) return;
+  orientationHandler = function() {
+    if (isPhonePortrait()) {
+      // Rotated to portrait mid-lesson: pause and wait to resume from the demo
+      const inLesson = gameState === 'teacher-playing' || gameState === 'student-turn' || gameState === 'retry-pause';
+      if (inLesson && !waitingForLandscape) {
+        clearTeacherTimers();
+        hideBouncyBall();
+        stopLionNod();
+        setKeysDisabled(true);
+        showReplayBtn('disabled');
+        showTeacher('', 'Get ready!', '🎵');
+        gameState = 'lesson-intro';
+        waitingForLandscape = true;
+      }
+    } else if (waitingForLandscape) {
+      waitingForLandscape = false;
+      runCountdown(() => startTeacherDemo());
+    }
+  };
+  window.addEventListener('resize', orientationHandler);
 }
 
 // ===== Replay Button =====
@@ -864,16 +931,21 @@ function showBouncyBall() {
     ball.className = 'melody-bouncy-ball';
     melodyGameEl.appendChild(ball);
   }
+  // Cancel a pending fade-out — tapping 🔄 within 300ms of the demo ending
+  // used to let the stale timer hide the ball for the whole replay
+  timers.cancel(ballHideTimer);
+  ballHideTimer = null;
   ball.style.display = 'block';
   ball.style.opacity = '1';
   return ball;
 }
 
 function hideBouncyBall() {
-  const ball = melodyGameEl.querySelector('.melody-bouncy-ball');
+  const ball = melodyGameEl && melodyGameEl.querySelector('.melody-bouncy-ball');
   if (ball) {
     ball.style.opacity = '0';
-    setTimeout(() => { ball.style.display = 'none'; }, 300);
+    timers.cancel(ballHideTimer);
+    ballHideTimer = timers.later(() => { ball.style.display = 'none'; ballHideTimer = null; }, 300);
   }
 }
 
@@ -923,6 +995,7 @@ function startTeacherDemo() {
   gameState = 'teacher-playing';
   const melody = MELODIES[currentMelodyIndex];
   const mult = getEffectiveMultiplier();
+  demoMultiplier = mult;   // the student is graded against the tempo they heard
 
   showTeacher('playing', 'Listen...', '👂');
   setKeysDisabled(true);
@@ -951,11 +1024,20 @@ function startTeacherDemo() {
       animateKeyPress(idx);       // key squash + particles (kid's play mode effect)
       triggerBallLand(ball);      // ball squash-stretch + particles
 
-      // Start ball moving toward NEXT key (arrives when next note fires)
+      // Start ball moving toward NEXT key (arrives when next note fires).
+      // The landing squash is a 250ms animation on the same element, and
+      // starting the hop in the same tick removed it before a frame painted —
+      // so let the squash show first when there's time, then hop the rest.
       if (i < melody.notes.length - 1) {
         const nextIdx = pitchIndex(melody.notes[i + 1]);
         const travelMs = noteDelay(note) * mult;
-        bounceToKey(ball, nextIdx, travelMs);
+        const LAND_MS = 250;
+        if (travelMs > LAND_MS + 150) {
+          const t2 = setTimeout(() => bounceToKey(ball, nextIdx, travelMs - LAND_MS), LAND_MS);
+          teacherTimers.push(t2);
+        } else {
+          bounceToKey(ball, nextIdx, travelMs);
+        }
       }
     }, cumDelay);
     teacherTimers.push(t);
@@ -996,7 +1078,7 @@ function handleStudentInput(noteIndex) {
     } else {
       const delta = now - noteTimestamps[noteTimestamps.length - 2];
       const prevNote = melody.notes[currentStepIndex - 1];
-      const expectedMs = noteDelay(prevNote) * getEffectiveMultiplier();
+      const expectedMs = noteDelay(prevNote) * demoMultiplier;   // not the live toggle — see startTeacherDemo
       const ratio = delta / expectedMs;
       if (ratio >= 0.5 && ratio <= 1.5) tempoRatings.push('green');
       else if (ratio >= 0.3 && ratio <= 2.5) tempoRatings.push('yellow');
@@ -1039,7 +1121,6 @@ function onMelodyComplete() {
     showTeacher('happy', 'Nice! Listen to the rhythm', '👂');
   }
 
-  flashAllKeysGreen();
   playSuccessChime();
 
   // Tiered celebrations based on level
@@ -1049,17 +1130,21 @@ function onMelodyComplete() {
   const cx = rect.left - gameRect.left + rect.width / 2;
   const cy = rect.top - gameRect.top + rect.height / 2;
 
+  // The key cascade (level 20+) replaces the plain green flash — running both
+  // had them fighting over the same class and cutting each other short
+  if (level < 20) flashAllKeysGreen();
+
   if (level < 20) {
     // Standard: 3 particle bursts
     for (let i = 0; i < 3; i++) {
-      setTimeout(() => {
+      timers.later(() => {
         spawnParticles(cx + (Math.random() - 0.5) * 80, cy, melodyGameEl);
       }, i * 150);
     }
   } else if (level < 26) {
     // Levels 20-25: 6 bursts + key cascade
     for (let i = 0; i < 6; i++) {
-      setTimeout(() => {
+      timers.later(() => {
         spawnParticles(cx + (Math.random() - 0.5) * 120, cy, melodyGameEl);
       }, i * 120);
     }
@@ -1067,14 +1152,14 @@ function onMelodyComplete() {
   } else {
     // Levels 26-29: 8 bursts + key cascade + particles from each key
     for (let i = 0; i < 8; i++) {
-      setTimeout(() => {
+      timers.later(() => {
         spawnParticles(cx + (Math.random() - 0.5) * 150, cy - 20 + Math.random() * 40, melodyGameEl);
       }, i * 100);
     }
     keyCascade();
-    setTimeout(() => {
+    timers.later(() => {
       keyboardEl.querySelectorAll('.melody-key').forEach((k, i) => {
-        setTimeout(() => {
+        timers.later(() => {
           const kr = k.getBoundingClientRect();
           spawnParticles(kr.left - gameRect.left + kr.width / 2, kr.top - gameRect.top, melodyGameEl);
         }, i * 80);
@@ -1119,9 +1204,15 @@ function onMelodyMistake() {
 
 function onAllComplete() {
   gameState = 'lesson-complete';
+  clearOrientationWait();
+  hideBouncyBall();
   teacherAreaEl.classList.remove('active');
   keyboardEl.style.display = 'none';
   showSpeedToggle(false);
+  showReplayBtn(false);
+  // Drop the gameplay class so the phone-portrait rotate prompt (z 500)
+  // can't sit on top of the celebration overlay (z 400)
+  melodyGameEl.classList.remove('melody-playing');
   playWinFanfare();
 
   celebrateEl.innerHTML = '';
@@ -1162,7 +1253,7 @@ function onAllComplete() {
   // Grand finale particles — multiple waves
   const gameRect = melodyGameEl.getBoundingClientRect();
   for (let wave = 0; wave < 5; wave++) {
-    setTimeout(() => {
+    timers.later(() => {
       for (let i = 0; i < 6; i++) {
         spawnParticles(
           Math.random() * gameRect.width,
@@ -1183,6 +1274,11 @@ function onKeyboardPointer(e) {
   initAudio();
   const idx = parseInt(key.dataset.noteIndex, 10);
   if (isNaN(idx)) return;
+
+  // During a lesson only the first finger counts — a palm slap used to be
+  // judged as several notes in sequence and fail the step instantly.
+  // Free play keeps multitouch so chords still work.
+  if (gameState === 'student-turn' && e.pointerType === 'touch' && !e.isPrimary) return;
 
   if (gameState === 'freestyle') {
     hideFreestyleHint();
@@ -1233,8 +1329,17 @@ function clearTeacherTimers() {
   teacherTimers = [];
 }
 
+// Keys mashed while the tab loses focus never get their keyup — reset so
+// they don't stay "held" (and silently ignored) for the rest of the session
+function onWindowBlur() {
+  heldKeys.clear();
+}
+
 function cleanup() {
   clearTeacherTimers();
+  timers.clearAll();
+  ballHideTimer = null;
+  clearTimeout(gridResizeTimer);
   stopLionNod();
   stopSongParade();
   gameState = 'idle';
@@ -1242,6 +1347,7 @@ function cleanup() {
   currentStepIndex = 0;
   retryCount = 0;
   retrySpeedMultiplier = 1.0;
+  demoMultiplier = 1.0;
   isSlowMode = false;
   heldKeys.clear();
   freestyleNotePlayed = false;
@@ -1257,6 +1363,14 @@ function cleanup() {
 
   // Remove speed toggle
   if (speedToggleEl) { speedToggleEl.remove(); speedToggleEl = null; }
+
+  // Remove free-play back button
+  if (freestyleBackEl) { freestyleBackEl.remove(); freestyleBackEl = null; }
+
+  // Stale lesson text was left in the DOM between sessions
+  if (melodyNameEl) melodyNameEl.textContent = '';
+  if (teacherSpeechEl) teacherSpeechEl.innerHTML = '';
+  if (progressEl) progressEl.innerHTML = '';
 
   // Remove bouncy ball
   if (melodyGameEl) {
@@ -1276,6 +1390,7 @@ function cleanup() {
   if (levelSelectEl) levelSelectEl.classList.remove('active');
   if (levelGridEl) {
     levelGridEl.innerHTML = '';
+    levelGridEl.removeAttribute('style');   // inline grid sizing from buildLevelGrid
     levelGridEl.removeEventListener('click', handleLevelTap);
   }
   if (levelBackEl) levelBackEl.removeEventListener('click', onLevelBackClick);
@@ -1293,6 +1408,9 @@ function cleanup() {
   }
 
   document.removeEventListener('keyup', handleKeyUp);
+  window.removeEventListener('blur', onWindowBlur);
+  document.removeEventListener('visibilitychange', onWindowBlur);
+  window.removeEventListener('resize', onGridResize);
 }
 
 // ===== Exported Game Module =====
@@ -1326,13 +1444,25 @@ export const melodyMaker = {
       melodyGameEl.appendChild(rotatePromptEl);
     }
 
+    // Listeners are bound synchronously. They used to be bound inside the
+    // preload callback, so a stop() before the emojis arrived was followed by
+    // a rebind, and the next session had two of everything (double notes per
+    // tap). keyup in particular must exist from the first keydown, or keys
+    // mashed during the download stay in heldKeys forever.
+    const mySession = ++sessionId;
+    gameState = 'loading';
+    keyboardEl.addEventListener('pointerdown', onKeyboardPointer);
+    modeSelectEl.addEventListener('click', onModeClick);
+    levelGridEl.addEventListener('click', handleLevelTap);   // event delegation, same as Memory Match
+    levelBackEl.addEventListener('click', onLevelBackClick);
+    document.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', onWindowBlur);
+    document.addEventListener('visibilitychange', onWindowBlur);
+    window.addEventListener('resize', onGridResize);
+
     preloadEmojis(EMOJI_REGISTRY['melody-maker'] || []).then(() => {
+      if (mySession !== sessionId || gameState !== 'loading') return;   // stopped meanwhile
       buildKeyboard();
-      modeSelectEl.addEventListener('click', onModeClick);
-      // Event delegation on grid (same as Memory Match board)
-      levelGridEl.addEventListener('click', handleLevelTap);
-      levelBackEl.addEventListener('click', onLevelBackClick);
-      document.addEventListener('keyup', handleKeyUp);
       showModeSelect();
     });
   },
@@ -1348,9 +1478,10 @@ export const melodyMaker = {
     // Space/Enter on completion screens
     if (e.key === ' ' || e.key === 'Enter') {
       if (gameState === 'lesson-complete') {
+        // Same destination as the on-screen "Play Again" button
         celebrateEl.classList.remove('show');
         keyboardEl.style.display = '';
-        showModeSelect();
+        showLevelSelect();
       } else if (gameState === 'parade-complete') {
         celebrateEl.classList.remove('show');
         if (paradeEngine) paradeEngine.showSongSelect();

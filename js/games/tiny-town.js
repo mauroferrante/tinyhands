@@ -347,6 +347,8 @@ let selectingChar = false;
 let charSelectIdx = 0;
 let player = { x:2600, y:2400, node:'c11', sourceNode:null, targetNode:null, path:[], moving:false, keyDriven:false, dir:0, bobT:0, emoji:'🧒' };
 let keysDown = {};
+let loading = false;
+let sessionId = 0;
 let collected = {};
 let delivered = {};
 let allDelivered = false;
@@ -1771,7 +1773,7 @@ function drawEndScreen(c) {
   c.fillStyle = 'rgba(255,255,255,0.5)';
   c.fillText('Thank you, little hero!', W/2, cy2 + 210);
   const tyW = c.measureText('Thank you, little hero! ').width;
-  drawSprite(c, '🌟', 16 * fontScale, W/2 + tyW/2, cy2 + 210);
+  drawSprite(c, '🌟', W/2 + tyW/2, cy2 + 210, 16 * fontScale);
   // Tap to restart
   const blink = Math.sin(frameCount * 0.05) * 0.3 + 0.7;
   c.globalAlpha = fadeIn * blink;
@@ -2241,9 +2243,13 @@ function triggerGrandFinale() {
 }
 
 // === INPUT HANDLERS ===
+function keyId(e) {
+  return e.key.length === 1 ? e.key.toLowerCase() : e.key;
+}
+
 function handleKey(e) {
   if (e.type === 'keydown') {
-    keysDown[e.key] = true;
+    keysDown[keyId(e)] = true;
     if (selectingChar) {
       if (e.key === 'ArrowLeft') {
         charSelectIdx = (charSelectIdx - 1 + CHAR_OPTIONS.length) % CHAR_OPTIONS.length;
@@ -2264,9 +2270,8 @@ function handleKey(e) {
       }
       return;
     }
-  } else {
-    keysDown[e.key] = false;
   }
+  // (keyup is handled by keyUpHandler in start(); game-manager only dispatches keydown)
 }
 
 function closestRoadNode(wx, wy, excludeNode) {
@@ -2384,7 +2389,7 @@ function onTouchHandler(e) {
   if (!canvas) return;
   e.preventDefault();
   const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0] || e.changedTouches[0];
+  const touch = (e.changedTouches && e.changedTouches[0]) || e.touches[0];
   const mx = touch.clientX - rect.left;
   const my = touch.clientY - rect.top;
   if (e.type === 'touchstart') {
@@ -2798,7 +2803,6 @@ function initWorld() {
 
 // === CANVAS INIT ===
 let keyUpHandler = null;
-let mouseMoveHandler = null;
 
 function initCanvas() {
   const dpr = window.devicePixelRatio || 1;
@@ -2817,6 +2821,7 @@ function initCanvas() {
 function resetState() {
   player = { x: 2600, y: 2400, node: 'c11', sourceNode: null, targetNode: null, path: [], moving: false, keyDriven: false, dir: 0, bobT: 0, emoji: '🧒' };
   keysDown = {};
+  charSelectIdx = 0;
   collected = {};
   delivered = {};
   allDelivered = false;
@@ -2972,8 +2977,14 @@ export const tinyTown = {
     gameEl.style.display = 'block';
     initCanvas();
     // Re-init after fullscreen settles (browser may not have final dimensions yet)
-    requestAnimationFrame(() => { setTimeout(() => { if (running) initCanvas(); }, 100); });
+    requestAnimationFrame(() => { pendingTimeouts.push(setTimeout(() => { if (running) initCanvas(); }, 100)); });
+    // `loading` marks the window between start() and the emojis arriving; stop()
+    // clears it, so a late preload can't restart a loop nobody can cancel
+    loading = true;
+    const mySession = ++sessionId;
     preloadEmojis(EMOJI_REGISTRY['tiny-town']).then(() => {
+      if (mySession !== sessionId || !loading) return;
+      loading = false;
       resetState();
       running = true;
       selectingChar = true;
@@ -2983,13 +2994,8 @@ export const tinyTown = {
 
     // Always registered — keydown now works on touch laptops/iPads with
     // keyboards, so keyup must match or keys get stuck "held down"
-    keyUpHandler = (e) => { delete keysDown[e.key]; };
+    keyUpHandler = (e) => { delete keysDown[keyId(e)]; };
     document.addEventListener('keyup', keyUpHandler);
-
-    mouseMoveHandler = (e) => {
-      if (!selectingChar) return;
-    };
-    canvas.addEventListener('mousemove', mouseMoveHandler);
 
     resizeHandler = () => {
       if (!running) return;
@@ -3000,6 +3006,7 @@ export const tinyTown = {
 
   stop() {
     running = false;
+    loading = false;
     if (animFrame) cancelAnimationFrame(animFrame);
     animFrame = null;
     pendingTimeouts.forEach(t => clearTimeout(t));
@@ -3008,10 +3015,6 @@ export const tinyTown = {
     if (keyUpHandler) {
       document.removeEventListener('keyup', keyUpHandler);
       keyUpHandler = null;
-    }
-    if (mouseMoveHandler) {
-      canvas.removeEventListener('mousemove', mouseMoveHandler);
-      mouseMoveHandler = null;
     }
     if (resizeHandler) {
       window.removeEventListener('resize', resizeHandler);

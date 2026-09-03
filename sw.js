@@ -4,7 +4,7 @@
  *  Stale-while-revalidate for CDN assets
  * ========================================================= */
 
-const CACHE = 'thp-v62';
+const CACHE = 'thp-v63';
 
 const SHELL = [
   '/',
@@ -30,6 +30,8 @@ const SHELL = [
   '/js/emoji.js',
   '/js/emoji-registry.js',
   '/js/share.js',
+  '/js/storage.js',
+  '/js/timers.js',
   '/js/games/splat-keys.js',
   '/js/games/stack-smash.js',
   '/js/games/stack-audience.js',
@@ -62,15 +64,32 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
+// Should this response go in the cache?
+//  - Cross-origin <img>/<link> requests come back *opaque* (status 0, ok=false).
+//    They used to be skipped entirely, so the CDN emoji were never cached and
+//    "offline play" depended on the browser HTTP cache alone.
+//  - vercel.json rewrites every unknown path to index.html with a 200, so a
+//    renamed/mistyped asset would be cached as HTML under a .js/.css URL and
+//    break every load until the next CACHE bump. Refuse HTML for non-document requests.
+function isCacheable(request, response) {
+  if (response.type === 'opaque') return true;
+  if (!response.ok) return false;
+  const ct = response.headers.get('content-type') || '';
+  const wantsDocument = request.mode === 'navigate' || request.destination === 'document' ||
+                        new URL(request.url).pathname.endsWith('.html');
+  if (ct.includes('text/html') && !wantsDocument) return false;
+  return true;
+}
+
 // Stale-while-revalidate helper: serve cached instantly, update cache in background
 function staleWhileRevalidate(e) {
   e.respondWith(
     caches.open(CACHE).then((cache) =>
       cache.match(e.request).then((cached) => {
         const fetched = fetch(e.request).then((response) => {
-          if (response.ok) cache.put(e.request, response.clone());
+          if (isCacheable(e.request, response)) cache.put(e.request, response.clone());
           return response;
-        }).catch(() => cached);
+        }).catch(() => cached || Response.error());   // never resolve to undefined
         return cached || fetched;
       })
     )

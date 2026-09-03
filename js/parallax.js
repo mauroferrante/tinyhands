@@ -63,9 +63,12 @@ if (hero && !window.matchMedia('(pointer: coarse)').matches) {
     hero.appendChild(span);
     sparkleCount++;
 
-    span.addEventListener('animationend', () => {
-      span.remove();
-      sparkleCount--;
-    }, { once: true });
+    // Under prefers-reduced-motion the CSS disables the animation, so
+    // animationend never fires and the counter would saturate at MAX_SPARKLES
+    // with 15 permanent spans. Whichever comes first wins.
+    let gone = false;
+    const done = () => { if (gone) return; gone = true; span.remove(); sparkleCount--; };
+    span.addEventListener('animationend', done, { once: true });
+    setTimeout(done, 2500);
   }
 }

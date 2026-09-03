@@ -1,7 +1,14 @@
-import { initAudio, getAudioCtx } from '../audio.js';
+import { initAudio, getAudioCtx, getMasterBus } from '../audio.js';
 import { spawnParticles } from '../effects.js';
 import { preloadEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
+import { createTimerPool } from '../timers.js';
+
+// Every timeout in this file goes through the pool so stop() can cancel it.
+// Untracked spawn timers used to fire after exit and hit a null ball
+// (TypeError in randomPos) while appending orphan characters to the hidden game.
+const timers = createTimerPool();
+let sessionId = 0;
 
 /* =============================================================
  *  Ball Bonanza — Chaotic Emoji Physics Playground
@@ -103,7 +110,7 @@ function synth(type, freq, dur, sweep, vol) {
   if (sweep) o.frequency.exponentialRampToValueAtTime(sweep, t + dur);
   g.gain.setValueAtTime(vol || 0.12, t);
   g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-  o.connect(g).connect(c.destination);
+  o.connect(g).connect(getMasterBus());
   o.start(t); o.stop(t + dur);
 }
 
@@ -117,7 +124,7 @@ function synthMulti(notes, type, vol) {
     o.frequency.setValueAtTime(freq, t + delay);
     g.gain.setValueAtTime(vol || 0.1, t + delay);
     g.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
-    o.connect(g).connect(c.destination);
+    o.connect(g).connect(getMasterBus());
     o.start(t + delay); o.stop(t + delay + dur);
   });
 }
@@ -138,7 +145,7 @@ const charSounds = {
     o.frequency.exponentialRampToValueAtTime(80, t + 0.15);
     g.gain.setValueAtTime(0.1, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-    o.connect(g).connect(c.destination);
+    o.connect(g).connect(getMasterBus());
     mod.start(t); o.start(t); mod.stop(t + 0.15); o.stop(t + 0.15);
   },
   '🦁': () => synth('sawtooth', 120, 0.2, 60),
@@ -152,7 +159,7 @@ const charSounds = {
     o.frequency.linearRampToValueAtTime(500, t + 0.15);
     g.gain.setValueAtTime(0.12, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-    o.connect(g).connect(c.destination);
+    o.connect(g).connect(getMasterBus());
     o.start(t); o.stop(t + 0.15);
   },
   '🐧': () => synth('sine', 300, 0.2, 1200, 0.1),
@@ -171,7 +178,7 @@ const charSounds = {
     o.frequency.linearRampToValueAtTime(1100, t + 0.1);
     g.gain.setValueAtTime(0.1, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-    o.connect(g).connect(c.destination);
+    o.connect(g).connect(getMasterBus());
     o.start(t); o.stop(t + 0.12);
   },
   '🐻': () => synth('sawtooth', 80, 0.2, 60, 0.1),
@@ -301,7 +308,7 @@ function showDizzyStars(char) {
     s.style.animationDelay = (i * 0.15) + 's';
     starsDiv.appendChild(s);
   }
-  setTimeout(() => { starsDiv.innerHTML = ''; }, 2000);
+  timers.later(() => { starsDiv.innerHTML = ''; }, 2000);
 }
 
 function showEventText(emoji, text, x, y) {
@@ -380,7 +387,7 @@ function removeBonusBall(b) {
       b.el.style.opacity = String(Math.max(0, 1 - Math.max(
         Math.max(-b.x, b.x - W, -b.y, b.y - H) / 60, 0
       )));
-      if (b.x < -100 || b.x > W + 100 || b.y < -100 || b.y > H + 100) {
+      if (!running || b.x < -100 || b.x > W + 100 || b.y < -100 || b.y > H + 100) {
         b.el.remove();
       } else {
         requestAnimationFrame(flyOut);
@@ -400,7 +407,7 @@ function effectStar(x, y) {
   b.vx = Math.cos(angle) * LAUNCH_SPEED;
   b.vy = Math.sin(angle) * LAUNCH_SPEED;
   bonusBalls.push(b);
-  setTimeout(() => removeBonusBall(b), 20000);
+  timers.later(() => removeBonusBall(b), 20000);
 }
 
 // -- Clock effect: speed everything up for 20s --
@@ -415,8 +422,8 @@ function effectClock(x, y) {
     gameEl.appendChild(speedTintEl);
   }
   // Clear previous timeout if stacking
-  if (effectClock._timeout) clearTimeout(effectClock._timeout);
-  effectClock._timeout = setTimeout(() => {
+  timers.cancel(effectClock._timeout);
+  effectClock._timeout = timers.later(() => {
     speedMultiplier = 1;
     if (speedTintEl) { speedTintEl.remove(); speedTintEl = null; }
   }, 20000);
@@ -426,13 +433,13 @@ function effectClock(x, y) {
 function effectCircus(x, y) {
   sndCollectCircus();
   gameEl.classList.add('bb-shaking');
-  setTimeout(() => gameEl.classList.remove('bb-shaking'), 200);
+  timers.later(() => gameEl.classList.remove('bb-shaking'), 200);
   const toAdd = Math.max(2, Math.ceil(characters.length * 0.5));
   showEventText('🎪', 'MORE FRIENDS!', x, y);
   spawnParticles(x, y, gameEl);
   const extraChars = [];
   for (let i = 0; i < toAdd; i++) {
-    setTimeout(() => {
+    timers.later(() => {
       const before = characters.length;
       spawnNewCharacter();
       // Track newly added character
@@ -442,7 +449,7 @@ function effectCircus(x, y) {
     }, i * 250);
   }
   // After 20s, walk extras off-screen and remove
-  setTimeout(() => {
+  timers.later(() => {
     extraChars.forEach(c => {
       if (!characters.includes(c)) return; // already gone
       const edge = Math.floor(Math.random() * 4);
@@ -453,7 +460,7 @@ function effectCircus(x, y) {
       c.state = 'walking';
     });
     // Remove them once they've had time to walk off
-    setTimeout(() => {
+    timers.later(() => {
       extraChars.forEach(c => {
         const idx = characters.indexOf(c);
         if (idx !== -1) {
@@ -495,7 +502,7 @@ function triggerReaction(char) {
 
   // Glow briefly
   char.el.classList.add('bb-glow');
-  setTimeout(() => char.el.classList.remove('bb-glow'), 100);
+  timers.later(() => char.el.classList.remove('bb-glow'), 100);
 
   // Force reflow for re-triggering animation
   void char.el.offsetWidth;
@@ -510,7 +517,7 @@ function triggerReaction(char) {
 
   // Clean up reaction after animation
   const dur = pick === 'flip' ? 1200 : pick === 'spin' ? 800 : 500;
-  setTimeout(() => {
+  timers.later(() => {
     char.el.classList.remove(cls);
     char.reactionClass = null;
   }, dur);
@@ -564,7 +571,7 @@ function updateCharPhysics(c, dt) {
     c.state = 'recovering';
     c.stateTimer = 1.5;
     c.el.classList.add('bb-wobble');
-    setTimeout(() => c.el.classList.remove('bb-wobble'), 300);
+    timers.later(() => c.el.classList.remove('bb-wobble'), 300);
     return;
   }
 
@@ -621,13 +628,17 @@ function collideBallChar(b) {
       c.vy = ny * knockForce;
       c.state = 'knocked';
 
-      // Effects
-      const cx = (b.x + c.x) / 2;
-      const cy = (b.y + c.y) / 2;
-      sndHit();
-      flashAt(cx, cy);
-      impactStars(cx, cy);
-      triggerReaction(c);
+      // Effects (rate-limited per character)
+      const nowMs = performance.now();
+      if (!c.lastHitMs || nowMs - c.lastHitMs > 150) {
+        c.lastHitMs = nowMs;
+        const cx = (b.x + c.x) / 2;
+        const cy = (b.y + c.y) / 2;
+        sndHit();
+        flashAt(cx, cy);
+        impactStars(cx, cy);
+        triggerReaction(c);
+      }
     }
   }
 }
@@ -739,7 +750,7 @@ function shuffleCharacters() {
   });
 
   // After they leave, remove and spawn new ones
-  setTimeout(() => {
+  timers.later(() => {
     leaving.forEach(c => {
       c.el.remove();
       const idx = characters.indexOf(c);
@@ -748,7 +759,7 @@ function shuffleCharacters() {
     // Spawn fresh batch scaled to screen
     const count = INITIAL_CHARS + Math.floor(Math.random() * 2);
     for (let i = 0; i < count; i++) {
-      setTimeout(() => spawnNewCharacter(), i * 300);
+      timers.later(() => spawnNewCharacter(), i * 300);
     }
   }, 2500);
 }
@@ -761,7 +772,7 @@ function updateIdle(c, dt) {
   if (c.fidgetTimer <= 0) {
     c.fidgetTimer = rand(5, 10);
     c.el.classList.add('bb-fidget');
-    setTimeout(() => c.el.classList.remove('bb-fidget'), 300);
+    timers.later(() => c.el.classList.remove('bb-fidget'), 300);
   }
 }
 
@@ -770,7 +781,7 @@ function triggerAttention() {
   if (idleChars.length === 0) return;
   const c = idleChars[Math.floor(Math.random() * idleChars.length)];
   c.el.classList.add('bb-attention');
-  setTimeout(() => c.el.classList.remove('bb-attention'), 800);
+  timers.later(() => c.el.classList.remove('bb-attention'), 800);
 }
 
 // ---- Input ----
@@ -801,6 +812,12 @@ function launchBallRandom() {
   sndLaunch();
 }
 
+const MAX_BALL_SPEED = LAUNCH_SPEED * 1.6;
+function clampSpeed(b, max) {
+  const sp = speed(b);
+  if (sp > max) { b.vx *= max / sp; b.vy *= max / sp; }
+}
+
 function launchBallToward(tx, ty) {
   handleInput();
   const dx = tx - ball.x;
@@ -812,6 +829,7 @@ function launchBallToward(tx, ty) {
   const ny = dy / d;
   ball.vx += nx * Math.max(spd, 8);
   ball.vy += ny * Math.max(spd, 8);
+  clampSpeed(ball, MAX_BALL_SPEED);
   // Bonus balls also get kicked toward tap
   bonusBalls.forEach(b => {
     const bDx = tx - b.x;
@@ -950,7 +968,8 @@ function cleanup() {
   ball = null;
   speedMultiplier = 1;
   speedTintEl = null;
-  if (effectClock._timeout) { clearTimeout(effectClock._timeout); effectClock._timeout = null; }
+  timers.clearAll();
+  effectClock._timeout = null;
 }
 
 // ---- Resize handler ----
@@ -959,17 +978,31 @@ function onResize() {
   H = window.innerHeight;
   computeSizes();
   // Update existing entity radii and font sizes
+  const sizeImg = (el, px) => {
+    const img = el.querySelector('.emoji-img');
+    if (img) { img.style.width = px + 'px'; img.style.height = px + 'px'; }
+  };
+  const clampIn = (o) => {
+    o.x = Math.min(Math.max(o.x, PAD + o.r), W - PAD - o.r);
+    o.y = Math.min(Math.max(o.y, PAD + o.r), H - PAD - o.r);
+  };
   if (ball) {
     ball.r = BALL_R;
     ball.el.style.fontSize = BALL_FONT + 'px';
+    sizeImg(ball.el, BALL_FONT);
+    clampIn(ball);
   }
   characters.forEach(c => {
     c.r = CHAR_R;
     c.el.style.fontSize = CHAR_FONT + 'px';
+    sizeImg(c.el, CHAR_FONT);
+    if (c.state !== 'walking') clampIn(c);   // walkers are heading on/off screen deliberately
   });
   bonusBalls.forEach(b => {
     b.r = BALL_R;
     b.el.style.fontSize = BALL_FONT + 'px';
+    sizeImg(b.el, BALL_FONT);
+    clampIn(b);
   });
 }
 
@@ -981,7 +1014,9 @@ export const ballBonanza = {
     initAudio();
     gameEl = document.getElementById('ballBonanzaGame');
     gameEl.style.display = 'block';
+    const mySession = ++sessionId;
     preloadEmojis(EMOJI_REGISTRY['ball-bonanza']).then(() => {
+      if (mySession !== sessionId || gameEl.style.display === 'none') return;   // stopped while loading
       init();
       running = true;
       lastTime = performance.now();
@@ -1011,8 +1046,11 @@ export const ballBonanza = {
 
   onTouch(e) {
     if (!running) return;
-    for (let i = 0; i < e.touches.length; i++) {
-      launchBallToward(e.touches[i].clientX, e.touches[i].clientY);
+    // changedTouches = the fingers that just landed; e.touches would re-kick
+    // for every finger already resting on the glass
+    const pts = e.changedTouches && e.changedTouches.length ? e.changedTouches : e.touches;
+    for (let i = 0; i < pts.length; i++) {
+      launchBallToward(pts[i].clientX, pts[i].clientY);
     }
   }
 };

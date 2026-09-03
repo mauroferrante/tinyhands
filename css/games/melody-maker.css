@@ -387,6 +387,7 @@
 .melody-key {
   background: var(--key-color);
   border: none;
+  touch-action: manipulation;   /* no double-tap zoom / 300ms delay on rapid taps */
   border-radius: clamp(8px, 1.5vw, 12px) clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 18px) clamp(12px, 2.5vw, 18px);
   min-height: clamp(90px, 28vh, 180px);
   display: flex;

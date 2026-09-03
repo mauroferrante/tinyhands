@@ -11,6 +11,7 @@ import {
 import { shareOrCopy } from '../share.js';
 import { preloadEmojis, getImage, createEmojiImg, getEmojiUrl } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
+import { local } from '../storage.js';
 
 // ---- Physics constants ----
 const GRAVITY            = 1.2;
@@ -107,6 +108,9 @@ let countdownTimer, countdownPhase, launchTextTimer;
 // ---- Input state ----
 const keysDown = new Set();
 let keyUpHandler = null;
+let heldKeys = new Set();     // raw e.key values currently down
+let sessionId = 0;
+let touchCancelHandler = null;
 let touchBoosting = false;
 let touchSteering = 0; // -1 left, 0 center, 1 right
 let touchEndHandler = null;
@@ -206,6 +210,10 @@ function onResize() {
     createNebulae();
     createLandscape();
   }
+  // Keep the rocket inside the new viewport — rotating to a shorter screen
+  // used to trigger the bottom-edge crash on the very next frame
+  rocketY = Math.min(rocketY, H - ROCKET_RADIUS * 3);
+  rocketX = Math.min(Math.max(rocketX, 20), W - 20);
 }
 
 // ===== Sprite Cache =====
@@ -551,7 +559,7 @@ function spawnObstacle() {
   if (alt > 2000) types.push(OBS_UFO);
 
   const type = types[Math.floor(Math.random() * types.length)];
-  const x = 40 + Math.random() * (W - 80);
+  let x = 40 + Math.random() * (W - 80);
   let y = -40;
   let w, h, emoji, size, vx = 0;
 
@@ -572,15 +580,16 @@ function spawnObstacle() {
       size = 52; emoji = '\u{1F6F8}'; w = 48; h = 36; break;
   }
 
-  // Ensure minimum gap from existing obstacles
-  for (let attempt = 0; attempt < 5; attempt++) {
+  // Ensure a horizontal gap from obstacles still near the top (recent spawns),
+  // re-rolling x each attempt — stacked spawns made unavoidable walls
+  for (let attempt = 0; attempt < 6; attempt++) {
     let tooClose = false;
     for (const obs of obstacles) {
-      if (obs.y < H * 0.4 && Math.abs(obs.x - x) < MIN_GAP_Y * gameScale) {
-        tooClose = true; break;
-      }
+      const gap = Math.max(MIN_GAP_Y * gameScale, (w + obs.w) / 2 + 24 * gameScale);
+      if (obs.y < H * 0.4 && Math.abs(obs.x - x) < gap) { tooClose = true; break; }
     }
     if (!tooClose) break;
+    x = 40 + Math.random() * (W - 80);
   }
 
   obstacles.push({
@@ -805,7 +814,7 @@ function checkCollisions() {
 function activateFuel() {
   invincible = true;
   invincibleTimer = FUEL_DURATION;
-  rocketVY = -MAX_VERTICAL_VEL;  // Surge upward
+  rocketVY = -MAX_VERTICAL_VEL * gameScale;  // Surge upward
 }
 
 function updateInvincibility(dt) {
@@ -983,12 +992,12 @@ function showGameOver() {
   gameState = 'gameover';
   if (livesEl) livesEl.classList.remove('active');
 
-  bestScore = parseInt(localStorage.getItem(LS_BEST_KEY) || '0', 10);
-  bestAltitude = parseInt(localStorage.getItem(LS_ALT_KEY) || '0', 10);
+  bestScore = local.getInt(LS_BEST_KEY);
+  bestAltitude = local.getInt(LS_ALT_KEY);
   const isNewBest = score > bestScore;
   const isNewAlt = altitude > bestAltitude;
-  if (isNewBest) { try { localStorage.setItem(LS_BEST_KEY, String(score)); } catch (e) {} bestScore = score; }
-  if (isNewAlt) { try { localStorage.setItem(LS_ALT_KEY, String(altitude)); } catch (e) {} bestAltitude = altitude; }
+  if (isNewBest) { local.set(LS_BEST_KEY, score); bestScore = score; }
+  if (isNewAlt) { local.set(LS_ALT_KEY, altitude); bestAltitude = altitude; }
 
   const altFmt = altitude.toLocaleString() + 'km';
   const titles = [
@@ -1023,7 +1032,7 @@ function showGameOver() {
   if (againBtn) {
     againBtn.addEventListener('click', () => {
       resetAndStart();
-      animFrame = requestAnimationFrame(gameLoop);
+      restartLoop();
     });
   }
 }
@@ -1056,7 +1065,7 @@ function updateCountdown(dt) {
       gameState = 'playing';
       hudEl.style.display = 'flex';
       if (livesEl) livesEl.classList.add('active');
-      rocketVY = -MAX_VERTICAL_VEL; // Full launch surge
+      rocketVY = -MAX_VERTICAL_VEL * gameScale; // Full launch surge
       autoBoostTimer = 2.0; // 2 seconds of free boost
     }
   }
@@ -1646,6 +1655,11 @@ function gameLoop(timestamp) {
 
 // ===== Reset & Start =====
 
+function restartLoop() {
+  if (animFrame) cancelAnimationFrame(animFrame);
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
 function resetAndStart() {
   celebrateEl.classList.remove('show');
   celebrateEl.innerHTML = '';
@@ -1701,6 +1715,7 @@ function resetAndStart() {
 
   milestonesReached = new Set();
   keysDown.clear();
+  heldKeys.clear();
   touchBoosting = false;
 
   hudEl.style.display = 'none';
@@ -1711,13 +1726,13 @@ function resetAndStart() {
   if (hintEl) hintEl.remove();
   hintEl = document.createElement('div');
   hintEl.className = 'rocket-hint';
-  const launchVerb = (navigator.maxTouchPoints > 0) ? 'Tap to launch!' : 'Press any key to launch!';
+  const launchVerb = (navigator.maxTouchPoints > 0) ? 'Tap or press any key to launch!' : 'Press any key to launch!';
   hintEl.innerHTML = launchVerb + ' <img src="' + getEmojiUrl('🚀') + '" class="emoji-img inline-emoji" alt="🚀">';
   gameEl.appendChild(hintEl);
 
   gameState = 'ready';
-  bestScore = parseInt(localStorage.getItem(LS_BEST_KEY) || '0', 10);
-  bestAltitude = parseInt(localStorage.getItem(LS_ALT_KEY) || '0', 10);
+  bestScore = local.getInt(LS_BEST_KEY);
+  bestAltitude = local.getInt(LS_ALT_KEY);
   lastFrameTime = null;
 }
 
@@ -1747,6 +1762,12 @@ function cleanup() {
     document.removeEventListener('touchend', touchEndHandler);
     touchEndHandler = null;
   }
+  if (touchCancelHandler) {
+    document.removeEventListener('touchcancel', touchCancelHandler);
+    touchCancelHandler = null;
+  }
+  heldKeys.clear();
+  hasTouchInput = false;   // was never reset: steering overlays stuck on for the page session
   if (touchMoveHandler) {
     document.removeEventListener('touchmove', touchMoveHandler);
     touchMoveHandler = null;
@@ -1776,8 +1797,10 @@ export const rocketRide = {
     createNebulae();
     // Register keyup handler (game-manager only dispatches keydown)
     keyUpHandler = (e) => {
+      heldKeys.delete(e.key);
       const action = keyToAction(e.key);
-      if (action) keysDown.delete(action);
+      // Only release the action if no other held key still maps to it
+      if (action && ![...heldKeys].some(k => keyToAction(k) === action)) keysDown.delete(action);
     };
     document.addEventListener('keyup', keyUpHandler);
 
@@ -1792,6 +1815,8 @@ export const rocketRide = {
       }
     };
     document.addEventListener('touchend', touchEndHandler);
+    touchCancelHandler = touchEndHandler;
+    document.addEventListener('touchcancel', touchCancelHandler);
     touchMoveHandler = (e) => {
       if (!e.touches.length) return;
       applyAllTouches(e.touches);
@@ -1801,10 +1826,13 @@ export const rocketRide = {
     resizeHandler = onResize;
     window.addEventListener('resize', resizeHandler);
 
-    // Wait for emoji preload before starting game loop (prevents black screen)
+    // Wait for emoji preload before starting game loop (prevents black screen).
+    // If stop() ran in the meantime, don't start a loop nobody can cancel.
+    const mySession = ++sessionId;
     preloadEmojis(EMOJI_REGISTRY['rocket-ride']).then(() => {
+      if (mySession !== sessionId || gameEl.style.display === 'none') return;
       resetAndStart();
-      animFrame = requestAnimationFrame(gameLoop);
+      restartLoop();
     });
   },
 
@@ -1813,9 +1841,11 @@ export const rocketRide = {
   },
 
   onKey(e) {
-    // game-manager calls this on keydown
+    // game-manager calls this on keydown (auto-repeat included)
+    heldKeys.add(e.key);
     const action = keyToAction(e.key);
     if (action) keysDown.add(action);
+    if (e.repeat) return;
 
     if (gameState === 'ready') {
       startCountdown();
@@ -1824,7 +1854,7 @@ export const rocketRide = {
     if (gameState === 'gameover') {
       if (e.key === ' ' || e.key === 'Enter') {
         resetAndStart();
-        animFrame = requestAnimationFrame(gameLoop);
+        restartLoop();
       }
     }
   },
@@ -1841,7 +1871,9 @@ export const rocketRide = {
     if (gameState === 'playing' || gameState === 'countdown') {
       // Click = momentary boost
       keysDown.add('boost');
-      setTimeout(() => keysDown.delete('boost'), 150);
+      setTimeout(() => {
+        if (![...heldKeys].some(k => keyToAction(k) === 'boost')) keysDown.delete('boost');
+      }, 150);
     }
   },
 

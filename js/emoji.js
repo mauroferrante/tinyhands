@@ -39,13 +39,22 @@ export function getEmojiUrl(emoji) {
 
 /** Load a single emoji image. Resolves to the Image or null on failure.
  *  If the exact ZWJ/skin-tone URL fails, tries the base emoji (first codepoint). */
+const LOAD_TIMEOUT_MS = 6000;
+
 export function loadEmoji(emoji) {
   if (imageCache[emoji] !== undefined) return Promise.resolve(imageCache[emoji]);
   const url = getEmojiUrl(emoji);
   return new Promise(resolve => {
+    // A CDN that hangs (rather than errors) used to leave every game's
+    // preload pending forever — blank screen. Give up and fall back after
+    // a few seconds; the <img> keeps loading and fills the cache if it lands.
+    let settled = false;
+    const done = (v) => { if (!settled) { settled = true; resolve(v); } };
+    const timer = setTimeout(() => done(imageCache[emoji] === undefined ? null : imageCache[emoji]), LOAD_TIMEOUT_MS);
     const img = new Image();
-    img.onload  = () => { imageCache[emoji] = img; resolve(img); };
+    img.onload  = () => { clearTimeout(timer); imageCache[emoji] = img; done(img); };
     img.onerror = () => {
+      clearTimeout(timer);
       // Fallback: try base emoji (first codepoint only, strips ZWJ/gender/skin)
       const base = emoji.codePointAt(0).toString(16);
       const baseUrl = CDN_BASE + base + '_3d.png';

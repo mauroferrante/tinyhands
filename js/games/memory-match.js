@@ -8,6 +8,10 @@ import { spawnParticles } from '../effects.js';
 import { shareOrCopy } from '../share.js';
 import { preloadEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
+import { createTimerPool } from '../timers.js';
+import { local } from '../storage.js';
+
+const timers = createTimerPool();   // match/no-match/win timeouts — cancelled in cleanup()
 
 // ---- Difficulty configs ----
 const DIFFICULTIES = {
@@ -85,8 +89,8 @@ function lsKey(diff, metric) {
 
 function getBest(diff) {
   return {
-    flips: parseInt(localStorage.getItem(lsKey(diff, 'flips')) || '0', 10),
-    time:  parseInt(localStorage.getItem(lsKey(diff, 'time'))  || '0', 10)
+    flips: local.getInt(lsKey(diff, 'flips')),
+    time:  local.getInt(lsKey(diff, 'time'))
   };
 }
 
@@ -94,11 +98,11 @@ function saveBest(diff, flips, time) {
   const prev = getBest(diff);
   let isNew = false;
   if (prev.flips === 0 || flips < prev.flips) {
-    try { localStorage.setItem(lsKey(diff, 'flips'), String(flips)); } catch (e) {}
+    local.set(lsKey(diff, 'flips'), flips);
     isNew = true;
   }
   if (prev.time === 0 || time < prev.time) {
-    try { localStorage.setItem(lsKey(diff, 'time'), String(time)); } catch (e) {}
+    local.set(lsKey(diff, 'time'), time);
     isNew = true;
   }
   return isNew;
@@ -124,7 +128,7 @@ function showDifficultyPicker() {
     const el = document.getElementById('memoryBest' + diff.charAt(0).toUpperCase() + diff.slice(1));
     if (el) {
       el.textContent = best.flips > 0
-        ? `Best: ${best.flips} flips, ${fmt(best.time)}`
+        ? `Best: ${best.flips} turns, ${fmt(best.time)}`
         : '';
     }
   });
@@ -161,7 +165,7 @@ function startRound(difficulty) {
   memoryCelebrateEl.classList.remove('show');
   memoryCelebrateEl.innerHTML = '';
 
-  memoryFlipsEl.textContent = 'Flips: 0';
+  memoryFlipsEl.textContent = 'Turns: 0';
   memoryPairsEl.textContent = `0 / ${totalPairs}`;
   memoryTimeEl.textContent = '0:00';
 
@@ -195,7 +199,7 @@ function startRound(difficulty) {
     memoryBoardEl.classList.add('memory-dealt');
     // Play a card swoosh per card as each one lands
     cards.forEach((_, i) => {
-      setTimeout(() => playCardSwoosh(), i * 25 + 300);
+      timers.later(() => playCardSwoosh(), i * 25 + 300);   // tracked: 36 swooshes used to keep playing after exit
     });
   });
 }
@@ -209,11 +213,13 @@ function layoutBoard(totalCards) {
   memoryBoardEl.style.setProperty('--rows', rows);
 
   // Compute board width so cards stay square and fill available space
-  const gap = Math.min(12, window.innerWidth * 0.015);
+  // Mirror the CSS: gap is clamp(6px, 1.5vw, 12px), padding drops to 0.5rem under 480px
+  const gap = Math.max(6, Math.min(12, window.innerWidth * 0.015));
+  const pad = window.innerWidth <= 480 ? 16 : 32;
   const maxCardW = (window.innerWidth * 0.94 - gap * (cols + 1)) / cols;
   const maxCardH = (window.innerHeight * 0.82 - gap * (rows + 1)) / rows;
   const cardSize = Math.min(maxCardW, maxCardH, 140);
-  const boardW = cardSize * cols + gap * (cols - 1) + 32;
+  const boardW = cardSize * cols + gap * (cols - 1) + pad;
   memoryBoardEl.style.width = boardW + 'px';
 }
 
@@ -243,8 +249,8 @@ function flipCard(index) {
   }
 
   if (flippedCards.length === 2) {
-    flipCount++;
-    memoryFlipsEl.textContent = `Flips: ${flipCount}`;
+    flipCount++;   // one "turn" = a pair of cards flipped
+    memoryFlipsEl.textContent = `Turns: ${flipCount}`;
     isProcessing = true;
     evaluatePair();
   }
@@ -255,7 +261,7 @@ function evaluatePair() {
 
   if (a.emoji === b.emoji) {
     // Match!
-    setTimeout(() => {
+    timers.later(() => {
       a.matched = true;
       b.matched = true;
       a.element.classList.add('matched');
@@ -282,7 +288,7 @@ function evaluatePair() {
   } else {
     // No match
     playNoMatchBoop();
-    setTimeout(() => {
+    timers.later(() => {
       a.element.classList.remove('flipped');
       b.element.classList.remove('flipped');
       playCardSettle();
@@ -322,19 +328,19 @@ function triggerWin() {
 
   // Show win overlay
   const delay = cards.length * 40 + 600;
-  setTimeout(() => {
+  timers.later(() => {
     memoryCelebrateEl.innerHTML =
       '<div class="memory-endcard">' +
         '<div class="memory-endcard-emoji"><img src="' + getEmojiUrl('\u{1F389}') + '" class="emoji-img" alt="🎉"></div>' +
         '<div class="memory-endcard-title">You found them all!</div>' +
         '<div class="memory-endcard-stats">' +
           '<span><img src="' + getEmojiUrl('\u{23F1}') + '" class="emoji-img inline-emoji" alt="⏱"> ' + fmt(elapsedSeconds) + '</span>' +
-          '<span><img src="' + getEmojiUrl('\u{1F504}') + '" class="emoji-img inline-emoji" alt="🔄"> ' + flipCount + ' flips</span>' +
+          '<span><img src="' + getEmojiUrl('\u{1F504}') + '" class="emoji-img inline-emoji" alt="🔄"> ' + flipCount + ' turns</span>' +
         '</div>' +
         (isNewBest
           ? '<div class="memory-endcard-best"><img src="' + getEmojiUrl('\u{1F3C6}') + '" class="emoji-img inline-emoji" alt="🏆"> New Best!</div>'
           : (best.flips > 0
-              ? '<div class="memory-endcard-best-small">Best: ' + best.flips + ' flips, ' + fmt(best.time) + '</div>'
+              ? '<div class="memory-endcard-best-small">Best: ' + best.flips + ' turns, ' + fmt(best.time) + '</div>'
               : '')) +
         '<div class="memory-endcard-actions">' +
           '<button class="memory-endcard-btn memory-btn-again">Play Again</button>' +
@@ -389,6 +395,9 @@ function spawnWinConfetti() {
     el.style.animationDelay = (Math.random() * 1.5) + 's';
     memoryGameEl.appendChild(el);
     el.addEventListener('animationend', () => el.remove());
+    // Under prefers-reduced-motion the CSS sets animation:none + display:none,
+    // so animationend never fires — make sure the node still goes away
+    timers.later(() => el.remove(), 6000);
   }
 }
 
@@ -406,6 +415,7 @@ function handleCardTap(e) {
 
 function cleanup() {
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  timers.clearAll();   // match/no-match/win timeouts used to fire after exit (sounds on the landing page)
   gameActive = false;
   cards = [];
   flippedCards = [];
@@ -413,6 +423,7 @@ function cleanup() {
   timerStart = null;
   currentDifficulty = null;
   matchedCount = 0;
+  totalPairs = 0;
   flipCount = 0;
   elapsedSeconds = 0;
 

@@ -317,9 +317,15 @@ const storyBackdrop = document.getElementById('storyBackdrop');
 const storyClose = document.getElementById('storyClose');
 const footerStoryLink = document.getElementById('footerStoryLink');
 
+// Open state is tracked explicitly: the 'show' class is added in a rAF, which
+// doesn't run in a background tab, so it can't be used to decide "is open"
+let storyOpen = false;
+let feedbackOpen = false;
+
 function openStory(e) {
   if (e) e.preventDefault();
-  if (storyBackdrop.classList.contains('show')) return;
+  if (storyOpen) return;
+  storyOpen = true;
   storyBackdrop.style.display = 'flex';
   requestAnimationFrame(() => storyBackdrop.classList.add('show'));
   document.body.style.overflow = 'hidden';
@@ -342,7 +348,8 @@ if (heroLearnMore) {
 
 // `fromHistory`: popstate already left /story, don't move history again
 function closeStory({ fromHistory = false } = {}) {
-  if (!storyBackdrop.classList.contains('show')) return;
+  if (!storyOpen) return;
+  storyOpen = false;
   storyBackdrop.classList.remove('show');
   setTimeout(() => { storyBackdrop.style.display = 'none'; }, 300);
   document.body.style.overflow = '';
@@ -357,8 +364,8 @@ storyBackdrop.addEventListener('click', (e) => {
   if (e.target === storyBackdrop) closeStory();
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && storyBackdrop.classList.contains('show')) closeStory();
-  if (e.key === 'Escape' && fbBackdrop.classList.contains('show')) closeFeedback();
+  if (e.key === 'Escape' && storyOpen) closeStory();
+  if (e.key === 'Escape' && feedbackOpen) closeFeedback();
 });
 
 // ===== Feedback Overlay =====
@@ -369,7 +376,8 @@ const TYPEFORM_URL = 'https://mauroferrante85.typeform.com/to/pptDHXKN';
 
 document.getElementById('feedbackLink').addEventListener('click', (e) => {
   e.preventDefault();
-  if (fbBackdrop.classList.contains('show')) return;
+  if (feedbackOpen) return;
+  feedbackOpen = true;
   fbFrame.src = TYPEFORM_URL;
   fbBackdrop.style.display = 'block';
   requestAnimationFrame(() => fbBackdrop.classList.add('show'));
@@ -379,7 +387,8 @@ document.getElementById('feedbackLink').addEventListener('click', (e) => {
 });
 
 function closeFeedback({ fromHistory = false } = {}) {
-  if (!fbBackdrop.classList.contains('show')) return;
+  if (!feedbackOpen) return;
+  feedbackOpen = false;
   fbBackdrop.classList.remove('show');
   setTimeout(() => { fbBackdrop.style.display = 'none'; fbFrame.src = ''; }, 300);
   document.body.style.overflow = '';
@@ -511,8 +520,8 @@ window.addEventListener('popstate', () => {
     return;
   }
   // Modals: Back closes them (their open pushed a state entry)
-  if (!state.story && storyBackdrop.classList.contains('show')) closeStory({ fromHistory: true });
-  if (!state.feedback && fbBackdrop.classList.contains('show')) closeFeedback({ fromHistory: true });
+  if (!state.story && storyOpen) closeStory({ fromHistory: true });
+  if (!state.feedback && feedbackOpen) closeFeedback({ fromHistory: true });
 
   // No game running but the URL says otherwise (stale entry left by an
   // earlier intent ping or an old session) — normalise so the address bar

@@ -49,7 +49,7 @@ export function createBgEmojis(landingEl) {
       el.style.top  = (5 + Math.random() * 85) + '%';
       el.style.animationDuration = (4 + Math.random() * 4) + 's';
       el.style.animationDelay    = (Math.random() * 4) + 's';
-      document.body.appendChild(el);
+      (landingEl || document.body).appendChild(el);
     }
   });
 }

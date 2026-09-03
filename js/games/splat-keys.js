@@ -2,6 +2,13 @@ import { playRandomSound } from '../audio.js';
 import { EMOJIS, spawnParticles } from '../effects.js';
 import { preloadEmojis, createEmojiImg } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
+import { createTimerPool } from '../timers.js';
+
+const timers = createTimerPool();
+// A held key fires ~30 keydowns/s and each emoji lives 7s with an infinite
+// float animation — cap the live count so a toddler leaning on the keyboard
+// can't build up hundreds of animating nodes.
+const MAX_ACTIVE = 40;
 
 const splatKeysGame = document.getElementById('splatKeysGame');
 const splatHint     = document.getElementById('splatHint');
@@ -60,10 +67,14 @@ function spawnEmoji(x, y, key) {
 
   splatKeysGame.appendChild(el);
   activeEmojis.push(el);
+  while (activeEmojis.length > MAX_ACTIVE) {
+    const oldest = activeEmojis.shift();   // evict the oldest immediately
+    oldest.remove();
+  }
 
-  setTimeout(() => {
+  timers.later(() => {
     el.classList.add('fade-out');
-    setTimeout(() => {
+    timers.later(() => {
       el.remove();
       const idx = activeEmojis.indexOf(el);
       if (idx !== -1) activeEmojis.splice(idx, 1);
@@ -87,11 +98,13 @@ export const splatKeys = {
   },
   stop() {
     splatKeysGame.style.display = 'none';
+    timers.clearAll();
     activeEmojis.forEach(el => el.remove());
     activeEmojis = [];
     splatKeysGame.querySelectorAll('.particle').forEach(p => p.remove());
   },
   onKey(e) {
+    if (e.repeat) return;   // one press = one emoji; auto-repeat is not a toddler tapping
     const pos = randPos();
     spawnEmoji(pos.x, pos.y, e.key);
   },
@@ -107,8 +120,11 @@ export const splatKeys = {
     }
   },
   onTouch(e) {
-    for (let i = 0; i < e.touches.length; i++) {
-      spawnEmoji(e.touches[i].clientX, e.touches[i].clientY);
+    // Only the fingers that just landed — e.touches includes every finger
+    // already resting on the screen (a palm gave 55 emoji instead of 10)
+    const pts = e.changedTouches && e.changedTouches.length ? e.changedTouches : e.touches;
+    for (let i = 0; i < pts.length; i++) {
+      spawnEmoji(pts[i].clientX, pts[i].clientY);
     }
   }
 };

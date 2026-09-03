@@ -13,6 +13,7 @@ import {
 import { shareOrCopy } from '../share.js';
 import { preloadEmojis, getImage, createEmojiImg, getEmojiUrl } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
+import { local } from '../storage.js';
 
 // ---- Physics constants ----
 const GRAVITY         = 0.12;
@@ -176,6 +177,7 @@ function initCanvas() {
 let resizeHandler = null;
 let touchHolding = false;
 let touchEndHandler = null;
+let sessionId = 0;
 const HOLD_BOOST_FORCE = -0.15;
 
 function onResize() {
@@ -185,6 +187,8 @@ function onResize() {
     createBgClouds();
     createLandscape();
   }
+  // Keep the balloon on screen after a rotation instead of popping it
+  balloonY = Math.min(Math.max(balloonY, BALLOON_RADIUS), H - BALLOON_RADIUS * 2);
 }
 
 // ===== Opaque Emoji Sprite Cache =====
@@ -932,11 +936,15 @@ function checkCollisions() {
 
       if (dx < 0 && dy < 0) {
         if (shieldActive) {
-          // Shield absorbs ALL hits during its duration — bounce obstacle away
-          playShieldBreak();
-          spawnSparkles(bx, by, 12, '#66CCFF');
-          obs.speed *= -0.5;
-          obs.x += 30;
+          // Shield absorbs ALL hits during its duration — knock the obstacle
+          // clear of the hitbox and past the balloon so it can't re-collide
+          if (!obs.deflected) {
+            obs.deflected = true;
+            playShieldBreak();
+            spawnSparkles(bx, by, 12, '#66CCFF');
+          }
+          obs.x = bx - (hw + br) - 8;              // just behind the balloon
+          obs.speed = Math.max(obs.speed, 1) * 1.5; // hurry it off the left edge
           continue;
         }
         triggerPop();
@@ -1062,10 +1070,10 @@ function showGameOver() {
 
   if (livesEl) livesEl.classList.remove('active');
 
-  bestScore = parseInt(localStorage.getItem(LS_KEY) || '0', 10);
+  bestScore = local.getInt(LS_KEY);
   const isNewBest = score > bestScore;
   if (isNewBest) {
-    try { localStorage.setItem(LS_KEY, String(score)); } catch (e) {}
+    local.set(LS_KEY, score);
     bestScore = score;
   }
 
@@ -1515,8 +1523,10 @@ function gameLoop(timestamp) {
     }
   }
 
+  const dtNormBg = dt * 60;   // background scroll is tuned for 60fps units
+
   if (gameState === 'ready') {
-    bobPhase += BOB_FREQUENCY;
+    bobPhase += BOB_FREQUENCY * dtNormBg;
     balloonY = H * 0.45 + Math.sin(bobPhase) * BOB_AMPLITUDE * 2;
     balloonX = W * 0.25 + Math.sin(bobPhase * 0.3) * 10;
     updateString();
@@ -1547,7 +1557,7 @@ function gameLoop(timestamp) {
   }
 
   for (const c of bgClouds) {
-    c.x -= c.speed;
+    c.x -= c.speed * dtNormBg;
     if (c.x < -80) c.x = W + 80;
   }
 
@@ -1556,7 +1566,7 @@ function gameLoop(timestamp) {
       // Scroll hill control points
       if (layer.hills) {
         for (const hp of layer.hills) {
-          hp.x -= layer.speed;
+          hp.x -= layer.speed * dtNormBg;
         }
         // Recycle leftmost point to the right when it's far off-screen
         // Sort first so we always check the actual leftmost
@@ -1571,7 +1581,7 @@ function gameLoop(timestamp) {
       }
       // Scroll emoji clusters
       for (const item of layer.items) {
-        item.x -= layer.speed;
+        item.x -= layer.speed * dtNormBg;
       }
       // Recycle leftmost clusters
       let minClusterX = Infinity, maxClusterX = -Infinity;
@@ -1652,7 +1662,7 @@ function resetAndStart() {
   gameEl.appendChild(hintEl);
 
   gameState = 'ready';
-  bestScore = parseInt(localStorage.getItem(LS_KEY) || '0', 10);
+  bestScore = local.getInt(LS_KEY);
 }
 
 // ===== Cleanup =====
@@ -1708,14 +1718,20 @@ export const balloonFloat = {
     Object.keys(spriteCache).forEach(k => delete spriteCache[k]);
     initCanvas();
     createBgClouds();
+
+    resizeHandler = onResize;
+    window.addEventListener('resize', resizeHandler);
+    // Lifting one of two fingers used to end the hold — re-check what's left
+    touchEndHandler = (e) => { touchHolding = !!(e.touches && e.touches.length); };
+    document.addEventListener('touchend', touchEndHandler);
+    document.addEventListener('touchcancel', touchEndHandler);
+
+    const mySession = ++sessionId;
     preloadEmojis(EMOJI_REGISTRY['balloon-float']).then(() => {
+      if (mySession !== sessionId || gameEl.style.display === 'none') return;   // stopped while loading
       createLandscape();
       resetAndStart();
-      resizeHandler = onResize;
-      window.addEventListener('resize', resizeHandler);
-      touchEndHandler = () => { touchHolding = false; };
-      document.addEventListener('touchend', touchEndHandler);
-      document.addEventListener('touchcancel', touchEndHandler);
+      if (animFrame) cancelAnimationFrame(animFrame);
       animFrame = requestAnimationFrame(gameLoop);
     });
   },

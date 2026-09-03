@@ -1,9 +1,50 @@
 let audioCtx = null;
 let iosUnlocked = false;
+let masterGain = null;
+let masterComp = null;
 
 export function getAudioCtx() {
   if (!audioCtx) initAudio();
   return audioCtx;
+}
+
+// ---- Master bus ----
+// Every synth used to connect straight to ctx.destination, so a key cascade,
+// a chime and a fanfare overlapping (or a toddler mashing eight keys) summed
+// well past 1.0 and clipped. Everything now goes gain → compressor → out.
+function masterBus() {
+  if (!audioCtx) initAudio();
+  if (!masterGain) {
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 1;
+    masterComp = audioCtx.createDynamicsCompressor();
+    masterComp.threshold.value = -12;
+    masterComp.knee.value = 20;
+    masterComp.ratio.value = 6;
+    masterComp.attack.value = 0.003;
+    masterComp.release.value = 0.15;
+    masterGain.connect(masterComp).connect(audioCtx.destination);
+  }
+  return masterGain;
+}
+
+/** Shared master bus for games that synthesise their own sounds. */
+export function getMasterBus() {
+  return masterBus();
+}
+
+// While the context is suspended (iOS app switch, notification) currentTime
+// is frozen, so every note scheduled in that window lands on the same
+// timestamp and detonates together on resume. Duck the master bus across
+// the resume so that burst is swallowed.
+function duckOnResume() {
+  if (!masterGain || !audioCtx) return;
+  const g = masterGain.gain;
+  const now = audioCtx.currentTime;
+  g.cancelScheduledValues(now);
+  g.setValueAtTime(0, now);
+  g.setValueAtTime(0, now + 0.3);
+  g.linearRampToValueAtTime(1, now + 0.5);
 }
 
 // Lightweight helper: every play*() function calls this to
@@ -28,6 +69,7 @@ export function initAudio() {
     // user-gesture call to initAudio() retries the silent-oscillator trick.
     audioCtx.addEventListener('statechange', () => {
       if (audioCtx.state === 'suspended') iosUnlocked = false;
+      else if (audioCtx.state === 'running') duckOnResume();
     });
   }
 
@@ -66,7 +108,7 @@ function playPop(now) {
   osc.frequency.exponentialRampToValueAtTime(200, now + 0.1);
   gain.gain.setValueAtTime(0.15, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.12);
 }
@@ -81,7 +123,7 @@ function playBoing(now) {
   osc.frequency.exponentialRampToValueAtTime(base * 0.8, now + 0.15);
   gain.gain.setValueAtTime(0.12, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.18);
 }
@@ -95,7 +137,7 @@ function playChime(now) {
   osc.frequency.setValueAtTime(freq, now);
   gain.gain.setValueAtTime(0.1, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.2);
 }
@@ -110,7 +152,7 @@ function playBubble(now) {
   osc.frequency.exponentialRampToValueAtTime(base * 1.2, now + 0.15);
   gain.gain.setValueAtTime(0.12, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.15);
 }
@@ -141,11 +183,12 @@ export function playFanfare() {
     gain.gain.setValueAtTime(0, now + i * 0.1);
     gain.gain.linearRampToValueAtTime(0.15, now + i * 0.1 + 0.03);
     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now + i * 0.1);
     osc.stop(now + i * 0.1 + 0.4);
   });
   setTimeout(() => {
+    if (!audioCtx) return;
     [523, 659, 784, 1047, 1319].forEach(freq => {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -153,7 +196,7 @@ export function playFanfare() {
       osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
       gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-      osc.connect(gain).connect(audioCtx.destination);
+      osc.connect(gain).connect(masterBus());
       osc.start(audioCtx.currentTime);
       osc.stop(audioCtx.currentTime + 0.6);
     });
@@ -171,7 +214,7 @@ export function playThud() {
   osc.frequency.exponentialRampToValueAtTime(50, now + 0.15);
   gain.gain.setValueAtTime(0.2, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.15);
   const osc2 = audioCtx.createOscillator();
@@ -180,7 +223,7 @@ export function playThud() {
   osc2.frequency.setValueAtTime(80, now);
   gain2.gain.setValueAtTime(0.05, now);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.connect(gain2).connect(masterBus());
   osc2.start(now);
   osc2.stop(now + 0.08);
 }
@@ -197,7 +240,7 @@ export function playCrash() {
     osc.frequency.exponentialRampToValueAtTime(60, now + i * 0.05 + 0.3);
     gain.gain.setValueAtTime(0.06, now + i * 0.05);
     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.3);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now + i * 0.05);
     osc.stop(now + i * 0.05 + 0.3);
   }
@@ -214,7 +257,7 @@ export function playSnap() {
   osc.frequency.exponentialRampToValueAtTime(300, now + 0.06);
   gain.gain.setValueAtTime(0.12, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.06);
 }
@@ -230,7 +273,7 @@ export function playPerfectDing() {
   gain.gain.setValueAtTime(0.15, now);
   gain.gain.setValueAtTime(0.15, now + 0.1);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.4);
 }
@@ -248,7 +291,7 @@ export function playStreakChime() {
     gain.gain.setValueAtTime(0, now);
     gain.gain.setValueAtTime(0.12, now + i * 0.08);
     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.2);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now + i * 0.08);
     osc.stop(now + i * 0.08 + 0.2);
   });
@@ -267,7 +310,7 @@ export function playWinFanfare() {
     gain.gain.setValueAtTime(0, now);
     gain.gain.setValueAtTime(0.15, now + i * 0.12);
     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.4);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now + i * 0.12);
     osc.stop(now + i * 0.12 + 0.4);
   });
@@ -281,7 +324,7 @@ export function playWinFanfare() {
       osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
       gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
-      osc.connect(gain).connect(audioCtx.destination);
+      osc.connect(gain).connect(masterBus());
       osc.start(audioCtx.currentTime);
       osc.stop(audioCtx.currentTime + 0.8);
     });
@@ -299,7 +342,7 @@ export function playWhoosh() {
   osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
   gain.gain.setValueAtTime(0.06, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.18);
   const osc2 = audioCtx.createOscillator();
@@ -309,7 +352,7 @@ export function playWhoosh() {
   osc2.frequency.exponentialRampToValueAtTime(100, now + 0.12);
   gain2.gain.setValueAtTime(0.04, now);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.connect(gain2).connect(masterBus());
   osc2.start(now);
   osc2.stop(now + 0.12);
 }
@@ -328,7 +371,7 @@ export function playCreak() {
   osc.frequency.setValueAtTime(base * 1.1, now + 0.15);
   gain.gain.setValueAtTime(0.03, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.2);
 }
@@ -344,7 +387,7 @@ export function playPerfectClick() {
   osc.frequency.exponentialRampToValueAtTime(800, now + 0.02);
   gain.gain.setValueAtTime(0.1, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.04);
 }
@@ -361,7 +404,7 @@ export function playHeightPing(height) {
   osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.2, now + 0.1);
   gain.gain.setValueAtTime(0.08, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.15);
 }
@@ -377,7 +420,7 @@ export function playDangerBuzz() {
   gain.gain.setValueAtTime(0.04, now);
   gain.gain.setValueAtTime(0.04, now + 0.08);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.15);
 }
@@ -394,7 +437,7 @@ export function playBounce() {
   osc.frequency.exponentialRampToValueAtTime(80, now + 0.1);
   gain.gain.setValueAtTime(0.15, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.12);
 }
@@ -421,7 +464,7 @@ export function playCrowdCheer() {
     gain.gain.setValueAtTime(0.03, now);
     gain.gain.setValueAtTime(0.05, now + 0.05);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now);
     osc.stop(now + 0.3);
   });
@@ -440,7 +483,7 @@ export function playCrowdGasp() {
     osc.frequency.exponentialRampToValueAtTime(f * 0.5, now + 0.25);
     gain.gain.setValueAtTime(0.04, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now);
     osc.stop(now + 0.25);
   });
@@ -459,7 +502,7 @@ export function playCorrectDing() {
   osc1.frequency.setValueAtTime(600, now);
   gain1.gain.setValueAtTime(0.14, now);
   gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  osc1.connect(gain1).connect(audioCtx.destination);
+  osc1.connect(gain1).connect(masterBus());
   osc1.start(now);
   osc1.stop(now + 0.15);
   const osc2 = audioCtx.createOscillator();
@@ -469,7 +512,7 @@ export function playCorrectDing() {
   gain2.gain.setValueAtTime(0, now);
   gain2.gain.setValueAtTime(0.14, now + 0.1);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.connect(gain2).connect(masterBus());
   osc2.start(now + 0.1);
   osc2.stop(now + 0.3);
 }
@@ -485,7 +528,7 @@ export function playWrongBoop() {
   osc1.frequency.setValueAtTime(400, now);
   gain1.gain.setValueAtTime(0.1, now);
   gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-  osc1.connect(gain1).connect(audioCtx.destination);
+  osc1.connect(gain1).connect(masterBus());
   osc1.start(now);
   osc1.stop(now + 0.12);
   const osc2 = audioCtx.createOscillator();
@@ -495,7 +538,7 @@ export function playWrongBoop() {
   gain2.gain.setValueAtTime(0, now);
   gain2.gain.setValueAtTime(0.1, now + 0.08);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.connect(gain2).connect(masterBus());
   osc2.start(now + 0.08);
   osc2.stop(now + 0.22);
 }
@@ -512,7 +555,7 @@ export function playLifeLost() {
   osc.frequency.exponentialRampToValueAtTime(100, now + 0.25);
   gain.gain.setValueAtTime(0.12, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.3);
 }
@@ -529,7 +572,7 @@ export function playSpellWhoosh() {
   osc.frequency.exponentialRampToValueAtTime(200, now + 0.1);
   gain.gain.setValueAtTime(0.04, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.12);
 }
@@ -555,7 +598,7 @@ export function playStreakFanfare(level) {
     gain.gain.setValueAtTime(0, now);
     gain.gain.setValueAtTime(Math.min(vol, 0.18), now + i * 0.09);
     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.35);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now + i * 0.09);
     osc.stop(now + i * 0.09 + 0.35);
   });
@@ -571,7 +614,7 @@ export function playStreakFanfare(level) {
       gain.gain.setValueAtTime(0, now + delay - 0.01);
       gain.gain.linearRampToValueAtTime(0.05, now + delay + 0.05);
       gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.7);
-      osc.connect(gain).connect(audioCtx.destination);
+      osc.connect(gain).connect(masterBus());
       osc.start(now + delay);
       osc.stop(now + delay + 0.7);
     });
@@ -599,7 +642,7 @@ export function playCrowdRoar() {
     gain.gain.linearRampToValueAtTime(0.05, now + i * 0.05 + 0.1);
     gain.gain.setValueAtTime(0.05, now + 0.5);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now + i * 0.05);
     osc.stop(now + 1.0);
   });
@@ -618,7 +661,7 @@ export function playCardFlip() {
   osc.frequency.exponentialRampToValueAtTime(300, now + 0.06);
   gain.gain.setValueAtTime(0.06, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.08);
 }
@@ -633,7 +676,7 @@ export function playMatchChime() {
   osc1.frequency.setValueAtTime(659, now);
   gain1.gain.setValueAtTime(0.12, now);
   gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  osc1.connect(gain1).connect(audioCtx.destination);
+  osc1.connect(gain1).connect(masterBus());
   osc1.start(now);
   osc1.stop(now + 0.15);
   const osc2 = audioCtx.createOscillator();
@@ -643,7 +686,7 @@ export function playMatchChime() {
   gain2.gain.setValueAtTime(0, now);
   gain2.gain.setValueAtTime(0.12, now + 0.08);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.connect(gain2).connect(masterBus());
   osc2.start(now + 0.08);
   osc2.stop(now + 0.25);
 }
@@ -659,7 +702,7 @@ export function playNoMatchBoop() {
   osc.frequency.exponentialRampToValueAtTime(220, now + 0.12);
   gain.gain.setValueAtTime(0.09, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.15);
 }
@@ -675,7 +718,7 @@ export function playCardSettle() {
   osc.frequency.exponentialRampToValueAtTime(600, now + 0.03);
   gain.gain.setValueAtTime(0.05, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.05);
 }
@@ -700,7 +743,7 @@ export function playCardSwoosh() {
   gain.gain.setValueAtTime(0.12, now);
   gain.gain.linearRampToValueAtTime(0.06, now + 0.02);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-  noise.connect(filter).connect(gain).connect(audioCtx.destination);
+  noise.connect(filter).connect(gain).connect(masterBus());
   noise.start(now);
   noise.stop(now + 0.08);
 }
@@ -718,7 +761,7 @@ export function playBubblePop(pitch = 0) {
   osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
   gain.gain.setValueAtTime(0.1, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.14);
 }
@@ -742,7 +785,7 @@ export function playWindPuff() {
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.08, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-  noise.connect(filter).connect(gain).connect(audioCtx.destination);
+  noise.connect(filter).connect(gain).connect(masterBus());
   noise.start(now);
   noise.stop(now + 0.06);
 }
@@ -757,7 +800,7 @@ export function playStarCollect() {
   osc1.frequency.setValueAtTime(1047, now);
   gain1.gain.setValueAtTime(0.1, now);
   gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-  osc1.connect(gain1).connect(audioCtx.destination);
+  osc1.connect(gain1).connect(masterBus());
   osc1.start(now);
   osc1.stop(now + 0.1);
   const osc2 = audioCtx.createOscillator();
@@ -767,7 +810,7 @@ export function playStarCollect() {
   gain2.gain.setValueAtTime(0, now);
   gain2.gain.setValueAtTime(0.1, now + 0.06);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.connect(gain2).connect(masterBus());
   osc2.start(now + 0.06);
   osc2.stop(now + 0.18);
 }
@@ -789,7 +832,7 @@ export function playUfoCollect() {
     gain.gain.setValueAtTime(0, now);
     gain.gain.setValueAtTime(0.08, now + i * 0.07);
     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.2);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now + i * 0.07);
     osc.stop(now + i * 0.07 + 0.2);
   });
@@ -813,7 +856,7 @@ export function playNearMiss() {
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.04, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-  noise.connect(filter).connect(gain).connect(audioCtx.destination);
+  noise.connect(filter).connect(gain).connect(masterBus());
   noise.start(now);
   noise.stop(now + 0.08);
 }
@@ -830,7 +873,7 @@ export function playBalloonPop() {
   osc.frequency.exponentialRampToValueAtTime(40, now + 0.05);
   gain.gain.setValueAtTime(0.15, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.06);
   // High crackle burst
@@ -847,7 +890,7 @@ export function playBalloonPop() {
   const gain2 = audioCtx.createGain();
   gain2.gain.setValueAtTime(0.12, now);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-  noise.connect(filter).connect(gain2).connect(audioCtx.destination);
+  noise.connect(filter).connect(gain2).connect(masterBus());
   noise.start(now);
   noise.stop(now + 0.1);
 }
@@ -864,7 +907,7 @@ export function playBirdChirp() {
   osc.frequency.exponentialRampToValueAtTime(1800, now + 0.08);
   gain.gain.setValueAtTime(0.03, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.08);
 }
@@ -884,7 +927,7 @@ export function playPlaneZoom() {
   filter.Q.value = 0.8;
   gain.gain.setValueAtTime(0.06, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-  osc.connect(filter).connect(gain).connect(audioCtx.destination);
+  osc.connect(filter).connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.2);
 }
@@ -904,7 +947,7 @@ export function playPowerupCollect() {
     osc.frequency.setValueAtTime(freq, now + i * 0.08);
     gain.gain.setValueAtTime(0.12, now + i * 0.08);
     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.15);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now + i * 0.08);
     osc.stop(now + i * 0.08 + 0.15);
   });
@@ -922,7 +965,7 @@ export function playShieldActivate() {
   osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
   gain.gain.setValueAtTime(0.1, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.2);
   // Shimmer overlay
@@ -933,7 +976,7 @@ export function playShieldActivate() {
   osc2.frequency.exponentialRampToValueAtTime(2400, now + 0.12);
   gain2.gain.setValueAtTime(0.04, now);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-  osc2.connect(gain2).connect(audioCtx.destination);
+  osc2.connect(gain2).connect(masterBus());
   osc2.start(now);
   osc2.stop(now + 0.12);
 }
@@ -951,7 +994,7 @@ export function playShieldBreak() {
     osc.frequency.exponentialRampToValueAtTime(freq * 0.5, now + i * 0.03 + 0.06);
     gain.gain.setValueAtTime(0.08, now + i * 0.03);
     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.03 + 0.06);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(now + i * 0.03);
     osc.stop(now + i * 0.03 + 0.06);
   });
@@ -967,7 +1010,7 @@ export function playShieldBreak() {
   const ng = audioCtx.createGain();
   ng.gain.setValueAtTime(0.06, now);
   ng.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-  noise.connect(filt).connect(ng).connect(audioCtx.destination);
+  noise.connect(filt).connect(ng).connect(masterBus());
   noise.start(now);
   noise.stop(now + 0.1);
 }
@@ -986,7 +1029,7 @@ export function playRainbowActivate() {
     osc.frequency.setValueAtTime(freq, t);
     gain.gain.setValueAtTime(0.08, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(t);
     osc.stop(t + 0.12);
   });
@@ -1011,7 +1054,7 @@ export function playMagnetActivate() {
   lfo.stop(now + 0.2);
   gain.gain.setValueAtTime(0.06, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.2);
 }
@@ -1028,7 +1071,7 @@ export function playSlowMoActivate() {
   osc.frequency.exponentialRampToValueAtTime(200, now + 0.3);
   gain.gain.setValueAtTime(0.1, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.35);
 }
@@ -1048,7 +1091,7 @@ export function playColorChange() {
     osc.frequency.exponentialRampToValueAtTime(freq * 1.5, t + 0.06);
     gain.gain.setValueAtTime(0.08, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(t);
     osc.stop(t + 0.08);
   }
@@ -1067,7 +1110,7 @@ export function playMysteryBoxOpen() {
     osc.frequency.setValueAtTime(1500 + i * 50, t);
     gain.gain.setValueAtTime(0.05, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(t);
     osc.stop(t + 0.03);
   }
@@ -1087,7 +1130,7 @@ export function playMysteryBoxReveal() {
     osc.frequency.setValueAtTime(freq, t);
     gain.gain.setValueAtTime(0.12, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(t);
     osc.stop(t + 0.25);
   });
@@ -1106,7 +1149,7 @@ export function playRocketBoost() {
   gain.gain.setValueAtTime(0.001, now);
   gain.gain.linearRampToValueAtTime(0.06, now + 0.1);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.35);
 }
@@ -1127,7 +1170,7 @@ export function playBoostRelease() {
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.04, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-  src.connect(filter).connect(gain).connect(audioCtx.destination);
+  src.connect(filter).connect(gain).connect(masterBus());
   src.start(now);
   src.stop(now + 0.1);
 }
@@ -1143,7 +1186,7 @@ export function playRocketStarCollect() {
   osc.frequency.exponentialRampToValueAtTime(1400, now + 0.06);
   gain.gain.setValueAtTime(0.08, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.12);
 }
@@ -1160,7 +1203,7 @@ export function playFuelCanCollect() {
   gain.gain.setValueAtTime(0.08, now);
   gain.gain.linearRampToValueAtTime(0.08, now + 0.3);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.45);
 }
@@ -1180,7 +1223,7 @@ export function playAsteroidNearMiss() {
   filter.Q.value = 1.5;
   gain.gain.setValueAtTime(0.05, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  osc.connect(filter).connect(gain).connect(audioCtx.destination);
+  osc.connect(filter).connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.15);
 }
@@ -1196,7 +1239,7 @@ export function playRocketCrash() {
   imp.frequency.setValueAtTime(80, now);
   impG.gain.setValueAtTime(0.15, now);
   impG.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-  imp.connect(impG).connect(audioCtx.destination);
+  imp.connect(impG).connect(masterBus());
   imp.start(now);
   imp.stop(now + 0.12);
   // Descending whistle
@@ -1207,7 +1250,7 @@ export function playRocketCrash() {
   wh.frequency.exponentialRampToValueAtTime(200, now + 0.6);
   whG.gain.setValueAtTime(0.06, now + 0.08);
   whG.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-  wh.connect(whG).connect(audioCtx.destination);
+  wh.connect(whG).connect(masterBus());
   wh.start(now + 0.08);
   wh.stop(now + 0.6);
 }
@@ -1225,7 +1268,7 @@ export function playMilestoneChime() {
     osc.frequency.setValueAtTime(freq, t);
     gain.gain.setValueAtTime(0.08, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterBus());
     osc.start(t);
     osc.stop(t + 0.2);
   });
@@ -1241,7 +1284,7 @@ export function playCountdownBeep() {
   osc.frequency.setValueAtTime(800, now);
   gain.gain.setValueAtTime(0.06, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.12);
 }
@@ -1258,7 +1301,7 @@ export function playLaunchRumble() {
   gain.gain.setValueAtTime(0.07, now);
   gain.gain.linearRampToValueAtTime(0.07, now + 0.25);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-  osc.connect(gain).connect(audioCtx.destination);
+  osc.connect(gain).connect(masterBus());
   osc.start(now);
   osc.stop(now + 0.45);
   // Noise burst
@@ -1274,7 +1317,7 @@ export function playLaunchRumble() {
   const filter = audioCtx.createBiquadFilter();
   filter.type = 'lowpass';
   filter.frequency.value = 400;
-  src.connect(filter).connect(nGain).connect(audioCtx.destination);
+  src.connect(filter).connect(nGain).connect(masterBus());
   src.start(now);
   src.stop(now + 0.35);
 }
