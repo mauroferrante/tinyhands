@@ -507,10 +507,14 @@
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
 <script>
-  // Developer exclusion: skip analytics on localhost, LAN, or if 'hide_me' flag is set
-  if (window.location.hostname !== 'localhost' &&
-      !window.location.hostname.startsWith('192.168') &&
-      localStorage.getItem('hide_me') !== 'true') {
+  // Developer exclusion: skip analytics on localhost, LAN, Vercel previews, or if 'hide_me' flag is set
+  var host = window.location.hostname;
+  var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]' ||
+      /^192\.168\./.test(host) || /^10\./.test(host) || /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+      /\.local$/.test(host) || /\.vercel\.app$/.test(host);
+  var hideMe = false;
+  try { hideMe = localStorage.getItem('hide_me') === 'true'; } catch (e) {}
+  if (!isLocal && !hideMe) {
     ['/_vercel/insights/script.js', '/_vercel/speed-insights/script.js'].forEach(function(src) {
       var s = document.createElement('script');
       s.src = src;

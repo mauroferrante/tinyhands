@@ -9,6 +9,8 @@ import { shareOrCopy } from '../share.js';
 import { createAudience, destroyAudience, audienceReact } from './stack-audience.js';
 import { preloadEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
+import { createTimerPool } from '../timers.js';
+import { local } from '../storage.js';
 
 function wireEndcardShare(container) {
   const btn = container.querySelector('[data-share]');
@@ -77,7 +79,11 @@ const SWAY_SPEEDS = [0.6, 0.9, 1.2, 1.5, 1.8, 2.1];
 
 // ---- High Score ----
 const LS_KEY = 'tinyhandsplay-stack-best';
-let stBestScore = parseInt(localStorage.getItem(LS_KEY) || '0', 10);
+// Module-load storage read: an unguarded localStorage here threw in Safari
+// with "Block All Cookies" and took down the entire module graph (no games).
+let stBestScore = local.getInt(LS_KEY);
+const stTimers = createTimerPool();   // collapse/sway timeouts, cancelled in stop()
+let stSessionId = 0;
 
 let stTowerBlocks = [];
 let stActiveEl = null;
@@ -96,7 +102,6 @@ let stLeanDirection = 0;
 let stStructuralStress = 0;
 let stIdealCenterX = 0;
 let stWobbleTime = 0;
-let stRestartTimer = null;
 let stGameState = 'idle';
 let stAnimFrame = null;
 let stCableLength = 0;
@@ -133,7 +138,7 @@ function stShowBestScore() {
 function stCheckHighScore() {
   if (stBlockCount > stBestScore) {
     stBestScore = stBlockCount;
-    localStorage.setItem(LS_KEY, stBestScore);
+    local.set(LS_KEY, stBestScore);
     stackBestEl.textContent = 'Best: ' + stBestScore;
     stackBestEl.classList.remove('new-best');
     void stackBestEl.offsetWidth; // force reflow for re-triggering animation
@@ -330,6 +335,7 @@ function stOnLanded() {
       const tiltDeg = normalizedOffset * MAX_TILT;
       const ballRelativeX = ballCenterX - landedX;
       stActiveEl.style.transformOrigin = ballRelativeX + 'px bottom';
+      stActiveEl.style.transform = 'rotate(' + tiltDeg + 'deg)';   // was computed but never applied
       stActiveEl.style.bottom = GROUND_H + 'px';
       stActiveEl.style.left = landedX + 'px';
       stActiveEl.classList.remove('active');
@@ -342,7 +348,7 @@ function stOnLanded() {
       playThud();
       audienceReact('gasp');
       playCrowdGasp();
-      setTimeout(() => stTriggerCollapse(), 300);
+      stTimers.later(() => stTriggerCollapse(), 300);
       return;
     }
 
@@ -401,7 +407,7 @@ function stOnLanded() {
       playThud();
       audienceReact('gasp');
       playCrowdGasp();
-      setTimeout(() => stTriggerCollapse(), 300);
+      stTimers.later(() => stTriggerCollapse(), 300);
     } else {
       stActiveEl.remove();
       stActiveEl = null;
@@ -472,11 +478,11 @@ function stOnLanded() {
 
   const LEAN_COLLAPSE_THRESHOLD = 1.5;
   if (stInstability >= INSTABILITY_THRESHOLD || Math.abs(stLeanDirection) >= LEAN_COLLAPSE_THRESHOLD) {
-    setTimeout(() => stTriggerCollapse(), 400);
+    stTimers.later(() => stTriggerCollapse(), 400);
     return;
   }
 
-  setTimeout(() => stStartSway(), 250);
+  stTimers.later(() => stStartSway(), 250);
 }
 
 function stTriggerCollapse() {
@@ -557,7 +563,7 @@ function stTriggerTowerComplete() {
 }
 
 function stResetStack() {
-  if (stRestartTimer) { clearTimeout(stRestartTimer); stRestartTimer = null; }
+  stTimers.clearAll();
 
   stTowerBlocks.forEach(b => b.el.remove());
   stTowerBlocks = [];
@@ -690,7 +696,7 @@ export const stackSmash = {
     stStructuralStress = 0;
     stIdealCenterX = 0;
     stWobbleTime = 0;
-    stRestartTimer = null;
+    stTimers.clearAll();
     stTowerBlocks = [];
     stActiveEl = null;
     stDropping = false;
@@ -700,13 +706,19 @@ export const stackSmash = {
     stackTowerEl.style.transform = 'rotate(0deg)';
     if (stackDangerEl) stackDangerEl.style.setProperty('--danger-opacity', '0');
     stackScoreEl.textContent = '0';
+    stackCelebrate.classList.remove('show');
+    stackCelebrate.innerHTML = '';
 
     // High score display
-    stBestScore = parseInt(localStorage.getItem(LS_KEY) || '0', 10);
+    stBestScore = local.getInt(LS_KEY);
     stShowBestScore();
 
-    // Wait for emoji preload then build audience and start game
+    // Wait for emoji preload then build audience. If stop() ran in the
+    // meantime, skip — otherwise the audience (and its ResizeObserver) would
+    // be built into a hidden game and never torn down.
+    const mySession = ++stSessionId;
     preloadEmojis([...EMOJI_REGISTRY['stack-smash'], ...EMOJI_REGISTRY['stack-audience']]).then(() => {
+      if (mySession !== stSessionId || stAnimFrame === null) return;
       createAudience(stackGameEl);
     });
 
@@ -716,9 +728,8 @@ export const stackSmash = {
   stop() {
     stackGameEl.style.display = 'none';
     if (stAnimFrame) cancelAnimationFrame(stAnimFrame);
-    if (stRestartTimer) clearTimeout(stRestartTimer);
     stAnimFrame = null;
-    stRestartTimer = null;
+    stTimers.clearAll();
     stTowerBlocks.forEach(b => b.el.remove());
     stTowerBlocks = [];
     if (stActiveEl) { stActiveEl.remove(); stActiveEl = null; }

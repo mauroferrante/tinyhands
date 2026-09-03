@@ -4,6 +4,8 @@
  *  Kids play along by pressing the matching key as notes land.
  * ========================================================= */
 
+import { createTimerPool } from '../timers.js';
+
 // ===== Song Data =====
 // Format: { p: pitch name, b: beat duration, g: gap (rest) }
 
@@ -194,6 +196,8 @@ export class SongParadeEngine {
     this.stats = { hits: 0, misses: 0, total: 0 };
     this.repeatCount = 0;
     this.whaleTimer = null;
+    this.timers = createTimerPool();   // countdown / note fade / celebration timeouts — cancelled in destroy()
+    this.destroyed = false;
     this.boundTick = this.tick.bind(this);
     this.boundResize = this.onResize.bind(this);
     this.glowingKeys = new Set();
@@ -208,7 +212,9 @@ export class SongParadeEngine {
   }
 
   destroy() {
+    this.destroyed = true;
     this.stopPlaying();
+    this.timers.clearAll();
     window.removeEventListener('resize', this.boundResize);
     if (this.whaleTimer) clearTimeout(this.whaleTimer);
     if (this.paradeEl) { this.paradeEl.remove(); this.paradeEl = null; }
@@ -453,7 +459,7 @@ export class SongParadeEngine {
         void countEl.offsetWidth;
         countEl.classList.add('parade-countdown-pop');
         count--;
-        setTimeout(tick, 800);
+        this.timers.later(tick, 800);   // tracked: exiting mid-countdown used to start an immortal loop
       } else {
         countEl.remove();
         this.startPlaying();
@@ -465,6 +471,7 @@ export class SongParadeEngine {
   // ===== Core Game Loop =====
 
   startPlaying() {
+    if (this.destroyed || !this.paradeEl) return;
     this.isPlaying = true;
     this.nextNoteIdx = 0;
     this.activeNotes = [];
@@ -487,6 +494,9 @@ export class SongParadeEngine {
   stopPlaying() {
     this.isPlaying = false;
     if (this.rafId) { cancelAnimationFrame(this.rafId); this.rafId = null; }
+    // Also cancels a running countdown and the repeat/celebration timeouts
+    this.timers.clearAll();
+    if (this.trackEl) this.trackEl.querySelectorAll('.parade-countdown').forEach(el => el.remove());
     this.activeNotes.forEach(n => { if (n.el && n.el.parentNode) n.el.remove(); });
     this.activeNotes = [];
     this.clearKeyGlows();
@@ -731,7 +741,7 @@ export class SongParadeEngine {
 
     this.triggerWhaleSplash();
 
-    setTimeout(() => {
+    this.timers.later(() => {
       if (note.el.parentNode) note.el.remove();
       note.state = 'dead';
     }, 400);
@@ -743,7 +753,7 @@ export class SongParadeEngine {
 
     note.el.classList.add('missed');
 
-    setTimeout(() => {
+    this.timers.later(() => {
       if (note.el.parentNode) note.el.remove();
       note.state = 'dead';
     }, 600);
@@ -777,7 +787,7 @@ export class SongParadeEngine {
     drop.style.top = (whaleRect.top - gameRect.top - 10) + 'px';
     this.containerEl.appendChild(drop);
 
-    setTimeout(() => drop.remove(), 700);
+    this.timers.later(() => drop.remove(), 700);
   }
 
   // ===== Song Complete =====
@@ -791,7 +801,7 @@ export class SongParadeEngine {
     if (this.repeatCount < SONG_REPEATS) {
       // Loop: restart the song after a brief pause
       this.whaleEl.className = 'parade-whale happy';
-      setTimeout(() => {
+      this.timers.later(() => {
         this.startPlaying();
       }, 800);
       return;
@@ -801,7 +811,7 @@ export class SongParadeEngine {
     this.whaleEl.className = 'parade-whale happy';
     if (this.onComplete) this.onComplete();
 
-    setTimeout(() => {
+    this.timers.later(() => {
       this.showCelebration();
     }, 500);
   }
@@ -857,7 +867,7 @@ export class SongParadeEngine {
 
     const gameRect = this.containerEl.getBoundingClientRect();
     for (let wave = 0; wave < 4; wave++) {
-      setTimeout(() => {
+      this.timers.later(() => {
         for (let i = 0; i < 4; i++) {
           this.spawnParticles(
             Math.random() * gameRect.width,

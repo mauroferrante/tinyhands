@@ -9,6 +9,8 @@ import { spawnParticles } from '../effects.js';
 import { shareOrCopy } from '../share.js';
 import { preloadEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
+import { createTimerPool } from '../timers.js';
+import { local } from '../storage.js';
 
 function wireEndcardShare(container) {
   const btn = container.querySelector('[data-share]');
@@ -154,6 +156,9 @@ let gameState = 'idle'; // idle | playing | paused | gameover | won
 let answered = false;
 let nextWordTimer = null;
 let isTouchDevice = false;
+let bestAtStart = 0;     // best before this run — "New Best!" compares against this, not the live value
+const timers = createTimerPool();   // every timeout goes through here so stop() can cancel them all
+let sessionId = 0;                  // bumped on start(); the async preload checks it before touching state
 
 // ---- Utilities ----
 
@@ -196,7 +201,7 @@ function updateScoreBar() {
 function checkHighScore() {
   if (score > bestScore) {
     bestScore = score;
-    try { localStorage.setItem(LS_KEY, String(bestScore)); } catch (e) {}
+    local.set(LS_KEY, bestScore);
     updateScoreBar();
   }
 }
@@ -213,7 +218,10 @@ function showNextWord() {
 
   currentWord = shuffledPool[currentIndex++];
   blankIndex = Math.floor(Math.random() * currentWord.word.length);
-  answered = false;
+  // Stay "answered" until the new tiles exist — buildTiles defers the DOM
+  // rebuild by 300ms, and a keypress in that window used to find no
+  // .spell-blank tile, throw, and leave the game frozen.
+  answered = true;
 
   // Clear feedback
   spellFeedbackEl.textContent = '';
@@ -245,7 +253,7 @@ function buildTiles() {
   // Slide out old tiles
   spellTilesEl.classList.add('spell-tiles-exit');
 
-  setTimeout(() => {
+  timers.later(() => {
     spellTilesEl.innerHTML = '';
     spellTilesEl.classList.remove('spell-tiles-exit');
     spellTilesEl.classList.add('spell-tiles-enter');
@@ -270,7 +278,10 @@ function buildTiles() {
       spellTilesEl.appendChild(tile);
     }
 
-    setTimeout(() => {
+    // Tiles are in the DOM — now a guess has something to land on
+    if (gameState === 'playing') answered = false;
+
+    timers.later(() => {
       spellTilesEl.classList.remove('spell-tiles-enter');
     }, 400);
   }, currentIndex > 1 ? 300 : 0); // skip exit animation for first word
@@ -278,10 +289,11 @@ function buildTiles() {
 
 function handleGuess(letter) {
   if (answered || gameState !== 'playing') return;
-  answered = true;
 
   const correctLetter = currentWord.word[blankIndex];
   const blankTile = spellTilesEl.querySelector('.spell-blank');
+  if (!blankTile) return;   // tiles mid-rebuild; ignore rather than throw
+  answered = true;
 
   if (letter === correctLetter) {
     handleCorrect(blankTile, letter);
@@ -337,7 +349,7 @@ function handleCorrect(blankTile, letter) {
   disableKey(letter);
 
   // Next word after delay
-  nextWordTimer = setTimeout(() => showNextWord(), 1800);
+  nextWordTimer = timers.later(() => showNextWord(), 1800);
 }
 
 function handleWrong(blankTile, letter) {
@@ -359,7 +371,7 @@ function handleWrong(blankTile, letter) {
   streak = 0;
 
   // After delay, reveal correct letter
-  setTimeout(() => {
+  timers.later(() => {
     blankTile.textContent = currentWord.word[blankIndex];
     blankTile.classList.remove('spell-wrong');
     blankTile.classList.add('spell-revealed');
@@ -370,9 +382,9 @@ function handleWrong(blankTile, letter) {
     animateHeartLost();
 
     if (lives <= 0) {
-      nextWordTimer = setTimeout(() => triggerGameOver(), 2500);
+      nextWordTimer = timers.later(() => triggerGameOver(), 2500);
     } else {
-      nextWordTimer = setTimeout(() => showNextWord(), 2500);
+      nextWordTimer = timers.later(() => showNextWord(), 2500);
     }
   }, 800);
 }
@@ -389,7 +401,7 @@ function animateHeartLost() {
   const heartToRemove = hearts[lives];
   if (heartToRemove) {
     heartToRemove.classList.add('spell-heart-breaking');
-    setTimeout(() => {
+    timers.later(() => {
       heartToRemove.textContent = '';
       heartToRemove.appendChild(createEmojiImg('🤍', 'emoji-img'));
       heartToRemove.classList.add('lost');
@@ -403,8 +415,10 @@ function animateHeartLost() {
 function triggerGameOver() {
   gameState = 'gameover';
 
-  const isNewBest = score >= bestScore && score > 0;
-  if (isNewBest) checkHighScore();
+  // bestScore was already raised during play by checkHighScore(), so compare
+  // against the value at the start of this run or a tie shows "New Best!"
+  const isNewBest = score > bestAtStart && score > 0;
+  checkHighScore();
 
   spellCelebrateEl.innerHTML = `
     <div class="spell-endcard">
@@ -615,12 +629,14 @@ function destroyMobileKeyboard() {
 // ---- Reset ----
 
 function resetGame() {
-  if (nextWordTimer) { clearTimeout(nextWordTimer); nextWordTimer = null; }
+  timers.clearAll();
+  nextWordTimer = null;
 
   shufflePool();
   lives = 3;
   score = 0;
   streak = 0;
+  bestAtStart = bestScore;
   gameState = 'playing';
   answered = false;
 
@@ -638,7 +654,8 @@ function resetGame() {
 // ---- Cleanup ----
 
 function cleanup() {
-  if (nextWordTimer) { clearTimeout(nextWordTimer); nextWordTimer = null; }
+  timers.clearAll();
+  nextWordTimer = null;
   gameState = 'idle';
   currentWord = null;
   answered = false;
@@ -667,10 +684,16 @@ export const spellItOut = {
   id: 'spell-it-out',
 
   start() {
+    const mySession = ++sessionId;
+    gameState = 'loading';   // cleanup() resets to 'idle', which tells the preload callback we've been stopped
     spellGameEl.style.display = 'block';
-    bestScore = parseInt(localStorage.getItem(LS_KEY) || '0', 10);
+    bestScore = local.getInt(LS_KEY);
     buildMobileKeyboard();
-    preloadEmojis(EMOJI_REGISTRY['spell-it-out']).then(() => resetGame());
+    // If stop() ran while emojis were still downloading, don't resurrect the game
+    preloadEmojis(EMOJI_REGISTRY['spell-it-out']).then(() => {
+      if (mySession !== sessionId || gameState !== 'loading') return;
+      resetGame();
+    });
   },
 
   stop() {

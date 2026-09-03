@@ -15,6 +15,7 @@ import { ballBonanza } from './games/ball-bonanza.js';
 import { tinyTown } from './games/tiny-town.js';
 import { melodyMaker } from './games/melody-maker.js';
 import { shareOrCopy } from './share.js';
+import { local, session } from './storage.js';
 
 // ---- Element references ----
 const landing    = document.getElementById('landing');
@@ -52,6 +53,7 @@ const isStandalone = navigator.standalone === true ||
 // ---- Shared state ----
 let currentGame     = null;
 let pendingGame     = null;
+let ownBackPending  = false;   // stopGame() called history.back(); its popstate is ours, not the user's
 let deferredAndroidPrompt = null;
 
 // ---- Game Registry ----
@@ -110,34 +112,33 @@ function playEntryAnimation(originBtn, callback) {
 }
 
 function launchGame(gameId, btn) {
+  // A double-tap on Play used to queue two deferred starts; the second one
+  // called startGame(null) and left the playground visible with no game and
+  // no working exit. One launch at a time.
+  if (pendingGame || currentGame) return;
   initAudio();
   const game = GAMES[gameId];
   if (!game) return;
   pendingGame = game;
 
+  // Consume pendingGame exactly once, whichever path gets there first
+  const startPending = () => {
+    if (!currentGame && pendingGame) startGame(pendingGame);
+    pendingGame = null;
+  };
+
   playEntryAnimation(btn, () => {
     // iOS: skip Fullscreen API to avoid "typing in fullscreen" security warning.
     // CSS position:fixed + inset:0 on #playground already fills the viewport.
-    if (isIOS) {
-      startGame(pendingGame);
-      pendingGame = null;
-      return;
-    }
+    if (isIOS) { startPending(); return; }
     const el = document.documentElement;
     const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
     if (rfs) {
-      rfs.call(el).then(() => {
-        if (!currentGame && pendingGame) {
-          startGame(pendingGame);
-          pendingGame = null;
-        }
-      }).catch(() => {
-        if (pendingGame) startGame(pendingGame);
-        pendingGame = null;
-      });
+      let p;
+      try { p = rfs.call(el); } catch (e) { p = Promise.reject(e); }
+      Promise.resolve(p).then(startPending).catch(startPending);
     } else {
-      startGame(pendingGame);
-      pendingGame = null;
+      startPending();
     }
   });
 }
@@ -178,7 +179,10 @@ function updateExitBtn() {
   }
 }
 
-function stopGame() {
+// Single teardown path for ✕, ESC, fullscreen exit and the browser Back
+// button. `fromHistory` is true when popstate already moved the URL, so we
+// must not touch history again.
+function stopGame({ fromHistory = false } = {}) {
   if (!currentGame) return;
 
   currentGame.stop();
@@ -187,6 +191,14 @@ function stopGame() {
   playground.style.display = 'none';
   landing.style.display = 'flex';
   document.body.classList.remove('game-active');
+
+  // Back button out of a desktop fullscreen game left the landing page
+  // fullscreen — leave it here, fullscreenchange then sees no game and no-ops
+  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if (fsEl) {
+    const exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (exit) { try { const p = exit.call(document); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+  }
 
   // Reset scroll position — iOS Safari sometimes retains stale scroll offset
   // from when the address bar was hidden during gameplay
@@ -202,27 +214,46 @@ function stopGame() {
     void header.offsetWidth;              // force reflow
     header.style.animation = '';          // restore CSS animation
   }
-  // Reset PWA banner to collapsed state (no opacity fix needed — banner is fixed-position now)
-  if (pwaBanner && pwaBanner.style.display !== 'none') {
-    pwaBannerSteps.classList.remove('expanded');
-    document.body.classList.remove('pwa-banner-expanded');
-    pwaBannerExpand.style.display = '';
-  }
+  collapsePwaBanner();
 
   playground.querySelectorAll('.particle').forEach(p => p.remove());
 
-  // Virtual page view — back to landing
-  history.pushState({}, '', '/');
+  // Virtual page view — back to landing. Popping the /play/ entry (instead of
+  // pushing a new '/') keeps the history stack flat, so one Back press
+  // leaves the site instead of landing on a stale /play/x URL.
+  if (!fromHistory) {
+    if (history.state && history.state.game) {
+      // The popstate from this back() arrives asynchronously — flag it so the
+      // handler doesn't mistake it for a user Back press against a game that
+      // may have been launched in the meantime.
+      ownBackPending = true;
+      history.back();
+    } else {
+      history.replaceState({}, '', '/');
+    }
+  }
 
   // Show post-game nudge once per session after first game exit
-  if (!sessionStorage.getItem('tipNudgeShown')) {
-    sessionStorage.setItem('tipNudgeShown', 'true');
+  if (!session.get('tipNudgeShown')) {
+    session.set('tipNudgeShown', 'true');
     setTimeout(() => {
       postgameNudge.style.display = 'flex';
       requestAnimationFrame(() => postgameNudge.classList.add('show'));
     }, 1000);
   }
+}
 
+// ✕ button and ESC key: leave fullscreen if we're in it (fullscreenchange
+// then calls stopGame), otherwise stop directly. Previously ESC only worked
+// as a side effect of the browser exiting fullscreen — if requestFullscreen
+// had been refused, the "Press ESC to exit" hint lied and there was no exit.
+function exitGame() {
+  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if (fsEl) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else {
+    stopGame();
+  }
 }
 
 // ===== Fullscreen change listener =====
@@ -257,8 +288,14 @@ document.querySelectorAll('.game-card').forEach(card => {
 });
 
 // ===== Bubble pop sound on card entrance animation =====
+// animationend bubbles, so `once` alone would be consumed by whichever child
+// animation (e.g. the icon) finishes first — wait for the card's own.
 document.querySelectorAll('.game-card').forEach((card, i) => {
-  card.addEventListener('animationend', () => { if (isAudioReady()) playBubblePop(i); }, { once: true });
+  card.addEventListener('animationend', function onEnd(e) {
+    if (e.target !== card) return;
+    card.removeEventListener('animationend', onEnd);
+    if (isAudioReady()) playBubblePop(i);
+  });
 });
 
 // ===== Play buttons launch games =====
@@ -269,22 +306,10 @@ document.querySelectorAll('.play-btn[data-game]').forEach(btn => {
 });
 
 // ===== Exit Button (touch + desktop) =====
-exitBtn.addEventListener('click', () => {
-  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-  if (fsEl) {
-    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-  } else {
-    stopGame();
-  }
-});
+exitBtn.addEventListener('click', exitGame);
 exitBtn.addEventListener('touchend', (e) => {
-  e.preventDefault();
-  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-  if (fsEl) {
-    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-  } else {
-    stopGame();
-  }
+  e.preventDefault();   // suppress the synthetic click so exitGame runs once
+  exitGame();
 });
 
 // ===== Story Modal =====
@@ -294,10 +319,11 @@ const footerStoryLink = document.getElementById('footerStoryLink');
 
 function openStory(e) {
   if (e) e.preventDefault();
+  if (storyBackdrop.classList.contains('show')) return;
   storyBackdrop.style.display = 'flex';
   requestAnimationFrame(() => storyBackdrop.classList.add('show'));
   document.body.style.overflow = 'hidden';
-  history.pushState({}, '', '/story');
+  history.pushState({ story: true }, '', '/story');
 }
 
 if (footerStoryLink) footerStoryLink.addEventListener('click', openStory);
@@ -314,11 +340,16 @@ if (heroLearnMore) {
   heroLearnMore.addEventListener('click', openStory);
 }
 
-function closeStory() {
+// `fromHistory`: popstate already left /story, don't move history again
+function closeStory({ fromHistory = false } = {}) {
+  if (!storyBackdrop.classList.contains('show')) return;
   storyBackdrop.classList.remove('show');
   setTimeout(() => { storyBackdrop.style.display = 'none'; }, 300);
   document.body.style.overflow = '';
-  if (window.location.pathname === '/story') history.pushState({}, '', '/');
+  if (!fromHistory) {
+    if (history.state && history.state.story) history.back();
+    else if (window.location.pathname === '/story') history.replaceState({}, '', '/');
+  }
 }
 
 storyClose.addEventListener('click', closeStory);
@@ -338,16 +369,21 @@ const TYPEFORM_URL = 'https://mauroferrante85.typeform.com/to/pptDHXKN';
 
 document.getElementById('feedbackLink').addEventListener('click', (e) => {
   e.preventDefault();
+  if (fbBackdrop.classList.contains('show')) return;
   fbFrame.src = TYPEFORM_URL;
   fbBackdrop.style.display = 'block';
   requestAnimationFrame(() => fbBackdrop.classList.add('show'));
   document.body.style.overflow = 'hidden';
+  // Push an entry so the Back button closes the overlay instead of leaving the site
+  history.pushState({ feedback: true }, '', window.location.pathname);
 });
 
-function closeFeedback() {
+function closeFeedback({ fromHistory = false } = {}) {
+  if (!fbBackdrop.classList.contains('show')) return;
   fbBackdrop.classList.remove('show');
   setTimeout(() => { fbBackdrop.style.display = 'none'; fbFrame.src = ''; }, 300);
   document.body.style.overflow = '';
+  if (!fromHistory && history.state && history.state.feedback) history.back();
 }
 fbClose.addEventListener('click', closeFeedback);
 fbBackdrop.addEventListener('click', (e) => {
@@ -385,7 +421,11 @@ postgameNudgeShare.addEventListener('click', async () => {
 // "typing in fullscreen" warning this gate guarded against can't occur there.)
 document.addEventListener('keydown', (e) => {
   if (!currentGame) return;
-  if (e.key !== 'Escape') e.preventDefault();
+  if (e.key === 'Escape') { exitGame(); return; }
+  // Let browser shortcuts through (Cmd/Ctrl+R, F5, Cmd+F…) — a parent must be
+  // able to reload while a game is up. Tab stays swallowed: Splat Keys maps it.
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  e.preventDefault();
   currentGame.onKey(e);
 });
 
@@ -397,12 +437,24 @@ document.addEventListener('mousedown', (e) => {
 });
 
 // Touch
+// Elements whose default touch behaviour must survive: anything bound to
+// `click` (preventDefault on touchstart suppresses the synthetic click on
+// iOS/Android) or that needs native scrolling. Melody Maker's lesson picker
+// was missing from this list, which is why no lesson could be tapped or
+// scrolled on tablets.
+const TOUCH_PASSTHROUGH = [
+  '#spellKeyboard', '#memoryGame',
+  '#melodyKeyboard', '#melodyModeSelect', '#melodyLevelSelect', '.melody-celebrate',
+  '.parade-song-select', '.parade-top-bar',
+  '.endcard-share-btn', '[class*="endcard-btn"]', '[class*="btn-again"]', '[class*="btn-diff"]',
+  '#postgameNudge', '#exitGame'
+].join(',');
+
 document.addEventListener('touchstart', (e) => {
   if (!currentGame) return;
-  // Don't preventDefault on elements that need click events to fire
-  if (!e.target.closest('#spellKeyboard') && !e.target.closest('#memoryGame') && !e.target.closest('#melodyKeyboard') && !e.target.closest('#melodyModeSelect') && !e.target.closest('.melody-celebrate') && !e.target.closest('.endcard-share-btn') && !e.target.closest('[class*="endcard-btn"]') && !e.target.closest('[class*="btn-again"]') && !e.target.closest('[class*="btn-diff"]') && !e.target.closest('#postgameNudge')) {
-    e.preventDefault();
-  }
+  // The ✕ button has its own handler — don't also drop a block / spawn an emoji
+  if (e.target.closest('#exitGame')) return;
+  if (!e.target.closest(TOUCH_PASSTHROUGH)) e.preventDefault();
   currentGame.onTouch(e);
 }, { passive: false });
 
@@ -424,29 +476,49 @@ document.addEventListener('click', () => { initAudio(); });
 // ===== Analytics: Virtual Page Views =====
 
 // Track intent (donate / share) as a brief virtual page view
+// The intent entry is pushed (so the analytics script sees a route change)
+// and then replaced back, so it leaves the stack one entry deeper at most
+// and keeps the game's history state intact for stopGame's history.back().
+// A second tap inside the window used to capture /intent/… as "prev" and
+// leave the URL stuck there.
+let intentTimer = null;
 function trackIntent(name) {
-  const prev = window.location.pathname;
-  history.pushState({}, '', '/intent/' + name);
-  setTimeout(() => history.pushState({}, '', prev), 600);
+  if (intentTimer) return;
+  const prevPath  = window.location.pathname;
+  const prevState = history.state;
+  history.pushState(prevState, '', '/intent/' + name);
+  intentTimer = setTimeout(() => {
+    intentTimer = null;
+    if (window.location.pathname.startsWith('/intent/')) history.replaceState(prevState, '', prevPath);
+  }, 600);
 }
 
 // Browser back button: exit game when user navigates back
 window.addEventListener('popstate', () => {
-  if (currentGame && !window.location.pathname.startsWith('/play/')) {
-    currentGame.stop();
-    currentGame = null;
-    playground.style.display = 'none';
-    landing.style.display = 'flex';
-    document.body.classList.remove('game-active');
-    const header = landing.querySelector('header');
-    if (header) { header.style.animation = 'none'; void header.offsetWidth; header.style.animation = ''; }
-    // Reset PWA banner to collapsed state
-    if (pwaBanner && pwaBanner.style.display !== 'none') {
-      pwaBannerSteps.classList.remove('expanded');
-      document.body.classList.remove('pwa-banner-expanded');
-      pwaBannerExpand.style.display = '';
-    }
-    playground.querySelectorAll('.particle').forEach(p => p.remove());
+  const path  = window.location.pathname;
+  const state = history.state || {};
+
+  if (ownBackPending) {
+    // This is the echo of stopGame()'s own history.back(). The game is already
+    // gone; only tidy the URL if the entry we landed on is stale.
+    ownBackPending = false;
+    if (!currentGame && (path.startsWith('/play/') || path.startsWith('/intent/'))) history.replaceState({}, '', '/');
+    return;
+  }
+
+  if (currentGame) {
+    if (!path.startsWith('/play/')) stopGame({ fromHistory: true });
+    return;
+  }
+  // Modals: Back closes them (their open pushed a state entry)
+  if (!state.story && storyBackdrop.classList.contains('show')) closeStory({ fromHistory: true });
+  if (!state.feedback && fbBackdrop.classList.contains('show')) closeFeedback({ fromHistory: true });
+
+  // No game running but the URL says otherwise (stale entry left by an
+  // earlier intent ping or an old session) — normalise so the address bar
+  // matches what's on screen.
+  if (path.startsWith('/play/') || path.startsWith('/intent/') || (path === '/story' && !state.story)) {
+    history.replaceState({}, '', '/');
   }
 });
 
@@ -478,32 +550,44 @@ const pwaBannerExpand  = document.getElementById('pwaBannerExpand');
 // -- Landing banner (dismissible — resurfaces after 5 sessions) --
 const pwaBannerClose = document.getElementById('pwaBannerClose');
 
+// Dismissed banner resurfaces after 5 page loads: trackSession() (run on
+// every load) counts them and clears the dismissal at 5, so by the time
+// shouldShowBanner() runs, "dismissed" alone is the answer.
 function shouldShowBanner() {
-  const dismissed = parseInt(localStorage.getItem('pwa-banner-dismissed') || '0', 10);
-  if (!dismissed) return true;
-  const sessions = parseInt(localStorage.getItem('pwa-banner-sessions') || '0', 10);
-  return sessions >= 5;
+  return !local.getInt('pwa-banner-dismissed');
 }
 
 function trackSession() {
-  const dismissed = parseInt(localStorage.getItem('pwa-banner-dismissed') || '0', 10);
-  if (dismissed) {
-    const sessions = parseInt(localStorage.getItem('pwa-banner-sessions') || '0', 10) + 1;
-    localStorage.setItem('pwa-banner-sessions', String(sessions));
-    if (sessions >= 5) {
-      localStorage.removeItem('pwa-banner-dismissed');
-      localStorage.removeItem('pwa-banner-sessions');
-    }
+  if (!local.getInt('pwa-banner-dismissed')) return;
+  const sessions = local.getInt('pwa-banner-sessions') + 1;
+  local.set('pwa-banner-sessions', sessions);
+  if (sessions >= 5) {
+    local.remove('pwa-banner-dismissed');
+    local.remove('pwa-banner-sessions');
   }
 }
 trackSession();
 
+function hidePwaBanner() {
+  pwaBanner.style.display = 'none';
+  document.body.classList.remove('pwa-banner-visible', 'pwa-banner-expanded');
+}
+
+// Collapse the install steps (used when returning from a game). Resets the
+// toggle label too — it used to stay on "Hide ▴" with the steps collapsed.
+function collapsePwaBanner() {
+  if (!pwaBanner || pwaBanner.style.display === 'none') return;
+  pwaBannerSteps.classList.remove('expanded');
+  document.body.classList.remove('pwa-banner-expanded');
+  pwaBannerExpand.style.display = '';
+  if (!deferredAndroidPrompt) pwaBannerExpand.textContent = 'Learn how ▾';
+}
+
 if (pwaBannerClose) {
   pwaBannerClose.addEventListener('click', () => {
-    pwaBanner.style.display = 'none';
-    document.body.classList.remove('pwa-banner-visible', 'pwa-banner-expanded');
-    localStorage.setItem('pwa-banner-dismissed', '1');
-    localStorage.setItem('pwa-banner-sessions', '0');
+    hidePwaBanner();
+    local.set('pwa-banner-dismissed', '1');
+    local.set('pwa-banner-sessions', '0');
   });
 }
 
@@ -565,7 +649,7 @@ function triggerAndroidInstall() {
     deferredAndroidPrompt.prompt();
     deferredAndroidPrompt.userChoice.then(() => {
       deferredAndroidPrompt = null;
-      pwaBanner.style.display = 'none';
+      hidePwaBanner();   // also drops the body classes that reserve footer padding
     });
   }
 }
