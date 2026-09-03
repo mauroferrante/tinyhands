@@ -26,11 +26,12 @@
   position: relative;
   width: 100vw;
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100svh;
   margin-bottom: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 /* Soft glow behind center */
@@ -61,7 +62,7 @@
 }
 .hero-layer--bg  { z-index: 1; }
 .hero-layer--mid { z-index: 2; }
-.hero-layer--fg  { z-index: 4; }
+.hero-layer--fg  { z-index: 4; will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 
 /* ---- Hero Text (center, static) ---- */
 .hero-text {
@@ -141,12 +142,15 @@
   pointer-events: auto;
   animation: heroPropBob 5s ease-in-out infinite;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
-/* Hover flair only where hover actually exists — iOS keeps :hover stuck after tap */
+/* Hover flair only where hover actually exists — iOS keeps :hover stuck after tap.
+   No drop-shadow (upstream removed it). */
 @media (hover: hover) and (pointer: fine) {
   .hero-prop:hover {
     transform: scale(1.08) translateY(-15px) !important;
-    filter: brightness(1.1) drop-shadow(0 20px 25px rgba(0,0,0,0.2));
+    filter: brightness(1.1);
   }
 }
 .hero-prop--piano  { left: 18%; transform: rotate(-5deg); animation-delay: 0.5s; animation-name: heroPianoBob; }
@@ -218,6 +222,14 @@
   .hero-prop { bottom: 5%; }
   .hero-prop--piano  { left: 8%; }
   .hero-prop--blocks { right: 5%; }
+}
+
+/* ---- iPad Portrait: bigger emojis + props ---- */
+@media (min-width: 769px) and (max-width: 1100px) and (orientation: portrait) {
+  .hero-cloud-cluster { width: clamp(380px, 55vw, 520px); height: clamp(180px, 22vw, 260px); }
+  .hero-icon { width: clamp(44px, 7vw, 80px); }
+  .hero-prop { width: clamp(240px, 32vw, 380px); bottom: 3%; }
+  .hero-prop--blocks { width: clamp(190px, 26vw, 320px); }
 }
 
 /* ---- Hero Responsive (Mobile < 768px) ---- */
@@ -1046,6 +1058,14 @@ body.game-active .pwa-banner {
   cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer;
 }
 .pwa-banner-close:hover { opacity: 1; }
+
+.pwa-copy-url {
+  font-size: 0.75rem;
+  color: var(--color-primary, #7c5cbf);
+  text-decoration: underline;
+  margin-left: 6px;
+  cursor: pointer;
+}
 
 .pwa-banner-steps {
   display: none;
