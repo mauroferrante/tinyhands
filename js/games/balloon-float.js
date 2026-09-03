@@ -160,7 +160,9 @@ let gameScale = 1;   // speed/spawn scale based on screen width
 // ===== Canvas Setup =====
 
 function initCanvas() {
-  const dpr = Math.max(2, window.devicePixelRatio || 1);
+  // Real DPR for the fullscreen canvas — forcing 2× on 1× desktop monitors
+  // quadruples the pixel fill per frame (sprites stay supersampled below)
+  const dpr = window.devicePixelRatio || 1;
   W = gameEl.clientWidth;
   H = gameEl.clientHeight;
   canvas.width = W * dpr;

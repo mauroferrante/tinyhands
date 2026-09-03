@@ -246,6 +246,21 @@
   }
 }
 
+/* Short landscape screens (phones, small tablets): shrink the stage so the
+   emoji + tiles clear the fixed-bottom on-screen keyboard */
+@media (pointer: coarse) and (max-height: 500px) {
+  .spell-stage {
+    gap: 0.8rem;
+    top: 42%;
+    transform: translate(-50%, -60%);
+  }
+  .spell-emoji {
+    font-size: clamp(56px, 18vh, 110px);
+    width: clamp(56px, 18vh, 110px);
+    height: clamp(56px, 18vh, 110px);
+  }
+}
+
 .spell-key-row {
   display: flex;
   justify-content: center;
@@ -254,7 +269,7 @@
 }
 
 .spell-key {
-  min-width: 32px;
+  min-width: 28px;  /* 32px × 10 keys + gaps overflows 320–360px phones */
   min-height: 44px;
   flex: 1;
   max-width: 44px;

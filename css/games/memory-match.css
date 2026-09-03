@@ -51,10 +51,12 @@
   font-family: inherit;
 }
 
-.memory-diff-btn:hover {
-  transform: scale(1.06) translateY(-3px);
-  box-shadow: 0 8px 25px rgba(124, 107, 191, 0.2);
-  border-color: var(--color-primary);
+@media (hover: hover) and (pointer: fine) {
+  .memory-diff-btn:hover {
+    transform: scale(1.06) translateY(-3px);
+    box-shadow: 0 8px 25px rgba(124, 107, 191, 0.2);
+    border-color: var(--color-primary);
+  }
 }
 
 .memory-diff-btn:active {
@@ -359,8 +361,10 @@
   border: 2px solid #ddd;
 }
 
-.memory-endcard-btn:hover {
-  transform: scale(1.05) translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .memory-endcard-btn:hover {
+    transform: scale(1.05) translateY(-2px);
+  }
 }
 
 .memory-endcard-btn:active {

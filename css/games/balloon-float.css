@@ -197,8 +197,10 @@
   box-shadow: 0 4px 15px rgba(107, 175, 207, 0.3);
 }
 
-.balloon-endcard-btn:hover {
-  transform: scale(1.05) translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .balloon-endcard-btn:hover {
+    transform: scale(1.05) translateY(-2px);
+  }
 }
 
 .balloon-endcard-btn:active {

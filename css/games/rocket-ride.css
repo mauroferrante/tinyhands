@@ -198,8 +198,10 @@
   box-shadow: 0 4px 15px rgba(91, 77, 160, 0.3);
 }
 
-.rocket-endcard-btn:hover {
-  transform: scale(1.05) translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .rocket-endcard-btn:hover {
+    transform: scale(1.05) translateY(-2px);
+  }
 }
 
 .rocket-endcard-btn:active {
@@ -211,8 +213,8 @@
 .rocket-dpad {
   display: none;
   position: fixed;
-  bottom: 20px;
-  left: 20px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  left: max(20px, env(safe-area-inset-left));
   z-index: 300;
   pointer-events: auto;
 }

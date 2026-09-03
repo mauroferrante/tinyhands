@@ -66,7 +66,9 @@
 /* ---- Hero Text (center, static) ---- */
 .hero-text {
   position: relative;
-  z-index: 3;
+  /* Above the FG prop layer (z-index 4): on short viewports the props
+     overlap the CTA buttons and their img boxes would swallow the clicks */
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -140,9 +142,12 @@
   animation: heroPropBob 5s ease-in-out infinite;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
 }
-.hero-prop:hover {
-  transform: scale(1.08) translateY(-15px) !important;
-  filter: brightness(1.1) drop-shadow(0 20px 25px rgba(0,0,0,0.2));
+/* Hover flair only where hover actually exists — iOS keeps :hover stuck after tap */
+@media (hover: hover) and (pointer: fine) {
+  .hero-prop:hover {
+    transform: scale(1.08) translateY(-15px) !important;
+    filter: brightness(1.1) drop-shadow(0 20px 25px rgba(0,0,0,0.2));
+  }
 }
 .hero-prop--piano  { left: 18%; transform: rotate(-5deg); animation-delay: 0.5s; animation-name: heroPianoBob; }
 .hero-prop--blocks { right: 10%; width: clamp(150px, 18vw, 300px); animation-delay: 1s; }
@@ -198,9 +203,11 @@
   color: var(--color-primary, #7c5cbf);
   border: 1.5px solid var(--color-primary, #7c5cbf);
 }
-.hero-btn:hover {
-  transform: scale(1.1) translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+@media (hover: hover) and (pointer: fine) {
+  .hero-btn:hover {
+    transform: scale(1.1) translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  }
 }
 .hero-btn:active {
   transform: scale(0.97);
@@ -226,6 +233,17 @@
   .hero-glow { width: 280px; height: 280px; }
   .hero-cta { flex-direction: column; gap: 0.75rem; }
   .hero-btn { width: 100%; text-align: center; }
+}
+
+/* ---- Hero Responsive (short viewports: landscape tablets, small desktop windows) ----
+   The cluster bottoms out at 40% of hero height and the props are bottom-anchored;
+   under ~750px of height both collide with the vertically-centered hero text. */
+@media (max-height: 750px) {
+  .hero-cloud-cluster { bottom: 68%; height: clamp(90px, 14vh, 140px); }
+}
+@media (max-height: 700px) and (min-width: 769px) {
+  .hero-prop { width: clamp(140px, 18vw, 260px); }
+  .hero-prop--blocks { width: clamp(110px, 14vw, 200px); }
 }
 
 /* ---- Hero Reduced Motion ---- */
@@ -349,7 +367,6 @@
 #landing footer {
   margin-top: auto;
   padding: 2rem 1rem 1.2rem;
-  padding-bottom: calc(1.2rem + 60px); /* extra space for fixed PWA banner */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -364,6 +381,15 @@
   #landing footer {
     padding-top: 3.5rem;
   }
+}
+
+/* Clearance for the fixed PWA banner — only while it's actually shown,
+   and enough for the expanded install steps so the footer stays reachable */
+body.pwa-banner-visible #landing footer {
+  padding-bottom: calc(1.2rem + 60px + env(safe-area-inset-bottom));
+}
+body.pwa-banner-expanded #landing footer {
+  padding-bottom: calc(1.2rem + 250px + env(safe-area-inset-bottom));
 }
 
 #landing footer .footer-feedback {
@@ -704,9 +730,11 @@ body.game-active .bg-emoji {
   50%      { transform: translateY(-15px) rotate(8deg); }
 }
 
-.game-card:hover {
-  transform: scale(1.04) translateY(-4px);
-  box-shadow: 0 12px 40px rgba(124, 107, 191, 0.12);
+@media (hover: hover) and (pointer: fine) {
+  .game-card:hover {
+    transform: scale(1.04) translateY(-4px);
+    box-shadow: 0 12px 40px rgba(124, 107, 191, 0.12);
+  }
 }
 
 
@@ -788,9 +816,11 @@ body.game-active .bg-emoji {
 .play-btn.accent-indigo { background: #F4845F; }
 .play-btn.accent-green  { background: #F4845F; }
 
-.play-btn:hover {
-  transform: scale(1.08) translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+@media (hover: hover) and (pointer: fine) {
+  .play-btn:hover {
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+  }
 }
 
 .play-btn:active {

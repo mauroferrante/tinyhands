@@ -167,18 +167,8 @@ function startRound(difficulty) {
 
   // Grid config — responsive layout based on viewport
   const totalCards = cfg.pairs * 2;
-  const { cols, rows } = bestGrid(totalCards);
-  memoryBoardEl.style.setProperty('--cols', cols);
-  memoryBoardEl.style.setProperty('--rows', rows);
   memoryBoardEl.className = 'memory-board';
-
-  // Compute board width so cards stay square and fill available space
-  const gap = Math.min(12, window.innerWidth * 0.015);
-  const maxCardW = (window.innerWidth * 0.94 - gap * (cols + 1)) / cols;
-  const maxCardH = (window.innerHeight * 0.82 - gap * (rows + 1)) / rows;
-  const cardSize = Math.min(maxCardW, maxCardH, 140);
-  const boardW = cardSize * cols + gap * (cols - 1) + 32;
-  memoryBoardEl.style.width = boardW + 'px';
+  layoutBoard(totalCards);
 
   // Pick & shuffle emojis
   const picked = shuffle(EMOJI_POOL).slice(0, totalPairs);
@@ -208,6 +198,30 @@ function startRound(difficulty) {
       setTimeout(() => playCardSwoosh(), i * 25 + 300);
     });
   });
+}
+
+// Size the grid and board for the current viewport — also re-run on
+// resize/rotation, otherwise a rotated tablet keeps the old grid shape
+// and fixed pixel width, overflowing the screen
+function layoutBoard(totalCards) {
+  const { cols, rows } = bestGrid(totalCards);
+  memoryBoardEl.style.setProperty('--cols', cols);
+  memoryBoardEl.style.setProperty('--rows', rows);
+
+  // Compute board width so cards stay square and fill available space
+  const gap = Math.min(12, window.innerWidth * 0.015);
+  const maxCardW = (window.innerWidth * 0.94 - gap * (cols + 1)) / cols;
+  const maxCardH = (window.innerHeight * 0.82 - gap * (rows + 1)) / rows;
+  const cardSize = Math.min(maxCardW, maxCardH, 140);
+  const boardW = cardSize * cols + gap * (cols - 1) + 32;
+  memoryBoardEl.style.width = boardW + 'px';
+}
+
+let relayoutTimer = null;
+function onViewportResize() {
+  if (!cards.length) return;
+  clearTimeout(relayoutTimer);
+  relayoutTimer = setTimeout(() => layoutBoard(cards.length), 150);
 }
 
 function flipCard(index) {
@@ -411,6 +425,8 @@ function cleanup() {
 
   memoryDiffEl.removeEventListener('click', onDifficultyClick);
   memoryBoardEl.removeEventListener('click', handleCardTap);
+  window.removeEventListener('resize', onViewportResize);
+  clearTimeout(relayoutTimer);
 
   memoryGameEl.querySelectorAll('.memory-confetti, .particle').forEach(el => el.remove());
 }
@@ -427,6 +443,7 @@ export const memoryMatch = {
 
     memoryDiffEl.addEventListener('click', onDifficultyClick);
     memoryBoardEl.addEventListener('click', handleCardTap);
+    window.addEventListener('resize', onViewportResize);
 
     showDifficultyPicker();
   },

@@ -694,6 +694,7 @@ export const spellItOut = {
   },
 
   onMouse(e) {
+    if (e.target.closest('.endcard-share-btn')) return;  // let the share click through
     if (gameState === 'gameover' || gameState === 'won') {
       resetGame();
     }
@@ -702,6 +703,7 @@ export const spellItOut = {
   onTouch(e) {
     // Mobile keyboard handles letter input via delegated click
     // Tap anywhere else during gameover/won to restart
+    if (e.target.closest('.endcard-share-btn')) return;
     if (gameState === 'gameover' || gameState === 'won') {
       resetGame();
     }

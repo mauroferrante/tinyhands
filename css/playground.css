@@ -27,8 +27,8 @@
 #exitGame {
   display: none;
   position: fixed;
-  top: 12px;
-  left: 12px;
+  top: max(12px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
   width: 36px;
   height: 36px;
   border: none;
@@ -113,9 +113,12 @@
   pointer-events: auto;
 }
 
-.endcard-share-btn:hover {
-  background: rgba(255, 107, 138, 0.22);
-  transform: scale(1.05);
+/* hover-capable devices only — iOS keeps :hover stuck after tap */
+@media (hover: hover) and (pointer: fine) {
+  .endcard-share-btn:hover {
+    background: rgba(255, 107, 138, 0.22);
+    transform: scale(1.05);
+  }
 }
 
 .endcard-share-btn:active {

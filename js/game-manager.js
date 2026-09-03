@@ -205,6 +205,7 @@ function stopGame() {
   // Reset PWA banner to collapsed state (no opacity fix needed — banner is fixed-position now)
   if (pwaBanner && pwaBanner.style.display !== 'none') {
     pwaBannerSteps.classList.remove('expanded');
+    document.body.classList.remove('pwa-banner-expanded');
     pwaBannerExpand.style.display = '';
   }
 
@@ -261,12 +262,10 @@ document.querySelectorAll('.game-card').forEach((card, i) => {
 });
 
 // ===== Play buttons launch games =====
+// click alone covers touch here — a touchend handler would also fire when a
+// scroll swipe starts on the button, launching games mid-scroll on tablets
 document.querySelectorAll('.play-btn[data-game]').forEach(btn => {
   btn.addEventListener('click', () => launchGame(btn.dataset.game, btn));
-  btn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    launchGame(btn.dataset.game, btn);
-  });
 });
 
 // ===== Exit Button (touch + desktop) =====
@@ -380,14 +379,15 @@ postgameNudgeShare.addEventListener('click', async () => {
 
 // ===== Global Event Listeners =====
 
-// Keyboard — disabled on touch devices to avoid Safari fullscreen typing warning
-if (navigator.maxTouchPoints === 0) {
-  document.addEventListener('keydown', (e) => {
-    if (!currentGame) return;
-    if (e.key !== 'Escape') e.preventDefault();
-    currentGame.onKey(e);
-  });
-}
+// Keyboard — always registered. Gating on maxTouchPoints === 0 broke keyboard
+// input on touchscreen laptops, Surfaces, and iPads with attached keyboards.
+// (iOS never enters the Fullscreen API — see launchGame — so the Safari
+// "typing in fullscreen" warning this gate guarded against can't occur there.)
+document.addEventListener('keydown', (e) => {
+  if (!currentGame) return;
+  if (e.key !== 'Escape') e.preventDefault();
+  currentGame.onKey(e);
+});
 
 // Mouse
 document.addEventListener('mousedown', (e) => {
@@ -443,6 +443,7 @@ window.addEventListener('popstate', () => {
     // Reset PWA banner to collapsed state
     if (pwaBanner && pwaBanner.style.display !== 'none') {
       pwaBannerSteps.classList.remove('expanded');
+      document.body.classList.remove('pwa-banner-expanded');
       pwaBannerExpand.style.display = '';
     }
     playground.querySelectorAll('.particle').forEach(p => p.remove());
@@ -500,6 +501,7 @@ trackSession();
 if (pwaBannerClose) {
   pwaBannerClose.addEventListener('click', () => {
     pwaBanner.style.display = 'none';
+    document.body.classList.remove('pwa-banner-visible', 'pwa-banner-expanded');
     localStorage.setItem('pwa-banner-dismissed', '1');
     localStorage.setItem('pwa-banner-sessions', '0');
   });
@@ -533,6 +535,10 @@ function initPwaBanner() {
     pwaBanner.style.display = '';
     pwaBannerExpand.textContent = 'Install';
   }
+  // Footer bottom padding is reserved via this class only while the banner shows
+  if (pwaBanner.style.display !== 'none') {
+    document.body.classList.add('pwa-banner-visible');
+  }
 }
 
 pwaBannerExpand.addEventListener('click', () => {
@@ -541,6 +547,8 @@ pwaBannerExpand.addEventListener('click', () => {
     return;
   }
   const isExpanded = pwaBannerSteps.classList.toggle('expanded');
+  // Grow the footer clearance so the expanded banner can't hide the footer links
+  document.body.classList.toggle('pwa-banner-expanded', isExpanded);
   pwaBannerExpand.textContent = isExpanded ? 'Hide ▴' : 'Learn how ▾';
 });
 

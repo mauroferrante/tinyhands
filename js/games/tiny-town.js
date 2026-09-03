@@ -2981,10 +2981,10 @@ export const tinyTown = {
       animFrame = requestAnimationFrame(charSelectLoop);
     });
 
-    if (navigator.maxTouchPoints === 0) {
-      keyUpHandler = (e) => { delete keysDown[e.key]; };
-      document.addEventListener('keyup', keyUpHandler);
-    }
+    // Always registered — keydown now works on touch laptops/iPads with
+    // keyboards, so keyup must match or keys get stuck "held down"
+    keyUpHandler = (e) => { delete keysDown[e.key]; };
+    document.addEventListener('keyup', keyUpHandler);
 
     mouseMoveHandler = (e) => {
       if (!selectingChar) return;

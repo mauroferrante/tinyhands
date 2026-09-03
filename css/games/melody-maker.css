@@ -77,7 +77,10 @@
   margin-left: auto;
 }
 
-.melody-level-back:hover { transform: scale(1.1); background: rgba(255,255,255,0.9); }
+/* :hover only on hover-capable devices — iOS keeps it stuck after tap */
+@media (hover: hover) and (pointer: fine) {
+  .melody-level-back:hover { transform: scale(1.1); background: rgba(255,255,255,0.9); }
+}
 .melody-level-back:active { transform: scale(0.95); }
 
 .melody-level-title {
@@ -112,9 +115,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.melody-level-tile:hover:not(.locked) {
-  transform: scale(1.06);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+@media (hover: hover) and (pointer: fine) {
+  .melody-level-tile:hover:not(.locked) {
+    transform: scale(1.06);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
 }
 
 .melody-level-tile:active:not(.locked) { transform: scale(0.96); }
@@ -209,7 +214,13 @@
   font-family: inherit;
 }
 
-.melody-mode-btn:hover,
+@media (hover: hover) and (pointer: fine) {
+  .melody-mode-btn:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(124, 107, 191, 0.2);
+    border-color: var(--color-primary);
+  }
+}
 .melody-mode-btn:active {
   transform: scale(1.05) translateY(-2px);
   box-shadow: 0 8px 25px rgba(124, 107, 191, 0.2);
@@ -552,7 +563,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.melody-btn-again:hover,
+@media (hover: hover) and (pointer: fine) {
+  .melody-btn-again:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(124, 107, 191, 0.3);
+  }
+}
 .melody-btn-again:active {
   transform: scale(1.05);
   box-shadow: 0 4px 15px rgba(124, 107, 191, 0.3);
@@ -600,7 +616,12 @@
   height: 60%;
 }
 
-.melody-replay-btn:hover:not(.disabled),
+@media (hover: hover) and (pointer: fine) {
+  .melody-replay-btn:hover:not(.disabled) {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  }
+}
 .melody-replay-btn:active:not(.disabled) {
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
@@ -637,7 +658,12 @@
   height: 60%;
 }
 
-.melody-speed-toggle:hover,
+@media (hover: hover) and (pointer: fine) {
+  .melody-speed-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  }
+}
 .melody-speed-toggle:active {
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
@@ -701,7 +727,9 @@
   .melody-teacher-area { top: 8%; }
 }
 
-@media (min-width: 768px) and (orientation: portrait) {
+/* 668px lower bound closes the gap with the ≤667px rotate-prompt query —
+   iPad mini (744px) and narrow foldables get the tablet sizing */
+@media (min-width: 668px) and (orientation: portrait) {
   .melody-keyboard { max-width: 650px; bottom: 2%; }
   .melody-key { min-height: 130px; }
 }
@@ -938,7 +966,9 @@
   z-index: 210;
 }
 
-.parade-back-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.9); }
+@media (hover: hover) and (pointer: fine) {
+  .parade-back-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.9); }
+}
 .parade-back-btn:active { transform: scale(0.95); }
 
 /* ===== Parade Container ===== */
@@ -965,6 +995,7 @@
   justify-content: center;
   gap: clamp(8px, 2vw, 16px);
   padding: 0 clamp(10px, 2vw, 20px);
+  padding-left: calc(clamp(10px, 2vw, 20px) + 40px);   /* clear the fixed exit button */
   z-index: 160;
 }
 
@@ -986,7 +1017,9 @@
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.15s, background 0.15s;
 }
-.parade-game-back-btn:hover { background: rgba(255,255,255,0.9); transform: scale(1.1); }
+@media (hover: hover) and (pointer: fine) {
+  .parade-game-back-btn:hover { background: rgba(255,255,255,0.9); transform: scale(1.1); }
+}
 .parade-game-back-btn:active { transform: scale(0.9); }
 
 /* Song name left, whale center, tempo right */
@@ -1320,7 +1353,11 @@
   border: 2px solid var(--color-primary);
 }
 
-.parade-btn-pick:hover,
+@media (hover: hover) and (pointer: fine) {
+  .parade-btn-pick:hover {
+    background: rgba(124, 107, 191, 0.25);
+  }
+}
 .parade-btn-pick:active {
   background: rgba(124, 107, 191, 0.25);
 }

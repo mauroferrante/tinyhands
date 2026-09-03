@@ -282,7 +282,8 @@
 /* ===== High Score Display ===== */
 .stack-best {
   position: fixed;
-  top: 52px;
+  /* sit below the score, whose font grows to 2.5rem on wide screens */
+  top: calc(16px + clamp(1.9rem, 5vw, 3.1rem));
   right: 20px;
   font-family: 'Fredoka One', cursive;
   font-size: clamp(0.8rem, 2vw, 1.1rem);

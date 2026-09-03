@@ -744,10 +744,12 @@ export const stackSmash = {
     else if (stGameState === 'collapsing' || stGameState === 'winning') stResetStack();
   },
   onMouse(e) {
+    if (e.target.closest('.endcard-share-btn')) return;  // let the share click through
     if (stGameState === 'swaying') stDropBlock();
     else if (stGameState === 'collapsing' || stGameState === 'winning') stResetStack();
   },
   onTouch(e) {
+    if (e.target.closest('.endcard-share-btn')) return;
     if (stGameState === 'swaying') stDropBlock();
     else if (stGameState === 'collapsing' || stGameState === 'winning') stResetStack();
   }

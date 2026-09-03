@@ -185,7 +185,9 @@ const spriteCache = {};
 // ===== Canvas Setup =====
 
 function initCanvas() {
-  const dpr = Math.max(2, window.devicePixelRatio || 1);
+  // Real DPR for the fullscreen canvas — forcing 2× on 1× desktop monitors
+  // quadruples the pixel fill per frame (sprites stay supersampled below)
+  const dpr = window.devicePixelRatio || 1;
   W = gameEl.clientWidth;
   H = gameEl.clientHeight;
   canvas.width = W * dpr;
@@ -1709,7 +1711,8 @@ function resetAndStart() {
   if (hintEl) hintEl.remove();
   hintEl = document.createElement('div');
   hintEl.className = 'rocket-hint';
-  hintEl.innerHTML = 'Press any key to launch! <img src="' + getEmojiUrl('🚀') + '" class="emoji-img inline-emoji" alt="🚀">';
+  const launchVerb = (navigator.maxTouchPoints > 0) ? 'Tap to launch!' : 'Press any key to launch!';
+  hintEl.innerHTML = launchVerb + ' <img src="' + getEmojiUrl('🚀') + '" class="emoji-img inline-emoji" alt="🚀">';
   gameEl.appendChild(hintEl);
 
   gameState = 'ready';
