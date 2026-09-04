@@ -32,14 +32,14 @@ const ANIMALS = [
 const SLOTS = {
   hat:     { items: ['', '🎩', '👒', '🧢', '👑', '🎀', '🎓'],             x: 50, y: 5,  size: 30, z: 6,
              hit: { x: 18, y: -10, w: 64, h: 24 } },
-  glasses: { items: ['', '👓', '🕶️', '🥽', '🎭'],                          x: 50, y: 23, size: 22, z: 5,
+  glasses: { items: ['', '👓', '🕶️', '🥽'],                          x: 50, y: 23, size: 22, z: 5,
              hit: { x: 24, y: 14, w: 52, h: 16 } },
   top:     { items: ['', '👕', '👗', '🧥', '🦺', '👘', '🥋', '🎽'],        x: 50, y: 60, size: 38, z: 4,
              hit: { x: 22, y: 42, w: 56, h: 34 } },
   shoes:   { items: ['', '👟', '🥾', '👠', '🩴', '👢', '🩰'],              x: 50, y: 93, size: 20, w: 44, z: 4,
              hit: { x: 18, y: 78, w: 64, h: 26 } },
-  hand:    { items: ['', '🎈', '🧸', '🌂', '⚽', '🎸', '🪁', '🍦', '🪄'], x: 89, y: 54, size: 26, z: 7,
-             hit: { x: 76, y: 38, w: 30, h: 34 } },
+  hand:    { items: ['', '🎈', '🧸', '🌂', '⚽', '🎸', '🪁', '🍦', '🪄'], x: 86, y: 66, size: 26, z: 7,
+             hit: { x: 72, y: 48, w: 32, h: 36 } },
 };
 const SLOT_ORDER = ['hat', 'glasses', 'top', 'shoes', 'hand'];
 const SLOT_LABEL = { hat: 'Hat', glasses: 'Glasses', top: 'Top', shoes: 'Shoes', hand: 'Toy' };
@@ -128,17 +128,22 @@ function buildDOM() {
   puppetEl = document.createElement('div');
   puppetEl.className = 'du-puppet';
 
+  // Teddy silhouette sized to the clothes: the torso is as wide as the
+  // garment slot, arms hang down the sides ending in paws, and the legs
+  // sit exactly under the two shoes.
   puppetEl.innerHTML =
     '<svg class="du-body" viewBox="0 0 100 100" aria-hidden="true">' +
-      // arms
-      '<ellipse class="du-fill" cx="27" cy="58" rx="8" ry="16" transform="rotate(18 27 58)"/>' +
-      '<ellipse class="du-fill" cx="73" cy="58" rx="8" ry="16" transform="rotate(-18 73 58)"/>' +
-      // legs
-      '<rect class="du-fill" x="31" y="72" width="16" height="22" rx="8"/>' +
-      '<rect class="du-fill" x="53" y="72" width="16" height="22" rx="8"/>' +
+      // arms (slight outward lean) + paws
+      '<rect class="du-fill" x="23" y="44" width="11" height="28" rx="5.5" transform="rotate(8 28.5 44)"/>' +
+      '<rect class="du-fill" x="66" y="44" width="11" height="28" rx="5.5" transform="rotate(-8 71.5 44)"/>' +
+      '<circle class="du-fill" cx="24.5" cy="73" r="6.5"/>' +
+      '<circle class="du-fill" cx="75.5" cy="73" r="6.5"/>' +
+      // legs (centred under each shoe)
+      '<rect class="du-fill" x="33" y="70" width="12" height="22" rx="6"/>' +
+      '<rect class="du-fill" x="55" y="70" width="12" height="22" rx="6"/>' +
       // torso + belly
-      '<ellipse class="du-fill" cx="50" cy="60" rx="25" ry="24"/>' +
-      '<ellipse class="du-belly" cx="50" cy="64" rx="15" ry="14"/>' +
+      '<rect class="du-fill" x="31" y="39" width="38" height="41" rx="17"/>' +
+      '<ellipse class="du-belly" cx="50" cy="62" rx="12" ry="12"/>' +
     '</svg>';
   bodyFill  = puppetEl.querySelectorAll('.du-fill');
   bellyFill = puppetEl.querySelector('.du-belly');
