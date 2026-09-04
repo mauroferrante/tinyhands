@@ -1173,3 +1173,13 @@ body.game-active .pwa-banner {
   opacity: 1;
   transform: translate(-50%, 0);
 }
+
+/* ===== Story modal call to action ===== */
+.story-modal .story-cta {
+  margin: 0.2rem 0 1rem;
+}
+.story-modal .story-tip-btn {
+  display: inline-block;
+  font-size: 0.95rem;
+  padding: 10px 22px;
+}

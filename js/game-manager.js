@@ -456,6 +456,11 @@ if (tipCardBtn) {
   tipCardBtn.href = tipUrl('card');
   tipCardBtn.addEventListener('click', (e) => { e.stopPropagation(); trackIntent('donate-card'); });
 }
+const storyTip = document.getElementById('storyTip');
+if (storyTip) {
+  storyTip.href = tipUrl('story');
+  storyTip.addEventListener('click', () => trackIntent('donate-story'));
+}
 
 // Returning from Stripe (?thanks=1): say thanks, remember it, never nudge again
 function markTipped() {
@@ -463,6 +468,7 @@ function markTipped() {
   if (tipCard) tipCard.classList.add('tipped');
   if (tipCardDesc) tipCardDesc.textContent = 'You bought me a coffee. Thank you, it really helps!';
   if (tipCardBtn) tipCardBtn.textContent = 'Thank you 💛';
+  if (storyTip) storyTip.textContent = 'Thank you for the coffee 💛';
 }
 (function handleThanksReturn() {
   const params = new URLSearchParams(window.location.search);
