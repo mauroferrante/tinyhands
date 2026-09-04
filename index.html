@@ -7,7 +7,7 @@
 <title>Tiny Hands Play, Free Toddler & Kids Browser Games</title>
 
 <!-- SEO Meta Tags -->
-<meta name="description" content="Free fun and educational browser games for toddlers and kids aged 6 months to 9 years. No installs, no accounts, no ads. Just open and play, Kaboom Keys, Stack It Up, Spell It Out, Memory Match, Melody Maker, Dress-Up Party, Balloon Float, and Rocket Ride.">
+<meta name="description" content="Free fun and educational browser games for toddlers and kids aged 6 months to 9 years. No installs, no accounts, no ads. Just open and play, Kaboom Keys, Stack It Up, Spell It Out, Memory Match, Melody Maker, Dress-Up Party, Balloon Float, Rocket Ride, and Math Ninja.">
 <meta name="keywords" content="toddler games, free kids games, browser games for toddlers, baby keyboard game, stacking game for kids, spelling game for kids, no install games, preschool games online, free online games for toddlers, toddler safe games, kids games no ads, baby games online free">
 <meta name="author" content="Mauro Ferrante">
 <meta name="theme-color" content="#FFFAF7">
@@ -54,6 +54,7 @@
 <link rel="stylesheet" href="css/games/tiny-town.css">
 <link rel="stylesheet" href="css/games/melody-maker.css">
 <link rel="stylesheet" href="css/games/dress-up.css">
+<link rel="stylesheet" href="css/games/math-ninja.css">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -334,6 +335,25 @@
       <button class="card-info-btn" aria-label="Game info">ⓘ</button>
     </article>
 
+    <!-- Math Ninja Card -->
+    <article class="game-card">
+      <div class="card-flipper">
+        <div class="card-front">
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f977_3d.png" class="emoji-img" alt="🥷"></span>
+          <h2>Math Ninja</h2>
+          <span class="age-badge">6 – 10 years</span>
+          <p class="card-desc">Number basics and sneaky mental-math tricks!</p>
+          <button class="play-btn accent-indigo" data-game="math-ninja">Play</button>
+        </div>
+        <div class="card-back">
+          <p class="card-info-desc">Ten levels of counting, adding, taking away, times tables and sharing with picture hints. Then 20 ninja tricks: watch one, try it with help, then go solo.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Number sense, place value, and real mental-arithmetic strategies like making tens, rounding and compensating, doubling and halving. No wrong-answer game over, just another go.</p>
+          <span class="card-back-hint">Tap to flip back</span>
+        </div>
+      </div>
+      <button class="card-info-btn" aria-label="Game info">ⓘ</button>
+    </article>
+
     <!-- Tip Card (for grown-ups) -->
     <article class="game-card tip-card" id="tipCard">
       <div class="card-front">
@@ -366,6 +386,7 @@
     <p><strong>Dress-Up Party</strong> (2 – 3 years): Dress a furry friend in silly outfits!</p>
     <p><strong>Balloon Float</strong> (4 – 8 years): Tap to float, dodge the clouds!</p>
     <p><strong>Rocket Ride</strong> (5 – 9 years): Blast off and dodge the asteroids!</p>
+    <p><strong>Math Ninja</strong> (6 – 10 years): Number basics and sneaky mental-math tricks!</p>
     <p>No installs, no accounts, no ads. Please enable JavaScript to play.</p>
   </div>
 </noscript>
@@ -536,6 +557,9 @@
 
   <!-- Dress-Up Party game layer (built entirely in JS) -->
   <div id="dressUpGame"></div>
+
+  <!-- Math Ninja game layer (built entirely in JS) -->
+  <div id="mathGame"></div>
 
   <button id="exitGame" aria-label="Exit game">✕</button>
   <div id="escHint">Press ESC to exit</div>

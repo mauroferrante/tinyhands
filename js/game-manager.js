@@ -15,6 +15,7 @@ import { ballBonanza } from './games/ball-bonanza.js';
 import { tinyTown } from './games/tiny-town.js';
 import { melodyMaker } from './games/melody-maker.js';
 import { dressUp } from './games/dress-up.js';
+import { mathNinja } from './games/math-ninja.js';
 import { shareOrCopy } from './share.js';
 import { local, session } from './storage.js';
 
@@ -82,7 +83,8 @@ const GAMES = {
   'ball-bonanza': ballBonanza,
   'tiny-town': tinyTown,
   'melody-maker': melodyMaker,
-  'dress-up': dressUp
+  'dress-up': dressUp,
+  'math-ninja': mathNinja
 };
 
 // ===== Entry Animation & Fullscreen =====
