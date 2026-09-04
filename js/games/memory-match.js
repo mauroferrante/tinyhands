@@ -58,6 +58,7 @@ const memoryFlipsEl     = document.getElementById('memoryFlips');
 const memoryPairsEl     = document.getElementById('memoryPairs');
 const memoryTimeEl      = document.getElementById('memoryTime');
 const memoryCelebrateEl = document.getElementById('memoryCelebrate');
+const memoryChangeDiffEl = document.getElementById('memoryChangeDiff');
 
 // ---- Game state ----
 let currentDifficulty = null;
@@ -401,6 +402,27 @@ function spawnWinConfetti() {
   }
 }
 
+// Mid-game "change size": abandon the round and return to the picker.
+// Requested by a parent who had no way back short of reloading the site.
+function abortRound() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  timers.clearAll();
+  gameActive = false;
+  isProcessing = false;
+  cards = [];
+  flippedCards = [];
+  timerStart = null;
+  memoryBoardEl.innerHTML = '';
+  memoryBoardEl.className = 'memory-board';
+  memoryGameEl.querySelectorAll('.memory-confetti, .particle').forEach(el => el.remove());
+  playCardSwoosh();
+  showDifficultyPicker();
+}
+function onChangeDiff(e) {
+  e.stopPropagation();
+  abortRound();
+}
+
 // ===== Input handler (delegated) =====
 
 function handleCardTap(e) {
@@ -436,6 +458,7 @@ function cleanup() {
 
   memoryDiffEl.removeEventListener('click', onDifficultyClick);
   memoryBoardEl.removeEventListener('click', handleCardTap);
+  if (memoryChangeDiffEl) memoryChangeDiffEl.removeEventListener('click', onChangeDiff);
   window.removeEventListener('resize', onViewportResize);
   clearTimeout(relayoutTimer);
 
@@ -454,6 +477,7 @@ export const memoryMatch = {
 
     memoryDiffEl.addEventListener('click', onDifficultyClick);
     memoryBoardEl.addEventListener('click', handleCardTap);
+    if (memoryChangeDiffEl) memoryChangeDiffEl.addEventListener('click', onChangeDiff);
     window.addEventListener('resize', onViewportResize);
 
     showDifficultyPicker();

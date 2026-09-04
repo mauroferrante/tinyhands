@@ -1,8 +1,9 @@
-import { playRandomSound } from '../audio.js';
+import { playRandomSound, playBubblePop } from '../audio.js';
 import { EMOJIS, spawnParticles } from '../effects.js';
 import { preloadEmojis, createEmojiImg } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
 import { createTimerPool } from '../timers.js';
+import { local } from '../storage.js';
 
 const timers = createTimerPool();
 // A held key fires ~30 keydowns/s and each emoji lives 7s with an infinite
@@ -12,6 +13,49 @@ const MAX_ACTIVE = 40;
 
 const splatKeysGame = document.getElementById('splatKeysGame');
 const splatHint     = document.getElementById('splatHint');
+const splatModeBtn  = document.getElementById('splatModeBtn');
+
+// ---- ABC mode (parent request: "an abc and number one, not random things") ----
+// Letters and digits show a big glyph card with the matching emoji and the
+// browser speaks the name. Taps walk through the alphabet then 0-9.
+const ABC_SEQ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
+const ABC_COLORS = ['#FF6B8A', '#7C5CFC', '#F4845F', '#2EC4B6', '#3A86FF', '#FFB703', '#8AC926', '#E040FB'];
+const ABC_MODE_KEY = 'thp-splat-abc';
+let abcMode = false;
+let abcIndex = 0;
+
+function speak(text) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();                 // a toddler mashes faster than speech can keep up
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.85;
+    u.pitch = 1.1;
+    speechSynthesis.speak(u);
+  } catch (e) { /* speech is a bonus, never an error */ }
+}
+
+function setAbcMode(on) {
+  abcMode = !!on;
+  local.set(ABC_MODE_KEY, abcMode ? 1 : 0);
+  if (splatModeBtn) {
+    splatModeBtn.classList.toggle('on', abcMode);
+    splatModeBtn.setAttribute('aria-pressed', String(abcMode));
+  }
+  splatHint.textContent = abcMode ? 'Press a letter or tap to hear it!' : 'Press any key and watch the magic!';
+}
+
+function isToggle(target) {
+  return !!(target && target.closest && target.closest('.splat-mode-btn'));
+}
+
+function onModeToggle(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  setAbcMode(!abcMode);
+  playBubblePop(abcMode ? 4 : 1);
+}
 
 const KEY_MAP = {
   a: '🍎',  b: '🐝',  c: '🐱',  d: '🐶',  e: '🐘',
@@ -40,21 +84,38 @@ function splatHideHint() {
 }
 
 function spawnEmoji(x, y, key) {
+  // ABC mode: only letters and digits count; taps walk the sequence
+  let glyph = null;
+  if (abcMode) {
+    if (key == null) glyph = ABC_SEQ[abcIndex++ % ABC_SEQ.length];
+    else if (key.length === 1 && /[a-z0-9]/i.test(key)) glyph = key.toUpperCase();
+    else return;
+  }
   splatHideHint();
-  const char = (key && KEY_MAP[key]) ? KEY_MAP[key]
-             : (key && KEY_MAP[key.toLowerCase()]) ? KEY_MAP[key.toLowerCase()]
+  const lookup = glyph ? glyph.toLowerCase() : key;
+  const char = (lookup && KEY_MAP[lookup]) ? KEY_MAP[lookup]
+             : (lookup && KEY_MAP[lookup.toLowerCase()]) ? KEY_MAP[lookup.toLowerCase()]
              : EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
   const rot = (Math.random() * 30 - 15);
   const randDrift = () => (Math.random() * 40 - 20) + 'px';
 
   const el = document.createElement('span');
-  el.className = 'emoji';
+  el.className = 'emoji' + (glyph ? ' abc' : '');
+  if (glyph) {
+    const letter = document.createElement('span');
+    letter.className = 'abc-letter';
+    letter.textContent = glyph;
+    letter.style.color = ABC_COLORS[glyph.charCodeAt(0) % ABC_COLORS.length];
+    el.appendChild(letter);
+  }
   const imgEl = createEmojiImg(char, 'emoji-img');
-  imgEl.style.width = EMOJI_SIZE + 'px';
-  imgEl.style.height = EMOJI_SIZE + 'px';
+  const imgSize = glyph ? Math.round(EMOJI_SIZE * 0.5) : EMOJI_SIZE;
+  imgEl.style.width = imgSize + 'px';
+  imgEl.style.height = imgSize + 'px';
   el.appendChild(imgEl);
-  el.style.left = (x - EMOJI_SIZE / 2) + 'px';
-  el.style.top  = (y - EMOJI_SIZE / 2) + 'px';
+  const boxW = glyph ? 130 : EMOJI_SIZE, boxH = glyph ? 170 : EMOJI_SIZE;
+  el.style.left = (x - boxW / 2) + 'px';
+  el.style.top  = (y - boxH / 2) + 'px';
   el.style.setProperty('--rot', rot + 'deg');
   el.style.setProperty('--float-dur', (3 + Math.random() * 3) + 's');
   el.style.setProperty('--float-delay', (Math.random() * -3) + 's');
@@ -82,7 +143,12 @@ function spawnEmoji(x, y, key) {
   }, 5000);
 
   spawnParticles(x, y, splatKeysGame);
-  playRandomSound();
+  if (glyph) {
+    playBubblePop(glyph.charCodeAt(0) % 6);
+    speak(glyph);
+  } else {
+    playRandomSound();
+  }
 }
 
 function randPos() {
@@ -94,10 +160,15 @@ export const splatKeys = {
   start() {
     splatKeysGame.style.display = 'block';
     splatHint.style.opacity = '1';
+    abcIndex = 0;
+    setAbcMode(local.getInt(ABC_MODE_KEY) === 1);
+    if (splatModeBtn) splatModeBtn.addEventListener('pointerdown', onModeToggle);
     preloadEmojis(EMOJI_REGISTRY['splat-keys']);
   },
   stop() {
     splatKeysGame.style.display = 'none';
+    if (splatModeBtn) splatModeBtn.removeEventListener('pointerdown', onModeToggle);
+    try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) {}
     timers.clearAll();
     activeEmojis.forEach(el => el.remove());
     activeEmojis = [];
@@ -109,6 +180,7 @@ export const splatKeys = {
     spawnEmoji(pos.x, pos.y, e.key);
   },
   onMouse(e) {
+    if (isToggle(e.target)) return;   // the toggle handles itself
     if (e.button === 2) {
       for (let i = 0; i < 3; i++) {
         const angle = (Math.PI * 2 / 3) * i + Math.random() * 0.8;
@@ -120,6 +192,7 @@ export const splatKeys = {
     }
   },
   onTouch(e) {
+    if (isToggle(e.target)) return;
     // Only the fingers that just landed — e.touches includes every finger
     // already resting on the screen (a palm gave 55 emoji instead of 10)
     const pts = e.changedTouches && e.changedTouches.length ? e.changedTouches : e.touches;

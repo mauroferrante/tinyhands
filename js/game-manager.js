@@ -186,14 +186,11 @@ function startGame(game) {
   game.start();
 }
 
+// Always visible while a game runs. It used to hide on desktop and in
+// fullscreen (relying on ESC and the browser's own exit UI) — a parent
+// reported having to reload the whole site to get back to the menu.
 function updateExitBtn() {
-  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-  if (currentGame && isTouchDevice && !fsEl) {
-    exitBtn.style.display = 'block';
-  } else {
-    exitBtn.style.display = 'none';
-  }
+  exitBtn.style.display = currentGame ? 'block' : 'none';
 }
 
 // Single teardown path for ✕, ESC, fullscreen exit and the browser Back

@@ -99,6 +99,20 @@
   color: rgba(124, 107, 191, 0.85);
 }
 
+.memory-hud-btn {
+  pointer-events: auto;
+  font: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 20px;
+  padding: 4px 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.memory-hud-btn:active { transform: scale(0.94); background: rgba(255, 255, 255, 0.95); }
+
 .memory-hud span {
   background: rgba(255, 255, 255, 0.5);
   padding: 4px 12px;
