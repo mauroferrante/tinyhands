@@ -930,6 +930,15 @@ body.game-active .postgame-nudge {
 .postgame-nudge-sub {
   display: none;
 }
+/* Room for the one-line reason on wider screens */
+@media (min-width: 768px) {
+  .postgame-nudge-sub {
+    display: inline;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+}
 
 .postgame-nudge-actions {
   display: flex;
@@ -1118,3 +1127,49 @@ body.game-active .pwa-banner {
   flex-shrink: 0;
 }
 
+
+/* ===== Tip card (last card in the games grid, for grown-ups) ===== */
+.game-card.tip-card {
+  background: linear-gradient(160deg, #FFF8F1 0%, #FFF1E4 100%);
+  cursor: default;
+  justify-content: center;
+}
+.game-card.tip-card .card-front { pointer-events: auto; }
+.game-card.tip-card .age-badge {
+  background: #FDE7D6;
+  color: #C9633C;
+}
+.game-card .play-btn.tip-card-btn {
+  display: inline-block;
+  text-decoration: none;
+  line-height: 1.4;
+}
+.game-card.tip-card.tipped .tip-card-btn {
+  background: var(--color-primary);
+  pointer-events: none;
+  box-shadow: none;
+}
+
+/* ===== Thank-you toast (after returning from Stripe) ===== */
+.thanks-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translate(-50%, 16px);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: 40px;
+  box-shadow: 0 8px 28px rgba(124, 107, 191, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 400;
+}
+.thanks-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}

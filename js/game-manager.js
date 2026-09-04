@@ -24,6 +24,18 @@ const escHint    = document.getElementById('escHint');
 const exitBtn    = document.getElementById('exitGame');
 const overlay    = document.getElementById('transition-overlay');
 
+// ---- Tip link ----
+// One Stripe payment link; utm_medium tells the Stripe dashboard which
+// placement each session (and each paid tip) came from.
+const TIP_URL = 'https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02';
+function tipUrl(placement) {
+  return TIP_URL + '?utm_source=tinyhandsplay&utm_medium=' + placement;
+}
+const tipCard     = document.getElementById('tipCard');
+const tipCardBtn  = document.getElementById('tipCardBtn');
+const tipCardDesc = document.getElementById('tipCardDesc');
+const thanksToast = document.getElementById('thanksToast');
+
 // ---- Post-game nudge references ----
 const postgameNudge       = document.getElementById('postgameNudge');
 const postgameNudgeClose  = document.getElementById('postgameNudgeClose');
@@ -53,6 +65,8 @@ const isStandalone = navigator.standalone === true ||
 // ---- Shared state ----
 let currentGame     = null;
 let pendingGame     = null;
+let playStartedAt   = 0;       // Date.now() when the current game started
+let sessionPlayMs   = 0;       // cumulative play time this page session
 let ownBackPending  = false;   // stopGame() called history.back(); its popstate is ours, not the user's
 let deferredAndroidPrompt = null;
 
@@ -145,6 +159,7 @@ function launchGame(gameId, btn) {
 
 function startGame(game) {
   currentGame = game;
+  playStartedAt = Date.now();
   landing.style.display = 'none';
   playground.style.display = 'block';
   document.body.classList.add('game-active');
@@ -187,6 +202,7 @@ function stopGame({ fromHistory = false } = {}) {
 
   currentGame.stop();
   currentGame = null;
+  if (playStartedAt) { sessionPlayMs += Date.now() - playStartedAt; playStartedAt = 0; }
 
   playground.style.display = 'none';
   landing.style.display = 'flex';
@@ -233,14 +249,33 @@ function stopGame({ fromHistory = false } = {}) {
     }
   }
 
-  // Show post-game nudge once per session after first game exit
-  if (!session.get('tipNudgeShown')) {
+  // Post-game tip nudge — only for people the site has already proven
+  // useful to (see shouldShowTipNudge), at most once per session
+  if (shouldShowTipNudge()) {
     session.set('tipNudgeShown', 'true');
+    local.set('thp-nudge-last', Date.now());
     setTimeout(() => {
       postgameNudge.style.display = 'flex';
       requestAnimationFrame(() => postgameNudge.classList.add('show'));
     }, 1000);
   }
+}
+
+// Parents tip, toddlers don't — and parents tip once the site has earned it.
+// Show the nudge to returning visitors or after a long session, back off for
+// three days after showing it, stop after two dismissals, never after a tip.
+const NUDGE_COOLDOWN_MS  = 3 * 24 * 60 * 60 * 1000;
+const NUDGE_PLAY_MS      = 6 * 60 * 1000;
+const NUDGE_MAX_DISMISS  = 2;
+function shouldShowTipNudge() {
+  if (local.getInt('thp-tipped')) return false;
+  if (local.getInt('thp-nudge-dismissed') >= NUDGE_MAX_DISMISS) return false;
+  if (session.get('tipNudgeShown')) return false;
+  const last = local.getInt('thp-nudge-last');
+  if (last && Date.now() - last < NUDGE_COOLDOWN_MS) return false;
+  const returning   = local.getInt('thp-visits') >= 2;
+  const playedEnough = sessionPlayMs >= NUDGE_PLAY_MS;
+  return returning || playedEnough;
 }
 
 // ✕ button and ESC key: leave fullscreen if we're in it (fullscreenchange
@@ -406,12 +441,42 @@ function dismissNudge() {
   setTimeout(() => { postgameNudge.style.display = 'none'; }, 300);
 }
 
-postgameNudgeClose.addEventListener('click', dismissNudge);
-
-postgameNudgeTip.addEventListener('click', () => {
-  sessionStorage.setItem('tipNudgeShown', 'true');
-  trackIntent('donate');
+postgameNudgeClose.addEventListener('click', () => {
+  local.set('thp-nudge-dismissed', local.getInt('thp-nudge-dismissed') + 1);
+  dismissNudge();
 });
+
+// Tip placements: attributed hrefs + a virtual pageview per placement
+postgameNudgeTip.href = tipUrl('nudge');
+postgameNudgeTip.addEventListener('click', () => {
+  session.set('tipNudgeShown', 'true');
+  trackIntent('donate-nudge');
+});
+if (tipCardBtn) {
+  tipCardBtn.href = tipUrl('card');
+  tipCardBtn.addEventListener('click', (e) => { e.stopPropagation(); trackIntent('donate-card'); });
+}
+
+// Returning from Stripe (?thanks=1): say thanks, remember it, never nudge again
+function markTipped() {
+  local.set('thp-tipped', 1);
+  if (tipCard) tipCard.classList.add('tipped');
+  if (tipCardDesc) tipCardDesc.textContent = 'You bought me a coffee. Thank you, it really helps!';
+  if (tipCardBtn) tipCardBtn.textContent = 'Thank you 💛';
+}
+(function handleThanksReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('thanks') === '1') {
+    markTipped();
+    history.replaceState({}, '', '/');
+    if (thanksToast) {
+      thanksToast.classList.add('show');
+      setTimeout(() => thanksToast.classList.remove('show'), 4500);
+    }
+  } else if (local.getInt('thp-tipped')) {
+    markTipped();
+  }
+})();
 
 postgameNudgeShare.addEventListener('click', async () => {
   trackIntent('share');
@@ -538,7 +603,10 @@ playground.addEventListener('click', (e) => {
 
 // Footer tip link: track as /intent/donate
 const footerTip = document.getElementById('footerTip');
-if (footerTip) footerTip.addEventListener('click', () => trackIntent('donate'));
+if (footerTip) {
+  footerTip.href = tipUrl('footer');
+  footerTip.addEventListener('click', () => trackIntent('donate-footer'));
+}
 
 // Clean URL on fresh page load — /play/ and /story paths are virtual routes
 // used only for analytics (pushState), not real deep links.
@@ -567,6 +635,7 @@ function shouldShowBanner() {
 }
 
 function trackSession() {
+  local.set('thp-visits', local.getInt('thp-visits') + 1);   // page loads; ≥2 = returning parent
   if (!local.getInt('pwa-banner-dismissed')) return;
   const sessions = local.getInt('pwa-banner-sessions') + 1;
   local.set('pwa-banner-sessions', sessions);

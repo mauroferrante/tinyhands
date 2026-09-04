@@ -87,13 +87,16 @@
 </head>
 <body>
 
+<!-- ===== Thank-you toast (Stripe returns here with ?thanks=1) ===== -->
+<div class="thanks-toast" id="thanksToast" role="status" aria-live="polite">Thank you so much <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f49b_3d.png" class="emoji-img inline-emoji" alt="💛"> Back to playing!</div>
+
 <!-- ===== Post-Game Nudge Banner ===== -->
 <div class="postgame-nudge" id="postgameNudge">
   <button class="postgame-nudge-close" id="postgameNudgeClose" aria-label="Dismiss">✕</button>
   <p class="postgame-nudge-text"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f389_3d.png" class="emoji-img inline-emoji" alt="🎉"> Hope you both had fun!</p>
-  <p class="postgame-nudge-sub">If your little one loved it, help me keep it going →</p>
+  <p class="postgame-nudge-sub">Free and ad-free thanks to parents like you.</p>
   <div class="postgame-nudge-actions">
-    <a href="https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02" target="_blank" rel="noopener noreferrer" class="postgame-nudge-tip" id="postgameNudgeTip"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/2615_3d.png" class="emoji-img inline-emoji" alt="☕"> Leave a tip</a>
+    <a href="https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02" target="_blank" rel="noopener noreferrer" class="postgame-nudge-tip" id="postgameNudgeTip"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/2615_3d.png" class="emoji-img inline-emoji" alt="☕"> Buy me a coffee · $3</a>
     <button class="postgame-nudge-share" id="postgameNudgeShare"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4e4_3d.png" class="emoji-img inline-emoji" alt="📤"> Share with a parent</button>
   </div>
   <span class="postgame-nudge-copied" id="postgameNudgeCopied">Copied!</span>
@@ -311,12 +314,23 @@
       <button class="card-info-btn" aria-label="Game info">ⓘ</button>
     </article>
 
+    <!-- Tip Card (for grown-ups) -->
+    <article class="game-card tip-card" id="tipCard">
+      <div class="card-front">
+        <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/2615_3d.png" class="emoji-img" alt="☕"></span>
+        <h2>Keep it free</h2>
+        <span class="age-badge">For grown-ups</span>
+        <p class="card-desc" id="tipCardDesc">No ads, no paywall, ever. A $3 coffee keeps it that way.</p>
+        <a class="play-btn accent-salmon tip-card-btn" id="tipCardBtn" href="https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02" target="_blank" rel="noopener noreferrer">Tip $3</a>
+      </div>
+    </article>
+
   </section>
 
   <footer>
-    <p class="footer-tip-copy">TinyHandsPlay is free for all parents and kids.<br>Thanks for helping me keep it that way. <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f64f_3d.png" class="emoji-img inline-emoji" alt="🙏"></p>
+    <p class="footer-tip-copy">TinyHandsPlay is free for all parents and kids, with no ads.<br>A $3 coffee helps me keep it that way. <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f64f_3d.png" class="emoji-img inline-emoji" alt="🙏"></p>
     <div class="footer-tip-buttons">
-      <a href="https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02" target="_blank" rel="noopener noreferrer" class="footer-tip-btn" id="footerTip">Leave a tip</a>
+      <a href="https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02" target="_blank" rel="noopener noreferrer" class="footer-tip-btn" id="footerTip">Buy me a coffee · $3</a>
     </div>
     <a href="#" class="footer-feedback footer-story-link" id="footerStoryLink">Built with <img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/2764_3d.png" class="emoji-img inline-emoji" alt="❤️"> by a dad</a>
     <a href="#" class="footer-feedback" id="feedbackLink">Got <strong>feedback</strong>? I'd love to hear it →</a>
@@ -346,7 +360,7 @@
     <p>Tiny Hands Play started when my toddler discovered my computer keyboard and urgently needed to press every key. The first game I built, Kaboom Keys, was a safe way to let her mash the keyboard without wrecking my work.</p>
     <p>Seeing how much she loved it, I went looking for other games we could play together, but I quickly realised that most were either paid, packed with ads, or just not quite right for my little one. So I created Tiny Hands Play: a collection of playful, educational games with no ads, no paywall, and no sign-up.</p>
     <p>I hope it gives you a few minutes of peace. You can add it to your tablet/phone home screen for a full-screen experience that works even without internet (perfect for plane rides or car trips) or simply bookmark it in your browser.</p>
-    <p>If you'd like to help me keep it running, feel free to share it with other parents or leave a small tip.</p>
+    <p>If you'd like to help me keep it running, feel free to share it with other parents or buy me a $3 coffee.</p>
     <p>Enjoy!</p>
     <div class="story-sign"><img src="assets/m&m.png" class="story-photo" alt="Mauro and daughter"><span>— Mauro, a dad</span></div>
   </div>
