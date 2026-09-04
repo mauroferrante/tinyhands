@@ -1183,3 +1183,13 @@ body.game-active .pwa-banner {
   font-size: 0.95rem;
   padding: 10px 22px;
 }
+
+/* Footer tip: a quiet inline link — the grid card above already carries the ask */
+.footer-tip-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(124, 107, 191, 0.35);
+  text-underline-offset: 3px;
+}
+.footer-tip-link:hover { text-decoration-color: var(--color-primary); }
