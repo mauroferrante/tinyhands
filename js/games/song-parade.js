@@ -14,28 +14,26 @@ const PARADE_SONGS = [
     name: 'Old MacDonald',
     emoji: '🐄',
     notes: [
-      // Old Mac-Don-ald (Fa-Fa-Fa-Do)
-      {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Do',b:1,g:0.1},
-      // had a farm (Re-Re-Do)
-      {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Do',b:2,g:0.5},
-      // E-I-E-I-O (La-La-Sol-Sol-Fa)
-      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:2,g:1.0},
-      // And on his farm he had a cow (Do-Do-Fa-Fa-Fa-Do-Re-Re-Do)
-      {p:'Do',b:0.5,g:0.05}, {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1},
-      {p:'Fa',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Do',b:2,g:0.5},
-      // E-I-E-I-O (La-La-Sol-Sol-Fa)
-      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:2,g:1.0},
-      // With a moo-moo here (Do-Do-Fa-Fa-Fa)
-      {p:'Do',b:0.5,g:0.05}, {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:2,g:0.2},
-      // And a moo-moo there (Do-Do-Fa-Fa-Fa)
-      {p:'Do',b:0.5,g:0.05}, {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:2,g:0.5},
-      // Here a moo, there a moo, everywhere a moo-moo
-      {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.2},
-      {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.2},
-      {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.2},
       // Old Mac-Don-ald had a farm
-      {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Do',b:1,g:0.1},
-      {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Do',b:2,g:0.5},
+      {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Do',b:2,g:0.5},
+      // E-I-E-I-O
+      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:2,g:1.0},
+      // And on that farm he had a cow (one pickup note, not two)
+      {p:'Do',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Do',b:2,g:0.5},
+      // E-I-E-I-O
+      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:2,g:1.0},
+      // With a moo-moo here
+      {p:'Do',b:0.5,g:0.05}, {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:2,g:0.2},
+      // And a moo-moo there
+      {p:'Do',b:0.5,g:0.05}, {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:2,g:0.5},
+      // Here a moo
+      {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.2},
+      // There a moo
+      {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.2},
+      // Ev-ery-where a moo-moo (six notes)
+      {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.2},
+      // Old Mac-Don-ald had a farm
+      {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Do',b:2,g:0.5},
       // E-I-E-I-O!
       {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:3,g:1.5}
     ]
@@ -78,19 +76,19 @@ const PARADE_SONGS = [
     name: 'Wheels on the Bus',
     emoji: '🚌',
     notes: [
-      // The wheels on the bus go
-      {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.2},
-      // Round and round (La-Do2-La-Fa)
+      // The wheels on the bus (five notes)
+      {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.2},
+      // go round and round
       {p:'La',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Fa',b:2,g:0.2},
-      // Round and round (Sol-Mi-Do)
+      // round and round
       {p:'Sol',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Do',b:2,g:0.2},
-      // Round and round (La-Sol-Fa)
+      // round and round
       {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:2,g:0.4},
-      // The wheels on the bus go (Repeat)
-      {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.2},
-      // Round and round (Repeat)
+      // The wheels on the bus
+      {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.2},
+      // go round and round
       {p:'La',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Fa',b:2,g:0.2},
-      // All through the town! (Sol-Do-Do-Fa)
+      // all through the town
       {p:'Sol',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Fa',b:3,g:1.5}
     ]
   },
@@ -98,30 +96,12 @@ const PARADE_SONGS = [
     name: 'Ode to Joy',
     emoji: '🤩',
     notes: [
-      // 1. Phrase A1: Mi-Mi-Fa-Sol-Sol-Fa-Mi-Re
-      {p:'Mi',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.1},
-      {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Re',b:1,g:0.1},
-      // 2. Phrase A2: Do-Do-Re-Mi-Mi--Re-Re
-      {p:'Do',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Mi',b:1,g:0.1},
-      {p:'Mi',b:1.5,g:0.05}, {p:'Re',b:0.5,g:0.1}, {p:'Re',b:2,g:0.4},
-      // 3. Phrase A1 (Repeat): Mi-Mi-Fa-Sol-Sol-Fa-Mi-Re
-      {p:'Mi',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.1},
-      {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Re',b:1,g:0.1},
-      // 4. Phrase A3: Do-Do-Re-Mi-Re--Do-Do
-      {p:'Do',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Mi',b:1,g:0.1},
-      {p:'Re',b:1.5,g:0.05}, {p:'Do',b:0.5,g:0.1}, {p:'Do',b:2,g:0.6},
-      // 5. Section B: Re-Re-Mi-Do-Re-Mi-Fa-Mi-Do
-      {p:'Re',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Do',b:1,g:0.1},
-      {p:'Re',b:1,g:0.05}, {p:'Mi',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Mi',b:1,g:0.1}, {p:'Do',b:1,g:0.1},
-      // 6. Section B Cont: Re-Mi-Fa-Mi-Re-Do-Re-Sol
-      {p:'Re',b:1,g:0.05}, {p:'Mi',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Mi',b:1,g:0.1}, {p:'Re',b:1,g:0.1},
-      {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Sol',b:2,g:0.6},
-      // 7. Phrase A1 (Final): Mi-Mi-Fa-Sol-Sol-Fa-Mi-Re
-      {p:'Mi',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.1},
-      {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Mi',b:1,g:0.1}, {p:'Re',b:1,g:0.1},
-      // 8. Phrase A3 (Finish): Do-Do-Re-Mi-Re--Do-Do
-      {p:'Do',b:1,g:0.1}, {p:'Do',b:1,g:0.1}, {p:'Re',b:1,g:0.1}, {p:'Mi',b:1,g:0.1},
-      {p:'Re',b:1.5,g:0.05}, {p:'Do',b:0.5,g:0.1}, {p:'Do',b:3,g:2.0}
+      // Transposed to tonic Fa — every note fits the one-octave keyboard
+      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Ti',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'Ti',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'La',b:1.5,g:0.05}, {p:'Sol',b:0.5,g:0.1}, {p:'Sol',b:2,g:0.4},
+      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Ti',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'Ti',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1.5,g:0.05}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:2,g:0.6},
+      // D D E C | D E F E C | D E F E D | C D G(low) → …Fa Sol Do
+      {p:'Sol',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'Ti',b:0.5,g:0.05}, {p:'La',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'Ti',b:0.5,g:0.05}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Do',b:2,g:0.6},
+      {p:'La',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Ti',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'Do2',b:1,g:0.1}, {p:'Ti',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Fa',b:1,g:0.1}, {p:'Sol',b:1,g:0.1}, {p:'La',b:1,g:0.1}, {p:'Sol',b:1.5,g:0.05}, {p:'Fa',b:0.5,g:0.1}, {p:'Fa',b:3,g:2.0}
     ]
   },
   {
@@ -130,16 +110,19 @@ const PARADE_SONGS = [
     notes: [
       // If you're happy and you know it
       {p:'Do',b:0.5,g:0.05}, {p:'Do',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Fa',b:1,g:0.2},
-      // Clap your hands
+      // clap your hands
       {p:'Mi',b:1,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Sol',b:2,g:0.5},
       // If you're happy and you know it
       {p:'Do',b:0.5,g:0.05}, {p:'Do',b:0.5,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Sol',b:0.5,g:0.05}, {p:'Sol',b:0.5,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Sol',b:1,g:0.2},
-      // Clap your hands
+      // clap your hands
       {p:'Fa',b:1,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'La',b:2,g:0.5},
-      // Then your face will surely show it (Adapted to avoid B-flat)
-      {p:'La',b:0.5,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'La',b:1,g:0.05}, {p:'La',b:1,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Fa',b:1,g:0.2},
-      // If you're happy and you know it clap your hands
-      {p:'Mi',b:0.5,g:0.05}, {p:'Mi',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Mi',b:1,g:0.05}, {p:'Re',b:1,g:0.05}, {p:'Do',b:1,g:0.05}, {p:'Do',b:1,g:0.05},
+      // If you're happy and you know it (real tune: F F Bb Bb Bb Bb D D — Bb→A, high D→high C)
+      {p:'Fa',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'La',b:1,g:0.05}, {p:'La',b:1,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'Do2',b:1,g:0.05}, {p:'Do2',b:1,g:0.2},
+      // and you really want to show it (Bb Bb A A A G F F)
+      {p:'La',b:0.5,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'La',b:1,g:0.05}, {p:'La',b:1,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'Sol',b:0.5,g:0.05}, {p:'Fa',b:1,g:0.05}, {p:'Fa',b:1,g:0.2},
+      // If you're happy and you know it (A A G G G F E E)
+      {p:'La',b:0.5,g:0.05}, {p:'La',b:0.5,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Sol',b:1,g:0.05}, {p:'Sol',b:0.5,g:0.05}, {p:'Fa',b:0.5,g:0.05}, {p:'Mi',b:1,g:0.05}, {p:'Mi',b:1,g:0.2},
+      // clap your hands!
       {p:'Re',b:1,g:0.05}, {p:'Mi',b:1,g:0.05}, {p:'Fa',b:3,g:1.5}
     ]
   }

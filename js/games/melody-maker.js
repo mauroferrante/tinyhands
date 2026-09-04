@@ -107,8 +107,7 @@ const MELODIES = [
     {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:2,g:0}
   ]},
   { name: 'Mary\'s Lamb',    emoji: '🎀',  notes: [
-    {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2},
-    {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Mi',b:2,g:0.8},
+    {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.4},
     {p:'Re',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Do',b:2,g:0}
   ]},
   { name: 'Old MacDonald',   emoji: '🐄',  notes: [
@@ -158,9 +157,8 @@ const MELODIES = [
     {p:'Do2',b:1,g:0.2}, {p:'Ti',b:2,g:0}
   ]},
   { name: 'Ode to Joy',      emoji: '🎵',  notes: [
-    {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Fa',b:1,g:0.2}, {p:'Sol',b:1,g:0.2},
-    {p:'Sol',b:1,g:0.2}, {p:'Fa',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2},
-    {p:'Do',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:2,g:0}
+    {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Fa',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Sol',b:1,g:0.2}, {p:'Fa',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Re',b:1,g:0.2},
+    {p:'Do',b:1,g:0.2}, {p:'Do',b:1,g:0.2}, {p:'Re',b:1,g:0.2}, {p:'Mi',b:1,g:0.2}, {p:'Mi',b:1.5,g:0.1}, {p:'Re',b:0.5,g:0.2}, {p:'Re',b:2,g:0}
   ]},
   { name: 'Grand Finale',    emoji: '👑',  notes: [
     {p:'Do',b:1,g:0.2}, {p:'Mi',b:0.5,g:0.2}, {p:'Sol',b:1,g:0.3}, {p:'Do2',b:2,g:0.8},
