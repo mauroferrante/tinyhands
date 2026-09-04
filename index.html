@@ -7,7 +7,7 @@
 <title>Tiny Hands Play, Free Toddler & Kids Browser Games</title>
 
 <!-- SEO Meta Tags -->
-<meta name="description" content="Free fun and educational browser games for toddlers and kids aged 6 months to 9 years. No installs, no accounts, no ads. Just open and play, Kaboom Keys, Stack It Up, Spell It Out, Memory Match, Balloon Float, and Rocket Ride.">
+<meta name="description" content="Free fun and educational browser games for toddlers and kids aged 6 months to 9 years. No installs, no accounts, no ads. Just open and play, Kaboom Keys, Stack It Up, Spell It Out, Memory Match, Melody Maker, Dress-Up Party, Balloon Float, and Rocket Ride.">
 <meta name="keywords" content="toddler games, free kids games, browser games for toddlers, baby keyboard game, stacking game for kids, spelling game for kids, no install games, preschool games online, free online games for toddlers, toddler safe games, kids games no ads, baby games online free">
 <meta name="author" content="Mauro Ferrante">
 <meta name="theme-color" content="#FFFAF7">
@@ -53,6 +53,7 @@
 <link rel="stylesheet" href="css/games/ball-bonanza.css">
 <link rel="stylesheet" href="css/games/tiny-town.css">
 <link rel="stylesheet" href="css/games/melody-maker.css">
+<link rel="stylesheet" href="css/games/dress-up.css">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -314,6 +315,25 @@
       <button class="card-info-btn" aria-label="Game info">ⓘ</button>
     </article>
 
+    <!-- Dress-Up Party Card -->
+    <article class="game-card">
+      <div class="card-flipper">
+        <div class="card-front">
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f457_3d.png" class="emoji-img" alt="👗"></span>
+          <h2>Dress-Up Party</h2>
+          <span class="age-badge">2 – 5 years</span>
+          <p class="card-desc">Dress a furry friend in silly outfits!</p>
+          <button class="play-btn accent-purple" data-game="dress-up">Play</button>
+        </div>
+        <div class="card-back">
+          <p class="card-info-desc">Tap your friend's head, tummy, feet or paw to change hats, tops, shoes and toys. Tap the background for a new place, then take a photo!</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Creativity and self-expression, making choices, clothing and colour words, and cause-and-effect. There are no wrong answers, every tap makes something new.</p>
+          <span class="card-back-hint">Tap to flip back</span>
+        </div>
+      </div>
+      <button class="card-info-btn" aria-label="Game info">ⓘ</button>
+    </article>
+
     <!-- Tip Card (for grown-ups) -->
     <article class="game-card tip-card" id="tipCard">
       <div class="card-front">
@@ -343,6 +363,7 @@
     <p><strong>Stack It Up</strong> (3 – 5 years): How tall can you build your tower?</p>
     <p><strong>Spell It Out</strong> (4 – 7 years): Find the missing letter!</p>
     <p><strong>Memory Match</strong> (3 – 10 years): Find the matching pairs!</p>
+    <p><strong>Dress-Up Party</strong> (2 – 5 years): Dress a furry friend in silly outfits!</p>
     <p><strong>Balloon Float</strong> (4 – 8 years): Tap to float, dodge the clouds!</p>
     <p><strong>Rocket Ride</strong> (5 – 9 years): Blast off and dodge the asteroids!</p>
     <p>No installs, no accounts, no ads. Please enable JavaScript to play.</p>
@@ -510,6 +531,9 @@
     <div class="melody-keyboard" id="melodyKeyboard"></div>
     <div class="melody-celebrate" id="melodyCelebrate"></div>
   </div>
+
+  <!-- Dress-Up Party game layer (built entirely in JS) -->
+  <div id="dressUpGame"></div>
 
   <button id="exitGame" aria-label="Exit game">✕</button>
   <div id="escHint">Press ESC to exit</div>
