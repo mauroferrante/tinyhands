@@ -16,25 +16,13 @@ const splatHint     = document.getElementById('splatHint');
 const splatModeBtn  = document.getElementById('splatModeBtn');
 
 // ---- ABC mode (parent request: "an abc and number one, not random things") ----
-// Letters and digits show a big glyph card with the matching emoji and the
-// browser speaks the name. Taps walk through the alphabet then 0-9.
+// Letters and digits show a big glyph card with the matching emoji.
+// Taps walk through the alphabet then 0-9.
 const ABC_SEQ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
 const ABC_COLORS = ['#FF6B8A', '#7C5CFC', '#F4845F', '#2EC4B6', '#3A86FF', '#FFB703', '#8AC926', '#E040FB'];
 const ABC_MODE_KEY = 'thp-splat-abc';
 let abcMode = false;
 let abcIndex = 0;
-
-function speak(text) {
-  try {
-    if (!('speechSynthesis' in window)) return;
-    speechSynthesis.cancel();                 // a toddler mashes faster than speech can keep up
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'en-US';
-    u.rate = 0.85;
-    u.pitch = 1.1;
-    speechSynthesis.speak(u);
-  } catch (e) { /* speech is a bonus, never an error */ }
-}
 
 function setAbcMode(on) {
   abcMode = !!on;
@@ -43,7 +31,7 @@ function setAbcMode(on) {
     splatModeBtn.classList.toggle('on', abcMode);
     splatModeBtn.setAttribute('aria-pressed', String(abcMode));
   }
-  splatHint.textContent = abcMode ? 'Press a letter or tap to hear it!' : 'Press any key and watch the magic!';
+  splatHint.textContent = abcMode ? 'Press a letter or tap the screen!' : 'Press any key and watch the magic!';
 }
 
 function isToggle(target) {
@@ -109,11 +97,11 @@ function spawnEmoji(x, y, key) {
     el.appendChild(letter);
   }
   const imgEl = createEmojiImg(char, 'emoji-img');
-  const imgSize = glyph ? Math.round(EMOJI_SIZE * 0.5) : EMOJI_SIZE;
+  const imgSize = glyph ? Math.round(EMOJI_SIZE * 1.5) : EMOJI_SIZE;   // big emoji under the letter
   imgEl.style.width = imgSize + 'px';
   imgEl.style.height = imgSize + 'px';
   el.appendChild(imgEl);
-  const boxW = glyph ? 130 : EMOJI_SIZE, boxH = glyph ? 170 : EMOJI_SIZE;
+  const boxW = glyph ? 180 : EMOJI_SIZE, boxH = glyph ? 270 : EMOJI_SIZE;
   el.style.left = (x - boxW / 2) + 'px';
   el.style.top  = (y - boxH / 2) + 'px';
   el.style.setProperty('--rot', rot + 'deg');
@@ -145,7 +133,6 @@ function spawnEmoji(x, y, key) {
   spawnParticles(x, y, splatKeysGame);
   if (glyph) {
     playBubblePop(glyph.charCodeAt(0) % 6);
-    speak(glyph);
   } else {
     playRandomSound();
   }
@@ -168,7 +155,6 @@ export const splatKeys = {
   stop() {
     splatKeysGame.style.display = 'none';
     if (splatModeBtn) splatModeBtn.removeEventListener('pointerdown', onModeToggle);
-    try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) {}
     timers.clearAll();
     activeEmojis.forEach(el => el.remove());
     activeEmojis = [];
