@@ -203,6 +203,7 @@ function stopGame({ fromHistory = false } = {}) {
 
   currentGame.stop();
   currentGame = null;
+  updateExitBtn();
   if (playStartedAt) { sessionPlayMs += Date.now() - playStartedAt; playStartedAt = 0; }
 
   playground.style.display = 'none';
@@ -614,6 +615,34 @@ if (footerTip) {
   footerTip.href = tipUrl('footer');
   footerTip.addEventListener('click', () => trackIntent('donate-footer'));
 }
+
+// ===== ?play=<slug> launcher (used by the per-game pages) =====
+// Fullscreen and audio need a real user gesture, so we show a one-tap card
+// instead of auto-launching.
+(function handlePlayParam() {
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('play');
+  if (!slug) return;
+  history.replaceState({}, '', '/');
+  const btn = document.querySelector('.play-btn[data-game="' + slug + '"]');
+  if (!GAMES[slug] || !btn) return;
+  const card = btn.closest('.game-card');
+  const name = card ? card.querySelector('h2').textContent : slug;
+  const icon = card ? card.querySelector('.card-icon img') : null;
+  const overlay = document.createElement('div');
+  overlay.className = 'play-launch';
+  overlay.innerHTML =
+    '<div class="play-launch-card" role="dialog" aria-label="Start game">' +
+      (icon ? '<img src="' + icon.src + '" class="emoji-img" alt="">' : '') +
+      '<h2>' + name + '</h2><p>Ready when you are.</p>' +
+      '<button class="play-launch-btn" type="button">▶ Tap to start</button>' +
+      '<button class="play-launch-close" type="button">Not now</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  if (card) card.scrollIntoView({ block: 'center' });
+  overlay.querySelector('.play-launch-btn').addEventListener('click', () => { overlay.remove(); launchGame(slug, btn); });
+  overlay.querySelector('.play-launch-close').addEventListener('click', () => overlay.remove());
+})();
 
 // Clean URL on fresh page load — /play/ and /story paths are virtual routes
 // used only for analytics (pushState), not real deep links.

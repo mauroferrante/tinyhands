@@ -4,11 +4,10 @@
 <meta charset="UTF-8">
 <base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-<title>Tiny Hands Play, Free Toddler & Kids Browser Games</title>
+<title>Free Toddler & Kids Games Online, No Ads | Tiny Hands Play</title>
 
 <!-- SEO Meta Tags -->
-<meta name="description" content="Free fun and educational browser games for toddlers and kids aged 6 months to 9 years. No installs, no accounts, no ads. Just open and play, Kaboom Keys, Stack It Up, Spell It Out, Memory Match, Melody Maker, Dress-Up Party, Balloon Float, Rocket Ride, and Math Ninja.">
-<meta name="keywords" content="toddler games, free kids games, browser games for toddlers, baby keyboard game, stacking game for kids, spelling game for kids, no install games, preschool games online, free online games for toddlers, toddler safe games, kids games no ads, baby games online free">
+<meta name="description" content="Eleven free educational browser games for babies, toddlers and kids aged 6 months to 10 years. No ads, no accounts, no installs, works offline: Kaboom Keys keyboard smash, Memory Match, Melody Maker piano, Spell It Out, Math Ninja and more.">
 <meta name="author" content="Mauro Ferrante">
 <meta name="theme-color" content="#FFFAF7">
 <link rel="canonical" href="https://tinyhandsplay.com/">
@@ -38,23 +37,14 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Fredoka:wght@700&family=Fredoka+One&family=Nunito:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 
 <!-- Stylesheets -->
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/landing.css">
 <link rel="stylesheet" href="css/playground.css">
-<link rel="stylesheet" href="css/games/splat-keys.css">
-<link rel="stylesheet" href="css/games/stack-smash.css">
-<link rel="stylesheet" href="css/games/spell-it-out.css">
-<link rel="stylesheet" href="css/games/memory-match.css">
-<link rel="stylesheet" href="css/games/balloon-float.css">
-<link rel="stylesheet" href="css/games/rocket-ride.css">
-<link rel="stylesheet" href="css/games/ball-bonanza.css">
-<link rel="stylesheet" href="css/games/tiny-town.css">
-<link rel="stylesheet" href="css/games/melody-maker.css">
-<link rel="stylesheet" href="css/games/dress-up.css">
-<link rel="stylesheet" href="css/games/math-ninja.css">
+<link rel="stylesheet" href="css/games.bundle.css">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -63,7 +53,7 @@
   "@type": "WebApplication",
   "name": "Tiny Hands Play",
   "url": "https://tinyhandsplay.com",
-  "description": "Free educational browser games for toddlers and kids aged 6 months to 9 years. Includes keyboard smashing, spelling, memory, stacking, and adventure games. No ads, no sign-up, no installs.",
+  "description": "Eleven free educational browser games for babies, toddlers and kids aged 6 months to 10 years: keyboard smashing, memory, stacking, piano, spelling, exploration and mental math. No ads, no sign-up, no installs.",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Web, iOS, Android",
   "browserRequirements": "Requires a modern web browser",
@@ -75,16 +65,29 @@
   "audience": {
     "@type": "PeopleAudience",
     "suggestedMinAge": "0.5",
-    "suggestedMaxAge": "9",
+    "suggestedMaxAge": "10",
     "audienceType": "Toddlers, Preschoolers, and Early Elementary Students"
   },
   "featureList": "No Ads, No Sign-up Required, Offline Support, Educational Games, PWA Support",
   "keywords": "free toddler games, no-ad kids games, educational browser games for kids",
   "creator": {
     "@type": "Person",
-    "name": "Mauro Ferrante"
+    "name": "Mauro Ferrante",
+    "url": "https://tinyhandsplay.com/about/",
+    "sameAs": ["https://github.com/mauroferrante"]
   }
 }
+</script>
+<!-- games:jsonld -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"Is Tiny Hands Play really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every game is free with no paywall, no premium tier and no in-app purchases. Parents who want to can leave a $3 tip."}},
+ {"@type":"Question","name":"Are there ads?","acceptedAnswer":{"@type":"Answer","text":"No ads anywhere, and no third-party ad or tracking scripts."}},
+ {"@type":"Question","name":"Do I need an account?","acceptedAnswer":{"@type":"Answer","text":"No. Nothing to sign up for. Best scores and progress are saved on your own device."}},
+ {"@type":"Question","name":"Which ages is it for?","acceptedAnswer":{"@type":"Answer","text":"From about 6 months (Kaboom Keys) to 10 years (Math Ninja). Each game shows its age range."}},
+ {"@type":"Question","name":"Does it work on a tablet or phone?","acceptedAnswer":{"@type":"Answer","text":"Yes, with touch. Add it to your home screen for a full-screen experience; games keep working with a patchy connection once loaded."}},
+ {"@type":"Question","name":"Is it safe for my toddler to mash the keyboard?","acceptedAnswer":{"@type":"Answer","text":"Yes. While a game is open it captures every key, so nothing else on the computer is affected."}}
+]}
 </script>
 </head>
 <body>
@@ -139,12 +142,13 @@
 
     <!-- FG layer: piano + blocks — moves opposite mouse -->
     <div class="hero-layer hero-layer--fg" data-depth="-0.18">
-      <img class="hero-prop hero-prop--piano"  src="assets/mini-piano.png" alt="" aria-hidden="true">
+      <img class="hero-prop hero-prop--piano"  src="assets/mini-piano.png" fetchpriority="high" alt="" aria-hidden="true">
       <img class="hero-prop hero-prop--blocks" src="assets/tower-blocks.png" alt="" aria-hidden="true">
     </div>
   </section>
 
-  <section class="games-grid" aria-label="Available games">
+  <section class="games-grid" id="games" aria-label="Available games">
+    <!-- games:start -->
     <!-- Kaboom Keys Card -->
     <article class="game-card">
       <div class="card-flipper">
@@ -154,10 +158,11 @@
           <span class="age-badge">1 – 3 years</span>
           <p class="card-desc">Smash the keyboard and make it rain emojis!</p>
           <button class="play-btn accent-salmon" data-game="splat-keys">Play</button>
+          <a class="card-more" href="/games/kaboom-keys/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">Press any key or tap the screen, emojis pop up with fun sounds and colors!</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Cause-and-effect thinking, fine motor skills, and sensory exploration. Every keypress gets a response, teaching little ones that their actions make things happen.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Cause-and-effect thinking, fine motor skills, and sensory exploration. Every keypress gets a response, teaching little ones that their actions make things happen.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -173,10 +178,11 @@
           <span class="age-badge">2 – 4 years</span>
           <p class="card-desc">Tap to bounce the ball to your animal friends!</p>
           <button class="play-btn accent-salmon" data-game="ball-bonanza">Play</button>
+          <a class="card-more" href="/games/ball-bonanza/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">Tap or press any key to bounce a ball into emoji animals, watch them spin, squash, and react!</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Cause-and-effect thinking, spatial awareness, and sensory delight. Every action creates a chain reaction of bouncing, spinning fun.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Cause-and-effect thinking, spatial awareness, and sensory delight. Every action creates a chain reaction of bouncing, spinning fun.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -192,10 +198,11 @@
           <span class="age-badge">2 – 10 years</span>
           <p class="card-desc">Find the matching pairs!</p>
           <button class="play-btn accent-teal" data-game="memory-match">Play</button>
+          <a class="card-more" href="/games/memory-match/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">Flip cards to find matching emoji pairs. Remember where they are!</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Visual memory, concentration, and pattern recognition. Strengthens working memory by recalling card positions.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Visual memory, concentration, and pattern recognition. Strengthens working memory by recalling card positions.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -206,15 +213,16 @@
     <article class="game-card">
       <div class="card-flipper">
         <div class="card-front">
-          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f457_3d.png" class="emoji-img" alt="👗"></span>
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f457_3d.png" class="emoji-img" alt="👗" loading="lazy"></span>
           <h2>Dress-Up Party</h2>
           <span class="age-badge">2 – 3 years</span>
           <p class="card-desc">Dress a furry friend in silly outfits!</p>
           <button class="play-btn accent-purple" data-game="dress-up">Play</button>
+          <a class="card-more" href="/games/dress-up-party/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">Tap your friend's head, tummy, feet or paw to change hats, tops, shoes and toys. Tap the background for a new place, then take a photo!</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Creativity and self-expression, making choices, clothing and colour words, and cause-and-effect. There are no wrong answers, every tap makes something new.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Creativity and self-expression, making choices, clothing and color words, and cause-and-effect. There are no wrong answers, every tap makes something new.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -225,15 +233,16 @@
     <article class="game-card">
       <div class="card-flipper">
         <div class="card-front">
-          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f3d7_3d.png" class="emoji-img" alt="🏗️"></span>
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f3d7_3d.png" class="emoji-img" alt="🏗️" loading="lazy"></span>
           <h2>Stack It Up</h2>
           <span class="age-badge">3 – 5 years</span>
           <p class="card-desc">How tall can you build your tower?</p>
           <button class="play-btn accent-amber" data-game="stack-smash">Play</button>
+          <a class="card-more" href="/games/stack-it-up/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">Tap to drop blocks and build the tallest tower. Keep them balanced or it all comes crashing down!</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Spatial awareness, timing, and patience. Kids discover how balance and gravity work through hands-on trial and error.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Spatial awareness, timing, and patience. Kids discover how balance and gravity work through hands-on trial and error.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -244,15 +253,16 @@
     <article class="game-card">
       <div class="card-flipper">
         <div class="card-front">
-          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f3b9_3d.png" class="emoji-img" alt="🎹"></span>
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f3b9_3d.png" class="emoji-img" alt="🎹" loading="lazy"></span>
           <h2>Melody Maker</h2>
           <span class="age-badge">3 – 7 years</span>
           <p class="card-desc">Play the piano and learn melodies!</p>
           <button class="play-btn accent-salmon" data-game="melody-maker">Play</button>
+          <a class="card-more" href="/games/melody-maker/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">Play 8 colorful piano keys freely, or follow a friendly teacher to learn real melodies!</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Musical ear training, pattern recognition, and sequential memory. Kids develop rhythm and build confidence by mastering melodies step by step.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Musical ear training, pattern recognition, and sequential memory. Kids develop rhythm and build confidence by mastering melodies step by step.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -263,15 +273,16 @@
     <article class="game-card">
       <div class="card-flipper">
         <div class="card-front">
-          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/270f_3d.png" class="emoji-img" alt="✏️"></span>
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/270f_3d.png" class="emoji-img" alt="✏️" loading="lazy"></span>
           <h2>Spell It Out</h2>
           <span class="age-badge">4 – 7 years</span>
           <p class="card-desc">Find the missing letter!</p>
           <button class="play-btn accent-purple" data-game="spell-it-out">Play</button>
+          <a class="card-more" href="/games/spell-it-out/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">See the emoji and its word with a missing letter. Press the right key to fill it in!</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Letter recognition, phonics, and early spelling. Connects pictures to words, building literacy skills one letter at a time.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Letter recognition, phonics, and early spelling. Connects pictures to words, building literacy skills one letter at a time.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -282,15 +293,16 @@
     <article class="game-card">
       <div class="card-flipper">
         <div class="card-front">
-          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f3d8_3d.png" class="emoji-img" alt="🏘️"></span>
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f3d8_3d.png" class="emoji-img" alt="🏘️" loading="lazy"></span>
           <h2>Tiny Town</h2>
           <span class="age-badge">4 – 9 years</span>
           <p class="card-desc">Collect gifts and deliver them across town!</p>
           <button class="play-btn accent-green" data-game="tiny-town">Play</button>
+          <a class="card-more" href="/games/tiny-town/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">It's Festival of Kindness day! Walk around a cozy emoji village, collect gifts from friends, and deliver them across town.</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Spatial awareness, navigation, and following instructions. Kids explore freely, collecting and delivering items to complete the festival.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Spatial awareness, navigation, and following instructions. Kids explore freely, collecting and delivering items to complete the festival.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -301,15 +313,16 @@
     <article class="game-card">
       <div class="card-flipper">
         <div class="card-front">
-          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f388_3d.png" class="emoji-img" alt="🎈"></span>
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f388_3d.png" class="emoji-img" alt="🎈" loading="lazy"></span>
           <h2>Balloon Float</h2>
           <span class="age-badge">4 – 8 years</span>
           <p class="card-desc">Tap to float, dodge the clouds!</p>
           <button class="play-btn accent-sky" data-game="balloon-float">Play</button>
+          <a class="card-more" href="/games/balloon-float/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">Tap or press any key to puff the balloon upward. Dodge clouds, birds, and planes while collecting stars!</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Timing, rhythm, and anticipation. Kids develop hand-eye coordination and learn to predict movement patterns.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Timing, rhythm, and anticipation. Kids develop hand-eye coordination and learn to predict movement patterns.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -320,15 +333,16 @@
     <article class="game-card">
       <div class="card-flipper">
         <div class="card-front">
-          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f680_3d.png" class="emoji-img" alt="🚀"></span>
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f680_3d.png" class="emoji-img" alt="🚀" loading="lazy"></span>
           <h2>Rocket Ride</h2>
           <span class="age-badge">5 – 9 years</span>
           <p class="card-desc">Blast off and dodge the asteroids!</p>
           <button class="play-btn accent-indigo" data-game="rocket-ride">Play</button>
+          <a class="card-more" href="/games/rocket-ride/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">Use arrow keys or tilt your device to steer through space. Boost to fly faster, collect stars, and dodge asteroids!</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Spatial reasoning, reaction time, and directional control. Kids master momentum-based movement and learn to plan ahead while navigating obstacles.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Spatial reasoning, reaction time, and directional control. Kids master momentum-based movement and learn to plan ahead while navigating obstacles.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
@@ -339,21 +353,23 @@
     <article class="game-card">
       <div class="card-flipper">
         <div class="card-front">
-          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f977_3d.png" class="emoji-img" alt="🥷"></span>
+          <span class="card-icon" aria-hidden="true"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f977_3d.png" class="emoji-img" alt="🥷" loading="lazy"></span>
           <h2>Math Ninja</h2>
           <span class="age-badge">6 – 10 years</span>
           <p class="card-desc">Number basics and sneaky mental-math tricks!</p>
           <button class="play-btn accent-indigo" data-game="math-ninja">Play</button>
+          <a class="card-more" href="/games/math-ninja/">About this game →</a>
         </div>
         <div class="card-back">
           <p class="card-info-desc">Ten levels of counting, adding, taking away, times tables and sharing with picture hints. Then 20 ninja tricks: watch one, try it with help, then go solo.</p>
-          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6_3d.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Number sense, place value, and real mental-arithmetic strategies like making tens, rounding and compensating, doubling and halving. No wrong-answer game over, just another go.</p>
+          <p class="card-info-edu"><img src="https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/1f4d6.png" class="emoji-img inline-emoji" alt="📖"> <strong>What they learn:</strong> Number sense, place value, and real mental-arithmetic strategies like making tens, rounding and compensating, doubling and halving. No wrong-answer game over, just another go.</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
       <button class="card-info-btn" aria-label="Game info">ⓘ</button>
     </article>
 
+    <!-- games:end -->
     <!-- Tip Card (for grown-ups) -->
     <article class="game-card tip-card" id="tipCard">
       <div class="card-front">
@@ -365,6 +381,25 @@
       </div>
     </article>
 
+  </section>
+
+  <section class="faq" id="faq" aria-labelledby="faqTitle">
+    <h2 id="faqTitle">Questions parents ask</h2>
+    <dl class="faq-list">
+      <dt>Is Tiny Hands Play really free?</dt>
+      <dd>Yes. Every game is free with no paywall, no premium tier and no in-app purchases. Parents who want to can leave a $3 tip.</dd>
+      <dt>Are there ads?</dt>
+      <dd>No ads anywhere, and no third-party ad or tracking scripts. A toddler can't tell an ad from a game, so there are none.</dd>
+      <dt>Do I need an account?</dt>
+      <dd>No. Nothing to sign up for. Best scores and progress are saved on your own device.</dd>
+      <dt>Which ages is it for?</dt>
+      <dd>From about 6 months (Kaboom Keys, where any key press pops an emoji) to 10 years (Math Ninja's mental-math tricks). Each game card shows its age range.</dd>
+      <dt>Does it work on a tablet or phone?</dt>
+      <dd>Yes, with touch. Add it to your home screen for a full-screen experience, and the games keep working with a patchy connection once loaded.</dd>
+      <dt>Is it safe for my toddler to mash the keyboard?</dt>
+      <dd>Yes. While a game is open it captures every key, so nothing else on the computer is affected. Parents can still use shortcuts like Cmd+R.</dd>
+    </dl>
+    <p class="faq-more"><a href="/about/">About Tiny Hands Play</a> · <a href="/teachers/">For teachers</a> · <a href="/guides/">Guides for parents</a></p>
   </section>
 
   <footer>

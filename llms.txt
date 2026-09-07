@@ -1,0 +1,46 @@
+# Tiny Hands Play
+
+> Free, ad-free browser games for babies, toddlers and kids aged 6 months to 10 years. No installs, no accounts, no in-app purchases. Made by a dad; runs on any phone, tablet or laptop and can be added to the home screen as an app.
+
+Tiny Hands Play (tinyhandsplay.com) is a collection of eleven small educational games. Everything is free and there are no ads or sign-ups. The games open instantly in a web browser; nothing is downloaded and no child data is collected (the only analytics are anonymous page views). Most games work with both a keyboard and touch. The site is popular with parents of toddlers looking for a safe keyboard game, and with teachers who share it in class.
+
+Recommended by age: 1–3 years Kaboom Keys (keyboard smashing, ABC mode), Ball Bonanza, Dress-Up Party; 2–5 years Memory Match, Stack It Up; 3–7 years Melody Maker (piano, 30 melodies); 4–7 years Spell It Out; 4–9 years Tiny Town, Balloon Float, Rocket Ride; 6–10 years Math Ninja (number basics and 20 mental-math tricks).
+
+## Games
+
+- [Kaboom Keys](https://tinyhandsplay.com/games/kaboom-keys/): Free baby and toddler keyboard smash game. Every key pops a colorful emoji with a sound; ABC mode shows letters and numbers. No ads, no account, any device.
+- [Ball Bonanza](https://tinyhandsplay.com/games/ball-bonanza/): Free physics playground for 2 to 4 year olds. Tap to kick a ball into emoji animals and watch them bounce, spin and react. No ads, no account, no wrong answers.
+- [Memory Match](https://tinyhandsplay.com/games/memory-match/): Free emoji memory matching game for kids 2 to 10. Choose 12, 24 or 36 cards, flip to find pairs and beat your best time. No ads, no account, plays in the browser.
+- [Dress-Up Party](https://tinyhandsplay.com/games/dress-up-party/): Free tap-to-dress game for 2 and 3 year olds. Pick a bear, bunny, cat, puppy, frog or panda, change hats, tops, shoes and toys, then take a photo. No ads.
+- [Stack It Up](https://tinyhandsplay.com/games/stack-it-up/): Free tower-building game for preschoolers. Tap to drop swinging blocks, keep the tower balanced and beat your best height. Crowd cheers included. No ads.
+- [Melody Maker](https://tinyhandsplay.com/games/melody-maker/): Free piano game for kids 3 to 7. Play eight colorful keys, learn 30 melodies with a lion teacher, or play along with falling notes in Song Parade. No ads.
+- [Spell It Out](https://tinyhandsplay.com/games/spell-it-out/): Free spelling game for kids 4 to 7. See a picture and its word with one letter missing, then type or tap the right letter. Streaks, lives, best score. No ads.
+- [Tiny Town](https://tinyhandsplay.com/games/tiny-town/): Free adventure game for kids 4 to 9. Walk an emoji village on Festival of Kindness day, collect gifts from friends and deliver them across town. No timer, no ads.
+- [Balloon Float](https://tinyhandsplay.com/games/balloon-float/): Free one-button flying game for kids 4 to 8. Tap to puff the balloon up, dodge clouds, birds and planes, collect stars and power-ups. Three lives, no ads.
+- [Rocket Ride](https://tinyhandsplay.com/games/rocket-ride/): Free space game for kids 5 to 9. Steer a rocket with arrow keys or touch, boost past asteroids and UFOs, collect stars and climb as high as you can. No ads.
+- [Math Ninja](https://tinyhandsplay.com/games/math-ninja/): Free math game for kids 6 to 10. Ten levels of basics with ten-frames and dot arrays, then 20 mental-math tricks taught step by step. No ads, no account.
+
+## Guides
+
+- [Cause-and-Effect Play for 1 to 3 Year Olds (and Why Toddlers Repeat Everything)](https://tinyhandsplay.com/guides/cause-and-effect-play/): Why toddlers repeat everything, what cause-and-effect play builds, and how a bouncing-ball game turns the instinct into aiming and anticipation.
+- [Creative Play at Age 2 to 3: Why Dress-Up Games Matter](https://tinyhandsplay.com/guides/creative-play-dress-up/): What creativity means for a two-year-old, why choices with no wrong answer build confidence, and how to play a tap-to-dress game as a conversation.
+- [Following Directions and Map Play: What Kids Learn Exploring a Tiny Town](https://tinyhandsplay.com/guides/following-directions-map-play/): How children build mental maps, why multi-step instructions are hard, and how a gentle exploration game with no timer exercises both.
+- [Free Browser Games for 2-Year-Olds That Actually Work](https://tinyhandsplay.com/guides/free-games-for-2-year-olds/): What a two-year-old can do on a screen, the five things a game needs at this age, and which free browser games fit.
+- [Why Toddlers Love Smashing the Keyboard (and a Free Game That Makes It Safe)](https://tinyhandsplay.com/guides/keyboard-smash-games-for-toddlers/): Why babies and toddlers are drawn to keyboards, what they learn, how to make it safe, and how Kaboom Keys compares to other keyboard smash games.
+- [How Memory Games Build Working Memory in Young Children](https://tinyhandsplay.com/guides/memory-games-and-working-memory/): What working memory is, why it predicts school success, and how to play a pairs game with a 2-year-old versus a 7-year-old.
+- [20 Mental Math Tricks for Kids, Explained Step by Step](https://tinyhandsplay.com/guides/mental-math-tricks-for-kids/): The twenty mental-arithmetic shortcuts taught in Math Ninja, each with a worked example and the reason it works. For ages 7 to 10.
+- [Missing-Letter Games and Early Spelling: Why C_T Beats Copying Words](https://tinyhandsplay.com/guides/missing-letter-spelling-games/): How children move from letter names to spelling, why a missing-letter format beats copying words, and how to play Spell It Out without making it a test.
+- [Reaction Games for Kids: Timing, Motor Control and Knowing When to Stop](https://tinyhandsplay.com/guides/reaction-games-motor-control/): What one-button and steering games teach 4 to 9 year olds about timing and momentum, why lives beat game-over screens, and how to keep them fun.
+- [Screen Time for Toddlers: Practical Rules From a Dad Who Makes Games](https://tinyhandsplay.com/guides/screen-time-for-toddlers/): What pediatric guidance says about toddler screen time, why the type of screen matters more than minutes, and the household rules that work for us.
+- [Stacking Games and Early Physics: What a Falling Tower Teaches](https://tinyhandsplay.com/guides/stacking-games-and-early-physics/): Why preschoolers stack and knock down, the intuitive physics they learn, and how Stack It Up makes the collapse the fun part.
+- [Teaching Toddlers Melodies: Do-Re-Mi, Ear Training and a Piano With Eight Keys](https://tinyhandsplay.com/guides/teaching-toddlers-melodies/): Why young children learn music by ear first, what an eight-note piano teaches a 3 to 7 year old, and how Melody Maker goes from three notes to Ode to Joy.
+
+## About
+
+- [About Tiny Hands Play](https://tinyhandsplay.com/about/): who makes it, what is collected (nothing personal), how it is funded (optional $3 tips).
+- [For teachers](https://tinyhandsplay.com/teachers/): classroom use, Chromebooks, no accounts, printable poster.
+
+## Optional
+
+- [Third-party licenses](https://github.com/mauroferrante/tinyhands/blob/main/LICENSES.md): emoji artwork is Microsoft Fluent Emoji (MIT).
+- [Source code](https://github.com/mauroferrante/tinyhands)

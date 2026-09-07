@@ -1,0 +1,552 @@
+[
+  {
+    "slug": "splat-keys",
+    "path": "kaboom-keys",
+    "name": "Kaboom Keys",
+    "emoji": "💥",
+    "icon": "1f4a5_3d",
+    "accent": "salmon",
+    "ages": {
+      "min": 1,
+      "max": 3,
+      "label": "1 – 3 years"
+    },
+    "genre": "Sensory / cause-and-effect",
+    "cardDesc": "Smash the keyboard and make it rain emojis!",
+    "cardInfo": "Press any key or tap the screen, emojis pop up with fun sounds and colors!",
+    "cardLearn": "Cause-and-effect thinking, fine motor skills, and sensory exploration. Every keypress gets a response, teaching little ones that their actions make things happen.",
+    "title": "Keyboard Smash Game for Toddlers & Babies, Free",
+    "description": "Free baby and toddler keyboard smash game. Every key pops a colorful emoji with a sound; ABC mode shows letters and numbers. No ads, no account, any device.",
+    "intro": "Kaboom Keys is the game Tiny Hands Play started with. A baby or toddler presses any key on the keyboard, or taps anywhere on a tablet screen, and a big colorful emoji pops up with a cheerful sound. That is the whole game, and that is the point: at this age, discovering that your action makes something happen is the lesson. Nothing can be broken, there are no menus to fall into, and the keyboard is finally allowed. Switch on ABC mode and each letter or number key shows a giant letter card with a matching picture, so the same smashing turns into a first look at the alphabet.",
+    "howToPlay": {
+      "desktop": "Press any key. Letters, numbers, space, arrows and even Shift each have their own emoji. Hold nothing, mash freely.",
+      "touch": "Tap anywhere on the screen. Several fingers at once make several emojis. Tap the ABC button in the corner to switch to letters and numbers."
+    },
+    "learn": [
+      "Cause and effect: my action makes a thing happen",
+      "Fine motor control: isolating one finger to press one key",
+      "Letter and number recognition in ABC mode",
+      "Sensory exploration of color, motion and sound"
+    ],
+    "tips": "Sit your child at a real keyboard once the game is running so they can see the connection between the key and the pop. If a key does nothing, it is probably a modifier like Fn. Kaboom Keys is also a good first game for children who are not yet ready for anything with a goal.",
+    "faq": [
+      {
+        "q": "Is Kaboom Keys safe for a baby to mash?",
+        "a": "Yes. The game captures every key so nothing else on the computer is affected while it is open. Keyboard shortcuts like Cmd+R still work for the grown-up."
+      },
+      {
+        "q": "What is ABC mode?",
+        "a": "A toggle in the top corner. When it is on, letter and number keys show a big letter card with a matching emoji (A with an apple, B with a bee), and taps walk through the alphabet in order. Other keys are ignored."
+      },
+      {
+        "q": "Does it work on a tablet without a keyboard?",
+        "a": "Yes. Tapping the screen pops emojis, and multi-touch works, so two hands make twice the chaos."
+      }
+    ],
+    "related": [
+      "ball-bonanza",
+      "dress-up",
+      "memory-match"
+    ]
+  },
+  {
+    "slug": "ball-bonanza",
+    "path": "ball-bonanza",
+    "name": "Ball Bonanza",
+    "emoji": "⚽",
+    "icon": "26bd_3d",
+    "accent": "salmon",
+    "ages": {
+      "min": 2,
+      "max": 4,
+      "label": "2 – 4 years"
+    },
+    "genre": "Physics playground",
+    "cardDesc": "Tap to bounce the ball to your animal friends!",
+    "cardInfo": "Tap or press any key to bounce a ball into emoji animals, watch them spin, squash, and react!",
+    "cardLearn": "Cause-and-effect thinking, spatial awareness, and sensory delight. Every action creates a chain reaction of bouncing, spinning fun.",
+    "title": "Ball Bonanza: Free Bouncing Ball Game for Toddlers",
+    "description": "Free physics playground for 2 to 4 year olds. Tap to kick a ball into emoji animals and watch them bounce, spin and react. No ads, no account, no wrong answers.",
+    "intro": "Ball Bonanza is a physics playground with no goal except delight. A ball bounces around the screen among a crowd of emoji animals. Tap anywhere and the ball flies toward your finger, knocking the animals into spins, squashes and surprised faces. Every so often a star, a clock or a circus tent appears; touching them with the ball adds a bonus ball, speeds everything up, or invites more friends. Nothing needs to be finished and nothing can be lost.",
+    "howToPlay": {
+      "desktop": "Press any key to kick the ball in a random direction. Click to kick it toward the pointer.",
+      "touch": "Tap where you want the ball to go. New fingers kick, so a whole hand on the screen sends it flying."
+    },
+    "learn": [
+      "Cause and effect with a delay: the tap comes first, the bounce follows",
+      "Early spatial reasoning: aiming toward a target",
+      "Anticipation and tracking a moving object",
+      "Emotional vocabulary from the animals' reactions"
+    ],
+    "tips": "Talk about what the animals are doing: dizzy, surprised, wobbly. Two-year-olds love naming reactions. If the ball gets stuck in a corner, one tap frees it.",
+    "faq": [
+      {
+        "q": "Is there a way to win?",
+        "a": "No. Ball Bonanza is a sandbox. Children play until they are done, and nothing resets or fails."
+      },
+      {
+        "q": "Why do the animals change sometimes?",
+        "a": "Every couple of minutes the animals wave goodbye and a new group walks in, so a long session stays fresh."
+      },
+      {
+        "q": "Does it work with a mouse?",
+        "a": "Yes. Click to aim the ball, or press any key for a random kick."
+      }
+    ],
+    "related": [
+      "splat-keys",
+      "dress-up",
+      "stack-smash"
+    ]
+  },
+  {
+    "slug": "memory-match",
+    "path": "memory-match",
+    "name": "Memory Match",
+    "emoji": "🧠",
+    "icon": "1f9e0_3d",
+    "accent": "teal",
+    "ages": {
+      "min": 2,
+      "max": 10,
+      "label": "2 – 10 years"
+    },
+    "genre": "Memory / concentration",
+    "cardDesc": "Find the matching pairs!",
+    "cardInfo": "Flip cards to find matching emoji pairs. Remember where they are!",
+    "cardLearn": "Visual memory, concentration, and pattern recognition. Strengthens working memory by recalling card positions.",
+    "title": "Memory Match: Free Memory Game for Kids Online",
+    "description": "Free emoji memory matching game for kids 2 to 10. Choose 12, 24 or 36 cards, flip to find pairs and beat your best time. No ads, no account, plays in the browser.",
+    "intro": "Memory Match is the classic pairs game with emoji instead of pictures on cardboard. Pick a board size, 12 cards for toddlers, 24 for preschoolers, 36 for confident players, then flip two cards at a time to find matching pairs. The game tracks turns and time, remembers each child's best result per board size, and celebrates every finished board. A Size button in the corner lets you change the board mid-game without starting over from the menu.",
+    "howToPlay": {
+      "desktop": "Click a card to flip it, then a second card. Matches stay face up.",
+      "touch": "Tap two cards. If they match they stay, if not they flip back after a moment."
+    },
+    "learn": [
+      "Working memory: holding card positions in mind",
+      "Concentration and turn-taking",
+      "Visual discrimination between similar pictures",
+      "Strategy, as older children learn to search systematically"
+    ],
+    "tips": "For a two-year-old, play the 12-card board together and narrate: \"Where did we see the lion?\" Older children enjoy racing their own best time. The timer only starts on the first flip, so there is no rush to begin.",
+    "faq": [
+      {
+        "q": "Which board size should my child start with?",
+        "a": "12 cards (6 pairs) for ages 2 to 4, 24 cards for ages 4 to 7, 36 cards for 7 and up. You can change size at any time with the Size button."
+      },
+      {
+        "q": "Are best scores saved?",
+        "a": "Yes, on the device, per board size. Nothing is sent anywhere and no account is needed."
+      },
+      {
+        "q": "Can two children play together?",
+        "a": "Yes. Take turns flipping pairs. The game does not enforce turns, so it works for cooperative play too."
+      }
+    ],
+    "related": [
+      "dress-up",
+      "stack-smash",
+      "spell-it-out"
+    ]
+  },
+  {
+    "slug": "dress-up",
+    "path": "dress-up-party",
+    "name": "Dress-Up Party",
+    "emoji": "👗",
+    "icon": "1f457_3d",
+    "accent": "purple",
+    "ages": {
+      "min": 2,
+      "max": 3,
+      "label": "2 – 3 years"
+    },
+    "genre": "Creative / dress-up",
+    "cardDesc": "Dress a furry friend in silly outfits!",
+    "cardInfo": "Tap your friend's head, tummy, feet or paw to change hats, tops, shoes and toys. Tap the background for a new place, then take a photo!",
+    "cardLearn": "Creativity and self-expression, making choices, clothing and color words, and cause-and-effect. There are no wrong answers, every tap makes something new.",
+    "title": "Dress-Up Party: Free Dress-Up Game for Toddlers",
+    "description": "Free tap-to-dress game for 2 and 3 year olds. Pick a bear, bunny, cat, puppy, frog or panda, change hats, tops, shoes and toys, then take a photo. No ads.",
+    "intro": "Dress-Up Party is a creativity game built around one gesture a two-year-old already has: the tap. A furry friend stands in the middle of the screen. Tap its head for a new hat, its eyes for glasses, its tummy for a top, its feet for shoes and its paw for a toy. Tap the background to change the scene from park to beach to circus. Tap the face to swap the animal. When the outfit is ready, the camera button flashes, the friend dances, and a polaroid appears with a silly name like Royal Bunny or Sporty Frog. A dice button makes a surprise outfit for children who just want to see what happens.",
+    "howToPlay": {
+      "desktop": "Click parts of the friend to change items. Letter keys change a slot, Space is a surprise outfit, Enter takes the photo.",
+      "touch": "Tap the friend, tap the background, tap the wardrobe strip. Everything is one tap."
+    },
+    "learn": [
+      "Creative choice: there is no right outfit",
+      "Clothing and color vocabulary in conversation",
+      "Cause and effect with a visible, immediate result",
+      "Fine motor aiming at large targets"
+    ],
+    "tips": "Ask questions instead of directing: \"What should Bunny wear to the beach?\" The photo card is a natural stopping point, and the Share button on it lets a parent send the photo to a grandparent.",
+    "faq": [
+      {
+        "q": "Is there dragging?",
+        "a": "No. Drag-and-drop is hard for two-year-olds, so every change is a tap. Tapping the same spot cycles through the options."
+      },
+      {
+        "q": "Can we save the photo?",
+        "a": "The polaroid stays on screen until you tap Dress up again. Use your device's screenshot to keep it, or the Share button to send the site to another parent."
+      },
+      {
+        "q": "How many outfits are there?",
+        "a": "Six friends, six hats, three pairs of glasses, seven tops, five pairs of shoes, eight toys and six scenes. Thousands of combinations."
+      }
+    ],
+    "related": [
+      "splat-keys",
+      "ball-bonanza",
+      "memory-match"
+    ]
+  },
+  {
+    "slug": "stack-smash",
+    "path": "stack-it-up",
+    "name": "Stack It Up",
+    "emoji": "🏗️",
+    "icon": "1f3d7_3d",
+    "accent": "amber",
+    "ages": {
+      "min": 3,
+      "max": 5,
+      "label": "3 – 5 years"
+    },
+    "genre": "Timing / balance",
+    "cardDesc": "How tall can you build your tower?",
+    "cardInfo": "Tap to drop blocks and build the tallest tower. Keep them balanced or it all comes crashing down!",
+    "cardLearn": "Spatial awareness, timing, and patience. Kids discover how balance and gravity work through hands-on trial and error.",
+    "title": "Stack It Up: Free Block Stacking Game for Kids",
+    "description": "Free tower-building game for preschoolers. Tap to drop swinging blocks, keep the tower balanced and beat your best height. Crowd cheers included. No ads.",
+    "intro": "A block swings from a crane at the top of the screen. Tap and it drops. Land it squarely on the block below and the tower grows; land it off-center and the tower leans, wobbles and, eventually, comes crashing down to a chorus of gasps from an emoji audience. That is Stack It Up: a timing game with real physics, where the only score is how high you built before gravity had its say. A perfect drop snaps into place with a chime, and three perfect drops in a row set the crowd waving.",
+    "howToPlay": {
+      "desktop": "Press any key or click to drop the block. After a collapse, press again to start a new tower.",
+      "touch": "Tap anywhere to drop. The swing speeds up as the tower gets taller."
+    },
+    "learn": [
+      "Timing: watching a moving object and choosing the moment",
+      "Balance and gravity through immediate feedback",
+      "Patience and persistence after a collapse",
+      "Counting, as the block count climbs"
+    ],
+    "tips": "Say the count out loud together as the tower grows. When it falls, laugh with the crowd. The collapse is designed to be the fun part, so no child should feel they lost.",
+    "faq": [
+      {
+        "q": "Is there a game over?",
+        "a": "The tower falls, the crowd gasps, and one tap starts a fresh tower. The best height is remembered on the device."
+      },
+      {
+        "q": "How tall can the tower get?",
+        "a": "As tall as your timing allows. The swing gets faster every five blocks, so very tall towers are a real achievement."
+      },
+      {
+        "q": "Why does the first block sometimes fall straight off?",
+        "a": "The first block lands on a ball. If it is too far off-center it tips, just like a real block would. Aim for the middle."
+      }
+    ],
+    "related": [
+      "ball-bonanza",
+      "memory-match",
+      "balloon-float"
+    ]
+  },
+  {
+    "slug": "melody-maker",
+    "path": "melody-maker",
+    "name": "Melody Maker",
+    "emoji": "🎹",
+    "icon": "1f3b9_3d",
+    "accent": "salmon",
+    "ages": {
+      "min": 3,
+      "max": 7,
+      "label": "3 – 7 years"
+    },
+    "genre": "Music / ear training",
+    "cardDesc": "Play the piano and learn melodies!",
+    "cardInfo": "Play 8 colorful piano keys freely, or follow a friendly teacher to learn real melodies!",
+    "cardLearn": "Musical ear training, pattern recognition, and sequential memory. Kids develop rhythm and build confidence by mastering melodies step by step.",
+    "title": "Melody Maker: Free Piano Game for Kids",
+    "description": "Free piano game for kids 3 to 7. Play eight colorful keys, learn 30 melodies with a lion teacher, or play along with falling notes in Song Parade. No ads.",
+    "intro": "Melody Maker is an eight-key piano with three ways to play. Free Play is just the keys: tap or press A to K and hear a warm piano note. Learn Melodies is a lesson mode where a friendly lion plays a short tune while a bouncing ball shows which key is next, then it is your turn to play it back. Thirty melodies build from three notes to real songs like Twinkle Twinkle, Happy Birthday and Ode to Joy. Song Parade is a play-along mode where notes fall toward the keyboard and a whale conducts. Progress is saved so children can pick up where they left off.",
+    "howToPlay": {
+      "desktop": "Keys A, S, D, F, G, H, J, K play Do to high Do. Space or Enter continue after a completed melody.",
+      "touch": "Tap the colored keys. In lessons, watch the ball, then tap the keys in the same order. A replay button repeats the demo; a turtle button slows it down."
+    },
+    "learn": [
+      "Pitch discrimination and ear training",
+      "Sequential memory: holding a pattern of notes",
+      "Rhythm, with feedback on steady timing",
+      "Confidence from playing recognizable songs"
+    ],
+    "tips": "Start in Free Play so the piano feels like a toy before it feels like a lesson. In Learn Melodies, the slow-down button is there for a reason; a four-year-old will need it on longer tunes. Phones work best in landscape.",
+    "faq": [
+      {
+        "q": "Which songs are in it?",
+        "a": "Thirty melodies including Hot Cross Buns, Mary Had a Little Lamb, Old MacDonald, Row Your Boat, London Bridge, Jingle Bells, Twinkle Twinkle, Happy Birthday and Ode to Joy, plus short exercises that teach intervals first."
+      },
+      {
+        "q": "Does it need a real piano keyboard?",
+        "a": "No. The eight on-screen keys work with taps, and a computer keyboard maps A to K to the notes."
+      },
+      {
+        "q": "Is progress saved?",
+        "a": "Yes, on the device. Completed melodies show a star, and the next one is highlighted."
+      }
+    ],
+    "related": [
+      "spell-it-out",
+      "memory-match",
+      "math-ninja"
+    ]
+  },
+  {
+    "slug": "spell-it-out",
+    "path": "spell-it-out",
+    "name": "Spell It Out",
+    "emoji": "✏️",
+    "icon": "270f_3d",
+    "accent": "purple",
+    "ages": {
+      "min": 4,
+      "max": 7,
+      "label": "4 – 7 years"
+    },
+    "genre": "Spelling / phonics",
+    "cardDesc": "Find the missing letter!",
+    "cardInfo": "See the emoji and its word with a missing letter. Press the right key to fill it in!",
+    "cardLearn": "Letter recognition, phonics, and early spelling. Connects pictures to words, building literacy skills one letter at a time.",
+    "title": "Spell It Out: Free Spelling Game for Kids 4–7",
+    "description": "Free spelling game for kids 4 to 7. See a picture and its word with one letter missing, then type or tap the right letter. Streaks, lives, best score. No ads.",
+    "intro": "Spell It Out shows a picture, an emoji cat for example, and its word with one letter missing: C_T. The child presses or taps the missing letter. A right answer fills the tile with a chime and sparkles; a wrong one shows the correct letter, costs a life, and moves on. Words run from three letters to longer ones, streaks earn bigger and bigger celebrations, and the game remembers a best score. It is deliberately gentle: three lives, plenty of encouragement, and the right letter is always shown after a miss.",
+    "howToPlay": {
+      "desktop": "Type the missing letter on the keyboard. Space or Enter restarts after a game.",
+      "touch": "Tap the letter on the on-screen keyboard. Used letters gray out so the choice narrows."
+    },
+    "learn": [
+      "Letter recognition and letter-sound links",
+      "Early spelling of common nouns",
+      "Picture-to-word association",
+      "Persistence: streaks reward staying focused"
+    ],
+    "tips": "Say the word out loud slowly and let the child hear the missing sound before they look for the letter. If they are guessing, cover the picture and read the word together first.",
+    "faq": [
+      {
+        "q": "Are the words in American or British spelling?",
+        "a": "The word list uses spellings that are the same in both, like CAT, MOON and FROG, so nobody is marked wrong for a regional difference."
+      },
+      {
+        "q": "What happens when the lives run out?",
+        "a": "A friendly end card shows the score and best score with a tap-to-restart. There is no penalty beyond starting a new round."
+      },
+      {
+        "q": "My child can't type yet. Does it still work?",
+        "a": "Yes. On touch devices an on-screen keyboard appears, and on desktop a parent can point to the key."
+      }
+    ],
+    "related": [
+      "melody-maker",
+      "memory-match",
+      "math-ninja"
+    ]
+  },
+  {
+    "slug": "tiny-town",
+    "path": "tiny-town",
+    "name": "Tiny Town",
+    "emoji": "🏘️",
+    "icon": "1f3d8_3d",
+    "accent": "green",
+    "ages": {
+      "min": 4,
+      "max": 9,
+      "label": "4 – 9 years"
+    },
+    "genre": "Exploration / adventure",
+    "cardDesc": "Collect gifts and deliver them across town!",
+    "cardInfo": "It's Festival of Kindness day! Walk around a cozy emoji village, collect gifts from friends, and deliver them across town.",
+    "cardLearn": "Spatial awareness, navigation, and following instructions. Kids explore freely, collecting and delivering items to complete the festival.",
+    "title": "Tiny Town: Free Exploration Game for Kids 4–9",
+    "description": "Free adventure game for kids 4 to 9. Walk an emoji village on Festival of Kindness day, collect gifts from friends and deliver them across town. No timer, no ads.",
+    "intro": "Tiny Town is a small open world drawn entirely in emoji. It is Festival of Kindness day, and townsfolk have gifts for one another that need delivering. Pick a character, then walk the streets: past the bakery, along the beach with its boats and dolphins, over to the airport where planes take off. Talk to a friend, collect their gift, find the person it is for. There are no enemies, no timer and no score, only a growing list of happy deliveries and a festival to finish.",
+    "howToPlay": {
+      "desktop": "Arrow keys or WASD to walk. Walk into a person to talk to them. Enter to pick a character.",
+      "touch": "Tap where you want to go and your character walks there along the roads. Tap a person to talk."
+    },
+    "learn": [
+      "Navigation and mental mapping of a small world",
+      "Following multi-step instructions",
+      "Reading short dialogue",
+      "Kindness as the goal of the game"
+    ],
+    "tips": "Ask your child to tell you where they think the recipient lives before they set off. Older children like to plan a route that delivers two gifts in one trip.",
+    "faq": [
+      {
+        "q": "Is there any danger in the town?",
+        "a": "None. Nothing chases, nothing runs out. The only surprise is a puppy who might decide to follow you."
+      },
+      {
+        "q": "How long does the festival take?",
+        "a": "Around ten to fifteen minutes for a child who knows the town. Exploring is encouraged, so it can happily take longer."
+      },
+      {
+        "q": "Does it work on a phone?",
+        "a": "Yes, by tapping where you want to walk, though the town is more comfortable on a tablet or laptop."
+      }
+    ],
+    "related": [
+      "balloon-float",
+      "rocket-ride",
+      "math-ninja"
+    ]
+  },
+  {
+    "slug": "balloon-float",
+    "path": "balloon-float",
+    "name": "Balloon Float",
+    "emoji": "🎈",
+    "icon": "1f388_3d",
+    "accent": "sky",
+    "ages": {
+      "min": 4,
+      "max": 8,
+      "label": "4 – 8 years"
+    },
+    "genre": "Reaction / arcade",
+    "cardDesc": "Tap to float, dodge the clouds!",
+    "cardInfo": "Tap or press any key to puff the balloon upward. Dodge clouds, birds, and planes while collecting stars!",
+    "cardLearn": "Timing, rhythm, and anticipation. Kids develop hand-eye coordination and learn to predict movement patterns.",
+    "title": "Balloon Float: Free One-Tap Flying Game for Kids",
+    "description": "Free one-button flying game for kids 4 to 8. Tap to puff the balloon up, dodge clouds, birds and planes, collect stars and power-ups. Three lives, no ads.",
+    "intro": "Balloon Float is a one-button game: tap and the balloon puffs upward, let go and it drifts down. Obstacles float in from the right, clouds, birds, kites and planes, and the job is to weave between them while collecting stars. Power-ups add variety: a shield, a rainbow trail, a magnet for stars, a slow-motion moment and a mystery box. Three lives mean a mistake is not the end, and a best score is kept on the device.",
+    "howToPlay": {
+      "desktop": "Press any key to puff. Space or Enter restart after a game.",
+      "touch": "Tap to puff, hold for a longer rise. Keep tapping to stay level."
+    },
+    "learn": [
+      "Timing and rhythm of a repeated action",
+      "Anticipation: reading where an obstacle will be",
+      "Hand-eye coordination",
+      "Managing a small budget of lives"
+    ],
+    "tips": "New players tend to over-tap and hit the top of the screen. Suggest small taps and watching the middle of the screen rather than the balloon. Shields make a good moment to relax.",
+    "faq": [
+      {
+        "q": "Is it too hard for a four-year-old?",
+        "a": "The first thirty seconds are gentle and speed builds slowly. Four-year-olds enjoy the floating even when they crash early; the three lives help."
+      },
+      {
+        "q": "What do the power-ups do?",
+        "a": "Shield absorbs a hit, Rainbow makes the balloon invincible for a while, Magnet pulls stars toward you, Snail slows the obstacles down, and the Mystery Box picks one of them at random."
+      },
+      {
+        "q": "Why did the game restart when I rotated the tablet?",
+        "a": "It doesn't anymore. Rotating keeps the balloon on screen and the game continues."
+      }
+    ],
+    "related": [
+      "rocket-ride",
+      "stack-smash",
+      "tiny-town"
+    ]
+  },
+  {
+    "slug": "rocket-ride",
+    "path": "rocket-ride",
+    "name": "Rocket Ride",
+    "emoji": "🚀",
+    "icon": "1f680_3d",
+    "accent": "indigo",
+    "ages": {
+      "min": 5,
+      "max": 9,
+      "label": "5 – 9 years"
+    },
+    "genre": "Arcade / steering",
+    "cardDesc": "Blast off and dodge the asteroids!",
+    "cardInfo": "Use arrow keys or tilt your device to steer through space. Boost to fly faster, collect stars, and dodge asteroids!",
+    "cardLearn": "Spatial reasoning, reaction time, and directional control. Kids master momentum-based movement and learn to plan ahead while navigating obstacles.",
+    "title": "Rocket Ride: Free Space Game for Kids 5–9",
+    "description": "Free space game for kids 5 to 9. Steer a rocket with arrow keys or touch, boost past asteroids and UFOs, collect stars and climb as high as you can. No ads.",
+    "intro": "Rocket Ride is the fastest game on Tiny Hands Play. A rocket launches from a countdown and climbs through space while asteroids, satellites, space junk and eventually UFOs drift into its path. Steer left and right, boost upward, brake to slow down, and collect stars and fuel cans that give a burst of invincibility. Altitude and stars both count, best results are saved, and the higher you go the faster it all comes. Milestone chimes mark every few hundred kilometers.",
+    "howToPlay": {
+      "desktop": "Arrow keys or WASD: left and right steer, up or Space boosts, down brakes. Any key launches.",
+      "touch": "Touch the left or right side of the screen to steer, hold to boost. Two thumbs work well."
+    },
+    "learn": [
+      "Momentum: the rocket keeps moving after you stop pressing",
+      "Reaction time and planning ahead",
+      "Left-right directional control",
+      "Reading a rising number (altitude) as a goal"
+    ],
+    "tips": "Boosting the whole time is the beginner's mistake; short boosts and steering early are the skill. Talk about momentum: why does the rocket keep drifting after you let go?",
+    "faq": [
+      {
+        "q": "What is the best age for Rocket Ride?",
+        "a": "Five and up. It needs two-directional steering and some planning, which most four-year-olds find frustrating."
+      },
+      {
+        "q": "Does it use the phone's tilt sensor?",
+        "a": "No. Steering is by touch zones on the left and right of the screen, which is more predictable for kids than tilting."
+      },
+      {
+        "q": "How do lives work?",
+        "a": "Three lives. Hitting an asteroid costs one and gives a few seconds of invincibility to recover. Fuel cans also make you invincible for a moment."
+      }
+    ],
+    "related": [
+      "balloon-float",
+      "tiny-town",
+      "math-ninja"
+    ]
+  },
+  {
+    "slug": "math-ninja",
+    "path": "math-ninja",
+    "name": "Math Ninja",
+    "emoji": "🥷",
+    "icon": "1f977_3d",
+    "accent": "indigo",
+    "ages": {
+      "min": 6,
+      "max": 10,
+      "label": "6 – 10 years"
+    },
+    "genre": "Math / mental arithmetic",
+    "cardDesc": "Number basics and sneaky mental-math tricks!",
+    "cardInfo": "Ten levels of counting, adding, taking away, times tables and sharing with picture hints. Then 20 ninja tricks: watch one, try it with help, then go solo.",
+    "cardLearn": "Number sense, place value, and real mental-arithmetic strategies like making tens, rounding and compensating, doubling and halving. No wrong-answer game over, just another go.",
+    "title": "Math Ninja: Free Mental Math Game for Kids",
+    "description": "Free math game for kids 6 to 10. Ten levels of basics with ten-frames and dot arrays, then 20 mental-math tricks taught step by step. No ads, no account.",
+    "intro": "Math Ninja has two doors. Number Basics is ten levels of practice, from counting to ten up to times tables and division, with pictures that carry the idea: ten-frames of dots for small sums, rows of dots for multiplication, groups for sharing. Ninja Tricks teaches twenty real mental-arithmetic shortcuts, the kind adults use without noticing: rounding to a friendly number, making tens, adding 9 by adding 10 and sliding back, doubling and halving, the 11 rule. Each trick is taught three ways: watch a worked example unfold, do one together step by step, then five on your own. A wrong answer gets a hint and a second go, never a game over.",
+    "howToPlay": {
+      "desktop": "Type the answer and press Enter. In a lesson, Space skips ahead through the worked example.",
+      "touch": "Tap the digits on the number pad, then the green check. Tap a step to hurry the demonstration."
+    },
+    "learn": [
+      "Number sense and place value through visuals",
+      "Times tables and division facts",
+      "Twenty mental-math strategies, each with the reasoning behind it",
+      "Confidence: every problem has a gentle path to the answer"
+    ],
+    "tips": "Do the Watch phase together once and say the steps out loud. The tricks stick when a child can explain why they work, not just that they do. The Solo phase has a peek button that shows the steps at the cost of a star.",
+    "faq": [
+      {
+        "q": "Which tricks are included?",
+        "a": "Friendly numbers, left-to-right adding, making tens, plus 9, doubles plus one, add-up-to-subtract, shifting both numbers, all-from-9-last-from-10, minus 9, dropping to a ten, double and halve, the 11 rule, times 5, times 9, double-double for times 4, times 15, squaring numbers ending in 5, dividing by 5, halving twice for dividing by 4, and chunking."
+      },
+      {
+        "q": "Is it suitable for a six-year-old?",
+        "a": "Number Basics is. The tricks assume comfort with two-digit numbers and are best from about eight."
+      },
+      {
+        "q": "Are the problems the same every time?",
+        "a": "No. Every problem is generated fresh, but always with numbers where the trick actually applies, so the child sees the pattern rather than memorizing an answer."
+      }
+    ],
+    "related": [
+      "spell-it-out",
+      "memory-match",
+      "melody-maker"
+    ]
+  }
+]

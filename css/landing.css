@@ -1193,3 +1193,79 @@ body.game-active .pwa-banner {
   text-underline-offset: 3px;
 }
 .footer-tip-link:hover { text-decoration-color: var(--color-primary); }
+
+/* ===== "About this game" link under Play ===== */
+.game-card .card-more {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: none;
+  opacity: 0.85;
+}
+.game-card .card-more:hover { text-decoration: underline; }
+
+/* ===== FAQ (matches the FAQPage JSON-LD) ===== */
+.faq {
+  max-width: 760px;
+  margin: 3.5rem auto 0;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 10;
+}
+.faq h2 {
+  font-family: 'Baloo 2', 'Quicksand', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+  color: var(--color-primary-dark, #6354A4);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.faq-list dt { font-weight: 800; color: var(--color-text); margin-top: 1rem; }
+.faq-list dd { margin: 0.25rem 0 0; color: var(--color-text-muted); line-height: 1.55; }
+.faq-more { text-align: center; margin-top: 1.5rem; font-weight: 700; }
+.faq-more a { color: var(--color-primary); text-decoration: none; }
+.faq-more a:hover { text-decoration: underline; }
+
+/* ===== ?play= launcher overlay (a real tap is needed for fullscreen + audio) ===== */
+.play-launch {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(45, 45, 45, 0.45);
+  padding: 20px;
+}
+.play-launch-card {
+  background: #fff;
+  border-radius: 28px;
+  padding: 28px 26px;
+  width: min(380px, 92vw);
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+.play-launch-card .emoji-img { width: 72px; height: 72px; }
+.play-launch-card h2 { font-family: 'Baloo 2', sans-serif; font-weight: 800; margin: 10px 0 4px; color: var(--color-primary-dark, #6354A4); }
+.play-launch-card p { color: var(--color-text-muted); margin: 0 0 16px; }
+.play-launch-btn {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  background: #F4845F;
+  box-shadow: 0 6px 18px rgba(244, 132, 95, 0.35);
+  cursor: pointer;
+}
+.play-launch-close {
+  display: block;
+  margin: 12px auto 0;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  cursor: pointer;
+}

@@ -1,0 +1,1371 @@
+# Tiny Hands Play
+
+> Free, ad-free browser games for babies, toddlers and kids aged 6 months to 10 years. No installs, no accounts, no in-app purchases. Made by a dad; runs on any phone, tablet or laptop and can be added to the home screen as an app.
+
+Tiny Hands Play (tinyhandsplay.com) is a collection of eleven small educational games. Everything is free and there are no ads or sign-ups. The games open instantly in a web browser; nothing is downloaded and no child data is collected (the only analytics are anonymous page views). Most games work with both a keyboard and touch. The site is popular with parents of toddlers looking for a safe keyboard game, and with teachers who share it in class.
+
+Recommended by age: 1–3 years Kaboom Keys (keyboard smashing, ABC mode), Ball Bonanza, Dress-Up Party; 2–5 years Memory Match, Stack It Up; 3–7 years Melody Maker (piano, 30 melodies); 4–7 years Spell It Out; 4–9 years Tiny Town, Balloon Float, Rocket Ride; 6–10 years Math Ninja (number basics and 20 mental-math tricks).
+
+## Games
+
+- [Kaboom Keys](https://tinyhandsplay.com/games/kaboom-keys/): Free baby and toddler keyboard smash game. Every key pops a colorful emoji with a sound; ABC mode shows letters and numbers. No ads, no account, any device.
+- [Ball Bonanza](https://tinyhandsplay.com/games/ball-bonanza/): Free physics playground for 2 to 4 year olds. Tap to kick a ball into emoji animals and watch them bounce, spin and react. No ads, no account, no wrong answers.
+- [Memory Match](https://tinyhandsplay.com/games/memory-match/): Free emoji memory matching game for kids 2 to 10. Choose 12, 24 or 36 cards, flip to find pairs and beat your best time. No ads, no account, plays in the browser.
+- [Dress-Up Party](https://tinyhandsplay.com/games/dress-up-party/): Free tap-to-dress game for 2 and 3 year olds. Pick a bear, bunny, cat, puppy, frog or panda, change hats, tops, shoes and toys, then take a photo. No ads.
+- [Stack It Up](https://tinyhandsplay.com/games/stack-it-up/): Free tower-building game for preschoolers. Tap to drop swinging blocks, keep the tower balanced and beat your best height. Crowd cheers included. No ads.
+- [Melody Maker](https://tinyhandsplay.com/games/melody-maker/): Free piano game for kids 3 to 7. Play eight colorful keys, learn 30 melodies with a lion teacher, or play along with falling notes in Song Parade. No ads.
+- [Spell It Out](https://tinyhandsplay.com/games/spell-it-out/): Free spelling game for kids 4 to 7. See a picture and its word with one letter missing, then type or tap the right letter. Streaks, lives, best score. No ads.
+- [Tiny Town](https://tinyhandsplay.com/games/tiny-town/): Free adventure game for kids 4 to 9. Walk an emoji village on Festival of Kindness day, collect gifts from friends and deliver them across town. No timer, no ads.
+- [Balloon Float](https://tinyhandsplay.com/games/balloon-float/): Free one-button flying game for kids 4 to 8. Tap to puff the balloon up, dodge clouds, birds and planes, collect stars and power-ups. Three lives, no ads.
+- [Rocket Ride](https://tinyhandsplay.com/games/rocket-ride/): Free space game for kids 5 to 9. Steer a rocket with arrow keys or touch, boost past asteroids and UFOs, collect stars and climb as high as you can. No ads.
+- [Math Ninja](https://tinyhandsplay.com/games/math-ninja/): Free math game for kids 6 to 10. Ten levels of basics with ten-frames and dot arrays, then 20 mental-math tricks taught step by step. No ads, no account.
+
+## Guides
+
+- [Cause-and-Effect Play for 1 to 3 Year Olds (and Why Toddlers Repeat Everything)](https://tinyhandsplay.com/guides/cause-and-effect-play/): Why toddlers repeat everything, what cause-and-effect play builds, and how a bouncing-ball game turns the instinct into aiming and anticipation.
+- [Creative Play at Age 2 to 3: Why Dress-Up Games Matter](https://tinyhandsplay.com/guides/creative-play-dress-up/): What creativity means for a two-year-old, why choices with no wrong answer build confidence, and how to play a tap-to-dress game as a conversation.
+- [Following Directions and Map Play: What Kids Learn Exploring a Tiny Town](https://tinyhandsplay.com/guides/following-directions-map-play/): How children build mental maps, why multi-step instructions are hard, and how a gentle exploration game with no timer exercises both.
+- [Free Browser Games for 2-Year-Olds That Actually Work](https://tinyhandsplay.com/guides/free-games-for-2-year-olds/): What a two-year-old can do on a screen, the five things a game needs at this age, and which free browser games fit.
+- [Why Toddlers Love Smashing the Keyboard (and a Free Game That Makes It Safe)](https://tinyhandsplay.com/guides/keyboard-smash-games-for-toddlers/): Why babies and toddlers are drawn to keyboards, what they learn, how to make it safe, and how Kaboom Keys compares to other keyboard smash games.
+- [How Memory Games Build Working Memory in Young Children](https://tinyhandsplay.com/guides/memory-games-and-working-memory/): What working memory is, why it predicts school success, and how to play a pairs game with a 2-year-old versus a 7-year-old.
+- [20 Mental Math Tricks for Kids, Explained Step by Step](https://tinyhandsplay.com/guides/mental-math-tricks-for-kids/): The twenty mental-arithmetic shortcuts taught in Math Ninja, each with a worked example and the reason it works. For ages 7 to 10.
+- [Missing-Letter Games and Early Spelling: Why C_T Beats Copying Words](https://tinyhandsplay.com/guides/missing-letter-spelling-games/): How children move from letter names to spelling, why a missing-letter format beats copying words, and how to play Spell It Out without making it a test.
+- [Reaction Games for Kids: Timing, Motor Control and Knowing When to Stop](https://tinyhandsplay.com/guides/reaction-games-motor-control/): What one-button and steering games teach 4 to 9 year olds about timing and momentum, why lives beat game-over screens, and how to keep them fun.
+- [Screen Time for Toddlers: Practical Rules From a Dad Who Makes Games](https://tinyhandsplay.com/guides/screen-time-for-toddlers/): What pediatric guidance says about toddler screen time, why the type of screen matters more than minutes, and the household rules that work for us.
+- [Stacking Games and Early Physics: What a Falling Tower Teaches](https://tinyhandsplay.com/guides/stacking-games-and-early-physics/): Why preschoolers stack and knock down, the intuitive physics they learn, and how Stack It Up makes the collapse the fun part.
+- [Teaching Toddlers Melodies: Do-Re-Mi, Ear Training and a Piano With Eight Keys](https://tinyhandsplay.com/guides/teaching-toddlers-melodies/): Why young children learn music by ear first, what an eight-note piano teaches a 3 to 7 year old, and how Melody Maker goes from three notes to Ode to Joy.
+
+## About
+
+- [About Tiny Hands Play](https://tinyhandsplay.com/about/): who makes it, what is collected (nothing personal), how it is funded (optional $3 tips).
+- [For teachers](https://tinyhandsplay.com/teachers/): classroom use, Chromebooks, no accounts, printable poster.
+
+## Optional
+
+- [Third-party licenses](https://github.com/mauroferrante/tinyhands/blob/main/LICENSES.md): emoji artwork is Microsoft Fluent Emoji (MIT).
+- [Source code](https://github.com/mauroferrante/tinyhands)
+
+---
+
+# Kaboom Keys (1 – 3 years)
+
+> Smash the keyboard and make it rain emojis!
+
+URL: https://tinyhandsplay.com/games/kaboom-keys/
+
+Kaboom Keys is the game Tiny Hands Play started with. A baby or toddler presses any key on the keyboard, or taps anywhere on a tablet screen, and a big colorful emoji pops up with a cheerful sound. That is the whole game, and that is the point: at this age, discovering that your action makes something happen is the lesson. Nothing can be broken, there are no menus to fall into, and the keyboard is finally allowed. Switch on ABC mode and each letter or number key shows a giant letter card with a matching picture, so the same smashing turns into a first look at the alphabet.
+
+## How to play
+
+- Laptop or desktop: Press any key. Letters, numbers, space, arrows and even Shift each have their own emoji. Hold nothing, mash freely.
+- Tablet or phone: Tap anywhere on the screen. Several fingers at once make several emojis. Tap the ABC button in the corner to switch to letters and numbers.
+
+## What children learn
+
+- Cause and effect: my action makes a thing happen
+- Fine motor control: isolating one finger to press one key
+- Letter and number recognition in ABC mode
+- Sensory exploration of color, motion and sound
+
+## Tips for parents
+
+Sit your child at a real keyboard once the game is running so they can see the connection between the key and the pop. If a key does nothing, it is probably a modifier like Fn. Kaboom Keys is also a good first game for children who are not yet ready for anything with a goal.
+
+## Questions parents ask
+
+**Is Kaboom Keys safe for a baby to mash?** Yes. The game captures every key so nothing else on the computer is affected while it is open. Keyboard shortcuts like Cmd+R still work for the grown-up.
+
+**What is ABC mode?** A toggle in the top corner. When it is on, letter and number keys show a big letter card with a matching emoji (A with an apple, B with a bee), and taps walk through the alphabet in order. Other keys are ignored.
+
+**Does it work on a tablet without a keyboard?** Yes. Tapping the screen pops emojis, and multi-touch works, so two hands make twice the chaos.
+
+---
+
+# Ball Bonanza (2 – 4 years)
+
+> Tap to bounce the ball to your animal friends!
+
+URL: https://tinyhandsplay.com/games/ball-bonanza/
+
+Ball Bonanza is a physics playground with no goal except delight. A ball bounces around the screen among a crowd of emoji animals. Tap anywhere and the ball flies toward your finger, knocking the animals into spins, squashes and surprised faces. Every so often a star, a clock or a circus tent appears; touching them with the ball adds a bonus ball, speeds everything up, or invites more friends. Nothing needs to be finished and nothing can be lost.
+
+## How to play
+
+- Laptop or desktop: Press any key to kick the ball in a random direction. Click to kick it toward the pointer.
+- Tablet or phone: Tap where you want the ball to go. New fingers kick, so a whole hand on the screen sends it flying.
+
+## What children learn
+
+- Cause and effect with a delay: the tap comes first, the bounce follows
+- Early spatial reasoning: aiming toward a target
+- Anticipation and tracking a moving object
+- Emotional vocabulary from the animals' reactions
+
+## Tips for parents
+
+Talk about what the animals are doing: dizzy, surprised, wobbly. Two-year-olds love naming reactions. If the ball gets stuck in a corner, one tap frees it.
+
+## Questions parents ask
+
+**Is there a way to win?** No. Ball Bonanza is a sandbox. Children play until they are done, and nothing resets or fails.
+
+**Why do the animals change sometimes?** Every couple of minutes the animals wave goodbye and a new group walks in, so a long session stays fresh.
+
+**Does it work with a mouse?** Yes. Click to aim the ball, or press any key for a random kick.
+
+---
+
+# Memory Match (2 – 10 years)
+
+> Find the matching pairs!
+
+URL: https://tinyhandsplay.com/games/memory-match/
+
+Memory Match is the classic pairs game with emoji instead of pictures on cardboard. Pick a board size, 12 cards for toddlers, 24 for preschoolers, 36 for confident players, then flip two cards at a time to find matching pairs. The game tracks turns and time, remembers each child's best result per board size, and celebrates every finished board. A Size button in the corner lets you change the board mid-game without starting over from the menu.
+
+## How to play
+
+- Laptop or desktop: Click a card to flip it, then a second card. Matches stay face up.
+- Tablet or phone: Tap two cards. If they match they stay, if not they flip back after a moment.
+
+## What children learn
+
+- Working memory: holding card positions in mind
+- Concentration and turn-taking
+- Visual discrimination between similar pictures
+- Strategy, as older children learn to search systematically
+
+## Tips for parents
+
+For a two-year-old, play the 12-card board together and narrate: "Where did we see the lion?" Older children enjoy racing their own best time. The timer only starts on the first flip, so there is no rush to begin.
+
+## Questions parents ask
+
+**Which board size should my child start with?** 12 cards (6 pairs) for ages 2 to 4, 24 cards for ages 4 to 7, 36 cards for 7 and up. You can change size at any time with the Size button.
+
+**Are best scores saved?** Yes, on the device, per board size. Nothing is sent anywhere and no account is needed.
+
+**Can two children play together?** Yes. Take turns flipping pairs. The game does not enforce turns, so it works for cooperative play too.
+
+---
+
+# Dress-Up Party (2 – 3 years)
+
+> Dress a furry friend in silly outfits!
+
+URL: https://tinyhandsplay.com/games/dress-up-party/
+
+Dress-Up Party is a creativity game built around one gesture a two-year-old already has: the tap. A furry friend stands in the middle of the screen. Tap its head for a new hat, its eyes for glasses, its tummy for a top, its feet for shoes and its paw for a toy. Tap the background to change the scene from park to beach to circus. Tap the face to swap the animal. When the outfit is ready, the camera button flashes, the friend dances, and a polaroid appears with a silly name like Royal Bunny or Sporty Frog. A dice button makes a surprise outfit for children who just want to see what happens.
+
+## How to play
+
+- Laptop or desktop: Click parts of the friend to change items. Letter keys change a slot, Space is a surprise outfit, Enter takes the photo.
+- Tablet or phone: Tap the friend, tap the background, tap the wardrobe strip. Everything is one tap.
+
+## What children learn
+
+- Creative choice: there is no right outfit
+- Clothing and color vocabulary in conversation
+- Cause and effect with a visible, immediate result
+- Fine motor aiming at large targets
+
+## Tips for parents
+
+Ask questions instead of directing: "What should Bunny wear to the beach?" The photo card is a natural stopping point, and the Share button on it lets a parent send the photo to a grandparent.
+
+## Questions parents ask
+
+**Is there dragging?** No. Drag-and-drop is hard for two-year-olds, so every change is a tap. Tapping the same spot cycles through the options.
+
+**Can we save the photo?** The polaroid stays on screen until you tap Dress up again. Use your device's screenshot to keep it, or the Share button to send the site to another parent.
+
+**How many outfits are there?** Six friends, six hats, three pairs of glasses, seven tops, five pairs of shoes, eight toys and six scenes. Thousands of combinations.
+
+---
+
+# Stack It Up (3 – 5 years)
+
+> How tall can you build your tower?
+
+URL: https://tinyhandsplay.com/games/stack-it-up/
+
+A block swings from a crane at the top of the screen. Tap and it drops. Land it squarely on the block below and the tower grows; land it off-center and the tower leans, wobbles and, eventually, comes crashing down to a chorus of gasps from an emoji audience. That is Stack It Up: a timing game with real physics, where the only score is how high you built before gravity had its say. A perfect drop snaps into place with a chime, and three perfect drops in a row set the crowd waving.
+
+## How to play
+
+- Laptop or desktop: Press any key or click to drop the block. After a collapse, press again to start a new tower.
+- Tablet or phone: Tap anywhere to drop. The swing speeds up as the tower gets taller.
+
+## What children learn
+
+- Timing: watching a moving object and choosing the moment
+- Balance and gravity through immediate feedback
+- Patience and persistence after a collapse
+- Counting, as the block count climbs
+
+## Tips for parents
+
+Say the count out loud together as the tower grows. When it falls, laugh with the crowd. The collapse is designed to be the fun part, so no child should feel they lost.
+
+## Questions parents ask
+
+**Is there a game over?** The tower falls, the crowd gasps, and one tap starts a fresh tower. The best height is remembered on the device.
+
+**How tall can the tower get?** As tall as your timing allows. The swing gets faster every five blocks, so very tall towers are a real achievement.
+
+**Why does the first block sometimes fall straight off?** The first block lands on a ball. If it is too far off-center it tips, just like a real block would. Aim for the middle.
+
+---
+
+# Melody Maker (3 – 7 years)
+
+> Play the piano and learn melodies!
+
+URL: https://tinyhandsplay.com/games/melody-maker/
+
+Melody Maker is an eight-key piano with three ways to play. Free Play is just the keys: tap or press A to K and hear a warm piano note. Learn Melodies is a lesson mode where a friendly lion plays a short tune while a bouncing ball shows which key is next, then it is your turn to play it back. Thirty melodies build from three notes to real songs like Twinkle Twinkle, Happy Birthday and Ode to Joy. Song Parade is a play-along mode where notes fall toward the keyboard and a whale conducts. Progress is saved so children can pick up where they left off.
+
+## How to play
+
+- Laptop or desktop: Keys A, S, D, F, G, H, J, K play Do to high Do. Space or Enter continue after a completed melody.
+- Tablet or phone: Tap the colored keys. In lessons, watch the ball, then tap the keys in the same order. A replay button repeats the demo; a turtle button slows it down.
+
+## What children learn
+
+- Pitch discrimination and ear training
+- Sequential memory: holding a pattern of notes
+- Rhythm, with feedback on steady timing
+- Confidence from playing recognizable songs
+
+## Tips for parents
+
+Start in Free Play so the piano feels like a toy before it feels like a lesson. In Learn Melodies, the slow-down button is there for a reason; a four-year-old will need it on longer tunes. Phones work best in landscape.
+
+## Questions parents ask
+
+**Which songs are in it?** Thirty melodies including Hot Cross Buns, Mary Had a Little Lamb, Old MacDonald, Row Your Boat, London Bridge, Jingle Bells, Twinkle Twinkle, Happy Birthday and Ode to Joy, plus short exercises that teach intervals first.
+
+**Does it need a real piano keyboard?** No. The eight on-screen keys work with taps, and a computer keyboard maps A to K to the notes.
+
+**Is progress saved?** Yes, on the device. Completed melodies show a star, and the next one is highlighted.
+
+---
+
+# Spell It Out (4 – 7 years)
+
+> Find the missing letter!
+
+URL: https://tinyhandsplay.com/games/spell-it-out/
+
+Spell It Out shows a picture, an emoji cat for example, and its word with one letter missing: C_T. The child presses or taps the missing letter. A right answer fills the tile with a chime and sparkles; a wrong one shows the correct letter, costs a life, and moves on. Words run from three letters to longer ones, streaks earn bigger and bigger celebrations, and the game remembers a best score. It is deliberately gentle: three lives, plenty of encouragement, and the right letter is always shown after a miss.
+
+## How to play
+
+- Laptop or desktop: Type the missing letter on the keyboard. Space or Enter restarts after a game.
+- Tablet or phone: Tap the letter on the on-screen keyboard. Used letters gray out so the choice narrows.
+
+## What children learn
+
+- Letter recognition and letter-sound links
+- Early spelling of common nouns
+- Picture-to-word association
+- Persistence: streaks reward staying focused
+
+## Tips for parents
+
+Say the word out loud slowly and let the child hear the missing sound before they look for the letter. If they are guessing, cover the picture and read the word together first.
+
+## Questions parents ask
+
+**Are the words in American or British spelling?** The word list uses spellings that are the same in both, like CAT, MOON and FROG, so nobody is marked wrong for a regional difference.
+
+**What happens when the lives run out?** A friendly end card shows the score and best score with a tap-to-restart. There is no penalty beyond starting a new round.
+
+**My child can't type yet. Does it still work?** Yes. On touch devices an on-screen keyboard appears, and on desktop a parent can point to the key.
+
+---
+
+# Tiny Town (4 – 9 years)
+
+> Collect gifts and deliver them across town!
+
+URL: https://tinyhandsplay.com/games/tiny-town/
+
+Tiny Town is a small open world drawn entirely in emoji. It is Festival of Kindness day, and townsfolk have gifts for one another that need delivering. Pick a character, then walk the streets: past the bakery, along the beach with its boats and dolphins, over to the airport where planes take off. Talk to a friend, collect their gift, find the person it is for. There are no enemies, no timer and no score, only a growing list of happy deliveries and a festival to finish.
+
+## How to play
+
+- Laptop or desktop: Arrow keys or WASD to walk. Walk into a person to talk to them. Enter to pick a character.
+- Tablet or phone: Tap where you want to go and your character walks there along the roads. Tap a person to talk.
+
+## What children learn
+
+- Navigation and mental mapping of a small world
+- Following multi-step instructions
+- Reading short dialogue
+- Kindness as the goal of the game
+
+## Tips for parents
+
+Ask your child to tell you where they think the recipient lives before they set off. Older children like to plan a route that delivers two gifts in one trip.
+
+## Questions parents ask
+
+**Is there any danger in the town?** None. Nothing chases, nothing runs out. The only surprise is a puppy who might decide to follow you.
+
+**How long does the festival take?** Around ten to fifteen minutes for a child who knows the town. Exploring is encouraged, so it can happily take longer.
+
+**Does it work on a phone?** Yes, by tapping where you want to walk, though the town is more comfortable on a tablet or laptop.
+
+---
+
+# Balloon Float (4 – 8 years)
+
+> Tap to float, dodge the clouds!
+
+URL: https://tinyhandsplay.com/games/balloon-float/
+
+Balloon Float is a one-button game: tap and the balloon puffs upward, let go and it drifts down. Obstacles float in from the right, clouds, birds, kites and planes, and the job is to weave between them while collecting stars. Power-ups add variety: a shield, a rainbow trail, a magnet for stars, a slow-motion moment and a mystery box. Three lives mean a mistake is not the end, and a best score is kept on the device.
+
+## How to play
+
+- Laptop or desktop: Press any key to puff. Space or Enter restart after a game.
+- Tablet or phone: Tap to puff, hold for a longer rise. Keep tapping to stay level.
+
+## What children learn
+
+- Timing and rhythm of a repeated action
+- Anticipation: reading where an obstacle will be
+- Hand-eye coordination
+- Managing a small budget of lives
+
+## Tips for parents
+
+New players tend to over-tap and hit the top of the screen. Suggest small taps and watching the middle of the screen rather than the balloon. Shields make a good moment to relax.
+
+## Questions parents ask
+
+**Is it too hard for a four-year-old?** The first thirty seconds are gentle and speed builds slowly. Four-year-olds enjoy the floating even when they crash early; the three lives help.
+
+**What do the power-ups do?** Shield absorbs a hit, Rainbow makes the balloon invincible for a while, Magnet pulls stars toward you, Snail slows the obstacles down, and the Mystery Box picks one of them at random.
+
+**Why did the game restart when I rotated the tablet?** It doesn't anymore. Rotating keeps the balloon on screen and the game continues.
+
+---
+
+# Rocket Ride (5 – 9 years)
+
+> Blast off and dodge the asteroids!
+
+URL: https://tinyhandsplay.com/games/rocket-ride/
+
+Rocket Ride is the fastest game on Tiny Hands Play. A rocket launches from a countdown and climbs through space while asteroids, satellites, space junk and eventually UFOs drift into its path. Steer left and right, boost upward, brake to slow down, and collect stars and fuel cans that give a burst of invincibility. Altitude and stars both count, best results are saved, and the higher you go the faster it all comes. Milestone chimes mark every few hundred kilometers.
+
+## How to play
+
+- Laptop or desktop: Arrow keys or WASD: left and right steer, up or Space boosts, down brakes. Any key launches.
+- Tablet or phone: Touch the left or right side of the screen to steer, hold to boost. Two thumbs work well.
+
+## What children learn
+
+- Momentum: the rocket keeps moving after you stop pressing
+- Reaction time and planning ahead
+- Left-right directional control
+- Reading a rising number (altitude) as a goal
+
+## Tips for parents
+
+Boosting the whole time is the beginner's mistake; short boosts and steering early are the skill. Talk about momentum: why does the rocket keep drifting after you let go?
+
+## Questions parents ask
+
+**What is the best age for Rocket Ride?** Five and up. It needs two-directional steering and some planning, which most four-year-olds find frustrating.
+
+**Does it use the phone's tilt sensor?** No. Steering is by touch zones on the left and right of the screen, which is more predictable for kids than tilting.
+
+**How do lives work?** Three lives. Hitting an asteroid costs one and gives a few seconds of invincibility to recover. Fuel cans also make you invincible for a moment.
+
+---
+
+# Math Ninja (6 – 10 years)
+
+> Number basics and sneaky mental-math tricks!
+
+URL: https://tinyhandsplay.com/games/math-ninja/
+
+Math Ninja has two doors. Number Basics is ten levels of practice, from counting to ten up to times tables and division, with pictures that carry the idea: ten-frames of dots for small sums, rows of dots for multiplication, groups for sharing. Ninja Tricks teaches twenty real mental-arithmetic shortcuts, the kind adults use without noticing: rounding to a friendly number, making tens, adding 9 by adding 10 and sliding back, doubling and halving, the 11 rule. Each trick is taught three ways: watch a worked example unfold, do one together step by step, then five on your own. A wrong answer gets a hint and a second go, never a game over.
+
+## How to play
+
+- Laptop or desktop: Type the answer and press Enter. In a lesson, Space skips ahead through the worked example.
+- Tablet or phone: Tap the digits on the number pad, then the green check. Tap a step to hurry the demonstration.
+
+## What children learn
+
+- Number sense and place value through visuals
+- Times tables and division facts
+- Twenty mental-math strategies, each with the reasoning behind it
+- Confidence: every problem has a gentle path to the answer
+
+## Tips for parents
+
+Do the Watch phase together once and say the steps out loud. The tricks stick when a child can explain why they work, not just that they do. The Solo phase has a peek button that shows the steps at the cost of a star.
+
+## Questions parents ask
+
+**Which tricks are included?** Friendly numbers, left-to-right adding, making tens, plus 9, doubles plus one, add-up-to-subtract, shifting both numbers, all-from-9-last-from-10, minus 9, dropping to a ten, double and halve, the 11 rule, times 5, times 9, double-double for times 4, times 15, squaring numbers ending in 5, dividing by 5, halving twice for dividing by 4, and chunking.
+
+**Is it suitable for a six-year-old?** Number Basics is. The tricks assume comfort with two-digit numbers and are best from about eight.
+
+**Are the problems the same every time?** No. Every problem is generated fresh, but always with numbers where the trick actually applies, so the child sees the pattern rather than memorizing an answer.
+
+---
+
+# Cause-and-Effect Play for 1 to 3 Year Olds (and Why Toddlers Repeat Everything)
+
+URL: https://tinyhandsplay.com/guides/cause-and-effect-play/
+
+# Cause-and-effect play for 1 to 3 year olds (and why toddlers repeat everything)
+
+Every parent of a one-year-old has watched the spoon experiment. Spoon goes over the edge of the high chair. Parent picks it up. Spoon goes over the edge again. Forty times. It looks like mischief. It is actually science.
+
+## What the spoon is for
+
+Between roughly nine months and three years, a child's main project is working out how the world responds to them. Drop the spoon: it falls, it clatters, a grown-up appears. Do it again: same result. Do it again: still the same. The repetition is not stubbornness; it is a toddler confirming a law of nature, and it is deeply satisfying, because predictability is what makes the world feel safe.
+
+Psychologists call this cause-and-effect learning, and it underpins nearly everything that comes later: language (I say "up", I get lifted), social skills (I smile, she smiles), and eventually reasoning ("if I push the tower it falls, so I won't"). A child who has had thousands of reliable cause-and-effect experiences is a child who expects the world to make sense.
+
+## What good cause-and-effect toys have in common
+
+- **The effect is immediate.** A second's delay and the connection is lost.
+- **It is the same every time.** Reliability is the whole lesson.
+- **The child controls it.** Toys that perform on their own teach nothing about agency.
+- **The effect is big.** Light, sound, motion. Subtle is wasted on a one-year-old.
+- **It cannot be done wrong.** There is no failure, only more effect.
+
+Pop-up toys, light-up drums, a wooden spoon and a saucepan all qualify. So does a keyboard, if the computer is allowed to respond, which is what [Kaboom Keys](/games/kaboom-keys/) is for.
+
+## Adding a target: the next step
+
+Somewhere around two, pure cause and effect stops being enough. The child does not just want a thing to happen; they want to make a *particular* thing happen. This is where aiming, timing and anticipation start.
+
+[Ball Bonanza](/games/ball-bonanza/) is built for exactly this step. A ball bounces around a screen full of emoji animals. Tap anywhere and the ball flies toward your finger. If it hits an animal, the animal spins, squashes or looks surprised. There is still no way to fail and nothing to finish, but there is now a target, and the effect depends on *where* you tap, not just *whether* you tap. That is a real jump in complexity, and two-year-olds cross it with visible pride.
+
+Three things it quietly teaches:
+
+1. **Aiming.** "I want the ball over there, so I tap over there."
+2. **Delay tolerance.** The tap comes first, the bounce arrives a moment later. Learning to wait half a second for a result is harder than it sounds.
+3. **Reading reactions.** The animals have faces. Children start naming what they see: dizzy, surprised, wobbly. That is emotional vocabulary, borrowed from a physics game.
+
+## Playing it together
+
+Ball Bonanza is a sandbox, so the parent's job is commentary, not instruction:
+
+- "Whoa, the frog is dizzy!"
+- "Can you get the ball to the panda?"
+- "Look, a star! What happens if the ball touches it?"
+
+Every couple of minutes the animals wave goodbye and a new group walks in, and collectibles appear that add a bonus ball, speed things up or invite more friends. Point them out; a two-year-old will not notice a small change on their own.
+
+## From here
+
+When your child starts asking for *rules*, wanting to know if they did it right, they are ready for games with a goal. [Stack It Up](/games/stack-it-up/) is a good first one: drop blocks, build a tower, laugh when it falls. The collapse is designed to be the fun part, so the first taste of "trying" comes without a first taste of "losing".
+
+---
+
+# Creative Play at Age 2 to 3: Why Dress-Up Games Matter
+
+URL: https://tinyhandsplay.com/guides/creative-play-dress-up/
+
+# Creative play at age 2 to 3: why dress-up games matter
+
+Ask a room of parents what they want for their toddler and "creative" comes up early. Ask what creativity looks like at two and the room goes quiet. It does not look like painting a masterpiece. It looks like putting a saucepan on your head and announcing you are a firefighter.
+
+## What creativity means at two
+
+At this age, creativity is mostly two things:
+
+1. **Making a choice that is yours.** Not the right choice, not the choice mum would make. Yours. A two-year-old who picks the yellow cup over the blue one, every time, is exercising the muscle.
+2. **Combining things that do not normally go together.** Saucepan plus head. Bear plus sunglasses. Dinosaur at a tea party. This is the beginning of imagination: holding two ideas at once and enjoying the clash.
+
+Both need one condition to flourish: **no wrong answer.** The moment there is a right way to do it, the child is no longer creating; they are guessing what you want. Most early-years toys that call themselves creative quietly break this rule. The shape sorter has one hole per shape. The coloring book has lines.
+
+## Why dress-up is the perfect vehicle
+
+Dressing a character has no wrong answer, ever. A bunny in a top hat and flip-flops at the beach is not a mistake; it is a Tuesday. Every combination works, every combination gets a reaction, and the child is the author. That is why dress-up boxes have been in every nursery for a hundred years.
+
+The digital version has one advantage over the real box: the changes are instant and infinite. No fiddly buttons, no clothes that do not fit the doll, no ten-minute hunt for the other shoe.
+
+## How Dress-Up Party is built for this age
+
+[Dress-Up Party](/games/dress-up-party/) is designed around the one gesture a two-year-old owns completely: the tap.
+
+- A furry friend stands in the middle. Tap its head for a new hat, its eyes for glasses, its tummy for a top, its feet for shoes, its paw for a toy. Tap the face to swap the animal (bear, bunny, cat, puppy, frog, panda). Tap the background for a new scene.
+- **No dragging.** Drag-and-drop is a three-year-old skill; at two it ends in frustration.
+- **No menus.** A wardrobe strip along the edge mirrors the current outfit so a parent can help, but the child never has to find anything.
+- **A natural ending.** The camera button flashes, the friend does a little dance, and a polaroid appears with a name like *Royal Bunny* or *Sporty Frog*. Children learn quickly that the photo is the finale, which makes stopping easy.
+- A dice button makes a surprise outfit, for the child who wants to see what happens rather than decide.
+
+## Playing it as a conversation
+
+The game is better as a duet. A few prompts that work:
+
+- **Ask, don't direct.** "What should Bunny wear to the beach?" not "Put the sun hat on."
+- **Name everything.** Hat, boots, kimono, umbrella, snowy, rainbow. Dress-up is a vocabulary machine.
+- **Notice the combination.** "A crown *and* flip-flops! Is Bunny a beach queen?" That is you modeling imaginative play.
+- **Let them take the photo.** The polaroid's name is the punchline; read it in a silly voice.
+
+## What it is not
+
+It is not an art app, and it is not trying to be. There is no drawing, no free color mixing, because two-year-olds are not ready for a blank canvas. Constrained creativity, a small set of choices with no wrong answer, is the right amount of freedom at this age. The blank canvas comes later.
+
+## From here
+
+When your child starts telling you *stories* about the outfit ("Bunny is going to a party and then it will rain"), they are ready for games with a little narrative. [Tiny Town](/games/tiny-town/), from about four, lets them walk around a village delivering gifts, and the story is the whole point.
+
+---
+
+# Following Directions and Map Play: What Kids Learn Exploring a Tiny Town
+
+URL: https://tinyhandsplay.com/guides/following-directions-map-play/
+
+# Following directions and map play: what kids learn exploring a Tiny Town
+
+"Go to your room, get your shoes, and bring them to the front door." Three steps. Watch a five-year-old set off confidently and come back with a toy dinosaur. This is not disobedience. It is working memory and route planning being asked to do more than they can yet manage, and both are skills that grow with practice.
+
+## Two skills hiding in one errand
+
+**Holding an instruction.** A multi-step instruction has to be stored, kept in order, and checked off as you go. Most four-year-olds can hold two steps; three is a stretch; four is a lot until six or seven. When a child "forgets" step two, they often have not forgotten it so much as had it pushed out by whatever they saw on the way.
+
+**Knowing where things are.** Children build mental maps of their world surprisingly early, but they are patchy: home, nursery, grandma's house, the park, connected by "the car goes for a while." Filling in the map, knowing that the shop is *past* the park and *before* the bridge, is a skill that comes from moving through a space repeatedly and paying attention.
+
+Errands practice both at once, which is why they are hard, and why they are worth setting.
+
+## Practicing on a screen
+
+A small, consistent world that a child can walk around again and again is good practice for the second skill, and errands inside it are good practice for the first. That is the whole design of [Tiny Town](/games/tiny-town/).
+
+It is Festival of Kindness day in an emoji village. Townsfolk have gifts for one another that need delivering. The child picks a character and walks: past the bakery, along the beach with its boats and dolphins, over to the airport where planes take off. Talk to a friend and collect their gift. Find the person it is for. Deliver it. Repeat until the festival is complete.
+
+What is deliberately *not* in it: enemies, a timer, a score, any way to fail. Nothing chases you. The only surprise is a puppy who may decide to follow. A child can stop and watch the dolphins for as long as they like.
+
+## What it exercises
+
+- **Holding a two-part instruction.** "The baker has a gift for the pilot." Who, and where, kept in mind across the walk.
+- **Building a mental map.** After two or three visits, children stop wandering and start heading straight for the beach because they know where it is. That moment is the learning.
+- **Reading short dialogue.** The townsfolk speak in a sentence or two. Four-year-olds will need it read to them; six-year-olds read it themselves.
+- **Planning.** Older children notice they can carry two gifts and deliver both in one trip, which is genuine route optimization.
+- **Kindness as the point.** The goal is doing something nice for someone. It is a small thing in a game, and children notice.
+
+## Controls
+
+On a laptop, the arrow keys or WASD walk the character, and walking into a person starts a conversation. On a tablet, tap where you want to go and the character walks there along the roads; tap a person to talk. Either way the world is calm enough that a child can learn the controls without pressure.
+
+## Playing it together
+
+- **Ask before they set off.** "Where do you think the pilot lives?" Predicting the route is the map skill made explicit.
+- **Let them get lost.** Being lost in a safe world with no timer is how the map fills in. Resist directing.
+- **Retell the errand.** "Who gave you the gift? Who is it for?" That is the instruction-holding skill, rehearsed out loud.
+- **Notice the town.** The planes take off on a schedule. The boats drift. Point things out; noticing landmarks is how real-world navigation works too.
+
+## From here
+
+Children who enjoy Tiny Town's errands tend to enjoy real-world versions: a shopping list with three items they are in charge of, or drawing a map of the walk to school. The screen version is a rehearsal, and the rehearsal is safe.
+
+---
+
+# Free Browser Games for 2-Year-Olds That Actually Work
+
+URL: https://tinyhandsplay.com/guides/free-games-for-2-year-olds/
+
+# Free browser games for 2-year-olds that actually work
+
+Two is an awkward age for screens. A two-year-old is too old for the baby app that just makes noise, and too young for almost everything else: they cannot read, they cannot drag and drop reliably, they do not understand losing, and their attention span is measured in seconds unless something is genuinely fun. Most "toddler games" are either dressed-up ad machines or games for four-year-olds with the word "toddler" in the title.
+
+Here is what a game needs to work at two, and which free games on this site fit.
+
+## What a two-year-old can do on a screen
+
+- **Tap.** Reliably, with one finger, on a large target. Small buttons and precise aiming are out.
+- **Press keys.** Any key. A physical keyboard is actually easier than a touchscreen for many two-year-olds because the feedback is under the finger.
+- **Notice cause and effect.** If a tap makes something happen *every time*, they are in. If it sometimes does nothing, they lose interest fast.
+- **Make a choice between visible options.** "This hat or that hat" works. Menus do not.
+
+## What they cannot do yet
+
+- **Drag and drop.** Holding a finger down while moving it is a three-year-old skill.
+- **Read.** Anything that depends on a word or an instruction is out.
+- **Wait.** Loading screens, intros and countdowns are where two-year-olds walk away.
+- **Lose.** A "game over" screen at two is just confusing. There should be no way to fail.
+
+## Five things a game needs at this age
+
+1. **One gesture.** Tap, or press a key. That's it.
+2. **Instant response, every time.** Sound and motion within a fraction of a second.
+3. **No fail state.** Nothing ends, nothing resets, nothing goes red.
+4. **Nothing to break.** They will mash. The game must swallow every key.
+5. **Nothing to buy and nothing to click by accident.** No ads, no pop-ups, no "rate this app".
+
+## Free games that fit
+
+Everything on [Tiny Hands Play](/) is free with no ads and no accounts. These three are built for exactly this age:
+
+**[Kaboom Keys](/games/kaboom-keys/)** is the pure cause-and-effect game. Press any key or tap anywhere and a big emoji pops with a sound. It captures the whole keyboard so nothing else on the computer is affected. Flip on ABC mode and the letter keys show a giant letter with a matching picture, which is where a two-and-a-half-year-old starts noticing letters.
+
+**[Ball Bonanza](/games/ball-bonanza/)** adds a target. Tap and a ball flies toward your finger, knocking emoji animals into spins and squashes. Nothing to finish, nothing to lose, but the child is now aiming at something, which is the next step after pure smashing.
+
+**[Dress-Up Party](/games/dress-up-party/)** adds choice. Tap a furry friend's head for a new hat, its tummy for a new top, the background for a new place. There is no right answer and no dragging; every change is a tap. The camera button takes a photo and gives the outfit a silly name, which is a natural moment to stop.
+
+For a two-year-old who is nearly three, **[Memory Match](/games/memory-match/)** on its 12-card board works well as a game to play *together*, with the parent doing most of the remembering out loud.
+
+## How long, and how
+
+Short. Five to ten minutes at this age is plenty, and the best sessions are the ones you do together: naming the emojis, laughing at the animals, asking what the bear should wear to the beach. The games are designed so that a parent can put them down and pick them up in a sentence, and there is nothing lost when a session ends mid-tap.
+
+If you are using a tablet, add the site to the home screen. It opens full-screen, which keeps small fingers out of the browser bar, and the games keep working with a patchy connection once they have loaded.
+
+---
+
+# Why Toddlers Love Smashing the Keyboard (and a Free Game That Makes It Safe)
+
+URL: https://tinyhandsplay.com/guides/keyboard-smash-games-for-toddlers/
+
+# Why toddlers love smashing the keyboard (and a free game that makes it safe)
+
+If you have a laptop and a one-year-old, you already know the scene. You sit down to work, and a small person arrives at your elbow with a single mission: press every key, as fast as possible, while looking at your face for the reaction. Windows close. Emails send themselves. Somehow the display is upside down.
+
+This guide is about why that happens, why it is worth encouraging rather than fighting, and how to give it a safe outlet with a keyboard smash game.
+
+## Why the keyboard is irresistible
+
+A keyboard is a perfect toy for a toddler's stage of development, which is roughly "I do a thing, and the world does a thing back." Every key gives a click under the finger, and on a real computer every key does something visible. That is cause and effect at its purest, and between about ten months and three years it is the most interesting idea in the universe.
+
+It also happens to be *your* keyboard. Toddlers copy what the adults they love spend time on. If you type all day, the keyboard is the most important object in the house, and getting their hands on it is a way of joining in.
+
+## What they actually learn from it
+
+More than you would think, if the keyboard is allowed to respond.
+
+- **Cause and effect.** The core lesson. "My finger did that." It is the foundation for every later idea about how the world works.
+- **Fine motor control.** Pressing one key instead of a fistful takes real skill. Watch a two-year-old go from palms to a single pointing finger over a few weeks.
+- **Turn-taking and attention.** A game that responds to every press holds attention far longer than one that plays on its own.
+- **Letters and numbers, eventually.** Not at one. But by two and a half, the letters on the keys start to mean something, and a game that shows the letter when it is pressed makes that connection for them.
+
+## Making it safe
+
+The problem with a real keyboard is that it is connected to a real computer. The fix is a game that takes over every key while it is open, so pressing Escape, Enter or the Windows key does nothing except pop another emoji.
+
+That is exactly what [Kaboom Keys](/games/kaboom-keys/) does. Every key press pops a big colorful emoji with a sound. Letters, numbers, Space, the arrows, even Shift and Caps Lock each have their own. Grown-up shortcuts like Cmd+R still work, so you can reload or switch windows, but nothing a child can reach has an effect outside the game. On a tablet, tapping the screen does the same thing, and several fingers make several emojis.
+
+A few practical tips:
+
+1. Open the game first, then sit the child at the keyboard. Starting from the desktop invites a detour.
+2. Use full screen. Kaboom Keys goes full screen on laptops so the browser bar is out of reach.
+3. Turn the volume to a level *you* can live with. There will be a lot of pops.
+4. If a key does nothing, it is probably Fn or a media key. Everything else responds.
+
+## ABC mode: from smashing to letters
+
+Two parents asked for the same thing in the feedback form: "an ABC one, not random things." So Kaboom Keys has an **ABC** toggle in the corner. When it is on, letter and number keys show a giant letter card with a matching picture, A with an apple, B with a bee, Z with a zebra, and the other keys are ignored. On a tablet with no keyboard, each tap walks through the alphabet in order.
+
+It is the same game, one switch away, and it grows with the child. One-year-olds smash; two-year-olds start to notice the letters; three-year-olds hunt for the letter of their name.
+
+## Looking for Tiny Fingers?
+
+A lot of parents find this site while searching for *Tiny Fingers*, another keyboard smash site that has been around for years. If that is you: the idea is the same, and both are free. Kaboom Keys is one game inside [Tiny Hands Play](/), a collection of eleven, so when your child outgrows smashing there is a stacking game, a memory game and a piano waiting on the same page. It has no ads, works with touch as well as keys, and has the ABC mode described above. Try both and keep whichever your child comes back to.
+
+## When to move on
+
+Kaboom Keys is for the pure cause-and-effect stage. When your child starts wanting a *goal*, something to aim at, something to finish, [Ball Bonanza](/games/ball-bonanza/) gives them a ball to kick at animal friends, and [Dress-Up Party](/games/dress-up-party/) lets them make choices. Both are still one-tap games with no way to lose.
+
+---
+
+# How Memory Games Build Working Memory in Young Children
+
+URL: https://tinyhandsplay.com/guides/memory-games-and-working-memory/
+
+# How memory games build working memory in young children
+
+The pairs game is older than the tablet, older than the computer, older than most of the toys in your house. Cards face down, flip two, find the match. It has survived because it works, and it works because it exercises the mental muscle that early-years teachers talk about more than any other: working memory.
+
+## What working memory is
+
+Working memory is the small mental workspace where you hold information while you use it. Remembering a phone number long enough to dial it. Holding the first half of an instruction while you hear the second half. Keeping track of where the lion card was while you flip the frog.
+
+In children it is a strong predictor of how they will cope with school, because almost everything in a classroom asks for it: "Get your book, turn to page ten, and write your name at the top" is three items to hold at once. Children with weaker working memory are not less intelligent; they just lose the thread more easily, and that looks like not paying attention.
+
+The good news is that it responds to practice, especially the playful kind that does not feel like practice.
+
+## Why the pairs game works
+
+Every turn in a memory game is a working-memory exercise in miniature:
+
+1. Flip a card. Encode it: what it is, where it is.
+2. Flip another. Compare it to the first, and to every card you have seen before.
+3. Update. If it matched, that pair is done. If not, remember both positions for later.
+
+Nothing else is going on to distract from that loop. No story, no timer pressure unless you want it, no losing. Children can play it for twenty minutes and come away having done several hundred encode-compare-update cycles.
+
+## Playing with a two-year-old
+
+At two, the game is barely about memory yet. It is about turn-taking, naming pictures, and the pleasure of the flip. Play the smallest board, twelve cards in [Memory Match](/games/memory-match/), and do most of the remembering out loud yourself:
+
+- "Oh, a lion! Where did we see the other lion?"
+- "That's a frog. Let's remember: frog in the corner."
+- Celebrate every match, including the ones you found.
+
+The point is to model what remembering *sounds* like. Children absorb the strategy before they can use it.
+
+## Playing with a four-year-old
+
+Four-year-olds can genuinely play. Move up to 24 cards when twelve gets easy. Two habits are worth nudging:
+
+- **Say the picture when you flip it.** Naming an item makes it stick. Silent flipping is how cards get forgotten.
+- **Look before you flip the second card.** The impulse is to flip anything. Pausing to think "where might the other one be?" is the whole skill.
+
+Memory Match counts turns and time and remembers each child's best per board size, so a four-year-old can race their own record without competing with a sibling.
+
+## Playing with a seven-year-old and up
+
+Older children can handle 36 cards and start to use real strategy: flipping systematically rather than randomly, remembering *pairs of positions* rather than single cards, and noticing when a card they need has already been revealed. Ask them to explain their strategy; being able to describe how you remember is a big step toward using memory deliberately in school.
+
+## Two small design notes
+
+Two parents wrote in about the same things, so they are worth mentioning. The timer in Memory Match does not start until the first flip, so nobody is penalized for looking at the board first. And there is a Size button during play, so switching from 24 cards to 12 when a younger sibling joins does not mean starting over from the menu.
+
+## Beyond the pairs game
+
+Working memory shows up everywhere once you notice it. Cooking from a recipe, following a Lego instruction sheet, the card game Uno. On this site, [Melody Maker](/games/melody-maker/) asks children to hold a sequence of notes and play it back, which is working memory for sound, and [Tiny Town](/games/tiny-town/) asks them to remember who a gift is for while they walk across town. Different surfaces, same muscle.
+
+---
+
+# 20 Mental Math Tricks for Kids, Explained Step by Step
+
+URL: https://tinyhandsplay.com/guides/mental-math-tricks-for-kids/
+
+# 20 mental math tricks for kids, explained step by step
+
+Most adults do arithmetic in their heads with a handful of shortcuts they picked up without noticing: rounding to a friendly number, adding ten and taking one back, doubling and halving. Children are rarely taught these on purpose. They are taught the written method, column by column, and left to discover the shortcuts on their own, or not.
+
+This guide lists the twenty tricks taught in [Math Ninja](/games/math-ninja/), a free game on this site, in the order the game teaches them. Each one has a worked example and, more importantly, the reason it works. A trick a child can explain is a trick they will still have at forty. Every example below is the one the game uses in its Watch phase, so a parent reading this and a child playing the game are looking at the same numbers.
+
+> **How to use this with a child.** Pick one trick. Say the steps out loud together three or four times with different numbers. Then ask them to explain it back to you. If they can say *why* it works, move on. If they can only say *what* to do, stay a day longer.
+
+## ➕ Addition
+
+### 1. Friendly Numbers
+
+Round a tricky number to a ten, add, then give back the extra.
+
+**Example: 48 + 35 = 83**
+
+1. 48 is so close to 50. Round it up by 2. **48 + 2 = 50**
+2. Now the sum is easy. **50 + 35 = 85**
+3. We borrowed 2 to round up. Give it back. **85 − 2 = 83**
+
+*Why it works:* adding 2 to one number and taking 2 off the answer cancels out. We just moved the awkward part to the end, where it is a single easy step.
+
+### 2. Left to Right
+
+Add the tens first, then the ones, then join them.
+
+**Example: 53 + 36 = 89**
+
+1. Tens first: 50 and 30. **50 + 30 = 80**
+2. Now the ones: 3 and 6. **3 + 6 = 9**
+3. Join them. **80 + 9 = 89**
+
+*Why it works:* addition can happen in any order. Tens plus tens, then ones plus ones, is the written method turned sideways, and it keeps the big numbers in view so the answer is roughly right from the first step.
+
+### 3. Making Tens
+
+Borrow just enough from one number to make the other a ten.
+
+**Example: 8 + 7 = 15**
+
+1. 8 needs a little to make 10. How much? **10 − 8 = 2**
+2. Take 2 from 7. **7 − 2 = 5**
+3. Ten and 5. **10 + 5 = 15**
+
+*Why it works:* 8 + 7 and 10 + 5 are the same total; we only moved 2 from one pile to the other. Ten is easy to add to anything, so the whole job becomes finding how much a number needs to reach ten.
+
+### 4. The Plus 9 Slide
+
+Adding 9? Add 10 and slide back one.
+
+**Example: 67 + 9 = 76**
+
+1. Add 10 instead, that's easy. **67 + 10 = 77**
+2. Slide back one. **77 − 1 = 76**
+
+*Why it works:* 9 is one less than 10. Adding 10 is a single digit change, so add the easy number and correct by one.
+
+### 5. Doubles Plus One
+
+Neighbours? Double the smaller one and add 1.
+
+**Example: 7 + 8 = 15**
+
+1. Double the smaller number. **7 × 2 = 14**
+2. Add one more. **14 + 1 = 15**
+
+*Why it works:* neighbouring numbers are a double plus one. Children tend to know their doubles cold, so 7 + 8 becomes a fact they already own plus one.
+
+## ➖ Subtraction
+
+### 6. Add Up to Subtract
+
+Count up from the small number to the big one, like a shopkeeper giving change.
+
+**Example: 100 − 84 = 16**
+
+1. From 84, jump to the next ten, 90. How far? **90 − 84 = 6**
+2. From 90 up to 100. **100 − 90 = 10**
+3. Add the two jumps. **6 + 10 = 16**
+
+*Why it works:* the gap between two numbers is the same whichever way you walk it. Counting up in friendly jumps avoids borrowing altogether, and it is exactly how a shopkeeper counts change.
+
+### 7. Shift Both Numbers
+
+Move both numbers by the same amount so there is no borrowing.
+
+**Example: 72 − 39 = 33**
+
+1. Add 1 to both. 72 becomes… **72 + 1 = 73**
+2. …and 39 becomes a round ten. **39 + 1 = 40**
+3. Same gap, easier numbers. **73 − 40 = 33**
+
+*Why it works:* adding the same amount to both numbers leaves the difference unchanged (73 and 40 are as far apart as 72 and 39). We chose the shift that turns the bottom number into a round ten.
+
+### 8. All from 9, Last from 10
+
+Taking from 1,000? Each digit from 9, the last one from 10.
+
+**Example: 1000 − 436 = 564**
+
+1. Hundreds digit from 9. **9 − 4 = 5**
+2. Tens digit from 9. **9 − 3 = 6**
+3. Last digit from 10. **10 − 6 = 4**
+4. Read the three answers as one number. **5 6 4 = 564**
+
+*Why it works:* 1000 = 999 + 1. Subtracting from 999 never needs borrowing (every digit is a 9), and the extra 1 is handled by taking the last digit from 10 instead of 9.
+
+### 9. The Minus 9 Loop
+
+Taking 9? Take 10 and give one back.
+
+**Example: 54 − 9 = 45**
+
+1. Take 10 instead. **54 − 10 = 44**
+2. That was one too many. Give it back. **44 + 1 = 45**
+
+*Why it works:* 9 is one less than 10. Taking 10 is easy, but that removes one too many, so put one back.
+
+### 10. Drop to a Ten
+
+Take away in two easy pieces: first down to a ten, then the rest.
+
+**Example: 83 − 15 = 68**
+
+1. First take 3 to land on a ten. **83 − 3 = 80**
+2. How much is still left to take? **15 − 3 = 12**
+3. Now take the rest. **80 − 12 = 68**
+
+*Why it works:* subtracting in two steps is the same as subtracting all at once. The first step lands on a round ten, and taking things away from a round ten is easy.
+
+## ✖️ Multiplication
+
+### 11. Double and Halve
+
+Halve one number, double the other. Same answer, easier sum.
+
+**Example: 14 × 15 = 210**
+
+1. Halve 14. **14 ÷ 2 = 7**
+2. Double 15. **15 × 2 = 30**
+3. Multiply the easy pair. **7 × 30 = 210**
+
+*Why it works:* halving one factor and doubling the other leaves the product unchanged (14 × 15 and 7 × 30 are both 210). It turns an awkward pair into a pair with a round number in it.
+
+### 12. The 11 Rule
+
+Two digits times 11: put their sum in the middle.
+
+**Example: 35 × 11 = 385**
+
+1. Add the two digits, 3 and 5. **3 + 5 = 8**
+2. Put that in the middle: 3 _ 5. **3 8 5 = 385**
+
+*Why it works:* 35 × 11 = 35 × 10 + 35 = 350 + 35. Writing that addition digit by digit puts 3 in the hundreds, 3 + 5 in the tens and 5 in the ones. When the two digits add to more than 9, carry the 1 into the first digit.
+
+### 13. Times 5
+
+Halve the number, then times 10.
+
+**Example: 24 × 5 = 120**
+
+1. Halve it. **24 ÷ 2 = 12**
+2. Times 10, just add a zero. **12 × 10 = 120**
+
+*Why it works:* 5 is half of 10. Halving first and then adding a zero does the same job as multiplying by 5 in one step, without any tables.
+
+### 14. Times 9
+
+Times 10, then take one group away.
+
+**Example: 7 × 9 = 63**
+
+1. Times 10 first. **7 × 10 = 70**
+2. Take away one 7. **70 − 7 = 63**
+
+*Why it works:* 9 groups is 10 groups minus one group. Times ten is a zero on the end, then take one copy of the number away.
+
+### 15. Double-Double (×4)
+
+Times 4 is just doubling twice.
+
+**Example: 18 × 4 = 72**
+
+1. Double it. **18 × 2 = 36**
+2. Double it again. **36 × 2 = 72**
+
+*Why it works:* 4 = 2 × 2. Doubling twice multiplies by four, and doubling is something children do without thinking.
+
+### 16. Times 15
+
+Times 10, add half of that.
+
+**Example: 22 × 15 = 330**
+
+1. Times 10. **22 × 10 = 220**
+2. Half of that. **220 ÷ 2 = 110**
+3. Add them together. **220 + 110 = 330**
+
+*Why it works:* 15 = 10 + 5, and 5 is half of 10. So times 15 is times 10 plus half of that.
+
+### 17. Squares ending in 5
+
+First digit times the next number, then stick 25 on the end.
+
+**Example: 35 × 35 = 1225**
+
+1. Multiply 3 by the next number up, 4. **3 × 4 = 12**
+2. Attach 25 to the end. **12 25 = 1225**
+
+*Why it works:* (10n + 5)² = 100·n·(n+1) + 25. The algebra is for the grown-ups; the child just needs the pattern, and it works for every number ending in 5.
+
+## ➗ Division
+
+### 18. Divide by 5
+
+Double the number, then divide by 10.
+
+**Example: 145 ÷ 5 = 29**
+
+1. Double it. **145 × 2 = 290**
+2. Divide by 10, just drop the zero. **290 ÷ 10 = 29**
+
+*Why it works:* dividing by 5 is the same as dividing by 10 and doubling, because 5 = 10 ÷ 2. Doubling first keeps everything in whole numbers.
+
+### 19. Half-Half (÷4)
+
+Divide by 4 by halving twice.
+
+**Example: 112 ÷ 4 = 28**
+
+1. Halve it. **112 ÷ 2 = 56**
+2. Halve it again. **56 ÷ 2 = 28**
+
+*Why it works:* 4 = 2 × 2, so dividing by 4 is halving twice. Halving is easier than dividing, even for large numbers.
+
+### 20. Chunking
+
+Split a big number into two friendly chunks and divide each.
+
+**Example: 132 ÷ 6 = 22**
+
+1. Split 132 into 120 and 12. Divide the big chunk. **120 ÷ 6 = 20**
+2. Now the small chunk. **12 ÷ 6 = 2**
+3. Add the two answers. **20 + 2 = 22**
+
+*Why it works:* division shares out a total, and the total can be split into any convenient pieces first. Choose a big chunk that is an easy multiple of the divisor, then handle the small remainder.
+
+## Which tricks to teach first
+
+Start with the ones that lean on tens: making tens, plus 9, minus 9, and friendly numbers. They build the single most useful idea in mental arithmetic, that ten is the place to stand. Doubles, times 4 and times 5 come next, because doubling and halving feel like a game. Leave the 11 rule and squaring numbers ending in 5 for last; they are the party tricks, and they land better once a child trusts the others.
+
+Math Ninja teaches each trick three ways: watch a worked example, do one together with each step filled in, then five on your own. Stars are saved per trick, so a child can see the twenty light up over a few weeks.
+
+---
+
+# Missing-Letter Games and Early Spelling: Why C_T Beats Copying Words
+
+URL: https://tinyhandsplay.com/guides/missing-letter-spelling-games/
+
+# Missing-letter games and early spelling: why C_T beats copying words
+
+Somewhere between four and seven, a child goes from knowing that letters exist to knowing that letters *spell*. It is one of the biggest leaps in early learning, and one of the easiest to make miserable. Worksheets of words to copy teach handwriting; they do not teach much about how words work. A missing letter does.
+
+## The steps to spelling
+
+Spelling is not one skill. It stacks:
+
+1. **Letter recognition.** Knowing that this shape is a B.
+2. **Letter sounds.** Knowing B says /b/. This is phonics, and it is the hinge of the whole thing.
+3. **Hearing sounds in words.** Noticing that "cat" starts with /k/, has /a/ in the middle, ends with /t/. Teachers call this phonemic awareness.
+4. **Mapping sounds to letters.** Writing C-A-T for the sounds you heard.
+
+Most children arrive at four with step one and some of step two. Steps three and four are where school starts, and where a game can genuinely help.
+
+## Why the missing letter works
+
+Show a child a picture of a cat and the word C _ T, and something specific happens in their head. They say "cat" to themselves. They hear the middle sound. They hunt for the letter that makes it. That is steps three and four, exercised in three seconds, with a picture to anchor the meaning and the other letters as scaffolding.
+
+Compare copying the word CAT off a card: the child looks, draws, and never has to hear a sound at all. Copying is fine for handwriting practice. It does not build spelling.
+
+The missing-letter format also lets a game be gentle. There is one blank, so there is one decision, and the picture makes the word obvious. The child is never staring at an empty line.
+
+## How Spell It Out plays
+
+[Spell It Out](/games/spell-it-out/) shows an emoji, its word with one letter missing, and waits. On a laptop the child types the letter; on a tablet an on-screen keyboard appears and used letters gray out, so the choice narrows if they guess. A right answer fills the tile with a chime and sparkles. A wrong one shows the correct letter, costs one of three lives, and moves on. Streaks earn bigger celebrations, and the game remembers a best score.
+
+Words start at three letters (CAT, DOG, SUN, BUS) and get longer. The missing letter moves around, so sometimes it is the first sound, sometimes the middle vowel, sometimes the last consonant, which quietly covers all three positions.
+
+## Playing it without making it a test
+
+Four-year-olds can smell a test. A few ways to keep it a game:
+
+- **Say the word slowly, together.** "Caaat. What's in the middle?" Stretching the word is the single most useful thing a parent can do for early spelling.
+- **Let them guess.** A wrong guess shows the right letter and moves on. That is a lesson, not a failure.
+- **Cheer the streak, not the score.** Five in a row gets sparkles; make a fuss about that.
+- **Stop at the lives.** When three lives are gone, the round ends with a friendly card. That is a fine place to stop for the day.
+- **Cover the picture** for a confident six-year-old and read the word aloud instead. Now they are spelling from sound alone.
+
+## On spellings
+
+The word list avoids words that differ between American and British English (color/colour, gray/grey), so a child on either side of the Atlantic is never marked wrong for a regional difference. Common nouns with regular spelling were chosen deliberately; irregular words are a different lesson.
+
+## From here
+
+A child who is comfortable filling in a missing letter is ready to write whole short words from sound. Have them label their drawings. Spelling will be shaky and that is exactly right: "KAT" is a child who has heard every sound and is one rule away from correct.
+
+---
+
+# Reaction Games for Kids: Timing, Motor Control and Knowing When to Stop
+
+URL: https://tinyhandsplay.com/guides/reaction-games-motor-control/
+
+# Reaction games for kids: timing, motor control and knowing when to stop
+
+Around four, children start wanting games that are *hard*. Not confusing, not scary, but hard in the way a climbing frame is hard: a clear thing to do, and a real chance of not doing it. Reaction games, the tap-to-jump and steer-to-dodge kind, are the screen version of that climbing frame. Done well, they build real skills. Done badly, they build a tantrum at bedtime.
+
+## What a reaction game teaches
+
+- **Timing.** Pressing at the right moment, not just pressing. Balloon Float is a one-button game: tap and the balloon rises, don't and it falls. The whole skill is *when*.
+- **Anticipation.** Reading where an obstacle will be, not where it is. This is the same skill as catching a ball, and it develops on the same timescale.
+- **Momentum.** Rocket Ride's rocket keeps drifting after you stop steering. Learning that you have to act *before* you need the result is a surprisingly deep idea, and one that shows up later in everything from cycling to physics class.
+- **Managing a budget.** Three lives. A child who has two left plays differently from a child with none, and that is planning.
+- **Coping with failure.** Every reaction game ends with a crash eventually. How the game frames that crash decides whether the child learns resilience or frustration.
+
+## Why lives beat "game over"
+
+A sudden black screen with GAME OVER in red is a small cruelty for a five-year-old. It says: you failed, everything is gone. A life system says something different: that cost you one, keep going. Both [Balloon Float](/games/balloon-float/) and [Rocket Ride](/games/rocket-ride/) use three lives, a moment of invincibility after a hit so the child can recover, and an end card that shows the score with a best score next to it and a single tap to try again. The message is "here's how far you got," not "you lost."
+
+## Two games, two levels
+
+**[Balloon Float](/games/balloon-float/), from about four.** One button. Tap to puff the balloon up; obstacles float in from the right; collect stars. Power-ups add variety: a shield, a rainbow trail, a magnet, a slow-motion moment, a mystery box. The first thirty seconds are gentle and speed builds slowly. Four-year-olds enjoy the floating even when they crash early.
+
+**[Rocket Ride](/games/rocket-ride/), from about five.** Two directions plus boost and brake. Steer past asteroids, satellites and UFOs, collect stars and fuel, climb as high as you can. It needs planning as well as reflexes, which is why it is a year further up. On tablets, the left and right halves of the screen steer, and two thumbs work well.
+
+## Keeping it fun
+
+1. **Play it yourself first.** Crash a few times in front of them. A parent who laughs at their own crash gives the child permission to do the same.
+2. **Name the skill, not the score.** "You waited for the gap!" is better than "You got 300!"
+3. **Short sessions.** Reaction games are intense. Ten minutes of Rocket Ride is a lot of concentration for a six-year-old.
+4. **Watch for the tell.** Rising frustration usually shows as faster, sloppier tapping. That is the moment to say "one more go, then we do something else" before, not after, the meltdown.
+5. **Let the best score be theirs.** Both games remember a best score on the device. Racing your own record is motivating; racing a sibling's is a fight.
+
+## A note on screen time
+
+Reaction games are the most "video game" thing on this site, and they are the ones to watch most carefully for time. They are also the ones that feel most like sport: a clear challenge, visible improvement, and a natural end when the lives run out. Treat them like a football in the garden: brilliant for twenty minutes, not for the afternoon.
+
+## From here
+
+A child who has mastered Rocket Ride's momentum is ready for games with strategy rather than reflexes. [Math Ninja](/games/math-ninja/) looks nothing like a reaction game, but the same child who learned to boost early will enjoy learning to add nine by adding ten.
+
+---
+
+# Screen Time for Toddlers: Practical Rules From a Dad Who Makes Games
+
+URL: https://tinyhandsplay.com/guides/screen-time-for-toddlers/
+
+# Screen time for toddlers: practical rules from a dad who makes games
+
+I make children's games for a living, in the evenings anyway, so I have a stake in this. I also have a toddler and a laptop, so I have the same worries as everyone else. This is what the guidance says, what I think it misses, and the rules we actually use at home.
+
+## What the guidance says
+
+The American Academy of Pediatrics' current position, in plain terms:
+
+- **Under 18 months:** avoid screens other than video calls.
+- **18 to 24 months:** if you introduce digital media, choose high-quality content and use it *with* your child.
+- **2 to 5 years:** limit to about an hour a day of high-quality content, co-viewed where possible.
+- **All ages:** no screens during meals or in the hour before bed, and keep bedrooms screen-free.
+
+The World Health Organization is stricter on the under-twos (none at all) and similar for two to four (no more than an hour, less is better). Neither body says screens are poison. Both say the same two things: *what* is on the screen matters, and *who is with the child* matters.
+
+## The part the headlines miss
+
+"Screen time" lumps together things that have nothing in common. A toddler watching autoplaying videos alone is having a very different hour from a toddler sitting on a parent's lap pressing keys and hearing the parent name each emoji. The research that worries me is almost all about the first kind: passive, alone, algorithm-fed. The research on the second kind, interactive and shared, is much gentler.
+
+So the question I ask is not "how many minutes" but "is this doing something, or is it being done to?" A game where the child acts and the screen responds is closer to a toy than to television. It is still a screen, and the limits still apply, but it is not the thing the studies are warning about.
+
+## Our house rules
+
+These are ours, not a prescription.
+
+1. **Games, not videos, under three.** If there is a screen, the child is driving it. Autoplay is the enemy; nothing on this site autoplays anything.
+2. **Together, mostly.** The best sessions have a grown-up narrating: "You pressed the blue one!" "Where did we see the other lion?" Ten minutes together beats thirty alone.
+3. **Short and scheduled.** A known slot, after lunch for us, so it is not a bargaining chip. Ten to fifteen minutes at two, up to half an hour at four.
+4. **Never before bed, never at the table.** This one has real evidence behind it (screens and sleep do not mix) and it is the easiest to hold.
+5. **The screen is not the reward or the punishment.** Making it the prize makes it more desirable. It is just one of the things we do.
+6. **Choose things with a natural end.** A memory board finishes. A photo gets taken. A tower falls. A game that ends on its own is far easier to stop than one that scrolls forever.
+
+## What to look for in a game
+
+The same checklist I use when building one:
+
+- No ads, and nothing to buy. A toddler cannot tell an ad from the game.
+- No autoplay, no feed, no "next video".
+- Responds to the child; does not perform at them.
+- No fail state for under-fives. A "game over" at two is just bewildering.
+- Ends cleanly, so stopping is not a fight.
+- Works offline, so it is not a portal to the wider internet.
+
+Every game on [Tiny Hands Play](/) is built against that list, which is the honest reason I am comfortable recommending my own site here. If you want a starting point, [Kaboom Keys](/games/kaboom-keys/) for the under-twos and [Dress-Up Party](/games/dress-up-party/) or [Memory Match](/games/memory-match/) from about two and a half.
+
+## When it goes wrong
+
+It will. The tantrum at "time's up" is developmentally normal and not a sign of addiction. What helps us: a two-minute warning, letting the child do the last action ("take one more photo, then we stop"), and having the next thing ready. The transition is the hard part, not the screen.
+
+*This is a parent's experience, not medical advice. If you are worried about your child's development or sleep, talk to your pediatrician.*
+
+---
+
+# Stacking Games and Early Physics: What a Falling Tower Teaches
+
+URL: https://tinyhandsplay.com/guides/stacking-games-and-early-physics/
+
+# Stacking games and early physics: what a falling tower teaches
+
+Build it up, knock it down. If you have a three-year-old, you have seen the cycle a thousand times, and you may have wondered whether the building or the demolition is the point. It is both, and the physics they are learning from it is more sophisticated than it looks.
+
+## The physics a preschooler already knows
+
+By three, without a single lesson, children have working theories of:
+
+- **Gravity.** Things fall down, not up, and they fall when nothing holds them.
+- **Support.** A block stays up if enough of it sits on the block below.
+- **Balance.** A tower leaning one way needs weight the other way, or it goes.
+- **Stability versus height.** Tall is exciting and tall is fragile.
+
+They cannot say any of this. They *do* it, adjusting each block a little, watching the wobble, deciding when to stop. Developmental psychologists call it intuitive physics, and stacking is the main laboratory for it between two and five.
+
+## Why the collapse matters
+
+The knock-down is not the child ruining the work. It is the experiment's result. A tower that stands forever teaches nothing; a tower that falls tells you exactly where the limit was. Children who are allowed to build and fail and build again develop a stronger sense of what will hold than children who are helped to a perfect tower every time.
+
+The trick, as a parent, is keeping the collapse cheerful. A crash that ends in tears teaches "I failed". A crash that ends in laughter teaches "that's what happens when it's too tall, let's go again."
+
+## How Stack It Up handles it
+
+[Stack It Up](/games/stack-it-up/) is a one-tap timing game: a block swings from a crane, you tap, it drops. Land it squarely and the tower grows; land it off-center and the tower leans. Lean too far and it all comes crashing down.
+
+Three design choices are there specifically for preschoolers:
+
+1. **The crowd.** An emoji audience along the bottom cheers good drops and gasps at bad ones. When the tower falls, they gasp together and it is funny, not sad. The collapse is the show.
+2. **Physics you can see.** The tower visibly tilts as blocks land off-center, and a soft warning glow appears when it is in danger. Children learn to read the lean before it topples.
+3. **Perfect drops snap.** A block dropped right in the middle clicks into place with a chime. Three in a row and the crowd does a wave. It rewards patience, which is the actual skill.
+
+The block count is the only score, and the best count is remembered on the device, so a child races their own record rather than a sibling's.
+
+## Talking about it
+
+The game does the physics; you can do the words. A few that stick:
+
+- **"Which way is it leaning?"** Left and right, the first step toward describing balance.
+- **"Wait for the middle."** Timing is the whole game; naming the moment helps.
+- **Count out loud.** Every block is a number. Ten blocks feels like a milestone at three.
+- **"What happened?"** after a collapse. Let them explain. "It was too wobbly" is a physics statement.
+
+## Real blocks too
+
+None of this replaces a box of wooden blocks on the floor, and it is not meant to. Real blocks teach weight, texture and the three-dimensional problem of a tower that can fall in any direction. The game isolates one piece of the puzzle, timing and center of balance, and lets a child practice it a hundred times in ten minutes with no clean-up. Do both.
+
+## From here
+
+Children who love Stack It Up usually love [Balloon Float](/games/balloon-float/) next: the same one-tap timing, but now the thing you are controlling is moving and the obstacles come to you.
+
+---
+
+# Teaching Toddlers Melodies: Do-Re-Mi, Ear Training and a Piano With Eight Keys
+
+URL: https://tinyhandsplay.com/guides/teaching-toddlers-melodies/
+
+# Teaching toddlers melodies: do-re-mi, ear training and a piano with eight keys
+
+Children sing before they talk in sentences and dance before they walk well. Music is not something we add to a child; it is something they arrive with. The question for parents is how to feed it, and the answer, for the first several years, has almost nothing to do with reading notes.
+
+## Ear first, always
+
+Every music teacher will tell you the same thing: children who learn to *hear* music before they learn to read it become better musicians, and happier ones. Hearing means recognizing that a note is higher or lower than the last one, that a tune goes up and then comes back down, that a rhythm is steady or bumpy. Reading comes later, the same way reading words comes after speaking them.
+
+So the first musical instrument for a small child should do three things: make a clear, pleasant sound; have few enough notes that the child can find their way around; and let them play real tunes quickly enough to feel like a musician.
+
+## Why eight keys
+
+A full piano has 88 keys and is bewildering at three. Eight keys, one octave from Do to high Do, is enough for hundreds of children's songs. Twinkle Twinkle, Mary Had a Little Lamb, Hot Cross Buns, Happy Birthday and the theme from Ode to Joy all fit inside a single octave. Eight is also a number a small child can hold in their head, especially when each key has its own color.
+
+[Melody Maker](/games/melody-maker/) is an eight-key piano built on that idea. The keys are big, colorful and labeled with their solfège names (Do, Re, Mi…), and on a laptop the letters A to K play them, which most children find before you point it out.
+
+## Three ways in
+
+**Free Play** is just the piano. Tap, hear a note, tap another. Start here and stay here for a while; a three-year-old needs the instrument to feel like a toy before it feels like a lesson.
+
+**Learn Melodies** is where the ear training happens. A friendly lion plays a short tune while a bouncing ball hops from key to key showing what he pressed. Then it is the child's turn to play it back. Get a note wrong and the lion plays the tune again, a little slower. Thirty melodies build in difficulty:
+
+- Levels 1 to 5 are three or four notes with a clear shape: up, down, a jump.
+- Levels 6 to 15 add held notes, rests and longer patterns.
+- Levels 16 onward are real songs, from Hot Cross Buns through Old MacDonald and Jingle Bells to Happy Birthday and Ode to Joy.
+
+A star marks each completed melody and the next one is highlighted, so progress is visible.
+
+**Song Parade** is play-along: notes fall toward the keyboard and a whale conducts. It is less about memory and more about timing, and older children love it.
+
+## What they are actually learning
+
+- **Pitch discrimination.** Higher and lower, the foundation of every musical skill.
+- **Sequence memory.** Holding four, then six, then ten notes in order. This is working memory with sound, and it transfers.
+- **Rhythm.** Melody Maker rates each note played back as steady, a bit off or very off, gently, with colored dots.
+- **Confidence.** Playing a tune everyone recognizes, at four, is a genuine thrill.
+
+## Tips from a parent
+
+1. **Slow it down.** There is a turtle button that slows the lion's demonstration. Use it. Four-year-olds need it on anything over six notes.
+2. **Sing the note names.** Do, Re, Mi out loud while they play. It anchors the pitch to a word.
+3. **Landscape on phones.** The keyboard needs the width.
+4. **Don't correct, replay.** The replay button plays the demo again. Let the game do the correcting; you do the encouraging.
+5. **Stop while it's fun.** One melody a day is a fine pace.
+
+## From here
+
+Children who get through the melodies often want a real instrument. A cheap keyboard with full-size keys is the natural next step, and they will arrive already knowing what Do to Do sounds like.
+
+---
+
+# About Tiny Hands Play
+
+URL: https://tinyhandsplay.com/about/
+
+# About Tiny Hands Play
+
+Tiny Hands Play is a free collection of browser games for babies, toddlers and kids, made by one dad in his evenings. There are no ads, no accounts, no in-app purchases and nothing to install. You open the site, hand over the keyboard or the tablet, and play.
+
+## How it started
+
+It started when my toddler discovered my computer keyboard and urgently needed to press every key. The first game I built, Kaboom Keys, was a safe way to let her mash the keyboard without wrecking my work.
+
+Seeing how much she loved it, I went looking for other games we could play together. Most were either paid, packed with ads, or just not quite right for someone that small. So I kept building: a stacking game, a memory game, a piano with a lion teacher, a town to explore, and now eleven games in all, from keyboard smashing for one-year-olds up to mental-math tricks for ten-year-olds.
+
+## The rules I build by
+
+- **Free, and staying free.** No paywall, no premium tier, no "unlock more levels".
+- **No ads.** A toddler can't tell an ad from a game, so there are none.
+- **No accounts.** Nothing to sign up for. Best scores and progress are saved on your own device.
+- **Nothing to break.** Every game captures the keyboard while it runs, so a baby can mash freely without closing windows or sending emails.
+- **No game over for the little ones.** Games for under-fives have no fail state. Older kids get gentle retries and lives, never a buzzer.
+
+## Privacy, in plain English
+
+The site does not collect personal information about you or your child. There are no accounts and no forms in the games. The only measurement is anonymous page-view analytics (Vercel Web Analytics), which counts visits and which games are opened without using cookies or identifying anyone. Game progress and best scores are stored in your browser's local storage and never leave your device. There are no third-party ad or tracking scripts.
+
+If you tip through the "Buy me a coffee" button, the payment is handled entirely by Stripe on their own page; this site never sees your card details.
+
+## What it runs on
+
+Any modern browser on a phone, tablet, laptop or Chromebook. Most games support both keyboard and touch. You can add the site to your home screen (Share, then Add to Home Screen on iPhone and iPad; the install prompt on Android) for a full-screen experience, and the games keep working with a patchy connection once they have loaded once.
+
+## Credits
+
+The emoji artwork is [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji), used under the MIT license. Everything else, code and design, is written by hand in plain HTML, CSS and JavaScript with no frameworks, which is why the site loads quickly on older tablets. The source is on [GitHub](https://github.com/mauroferrante/tinyhands).
+
+## Support the site
+
+If Tiny Hands Play has given you a few minutes of peace, two things help enormously: share it with another parent or a teacher, or [buy me a $3 coffee](https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02?utm_source=tinyhandsplay&utm_medium=about). Tips cover hosting and let me keep it ad-free.
+
+## Get in touch
+
+Feedback, bug reports and game ideas are always welcome through the feedback link at the bottom of the homepage. Many of the games' best fixes came from parents writing in.
+
+— Mauro, a dad
+
+---
+
+# Tiny Hands Play for Teachers
+
+URL: https://tinyhandsplay.com/teachers/
+
+# Tiny Hands Play for teachers
+
+Tiny Hands Play is free, has no ads and needs no accounts, which is why it turns up in a lot of Google Classroom links. This page is for teachers, teaching assistants and childcare educators who want to know what they are sharing before they share it.
+
+## The short version
+
+- **Nothing to install, nothing to sign up for.** Share the link, children open it, the games start.
+- **Works on Chromebooks, iPads, Android tablets and any laptop.** Most games accept keyboard and touch.
+- **No ads, no external links inside the games, no chat, no user content.** The only outward link is a small "buy me a coffee" button for parents on the homepage footer.
+- **No student data.** There are no accounts. Best scores are saved in the device's browser only. The site uses anonymous page-view analytics and nothing else.
+- **Runs offline once loaded.** Useful for rooms with patchy Wi-Fi: open the site once, and the games keep working.
+
+## Games by age and skill
+
+| Game | Ages | Good for |
+|---|---|---|
+| Kaboom Keys | 1–3 | Cause and effect, first keyboard contact, ABC mode for letters and numbers |
+| Ball Bonanza | 2–4 | Aiming, tracking a moving object, emotional vocabulary |
+| Memory Match | 2–10 | Working memory; 12, 24 or 36 cards for differentiation |
+| Dress-Up Party | 2–3 | Choice-making, clothing and color words |
+| Stack It Up | 3–5 | Timing, counting aloud, coping with a collapse |
+| Melody Maker | 3–7 | Pitch, sequence memory, 30 melodies with a lion teacher |
+| Spell It Out | 4–7 | Letter-sound links, missing-letter spelling |
+| Tiny Town | 4–9 | Following multi-step instructions, reading short dialogue, kindness |
+| Balloon Float | 4–8 | Timing and anticipation, one-button control |
+| Rocket Ride | 5–9 | Two-direction steering, momentum, reaction time |
+| Math Ninja | 6–10 | Number basics with ten-frames and arrays; 20 mental-math strategies taught step by step |
+
+Math Ninja's tricks map well onto mental-arithmetic strategy work: making ten, compensation (friendly numbers), constant difference, doubling and halving, and partitioning are all there, each with a worked example, a guided attempt and independent practice.
+
+## Suggested classroom uses
+
+- **Early years free play**: Kaboom Keys and Ball Bonanza on a shared laptop at a play station. Both are safe to mash.
+- **Turn-taking**: Memory Match on a large screen, two children flipping in turn. The 12-card board finishes in a couple of minutes.
+- **Mental-math warm-ups**: pick one Math Ninja trick, run the Watch phase on the board, then let pairs do the Solo problems on tablets.
+- **Music**: Melody Maker's Learn Melodies mode on a class piano keyboard, with the whole class singing the note names.
+- **Early finishers**: Tiny Town has no timer or score, so it fills five minutes calmly and stops cleanly.
+
+## Sharing the link
+
+The homepage is `tinyhandsplay.com`. Each game also has its own page you can link directly, for example `tinyhandsplay.com/games/math-ninja/`, which describes the game and has a Play button. That is the better link for a lesson plan because parents who open it at home see what the game is for.
+
+Adding the site to a tablet's home screen (Share, then Add to Home Screen) makes it open full-screen like an app, which keeps small fingers out of the browser bar.
+
+## Accessibility notes
+
+Text is large and high-contrast. Every game works with a keyboard alone, and the touch games have generous tap targets. Sound is part of every game but never required: nothing depends on hearing an instruction. There is no reading required in the games for under-fives.
+
+## Questions
+
+If a game does not suit your setting, or you have an idea for one that would, please use the feedback link on the homepage. Several of the current games came directly from teacher and parent requests, including the ABC mode in Kaboom Keys and the change-size button in Memory Match.
+
+---
+

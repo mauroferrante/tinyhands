@@ -4,7 +4,7 @@
  *  Stale-while-revalidate for CDN assets
  * ========================================================= */
 
-const CACHE = 'thp-v82';
+const CACHE = 'thp-v83';
 
 const SHELL = [
   '/',
@@ -14,17 +14,8 @@ const SHELL = [
   '/css/base.css',
   '/css/landing.css',
   '/css/playground.css',
-  '/css/games/splat-keys.css',
-  '/css/games/stack-smash.css',
-  '/css/games/spell-it-out.css',
-  '/css/games/memory-match.css',
-  '/css/games/balloon-float.css',
-  '/css/games/rocket-ride.css',
-  '/css/games/ball-bonanza.css',
-  '/css/games/tiny-town.css',
-  '/css/games/melody-maker.css',
-  '/css/games/dress-up.css',
-  '/css/games/math-ninja.css',
+  '/css/games.bundle.css',
+  '/css/pages.css',
   // JS
   '/js/game-manager.js',
   '/js/audio.js',

@@ -1,0 +1,10 @@
+{
+  "name": "tinyhandsplay",
+  "private": true,
+  "type": "module",
+  "description": "Free, ad-free browser games for toddlers and kids. Static site; `npm run build` regenerates the game pages, guides, sitemap, llms.txt and the homepage card grid from content/.",
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "check": "node scripts/build-site.mjs --check"
+  }
+}
