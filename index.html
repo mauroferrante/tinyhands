@@ -621,6 +621,10 @@
       s.defer = true;
       document.head.appendChild(s);
     });
+    var u = document.createElement('script');
+    u.src = 'https://cloud.umami.is/script.js'; u.defer = true;
+    u.setAttribute('data-website-id', '900fed99-dfbe-41ad-af56-f1d2c57bf1ca');
+    document.head.appendChild(u);
   }
 </script>
 <!-- ===== PWA Install Banner (fixed bottom bar, hidden from crawlers) ===== -->

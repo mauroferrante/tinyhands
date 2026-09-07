@@ -138,6 +138,7 @@ function launchGame(gameId, btn) {
   const game = GAMES[gameId];
   if (!game) return;
   pendingGame = game;
+  track('play', { game: gameId });
 
   // Consume pendingGame exactly once, whichever path gets there first
   const startPending = () => {
@@ -363,6 +364,7 @@ function openStory(e) {
   if (e) e.preventDefault();
   if (storyOpen) return;
   storyOpen = true;
+  track('story-open');
   storyBackdrop.style.display = 'flex';
   requestAnimationFrame(() => storyBackdrop.classList.add('show'));
   document.body.style.overflow = 'hidden';
@@ -476,6 +478,7 @@ function markTipped() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('thanks') === '1') {
     markTipped();
+    track('tip-completed');
     history.replaceState({}, '', '/');
     if (thanksToast) {
       thanksToast.classList.add('show');
@@ -563,9 +566,19 @@ document.addEventListener('click', () => { initAudio(); });
 // and keeps the game's history state intact for stopGame's history.back().
 // A second tap inside the window used to capture /intent/… as "prev" and
 // leave the URL stuck there.
+// Named event for Umami (cookieless analytics). The script is deferred, so an
+// event fired during startup waits for `load`, by which time umami exists.
+function track(name, data) {
+  try {
+    if (window.umami) window.umami.track(name, data);
+    else window.addEventListener('load', () => { if (window.umami) window.umami.track(name, data); }, { once: true });
+  } catch (e) {}
+}
+
 let intentTimer = null;
 function trackIntent(name) {
   if (intentTimer) return;
+  track(name);
   const prevPath  = window.location.pathname;
   const prevState = history.state;
   history.pushState(prevState, '', '/intent/' + name);

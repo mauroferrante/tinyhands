@@ -4,7 +4,7 @@
  *  Stale-while-revalidate for CDN assets
  * ========================================================= */
 
-const CACHE = 'thp-v85';
+const CACHE = 'thp-v86';
 
 const SHELL = [
   '/',
@@ -99,6 +99,8 @@ self.addEventListener('fetch', (e) => {
 
   // SPA fallback: serve cached index.html for virtual routes (/play/*, /story, /intent/*)
   const url = new URL(e.request.url);
+  // Analytics scripts and beacons are never cached
+  if (url.hostname === 'cloud.umami.is' || url.pathname.startsWith('/_vercel/')) return;
   if (e.request.mode === 'navigate' &&
       (url.pathname.startsWith('/play/') || url.pathname === '/story' || url.pathname.startsWith('/intent/'))) {
     e.respondWith(caches.match('/index.html').then((r) => r || fetch('/index.html')));
