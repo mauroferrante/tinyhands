@@ -5,6 +5,7 @@
   "description": "Free, ad-free browser games for toddlers and kids. Static site with no build step on Vercel (the script is deliberately not named `build` so Vercel does not run it); `npm run site` regenerates the game pages, guides, sitemap, llms.txt and the homepage card grid from content/.",
   "scripts": {
     "site": "node scripts/build-site.mjs",
-    "check": "node scripts/build-site.mjs --check"
+    "check": "node scripts/build-site.mjs --check",
+    "indexnow": "node scripts/indexnow.mjs"
   }
 }
