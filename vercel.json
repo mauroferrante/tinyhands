@@ -1,14 +1,40 @@
 {
   "trailingSlash": true,
   "rewrites": [
-    { "source": "/play/:game", "destination": "/" },
-    { "source": "/story", "destination": "/" },
-    { "source": "/intent/:name", "destination": "/" }
+    {
+      "source": "/play/:game",
+      "destination": "/"
+    },
+    {
+      "source": "/play/:game/",
+      "destination": "/"
+    },
+    {
+      "source": "/story",
+      "destination": "/"
+    },
+    {
+      "source": "/story/",
+      "destination": "/"
+    },
+    {
+      "source": "/intent/:name",
+      "destination": "/"
+    },
+    {
+      "source": "/intent/:name/",
+      "destination": "/"
+    }
   ],
   "headers": [
     {
       "source": "/(llms.txt|llms-full.txt)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
     }
   ]
 }

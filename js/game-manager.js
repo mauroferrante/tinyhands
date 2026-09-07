@@ -649,7 +649,7 @@ if (footerTip) {
 // If the user refreshes mid-game, silently reset to landing.
 (function cleanUrlOnLoad() {
   const path = window.location.pathname;
-  if (path.startsWith('/play/') || path === '/story' || path.startsWith('/intent/')) {
+  if (path.startsWith('/play/') || path.startsWith('/story') || path.startsWith('/intent/')) {
     history.replaceState({}, '', '/');
   }
 })();
