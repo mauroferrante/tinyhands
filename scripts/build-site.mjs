@@ -143,7 +143,7 @@ const analyticsSnippet = `
 
 function nav() {
   return `<header class="pg-header">
-  <a class="pg-logo" href="/">${emojiImg('270c', '✌️', 'emoji-img inline-emoji')} Tiny Hands Play</a>
+  <a class="pg-logo" href="/"><img src="/assets/emoji/cursors/victory.png" class="emoji-img inline-emoji" alt="✌️"> Tiny Hands Play</a>
   <nav class="pg-nav" aria-label="Site">
     <a href="/#games">Games</a>
     <a href="/guides/">Guides</a>
@@ -162,7 +162,7 @@ function footer() {
     <div><h2>Guides</h2><div class="pg-links">${guideLinks}<a href="/guides/">All guides →</a></div></div>
     <div><h2>Tiny Hands Play</h2><div class="pg-links"><a href="/about/">About</a><a href="/teachers/">For teachers</a><a href="https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02?utm_source=tinyhandsplay&amp;utm_medium=page" rel="noopener">Buy me a coffee · $3</a><a href="https://github.com/mauroferrante/tinyhands" rel="noopener">Source on GitHub</a></div></div>
   </div>
-  <p class="pg-footer-note">Free for every family, with no ads, no accounts and no tracking of children. Built with ${emojiImg('2764', '❤️', 'emoji-img inline-emoji')} by a dad. Emoji by <a href="https://github.com/microsoft/fluentui-emoji" rel="noopener">Microsoft Fluent Emoji</a> (MIT).</p>
+  <p class="pg-footer-note">Free for every family, with no ads, no accounts and no tracking of children. Built with ${emojiImg('2764_3d', '❤️', 'emoji-img inline-emoji')} by a dad. Emoji by <a href="https://github.com/microsoft/fluentui-emoji" rel="noopener">Microsoft Fluent Emoji</a> (MIT).</p>
 </footer>`;
 }
 
