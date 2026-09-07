@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const HOST = 'tinyhandsplay.com';
-const KEY  = 'fc2d148a0750ca0fbabf549d6ad12d94';
+const KEY  = 'c657eb6e6e9b4fe99e1f4b64068af7c6';
 
 const args = process.argv.slice(2);
 const urls = args.length
