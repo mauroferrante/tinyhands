@@ -350,7 +350,7 @@ function homeCard(g, i) {
         </div>
         <div class="card-back">
           <p class="card-info-desc">${esc(g.cardInfo)}</p>
-          <p class="card-info-edu">${emojiImg('1f4d6', '📖', 'emoji-img inline-emoji')} <strong>What they learn:</strong> ${esc(g.cardLearn)}</p>
+          <p class="card-info-edu">${emojiImg('1f4d6_3d', '📖', 'emoji-img inline-emoji')} <strong>What they learn:</strong> ${esc(g.cardLearn)}</p>
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
