@@ -249,6 +249,10 @@
 /* Short landscape screens (phones, small tablets): shrink the stage so the
    emoji + tiles clear the fixed-bottom on-screen keyboard */
 @media (pointer: coarse) and (max-height: 500px) {
+  /* Four rows of keys are taller than the old three, so trim them in landscape */
+  .spell-key { min-height: 38px; max-width: 56px; }
+  .spell-key-row { gap: 4px; margin-bottom: 4px; }
+  .spell-keyboard { padding: 5px 4px 6px; }
   .spell-stage {
     gap: 0.8rem;
     top: 42%;
@@ -264,21 +268,24 @@
 .spell-key-row {
   display: flex;
   justify-content: center;
-  gap: 4px;
-  margin-bottom: 4px;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 
 .spell-key {
-  min-width: 28px;  /* 32px × 10 keys + gaps overflows 320–360px phones */
-  min-height: 44px;
+  /* Seven keys per row, not ten: at 390px that is ~51px each, clearing the
+     44px minimum touch target in both directions. The old QWERTY rows of ten
+     could only ever be ~35px wide however the gaps were tuned. */
+  min-width: 44px;
+  min-height: 48px;
   flex: 1;
-  max-width: 44px;
+  max-width: 64px;
   border: none;
   border-radius: 8px;
   background: rgba(124, 92, 252, 0.12);
   color: #333;
   font-family: 'Fredoka One', cursive;
-  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s ease, transform 0.1s ease;

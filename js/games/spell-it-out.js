@@ -7,7 +7,7 @@ import { playCorrectDing, playWrongBoop, playLifeLost, playSpellWhoosh,
          playWinFanfare, playStreakChime, playStreakFanfare } from '../audio.js';
 import { spawnParticles } from '../effects.js';
 import { shareOrCopy } from '../share.js';
-import { preloadEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
+import { preloadEmojis, warmEmojis, createEmojiImg, getEmojiUrl } from '../emoji.js';
 import { EMOJI_REGISTRY } from '../emoji-registry.js';
 import { createTimerPool } from '../timers.js';
 import { local } from '../storage.js';
@@ -28,7 +28,8 @@ function wireEndcardShare(container) {
 
 // ---- Word Pool ----
 const WORD_POOL = [
-  // 3-letter words
+  // Order here does not matter: shufflePool() groups by length and plays
+  // shortest first, so the ramp comes from the code, not this list.
   { emoji: '🐱', word: 'CAT' },
   { emoji: '🐶', word: 'DOG' },
   { emoji: '🐷', word: 'PIG' },
@@ -36,7 +37,7 @@ const WORD_POOL = [
   { emoji: '🐝', word: 'BEE' },
   { emoji: '🐜', word: 'ANT' },
   { emoji: '🦇', word: 'BAT' },
-  { emoji: '🐛', word: 'CATERPILLAR' },
+  { emoji: '🐛', word: 'BUG' },
   { emoji: '🦊', word: 'FOX' },
   { emoji: '🐔', word: 'HEN' },
   { emoji: '🦉', word: 'OWL' },
@@ -49,14 +50,13 @@ const WORD_POOL = [
   { emoji: '🧢', word: 'CAP' },
   { emoji: '🎩', word: 'HAT' },
   { emoji: '👁️', word: 'EYE' },
-  { emoji: '🏺', word: 'AMPHORA' },
+  { emoji: '🏺', word: 'JAR' },
   { emoji: '🗝️', word: 'KEY' },
   { emoji: '🥛', word: 'MILK' },
   { emoji: '🥜', word: 'PEANUTS' },
   { emoji: '🥧', word: 'PIE' },
-  { emoji: '🏃', word: 'RUNNING' },
+  { emoji: '🏃', word: 'RUN' },
 
-  // 4-letter words
   { emoji: '🐸', word: 'FROG' },
   { emoji: '🐻', word: 'BEAR' },
   { emoji: '🦁', word: 'LION' },
@@ -171,9 +171,47 @@ function shuffleArray(arr) {
   return a;
 }
 
+// How many words ahead to have images for. A session ends after three lives,
+// so most children see 15-25 of the 86 words; pulling all of them up front
+// cost 3.2 MB before the first word appeared.
+const PRELOAD_AHEAD = 8;
+const UI_EMOJI = ['\u2764\ufe0f', '\ud83e\udd0d'];
+
+// Blanking a letter can leave the rest of the word spelling something a
+// parent would rather not see on a children's site. GRAPE with the G removed
+// reads _RAPE; DUCK reads _UCK. Pick only from positions that stay clean.
+const UNSAFE_FRAGMENTS = ['RAPE', 'UCK', 'SHIT', 'CUNT', 'PISS', 'COCK',
+                          'TITS', 'ANUS', 'ARSE', 'SLUT', 'TWAT', 'WANK'];
+
+function pickBlankIndex(word) {
+  const safe = [];
+  for (let i = 0; i < word.length; i++) {
+    const visible = word.slice(0, i) + word.slice(i + 1);
+    if (!UNSAFE_FRAGMENTS.some((f) => visible.includes(f))) safe.push(i);
+  }
+  // Every position unsafe would mean the word itself is the problem; the last
+  // letter is the least likely to leave a readable fragment.
+  return safe.length ? safe[Math.floor(Math.random() * safe.length)] : word.length - 1;
+}
+
+// Progressive difficulty: shuffle within each word length, then play shortest
+// first. The pool used to be shuffled flat, so a four-year-old's opening word
+// could be CROCODILE.
 function shufflePool() {
-  shuffledPool = shuffleArray(WORD_POOL);
+  const byLength = new Map();
+  for (const entry of WORD_POOL) {
+    const n = entry.word.length;
+    if (!byLength.has(n)) byLength.set(n, []);
+    byLength.get(n).push(entry);
+  }
+  shuffledPool = [...byLength.keys()].sort((a, b) => a - b)
+    .flatMap((n) => shuffleArray(byLength.get(n)));
   currentIndex = 0;
+}
+
+// Keep a few words' images ahead of play, without ever blocking on them.
+function warmAhead() {
+  warmEmojis(shuffledPool.slice(currentIndex, currentIndex + PRELOAD_AHEAD).map((w) => w.emoji));
 }
 
 function randomEncouragement() {
@@ -217,7 +255,7 @@ function showNextWord() {
   }
 
   currentWord = shuffledPool[currentIndex++];
-  blankIndex = Math.floor(Math.random() * currentWord.word.length);
+  blankIndex = pickBlankIndex(currentWord.word);
   // Stay "answered" until the new tiles exist — buildTiles defers the DOM
   // rebuild by 300ms, and a keypress in that window used to find no
   // .spell-blank tile, throw, and leave the game frozen.
@@ -247,6 +285,9 @@ function showNextWord() {
 
   // Re-enable all keyboard keys
   enableAllKeys();
+
+  // Pull the next few words' images in behind the scenes
+  warmAhead();
 }
 
 function buildTiles() {
@@ -576,7 +617,10 @@ function buildMobileKeyboard() {
   }
 
   spellKeyboardEl.innerHTML = '';
-  const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+  // ABC order in four short rows, not QWERTY in three long ones. Ten keys
+  // across a 390px phone can only ever be ~35px wide, well under the 44px
+  // minimum, and a child learning to spell cannot read a QWERTY layout anyway.
+  const rows = ['ABCDEFG', 'HIJKLMN', 'OPQRSTU', 'VWXYZ'];
 
   rows.forEach((row, rowIdx) => {
     const rowDiv = document.createElement('div');
@@ -628,11 +672,11 @@ function destroyMobileKeyboard() {
 
 // ---- Reset ----
 
-function resetGame() {
+function resetGame(reshuffle = true) {
   timers.clearAll();
   nextWordTimer = null;
 
-  shufflePool();
+  if (reshuffle) shufflePool();
   lives = 3;
   score = 0;
   streak = 0;
@@ -689,10 +733,14 @@ export const spellItOut = {
     spellGameEl.style.display = 'block';
     bestScore = local.getInt(LS_KEY);
     buildMobileKeyboard();
-    // If stop() ran while emojis were still downloading, don't resurrect the game
-    preloadEmojis(EMOJI_REGISTRY['spell-it-out']).then(() => {
+    // Shuffle first so we know which words come up, then wait only on those.
+    // If stop() ran while emojis were still downloading, don't resurrect the game.
+    shufflePool();
+    const opening = shuffledPool.slice(0, PRELOAD_AHEAD).map((w) => w.emoji);
+    preloadEmojis([...UI_EMOJI, ...opening]).then(() => {
       if (mySession !== sessionId || gameState !== 'loading') return;
-      resetGame();
+      warmEmojis(EMOJI_REGISTRY['spell-it-out']);   // the rest, behind the game
+      resetGame(false);
     });
   },
 

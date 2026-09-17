@@ -39,12 +39,26 @@ body.game-active {
 body {
   font-family: 'Nunito', sans-serif;
   min-height: 100vh;
+  min-height: 100svh;        /* iOS: 100vh is the address-bar-retracted height,
+                                which leaves ~90px of phantom scroll */
   background: linear-gradient(135deg, #DDD0FF, #C8E8F0, #FFD9C4, #D8CCFF, #C4F0D8, #E0D4FF);
   background-size: 400% 400%;
   background-attachment: fixed;
   animation: gradientDrift 20s ease infinite;
   color: var(--color-text);
   cursor: url("../assets/emoji/cursors/hand-open-32.png") 16 16, auto;
+}
+
+/* The drifting gradient is a 400%-sized layer with background-attachment:
+   fixed, animated forever. On a phone that is a continuous full-screen
+   composite repaint for as long as the page is open, and it is the single
+   most expensive thing in the stylesheet. Hold it still on touch devices;
+   the colours are unchanged, they just stop moving. */
+@media (pointer: coarse) {
+  body {
+    animation: none;
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes gradientDrift {

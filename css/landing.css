@@ -324,24 +324,12 @@
   position: relative;
 }
 
-.footer-tip-btn:hover {
-  background: var(--color-primary);
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(124, 107, 191, 0.25);
-}
-
 #landing .qr-code {
   width: 90px;
   height: 90px;
   border-radius: 12px;
   opacity: 0.7;
   transition: opacity 0.2s ease, transform 0.15s ease;
-}
-
-#landing .qr-code:hover {
-  opacity: 1;
-  transform: scale(1.1);
 }
 
 #landing .subtitle {
@@ -370,10 +358,6 @@
   opacity: 1 !important;
   cursor: pointer;
   transition: color 0.2s ease, text-decoration 0.2s ease;
-}
-.why-top-link:hover {
-  color: var(--color-primary-dark);
-  text-decoration: underline;
 }
 
 #landing footer {
@@ -412,12 +396,6 @@ body.pwa-banner-expanded #landing footer {
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
-#landing footer .footer-feedback:hover {
-  opacity: 1;
-  color: var(--color-primary);
-  transform: translateX(2px);
-}
-
 /* ===== Feedback Overlay ===== */
 .feedback-backdrop {
   position: fixed;
@@ -454,9 +432,6 @@ body.pwa-banner-expanded #landing footer {
   cursor: pointer;
   line-height: 1;
   transition: background 0.2s;
-}
-.feedback-close:hover {
-  background: rgba(0, 0, 0, 0.6);
 }
 
 /* ===== Story Modal ===== */
@@ -515,7 +490,6 @@ body.pwa-banner-expanded #landing footer {
   line-height: 1;
   padding: 4px;
 }
-.story-close:hover { color: var(--color-text); }
 .story-modal .story-title {
   font-family: 'Baloo 2', cursive;
   font-size: 1.1rem;
@@ -644,10 +618,6 @@ body.pwa-banner-expanded #landing footer {
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
 }
-.card-info-btn:hover {
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-}
 /* Hide info button when flipped */
 .game-card.flipped .card-info-btn {
   pointer-events: none;
@@ -679,12 +649,6 @@ body.pwa-banner-expanded #landing footer {
   font-size: 0.7rem;
   color: var(--color-text-light);
   margin-top: 0.4em;
-}
-
-/* Disable card hover lift when flipped */
-.game-card.flipped:hover {
-  transform: none;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.04);
 }
 .game-card.flipped:active {
   transform: none;
@@ -916,10 +880,6 @@ body.game-active .postgame-nudge {
   flex-shrink: 0;
 }
 
-.postgame-nudge-close:hover {
-  color: var(--color-text);
-}
-
 .postgame-nudge-text {
   font-size: 0.95rem;
   color: var(--color-text);
@@ -959,11 +919,6 @@ body.game-active .postgame-nudge {
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.postgame-nudge-tip:hover {
-  background: var(--color-primary);
-  color: #fff;
-}
-
 .postgame-nudge-share {
   font-size: 0.85rem;
   font-weight: 600;
@@ -974,11 +929,6 @@ body.game-active .postgame-nudge {
   background: transparent;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.postgame-nudge-share:hover {
-  border-color: var(--color-text-muted);
-  color: var(--color-text);
 }
 
 .postgame-nudge-copied {
@@ -1066,7 +1016,6 @@ body.game-active .pwa-banner {
   padding: 4px 8px;
   cursor: url("../assets/emoji/cursors/hand-point-32.png") 16 4, pointer;
 }
-.pwa-banner-close:hover { opacity: 1; }
 
 .pwa-copy-url {
   font-size: 0.75rem;
@@ -1192,7 +1141,6 @@ body.game-active .pwa-banner {
   text-decoration-color: rgba(124, 107, 191, 0.35);
   text-underline-offset: 3px;
 }
-.footer-tip-link:hover { text-decoration-color: var(--color-primary); }
 
 /* ===== "About this game" link under Play ===== */
 .game-card .card-more {
@@ -1202,7 +1150,6 @@ body.game-active .pwa-banner {
   text-decoration: none;
   opacity: 0.85;
 }
-.game-card .card-more:hover { text-decoration: underline; }
 
 /* ===== FAQ (matches the FAQPage JSON-LD) ===== */
 .faq {
@@ -1224,7 +1171,6 @@ body.game-active .pwa-banner {
 .faq-list dd { margin: 0.25rem 0 0; color: var(--color-text-muted); line-height: 1.55; }
 .faq-more { text-align: center; margin-top: 1.5rem; font-weight: 700; }
 .faq-more a { color: var(--color-primary); text-decoration: none; }
-.faq-more a:hover { text-decoration: underline; }
 
 /* ===== ?play= launcher overlay (a real tap is needed for fullscreen + audio) ===== */
 .play-launch {
@@ -1268,4 +1214,61 @@ body.game-active .pwa-banner {
   color: var(--color-text-muted);
   font-weight: 700;
   cursor: pointer;
+}
+
+/* ---------------------------------------------------------------
+ * Hover states, gated to devices that actually hover.
+ * On iOS :hover sticks after a tap until you touch something else, so an
+ * ungated rule leaves a button looking jammed on. The two that mattered
+ * were the footer tip link and the post-game tip button: both invert to
+ * solid purple, and both stayed inverted after a parent tapped them.
+ * --------------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  .footer-tip-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 107, 191, 0.25);
+  }
+  #landing .qr-code:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  .why-top-link:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+  }
+  #landing footer .footer-feedback:hover {
+    opacity: 1;
+    color: var(--color-primary);
+    transform: translateX(2px);
+  }
+  .feedback-close:hover {
+    background: rgba(0, 0, 0, 0.6);
+  }
+  .story-close:hover { color: var(--color-text); }
+  .card-info-btn:hover {
+    color: var(--color-primary);
+    background: var(--color-primary-light);
+  }
+  /* Disable card hover lift when flipped */
+  .game-card.flipped:hover {
+    transform: none;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.04);
+  }
+  .postgame-nudge-close:hover {
+    color: var(--color-text);
+  }
+  .postgame-nudge-tip:hover {
+    background: var(--color-primary);
+    color: #fff;
+  }
+  .postgame-nudge-share:hover {
+    border-color: var(--color-text-muted);
+    color: var(--color-text);
+  }
+  .pwa-banner-close:hover { opacity: 1; }
+  .footer-tip-link:hover { text-decoration-color: var(--color-primary); }
+  .game-card .card-more:hover { text-decoration: underline; }
+  .faq-more a:hover { text-decoration: underline; }
 }

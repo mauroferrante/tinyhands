@@ -72,9 +72,59 @@ export function loadEmoji(emoji) {
   });
 }
 
-/** Preload an array of emoji. Returns a promise that resolves when all are loaded. */
-export function preloadEmojis(emojiList) {
-  return Promise.all(emojiList.map(loadEmoji));
+/** Preload an array of emoji.
+ *
+ *  Games used to await *every* image before rendering a single frame. Spell It
+ *  Out pulled 99 files (3.2 MB) to show one duck, which on a phone meant a
+ *  blank screen for several seconds — the top reason first-time mobile
+ *  visitors bounced. Now the promise resolves as soon as either every image
+ *  has landed or PRELOAD_DEADLINE_MS has passed, whichever comes first. The
+ *  stragglers keep downloading and fill the cache behind the running game,
+ *  and createEmojiImg/getSprite below upgrade themselves when they arrive.
+ *
+ *  Pass deadlineMs = 0 to genuinely wait for everything. */
+const PRELOAD_DEADLINE_MS = 600;
+
+export function preloadEmojis(emojiList, deadlineMs = PRELOAD_DEADLINE_MS) {
+  const all = Promise.all(emojiList.map(loadEmoji));
+  if (!deadlineMs) return all;
+  let deadline = null;
+  // Only surface a spinner on a genuinely slow connection. On a normal one the
+  // opening images land well inside SPINNER_AFTER_MS and nothing flashes.
+  const spinner = setTimeout(showLoading, SPINNER_AFTER_MS);
+  const settle = (v) => { clearTimeout(spinner); clearTimeout(deadline); hideLoading(); return v; };
+  return Promise.race([
+    all.then(settle),
+    new Promise((resolve) => { deadline = setTimeout(() => resolve(settle(null)), deadlineMs); }),
+  ]);
+}
+
+/* ---- Loading indicator (shared by every game, created on demand) ---- */
+const SPINNER_AFTER_MS = 250;
+let loadingEl = null;
+
+function showLoading() {
+  const host = document.getElementById('playground');
+  if (!host) return;
+  if (!loadingEl) {
+    loadingEl = document.createElement('div');
+    loadingEl.className = 'emoji-loading';
+    loadingEl.setAttribute('role', 'status');
+    loadingEl.setAttribute('aria-label', 'Loading');
+    loadingEl.innerHTML = '<i></i><i></i><i></i>';
+  }
+  if (loadingEl.parentNode !== host) host.appendChild(loadingEl);
+  loadingEl.classList.add('show');
+}
+
+function hideLoading() {
+  if (loadingEl) loadingEl.classList.remove('show');
+}
+
+/** Start loading emoji in the background. Returns nothing; never awaited.
+ *  Use for assets a game will need soon but not this instant. */
+export function warmEmojis(emojiList) {
+  for (const e of emojiList) if (imageCache[e] === undefined) loadEmoji(e);
 }
 
 /** Get the preloaded Image for an emoji, or null if not loaded / failed. */
@@ -104,15 +154,17 @@ export function getSprite(emoji, size, dpr) {
   const img = imageCache[emoji];
   if (img) {
     ctx.drawImage(img, 0, 0, dim, dim);
-  } else {
-    // Fallback: system emoji via fillText
-    ctx.font = Math.round(size * dpr * 0.75) + 'px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(emoji, dim / 2, dim / 2);
+    spriteCache[key] = c;      // only a real image is worth keeping
+    return c;
   }
 
-  spriteCache[key] = c;
+  // Fallback: system emoji via fillText. Deliberately NOT cached — the image
+  // is probably still downloading, and a cached fallback would freeze the
+  // canvas games on system emoji for the rest of the session.
+  ctx.font = Math.round(size * dpr * 0.75) + 'px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, dim / 2, dim / 2);
   return c;
 }
 
@@ -124,27 +176,52 @@ export function getSprite(emoji, size, dpr) {
  *  @param {string} emoji     - Emoji character
  *  @param {string} [className] - Optional CSS class name
  *  @returns {HTMLElement} <img> or <span> element */
-export function createEmojiImg(emoji, className) {
-  const img = imageCache[emoji];
-  if (img) {
-    const el = document.createElement('img');
-    el.src = getEmojiUrl(emoji);
-    el.alt = emoji;
-    el.draggable = false;
-    if (className) el.className = className;
-    return el;
-  }
-  // Fallback: plain text emoji
+function textEmoji(emoji, className) {
   const span = document.createElement('span');
   span.textContent = emoji;
   if (className) span.className = className;
   return span;
 }
 
+export function createEmojiImg(emoji, className) {
+  // Known-missing on the CDN (14 of the 362 in the registries): straight to text.
+  if (imageCache[emoji] === null) return textEmoji(emoji, className);
+
+  // Not yet cached is no longer a reason to fall back. Hand back the <img> and
+  // let the browser stream it in — waiting for the cache is what made games
+  // start slowly. If the URL turns out to be a 404 we try the base codepoint
+  // (strips ZWJ/gender/skin tone) and only then swap in a text span in place.
+  const el = document.createElement('img');
+  el.alt = emoji;
+  el.draggable = false;
+  if (className) el.className = className;
+
+  if (imageCache[emoji] === undefined) {
+    let triedBase = false;
+    el.addEventListener('error', function onError() {
+      const baseUrl = CDN_BASE + emoji.codePointAt(0).toString(16) + '_3d.png';
+      if (!triedBase && baseUrl !== getEmojiUrl(emoji)) {
+        triedBase = true;
+        el.src = baseUrl;
+        return;
+      }
+      el.removeEventListener('error', onError);
+      imageCache[emoji] = null;
+      if (el.parentNode) el.parentNode.replaceChild(textEmoji(emoji, className), el);
+    });
+    el.addEventListener('load', () => {
+      if (imageCache[emoji] === undefined) imageCache[emoji] = el;
+    }, { once: true });
+  }
+
+  el.src = getEmojiUrl(emoji);
+  return el;
+}
+
 /** Get the emoji URL directly (for use in HTML or CSS).
  *  Returns null if the emoji image was not preloaded. */
 export function getEmojiSrc(emoji) {
-  return imageCache[emoji] ? getEmojiUrl(emoji) : null;
+  return imageCache[emoji] === null ? null : getEmojiUrl(emoji);
 }
 
 /* ------------------------------------------------------------------
