@@ -2165,7 +2165,7 @@
   align-items: center;
   gap: 1rem;
   padding: clamp(8px, 2vw, 16px) clamp(12px, 3vw, 24px);
-  padding-left: calc(clamp(12px, 3vw, 24px) + 40px);   /* clear the fixed exit button */
+  padding-left: calc(clamp(12px, 3vw, 24px) + 60px + env(safe-area-inset-left));   /* clear the fixed exit button */
   z-index: 210;
   background: linear-gradient(135deg, #FFF8E7 0%, #FDE8F0 50%, #E8F0FE 100%);
 }
@@ -3107,7 +3107,7 @@
   justify-content: center;
   gap: clamp(8px, 2vw, 16px);
   padding: 0 clamp(10px, 2vw, 20px);
-  padding-left: calc(clamp(10px, 2vw, 20px) + 40px);   /* clear the fixed exit button */
+  padding-left: calc(clamp(10px, 2vw, 20px) + 60px + env(safe-area-inset-left));   /* clear the fixed exit button */
   z-index: 160;
 }
 
@@ -3901,7 +3901,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: max(10px, env(safe-area-inset-top)) 16px 6px 64px;   /* 64px clears the ✕ exit button */
+  /* Left padding clears the fixed exit button, which is 48px wide at
+     12px + the left safe-area inset. 64px was enough when it was 36px and
+     the inset was always zero; in landscape the title ran under it. */
+  padding: max(10px, env(safe-area-inset-top)) 16px 6px calc(72px + env(safe-area-inset-left));
   min-height: 56px;
 }
 .mn-back {

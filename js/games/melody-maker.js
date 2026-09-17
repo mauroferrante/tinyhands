@@ -1233,7 +1233,7 @@ function onAllComplete() {
 
   const sub = document.createElement('div');
   sub.className = 'melody-celebrate-sub';
-  sub.textContent = '30 melodies mastered 🎶';
+  sub.innerHTML = '30 melodies mastered <img src="' + getEmojiUrl('🎶') + '" alt="" class="emoji-img inline-emoji">';
   celebrateEl.appendChild(sub);
 
   const btn = document.createElement('button');
@@ -1437,7 +1437,7 @@ export const melodyMaker = {
     if (!rotatePromptEl) {
       rotatePromptEl = document.createElement('div');
       rotatePromptEl.className = 'melody-rotate-prompt';
-      rotatePromptEl.innerHTML = '<div class="melody-rotate-icon">📱</div>'
+      rotatePromptEl.innerHTML = '<div class="melody-rotate-icon"><img src="' + getEmojiUrl('📱') + '" alt="" class="emoji-img"></div>'
         + '<div class="melody-rotate-text">Rotate your device to play!</div>';
       melodyGameEl.appendChild(rotatePromptEl);
     }

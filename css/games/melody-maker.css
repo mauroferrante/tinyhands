@@ -61,7 +61,7 @@
   align-items: center;
   gap: 1rem;
   padding: clamp(8px, 2vw, 16px) clamp(12px, 3vw, 24px);
-  padding-left: calc(clamp(12px, 3vw, 24px) + 40px);   /* clear the fixed exit button */
+  padding-left: calc(clamp(12px, 3vw, 24px) + 60px + env(safe-area-inset-left));   /* clear the fixed exit button */
   z-index: 210;
   background: linear-gradient(135deg, #FFF8E7 0%, #FDE8F0 50%, #E8F0FE 100%);
 }
@@ -1003,7 +1003,7 @@
   justify-content: center;
   gap: clamp(8px, 2vw, 16px);
   padding: 0 clamp(10px, 2vw, 20px);
-  padding-left: calc(clamp(10px, 2vw, 20px) + 40px);   /* clear the fixed exit button */
+  padding-left: calc(clamp(10px, 2vw, 20px) + 60px + env(safe-area-inset-left));   /* clear the fixed exit button */
   z-index: 160;
 }
 

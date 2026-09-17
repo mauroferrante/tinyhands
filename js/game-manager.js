@@ -4,7 +4,7 @@
 
 import { initAudio, isAudioReady, playFanfare, playBubblePop } from './audio.js';
 import { EMOJIS, createBgEmojis } from './effects.js';
-import { createEmojiImg } from './emoji.js';
+import { createEmojiImg, getEmojiUrl } from './emoji.js';
 import { splatKeys } from './games/splat-keys.js';
 import { stackSmash } from './games/stack-smash.js';
 import { spellItOut } from './games/spell-it-out.js';
@@ -471,8 +471,8 @@ function markTipped() {
   local.set('thp-tipped', 1);
   if (tipCard) tipCard.classList.add('tipped');
   if (tipCardDesc) tipCardDesc.textContent = 'You bought me a coffee. Thank you, it really helps!';
-  if (tipCardBtn) tipCardBtn.textContent = 'Thank you 💛';
-  if (storyTip) storyTip.textContent = 'Thank you for the coffee 💛';
+  if (tipCardBtn) tipCardBtn.innerHTML = 'Thank you <img src="' + getEmojiUrl('💛') + '" alt="" class="emoji-img inline-emoji">';
+  if (storyTip) storyTip.innerHTML = 'Thank you for the coffee <img src="' + getEmojiUrl('💛') + '" alt="" class="emoji-img inline-emoji">';
 }
 (function handleThanksReturn() {
   const params = new URLSearchParams(window.location.search);

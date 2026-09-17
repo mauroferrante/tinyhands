@@ -57,7 +57,6 @@ if (hero && !window.matchMedia('(pointer: coarse)').matches) {
 
     const span = document.createElement('span');
     span.className = 'hero-sparkle';
-    span.textContent = '✨';
     span.style.left = e.clientX - hero.getBoundingClientRect().left + 'px';
     span.style.top = e.clientY - hero.getBoundingClientRect().top + 'px';
     hero.appendChild(span);

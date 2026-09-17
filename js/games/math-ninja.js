@@ -103,7 +103,9 @@ function buildDOM() {
   ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'back', '0', 'ok'].forEach(k => {
     const b = el('button', 'mn-key' + (k === 'ok' ? ' mn-key-ok' : k === 'back' ? ' mn-key-back' : ''));
     b.type = 'button'; b.dataset.key = k;
-    b.textContent = k === 'back' ? '⌫' : k === 'ok' ? '✓' : k;
+    // Plain characters every font has. U+232B and U+2713 fall through to
+    // Apple's LastResort font on iOS and draw a box with a question mark.
+    b.textContent = k === 'back' ? '←' : k === 'ok' ? 'OK' : k;
     b.setAttribute('aria-label', k === 'back' ? 'Delete' : k === 'ok' ? 'Check answer' : k);
     padEl.appendChild(b);
   });

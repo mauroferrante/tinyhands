@@ -200,18 +200,14 @@ export function createEmojiImg(emoji, className) {
   if (className) el.className = className;
 
   if (imageCache[emoji] === undefined) {
-    let triedBase = false;
     el.addEventListener('error', function onError() {
-      const baseUrl = CDN_BASE + emoji.codePointAt(0).toString(16) + '_3d.webp';
-      if (!triedBase && baseUrl !== getEmojiUrl(emoji)) {
-        triedBase = true;
-        el.src = baseUrl;
-        return;
-      }
       el.removeEventListener('error', onError);
-      imageCache[emoji] = null;
+      // Swap THIS element for text, but do not mark the emoji bad in the
+      // cache. We ship every file we reference, so an error here is a dropped
+      // request, not a missing asset — poisoning the cache turned one flaky
+      // fetch into a flat system glyph for the rest of the session.
       if (el.parentNode) el.parentNode.replaceChild(textEmoji(emoji, className), el);
-    });
+    }, { once: true });
     el.addEventListener('load', () => {
       if (imageCache[emoji] === undefined) imageCache[emoji] = el;
     }, { once: true });
