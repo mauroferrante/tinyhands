@@ -6,6 +6,10 @@
   "scripts": {
     "site": "node scripts/build-site.mjs",
     "check": "node scripts/build-site.mjs --check",
-    "indexnow": "node scripts/indexnow.mjs"
+    "indexnow": "node scripts/indexnow.mjs",
+    "emoji": "node scripts/fetch-emoji.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.4"
   }
 }

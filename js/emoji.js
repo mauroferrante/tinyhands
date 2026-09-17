@@ -3,8 +3,11 @@
  *  Replaces system font emoji with Microsoft Fluent 3D PNGs
  * ========================================================= */
 
-// jsDelivr CDN — serves Microsoft Fluent 3D emoji PNGs by codepoint
-const CDN_BASE = 'https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/';
+// Our own copies of the Microsoft Fluent 3D emoji, re-encoded to WebP at the
+// same 256px resolution by scripts/fetch-emoji.mjs (`npm run emoji`).
+// Self-hosting is ~85% fewer bytes than the PNGs we used to hot-link from
+// jsDelivr, is same-origin, and does not depend on a third-party mirror.
+const CDN_BASE = '/assets/emoji/fluent/';
 
 // ---- Image cache (preloaded Image objects keyed by emoji char) ----
 const imageCache = {};
@@ -18,14 +21,14 @@ const spriteCache = {};
 
 /** Convert an emoji character to its codepoint-based CDN filename.
  *  Strips variation selector FE0F since the asset files omit it.
- *  e.g. '🚀' → '1f680_3d.png', '👨‍🚀' → '1f468-200d-1f680_3d.png' */
+ *  e.g. '🚀' → '1f680_3d.webp', '👨‍🚀' → '1f468-200d-1f680_3d.webp' */
 export function emojiToFilename(emoji) {
   const cps = [...emoji]
     .map(c => c.codePointAt(0))
     .filter(cp => cp !== 0xFE0F)
     .map(cp => cp.toString(16))
     .join('-');
-  return cps + '_3d.png';
+  return cps + '_3d.webp';
 }
 
 /** Get the CDN URL for an emoji image. */
@@ -57,7 +60,7 @@ export function loadEmoji(emoji) {
       clearTimeout(timer);
       // Fallback: try base emoji (first codepoint only, strips ZWJ/gender/skin)
       const base = emoji.codePointAt(0).toString(16);
-      const baseUrl = CDN_BASE + base + '_3d.png';
+      const baseUrl = CDN_BASE + base + '_3d.webp';
       if (baseUrl !== url) {
         const fb = new Image();
         fb.onload  = () => { imageCache[emoji] = fb; resolve(fb); };
@@ -199,7 +202,7 @@ export function createEmojiImg(emoji, className) {
   if (imageCache[emoji] === undefined) {
     let triedBase = false;
     el.addEventListener('error', function onError() {
-      const baseUrl = CDN_BASE + emoji.codePointAt(0).toString(16) + '_3d.png';
+      const baseUrl = CDN_BASE + emoji.codePointAt(0).toString(16) + '_3d.webp';
       if (!triedBase && baseUrl !== getEmojiUrl(emoji)) {
         triedBase = true;
         el.src = baseUrl;

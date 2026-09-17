@@ -631,7 +631,7 @@ function generateCountryside() {
   }
 
   // === GARDEN (700, 2000) — Lush flower garden ===
-  const gardenEmojis = ['🌷','🌹','🌻','🌺','🌸','🪻','🌼','💐'];
+  const gardenEmojis = ['🌷','🌹','🌻','🌺','🌸','🌼','🌼','💐'];
   for (let i = 0; i < 50; i++) {
     const x = rng(350, 1050), y = rng(1750, 2250);
     const emoji = gardenEmojis[Math.floor(rng(0, gardenEmojis.length))];
@@ -718,7 +718,7 @@ function generateCountryside() {
   for (let i = 0; i < 3; i++) {
     const angle = rng(0, Math.PI*2);
     const r = rng(200, 320);
-    scenery.push({ x:2000+Math.cos(angle)*r, y:1000+Math.sin(angle)*r, emoji:'🪾', size:24+rng(0,10), layer:'sway', wobble:phase() });
+    scenery.push({ x:2000+Math.cos(angle)*r, y:1000+Math.sin(angle)*r, emoji:'🌳', size:24+rng(0,10), layer:'sway', wobble:phase() });
   }
   // Seedlings/sprouts around pond
   for (let i = 0; i < 5; i++) {
@@ -762,7 +762,7 @@ function generateCountryside() {
     '🐖','🐖','🐖','🐖','🐖','🐖','🐖','🐖','🐖',
     '🐑','🐑','🐑','🐑',
     '🦚','🦚','🦚',
-    '🪿','🪿','🪿','🪿','🪿',
+    '🦆','🦆','🦆','🦆','🦆',
   ];
   // Shuffle and place on a grid with jitter
   for (let fi = farmAnimals.length - 1; fi > 0; fi--) {

@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');   // handles spaces in the path
 const SITE = 'https://tinyhandsplay.com';
-const CDN  = 'https://cdn.jsdelivr.net/gh/shuding/fluentui-emoji-unicode/assets/';
+const CDN  = '/assets/emoji/fluent/';   // our own WebP set, see scripts/fetch-emoji.mjs
 const AUTHOR = 'Mauro Ferrante';
 const CHECK_ONLY = process.argv.includes('--check');
 const TODAY = new Date().toISOString().slice(0, 10);
@@ -39,7 +39,7 @@ function lastmod(rel) {
   catch { return TODAY; }
 }
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const emojiImg = (file, alt, cls = 'emoji-img', extra = '') => `<img src="${CDN}${file}.png" class="${cls}" alt="${esc(alt)}"${extra}>`;
+const emojiImg = (file, alt, cls = 'emoji-img', extra = '') => `<img src="${CDN}${file}.webp" class="${cls}" alt="${esc(alt)}"${extra}>`;
 const cp = ch => [...ch].map(c => c.codePointAt(0)).filter(c => c !== 0xFE0F).map(c => c.toString(16)).join('-') + '_3d';
 
 // ===== Content =====
@@ -196,7 +196,6 @@ function layout({ title, description, canonical, ogType = 'website', jsonld = []
 <link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/pages.css">
