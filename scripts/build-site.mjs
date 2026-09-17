@@ -357,7 +357,7 @@ function homeCard(g, i) {
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
-      <button class="card-info-btn" aria-label="Game info">i</button>
+      <button class="card-info-btn" aria-label="Game info">ⓘ</button>
     </article>
 `;
 }

@@ -605,13 +605,7 @@ body.pwa-banner-expanded #landing footer {
   right: 12px;
   width: 36px;
   height: 36px;
-  /* The glyph used to be U+24D8 (circled i). iOS has no font for it and drew
-     Apple's LastResort box instead, so the circle is CSS now and the letter
-     is a plain 'i' that every font has. */
-  border: 1.5px solid currentColor;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-  font-style: italic;
+  border: none;
   border-radius: 50%;
   background: transparent;
   color: var(--color-text-light);
