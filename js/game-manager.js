@@ -478,7 +478,16 @@ function markTipped() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('thanks') === '1') {
     markTipped();
-    track('tip-completed');
+    // Stripe does not store UTM codes in its dashboard; it appends them to the
+    // post-payment redirect instead. So the placement that actually produced
+    // the payment arrives right here, and used to be wiped by the
+    // replaceState below without anyone reading it. Capture it first, and the
+    // tip-completed event can be compared against the donate-* click events
+    // per placement. A run of 'unknown' means the payment link's confirmation
+    // behaviour is not set to redirect, so Stripe is not forwarding them.
+    const raw = params.get('utm_medium') || '';
+    const placement = /^[a-z0-9_-]{1,40}$/i.test(raw) ? raw : 'unknown';
+    track('tip-completed', { placement });
     history.replaceState({}, '', '/');
     if (thanksToast) {
       thanksToast.classList.add('show');
