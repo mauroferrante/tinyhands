@@ -1,3 +1,8 @@
+/* Safe-area note: index.html sets viewport-fit=cover, so the page now fills the
+   whole phone screen including behind the Dynamic Island and the home
+   indicator. Anything pinned to a screen edge adds the matching
+   env(safe-area-inset-*) so it stays reachable. calc() rather than max() so
+   stacked HUD rows keep their spacing relative to each other. */
 /* =========================================================
  *  Melody Maker — Piano & Melody Learning Game
  * ========================================================= */
@@ -378,6 +383,8 @@
   grid-template-columns: repeat(8, 1fr);
   gap: clamp(3px, 0.8vw, 8px);
   padding: clamp(6px, 1.5vw, 16px);
+  padding-left: max(clamp(6px, 1.5vw, 16px), env(safe-area-inset-left));
+  padding-right: max(clamp(6px, 1.5vw, 16px), env(safe-area-inset-right));
   padding-bottom: clamp(10px, 2.5vw, 24px);
   z-index: 200;
   max-width: 800px;
@@ -951,8 +958,8 @@
 
 .parade-back-btn {
   position: fixed;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: calc(0.5rem + env(safe-area-inset-top));
+  right: calc(0.5rem + env(safe-area-inset-right));
   padding: 0.5rem 1.5rem;
   font-family: 'Quicksand', sans-serif;
   font-weight: 700;

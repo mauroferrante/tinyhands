@@ -1,3 +1,8 @@
+/* Safe-area note: index.html sets viewport-fit=cover, so the page now fills the
+   whole phone screen including behind the Dynamic Island and the home
+   indicator. Anything pinned to a screen edge adds the matching
+   env(safe-area-inset-*) so it stays reachable. calc() rather than max() so
+   stacked HUD rows keep their spacing relative to each other. */
 /* ===== Spell It Out Game ===== */
 #spellGame {
   display: none;
@@ -10,8 +15,8 @@
 /* ===== Lives (top-right, above score) ===== */
 .spell-lives {
   position: fixed;
-  top: 14px;
-  right: 20px;
+  top: calc(14px + env(safe-area-inset-top));
+  right: calc(20px + env(safe-area-inset-right));
   font-size: clamp(1.2rem, 3vw, 1.6rem);
   z-index: 200;
   pointer-events: none;
@@ -47,8 +52,8 @@
 /* ===== Score Bar (top-right, below lives) ===== */
 .spell-score-bar {
   position: fixed;
-  top: 44px;
-  right: 20px;
+  top: calc(44px + env(safe-area-inset-top));
+  right: calc(20px + env(safe-area-inset-right));
   font-family: 'Fredoka One', cursive;
   font-size: clamp(0.9rem, 2.5vw, 1.2rem);
   color: rgba(124, 92, 252, 0.85);
@@ -230,7 +235,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 8px 4px 12px;
+  padding: 8px max(4px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
   z-index: 300;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);

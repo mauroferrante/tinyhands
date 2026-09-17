@@ -1,3 +1,8 @@
+/* Safe-area note: index.html sets viewport-fit=cover, so the page now fills the
+   whole phone screen including behind the Dynamic Island and the home
+   indicator. Anything pinned to a screen edge adds the matching
+   env(safe-area-inset-*) so it stays reachable. calc() rather than max() so
+   stacked HUD rows keep their spacing relative to each other. */
 /* ===== Memory Match Game ===== */
 
 #memoryGame {
@@ -89,8 +94,8 @@
 .memory-hud {
   display: none;
   position: fixed;
-  top: 14px;
-  right: 20px;
+  top: calc(14px + env(safe-area-inset-top));
+  right: calc(20px + env(safe-area-inset-right));
   z-index: 200;
   pointer-events: none;
   gap: 0.6rem;

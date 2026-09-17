@@ -1,3 +1,8 @@
+/* Safe-area note: index.html sets viewport-fit=cover, so the page now fills the
+   whole phone screen including behind the Dynamic Island and the home
+   indicator. Anything pinned to a screen edge adds the matching
+   env(safe-area-inset-*) so it stays reachable. calc() rather than max() so
+   stacked HUD rows keep their spacing relative to each other. */
 #splatKeysGame {
   display: none;
   position: absolute;
@@ -8,8 +13,8 @@
 /* ===== ABC mode ===== */
 .splat-mode-btn {
   position: fixed;
-  top: max(14px, env(safe-area-inset-top));
-  right: 20px;
+  top: calc(14px + env(safe-area-inset-top));
+  right: calc(20px + env(safe-area-inset-right));
   z-index: 200;
   font-family: 'Baloo 2', 'Fredoka One', sans-serif;
   font-weight: 800;

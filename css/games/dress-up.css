@@ -1,3 +1,7 @@
+/* Safe-area note: index.html sets viewport-fit=cover, so the page now fills the
+   whole phone screen including behind the Dynamic Island and the home
+   indicator. Anything pinned to a screen edge adds the matching
+   env(safe-area-inset-*) so it stays reachable. */
 /* =========================================================
  *  Dress-Up Party — tap a furry friend to dress it up
  * ========================================================= */
@@ -100,7 +104,7 @@
 /* ---- Wardrobe strip ---- */
 .du-strip {
   position: absolute;
-  right: clamp(8px, 1.5vw, 20px);
+  right: calc(clamp(8px, 1.5vw, 20px) + env(safe-area-inset-right));
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -146,7 +150,7 @@
 .du-actions {
   position: absolute;
   top: clamp(8px, 1.5vh, 16px);
-  right: clamp(8px, 1.5vw, 20px);
+  right: calc(clamp(8px, 1.5vw, 20px) + env(safe-area-inset-right));
   display: flex;
   gap: clamp(8px, 1.5vw, 14px);
   z-index: 30;

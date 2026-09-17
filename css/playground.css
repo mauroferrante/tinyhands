@@ -1,3 +1,8 @@
+/* Safe-area note: index.html sets viewport-fit=cover, so the page now fills the
+   whole phone screen including behind the Dynamic Island and the home
+   indicator. Anything pinned to a screen edge adds the matching
+   env(safe-area-inset-*) so it stays reachable. calc() rather than max() so
+   stacked HUD rows keep their spacing relative to each other. */
 /* ===== Playground (fullscreen mode) ===== */
 #playground {
   display: none;
@@ -82,8 +87,8 @@
 /* ESC hint (fades in then out on game start) */
 #escHint {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  right: calc(20px + env(safe-area-inset-right));
   font-family: 'Quicksand', sans-serif;
   font-size: 0.9rem;
   color: rgba(0, 0, 0, 0.35);
