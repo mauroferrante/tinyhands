@@ -290,7 +290,7 @@
 .mn-fdot-a { background: #7C6BBF; border-style: solid; border-color: #7C6BBF; }
 .mn-fdot-b { background: #F4845F; border-style: solid; border-color: #F4845F; }
 .mn-fdot-gone { opacity: 0.3; background: #B5AFA9; border-color: #B5AFA9; position: relative; }
-.mn-fdot-gone::after { content: '✕'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #C9633C; font-weight: 800; opacity: 1; }
+.mn-fdot-gone::after { content: '\00d7'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #C9633C; font-weight: 800; opacity: 1; }
 .mn-array {
   display: grid;
   gap: 4px;

@@ -648,7 +648,7 @@ if (footerTip) {
     '<div class="play-launch-card" role="dialog" aria-label="Start game">' +
       (icon ? '<img src="' + icon.src + '" class="emoji-img" alt="">' : '') +
       '<h2>' + name + '</h2><p>Ready when you are.</p>' +
-      '<button class="play-launch-btn" type="button">▶ Tap to start</button>' +
+      '<button class="play-launch-btn" type="button">Tap to start</button>' +
       '<button class="play-launch-close" type="button">Not now</button>' +
     '</div>';
   document.body.appendChild(overlay);

@@ -240,7 +240,7 @@ function gamePage(g) {
       <span class="age-badge">${esc(g.ages.label)}</span>
       <h1>${esc(g.name)}</h1>
       <p class="pg-tagline">${esc(g.cardDesc)}</p>
-      <a class="pg-play" href="/?play=${g.slug}">▶ Play ${esc(g.name)}</a>
+      <a class="pg-play" href="/?play=${g.slug}">Play ${esc(g.name)}</a>
       <p class="pg-facts">Free · No ads · No account · Phone, tablet and laptop</p>
     </div>
   </section>
@@ -258,7 +258,7 @@ function gamePage(g) {
   </section>
   ${guide ? `<section class="pg-section pg-guide-box"><h2>Read the guide</h2><p><a href="${guide.url}">${esc(guide.title)}</a> — ${esc(guide.description || '')}</p></section>` : ''}
   <section class="pg-section"><h2>More games for ages ${g.ages.min} to ${g.ages.max}</h2><div class="pg-minis">${related.map(miniCard).join('')}</div></section>
-  <p class="pg-cta"><a class="pg-play" href="/?play=${g.slug}">▶ Play ${esc(g.name)} now</a></p>
+  <p class="pg-cta"><a class="pg-play" href="/?play=${g.slug}">Play ${esc(g.name)} now</a></p>
 </main>`;
   const jsonld = [
     {
@@ -291,7 +291,7 @@ function guidePage(gd) {
       <p class="pg-meta">By ${AUTHOR} · Updated <time datetime="${gd.lastmod}">${gd.lastmod}</time> · ${Math.max(1, Math.round(words(gd.html) / 200))} min read</p>
     </header>
     ${gd.html.replace(/^<h1>[^<]*<\/h1>\n?/, '')}
-    ${game ? `<aside class="pg-guide-box"><h2>Try it</h2><p><a href="${gameUrl(game)}">${esc(game.name)}</a> is free, has no ads and runs in the browser. Ages ${game.ages.label}.</p><p><a class="pg-play" href="/?play=${game.slug}">▶ Play ${esc(game.name)}</a></p></aside>` : ''}
+    ${game ? `<aside class="pg-guide-box"><h2>Try it</h2><p><a href="${gameUrl(game)}">${esc(game.name)}</a> is free, has no ads and runs in the browser. Ages ${game.ages.label}.</p><p><a class="pg-play" href="/?play=${game.slug}">Play ${esc(game.name)}</a></p></aside>` : ''}
   </article>
   ${related.length ? `<section class="pg-section"><h2>More guides</h2><ul class="pg-guide-list">${related.map(r => `<li><a href="${r.url}">${esc(r.title)}</a><span>${esc(r.description || '')}</span></li>`).join('')}</ul></section>` : ''}
 </main>`;
@@ -358,7 +358,7 @@ function homeCard(g, i) {
           <span class="card-back-hint">Tap to flip back</span>
         </div>
       </div>
-      <button class="card-info-btn" aria-label="Game info">ⓘ</button>
+      <button class="card-info-btn" aria-label="Game info">i</button>
     </article>
 `;
 }
