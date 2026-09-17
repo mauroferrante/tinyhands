@@ -37,7 +37,7 @@ The emoji artwork is [Microsoft Fluent Emoji](https://github.com/microsoft/fluen
 
 ## Support the site
 
-If Tiny Hands Play has given you a few minutes of peace, two things help enormously: share it with another parent or a teacher, or [buy me a $3 coffee](https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02?utm_source=tinyhandsplay&utm_medium=about). Tips cover hosting and let me keep it ad-free.
+If Tiny Hands Play has given you a few minutes of peace, two things help enormously: share it with another parent or a teacher, or [buy me a coffee](https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02?utm_source=tinyhandsplay&utm_medium=about). Tips cover hosting and let me keep it ad-free.
 
 ## Get in touch
 

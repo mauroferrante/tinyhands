@@ -164,7 +164,7 @@ function footer() {
   <div class="pg-footer-cols">
     <div><h2>Games</h2><div class="pg-links">${gameLinks}</div></div>
     <div><h2>Guides</h2><div class="pg-links">${guideLinks}<a href="/guides/">All guides →</a></div></div>
-    <div><h2>Tiny Hands Play</h2><div class="pg-links"><a href="/about/">About</a><a href="/teachers/">For teachers</a><a href="https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02?utm_source=tinyhandsplay&amp;utm_medium=page" rel="noopener">Buy me a coffee · $3</a><a href="https://github.com/mauroferrante/tinyhands" rel="noopener">Source on GitHub</a></div></div>
+    <div><h2>Tiny Hands Play</h2><div class="pg-links"><a href="/about/">About</a><a href="/teachers/">For teachers</a><a href="https://donate.stripe.com/bJecN44KTgWlgqNfmQasg02?utm_source=tinyhandsplay&amp;utm_medium=page" rel="noopener">Buy me a coffee</a><a href="https://github.com/mauroferrante/tinyhands" rel="noopener">Source on GitHub</a></div></div>
   </div>
   <p class="pg-footer-note">Free for every family, with no ads, no accounts and no tracking of children. Built with ${emojiImg('2764_3d', '❤️', 'emoji-img inline-emoji')} by a dad. Emoji by <a href="https://github.com/microsoft/fluentui-emoji" rel="noopener">Microsoft Fluent Emoji</a> (MIT).</p>
 </footer>`;
@@ -407,7 +407,7 @@ ${guideLines || '- Guides are being written; see https://tinyhandsplay.com/guide
 
 ## About
 
-- [About Tiny Hands Play](${SITE}/about/): who makes it, what is collected (nothing personal), how it is funded (optional $3 tips).
+- [About Tiny Hands Play](${SITE}/about/): who makes it, what is collected (nothing personal), how it is funded (optional tips).
 - [For teachers](${SITE}/teachers/): classroom use, Chromebooks, no accounts, printable poster.
 
 ## Optional
