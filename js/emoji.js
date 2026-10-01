@@ -7,6 +7,9 @@
 // same 256px resolution by scripts/fetch-emoji.mjs (`npm run emoji`).
 // Self-hosting is ~85% fewer bytes than the PNGs we used to hot-link from
 // jsDelivr, is same-origin, and does not depend on a third-party mirror.
+// Served with a one-year immutable cache header (vercel.json). Never overwrite
+// a file here: re-encoded emoji go in a new folder, and this path changes with
+// it. See the note at the top of scripts/fetch-emoji.mjs.
 const CDN_BASE = '/assets/emoji/fluent/';
 
 // ---- Image cache (preloaded Image objects keyed by emoji char) ----

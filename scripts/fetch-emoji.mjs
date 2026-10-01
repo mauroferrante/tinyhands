@@ -12,6 +12,17 @@
  *      npm run emoji
  *
  *  Needs `sharp`, which is a devDependency and never runs on Vercel.
+ *
+ *  CACHING: everything under /assets/emoji/ is served with
+ *  `Cache-Control: public, max-age=31536000, immutable` (vercel.json), so
+ *  browsers keep each file for a year and never re-check it. Without that
+ *  header Vercel's default is max-age=0, which made every emoji on every page
+ *  load a billed CDN request and pushed the account over the Hobby limit in
+ *  Sep 2026. Consequence: NEVER overwrite a file in place. If the set is ever
+ *  re-encoded, write it to a new folder (e.g. assets/emoji/fluent-v2/) and
+ *  update every reference to the old path: CDN_BASE in js/emoji.js, CDN in
+ *  scripts/build-site.mjs, the hardcoded <img> paths in index.html, and the
+ *  .hero-sparkle background in css/landing.css. Adding NEW files is fine.
  * ========================================================= */
 import { mkdirSync, writeFileSync, readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
